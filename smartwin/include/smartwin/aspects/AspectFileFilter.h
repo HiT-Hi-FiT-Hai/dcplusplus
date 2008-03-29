@@ -37,12 +37,6 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-// DEVELOPERS RENOTE!
-// This class is INTENTIONALLY inlined since some users might want to include this
-// class without including the whole library! This way you can use the
-// WidgetLoadFile && the WidgetSaveFile dialogs WITHOUT being forced to link
-// against the COMPLETE library!! DON'T put this class into a library .cpp file!!!
-
 /// Class for adding a filter to e.g. a WidgetLoadFile dialog.
 /** \ingroup AspectClasses
   * Class is an Aspect class which should be realized into classes that needs it.
@@ -90,29 +84,6 @@ public:
 		return itsActiveFilter + 1;
 	}
 
-protected:
-	AspectFileFilter()
-		: itsActiveFilter( 0 )
-	{}
-
-	SmartUtil::tstring filter() const
-	{
-		SmartUtil::tstring filter( itsFilter.begin(), itsFilter.end() );
-		return filter;
-	}
-
-private:
-	std::vector< TCHAR > itsFilter;
-	unsigned int itsActiveFilter;
-};
-
-// Class that contains common things between the different WidgetXXXXFile classes.
-// Among other things we have specializations that have lots of commonalities.
-/// Class containing commonalities between WidgetLoadFile and WidgetSaveFile Widgets.
-class WidgetFileCommon
-	: public virtual AspectFileFilter
-{
-public:
 	/// Sets the starting directory of the WidgetLoadFile or WidgetSaveFile Widget
 	/** If given your dialog will try to start in the given directory, otherwise it
 	  * will use the working directory of the process.
@@ -155,7 +126,12 @@ public:
 #endif
 	}
 
+
 protected:
+	AspectFileFilter()
+		: itsActiveFilter( 0 )
+	{}
+
 	static const int PATH_BUFFER_SIZE = 32768; //really arbitrary, but 32K sounds reasonable. size in number of TCHARS!
 
 	// Fills out the common members of the OPENFILENAME struct.
@@ -170,7 +146,6 @@ protected:
 		ofn.hInstance = ::GetModuleHandle( 0 );
 
 		ofn.nMaxFile = PATH_BUFFER_SIZE;
-		itsFilter = this->filter(); // Remember that the filter needs to be accessible _after_ we return from this function...
 		ofn.lpstrFilter = itsFilter.c_str();
 		ofn.nFilterIndex = this->getActiveFilter();
 		ofn.lpstrFileTitle = NULL;
@@ -179,7 +154,9 @@ protected:
 		ofn.Flags = flags; // OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 	}
 
+
 private:
+	unsigned int itsActiveFilter;
 	SmartUtil::tstring itsStartDir;
 	SmartUtil::tstring itsFilter;
 };

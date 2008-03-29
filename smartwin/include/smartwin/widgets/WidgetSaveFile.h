@@ -28,9 +28,8 @@
 #ifndef WidgetSaveFile_h
 #define WidgetSaveFile_h
 
-#include "../WindowsHeaders.h"
+#include "../Widget.h"
 #include "../../SmartUtil.h"
-#include "../FreeCommonDialog.h"
 #include "../aspects/AspectFileFilter.h"
 
 namespace SmartWin
@@ -54,14 +53,12 @@ namespace SmartWin
   * arguments returning an HWND. <br>
   * the complete signature of the function will then be "HWND parent();"   
   */
-template< class Parent >
 class WidgetSaveFile
-	: public virtual AspectFileFilter,
-	public WidgetFileCommon
+	: public AspectFileFilter
 {
 public:
 	/// Class type
-	typedef WidgetSaveFile< Parent > ThisType;
+	typedef WidgetSaveFile ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -75,24 +72,20 @@ public:
 	SmartUtil::tstring showDialog();
 
 	/// Constructor Taking pointer to parent
-	explicit WidgetSaveFile( Parent * parent = 0 );
+	explicit WidgetSaveFile( Widget * parent = 0 );
 
 	virtual ~WidgetSaveFile()
 	{}
 
 private:
-	Parent * itsParent;
+	Widget * itsParent;
+	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
 };
-
-/// \ingroup GlobalStuff
-/// A Free WidgetSaveFile dialog is a dialog which isn't "owned" by another Widget
-typedef WidgetSaveFile< FreeCommonDialog > WidgetSaveFileFree;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class Parent >
-SmartUtil::tstring WidgetSaveFile< Parent >::showDialog()
+inline SmartUtil::tstring WidgetSaveFile::showDialog()
 {
 	TCHAR szFile[MAX_PATH + 1]; // buffer for file name
 	szFile[0] = '\0';
@@ -103,7 +96,7 @@ SmartUtil::tstring WidgetSaveFile< Parent >::showDialog()
 	// function... You MUST supply a parent with a function "handle()" which
 	// returns a HWND! All the Widgetxxx classes (except LoadFile, SaveFile and
 	// MessageBox) have the "handle()" function...
-	fillOutCommonStructure( ofn, itsParent->handle(), 0 ); // OFN_PATHMUSTEXIST ?
+	fillOutCommonStructure( ofn, getParentHandle(), 0 ); // OFN_PATHMUSTEXIST ?
 	ofn.lpstrFile = szFile;
 
 	SmartUtil::tstring retVal;
@@ -115,8 +108,7 @@ SmartUtil::tstring WidgetSaveFile< Parent >::showDialog()
 	return retVal;
 }
 
-template< class Parent >
-WidgetSaveFile< Parent >::WidgetSaveFile( Parent * parent )
+inline WidgetSaveFile::WidgetSaveFile( Widget * parent )
 	: itsParent( parent )
 {
 }

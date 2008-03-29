@@ -29,10 +29,8 @@
 #ifndef WidgetChooseFont_h
 #define WidgetChooseFont_h
 
-#include "../WindowsHeaders.h"
+#include "../Widget.h"
 #include "../resources/Font.h"
-#include "../FreeCommonDialog.h"
-#include <memory>
 
 namespace SmartWin
 {
@@ -49,12 +47,11 @@ namespace SmartWin
   * an HWND on the template parameter class. <br>
   * the complete signature of the function will then be "HWND parent()"   
   */
-template< class Parent >
 class WidgetChooseFont
 {
 public:
 	/// Class type
-	typedef WidgetChooseFont< Parent > ThisType;
+	typedef WidgetChooseFont ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -65,31 +62,26 @@ public:
 	bool showDialog(DWORD dwFlags, LPLOGFONT lplf, DWORD& rgbColors);
 
 	/// Constructor Taking pointer to parent
-	explicit WidgetChooseFont( Parent * parent = 0 );
+	explicit WidgetChooseFont( Widget* parent = 0 );
 
 	virtual ~WidgetChooseFont()
 	{}
 
 private:
-	Parent * itsParent;
-};
+	Widget* itsParent;
 
-/// \ingroup GlobalStuff
-/// A Free WidgetChooseFont dialog is a dialog which isn't "owned" by another Widget
-typedef WidgetChooseFont< FreeCommonDialog > WidgetChooseFontFree;
+	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
+};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class Parent >
-bool WidgetChooseFont< Parent >::showDialog(DWORD dwFlags, LPLOGFONT lplf, DWORD& rgbColors)
+inline bool WidgetChooseFont::showDialog(DWORD dwFlags, LPLOGFONT lplf, DWORD& rgbColors)
 {
-	CHOOSEFONT cf;
+	CHOOSEFONT cf = { sizeof(CHOOSEFONT) };
 
 	// Initialize CHOOSEFONT
-	ZeroMemory( & cf, sizeof( CHOOSEFONT ) );
-	cf.lStructSize = sizeof( CHOOSEFONT );
-	cf.hwndOwner = itsParent->handle();
+	cf.hwndOwner = getParentHandle();
 	cf.Flags = dwFlags | CF_INITTOLOGFONTSTRUCT;
 	cf.lpLogFont = lplf;
 	cf.rgbColors = rgbColors;
@@ -103,8 +95,7 @@ bool WidgetChooseFont< Parent >::showDialog(DWORD dwFlags, LPLOGFONT lplf, DWORD
 	return false;
 }
 
-template< class Parent >
-WidgetChooseFont< Parent >::WidgetChooseFont( Parent * parent )
+inline WidgetChooseFont::WidgetChooseFont( Widget * parent )
 	: itsParent( parent )
 {
 }

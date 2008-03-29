@@ -63,7 +63,7 @@ public:
 	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
 
 	/// ChooseFont class and object type.
-	typedef SmartWin::WidgetChooseFont< SmartWin::Widget > WidgetChooseFont;
+	typedef SmartWin::WidgetChooseFont WidgetChooseFont;
 
 	/// Toolbar class type.
 	typedef SmartWin::WidgetToolbar WidgetToolbar;

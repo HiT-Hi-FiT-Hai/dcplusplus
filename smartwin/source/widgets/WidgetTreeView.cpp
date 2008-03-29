@@ -22,8 +22,7 @@ HTREEITEM WidgetTreeView::insert( const SmartUtil::tstring & text, HTREEITEM par
 	tv.hParent = parent;
 	tv.hInsertAfter = TVI_LAST;
 
-	TVITEMEX t;
-	ZeroMemory( & t, sizeof( TVITEM ) );
+	TVITEMEX t = { 0 };
 	t.mask = TVIF_TEXT;
 	if ( param != 0 )
 	{

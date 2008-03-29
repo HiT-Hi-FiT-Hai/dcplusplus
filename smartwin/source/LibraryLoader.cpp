@@ -120,9 +120,7 @@ DWORD LibraryLoader::getCommonControlsVersion() {
 	LibraryLoader lib(_T("comctl32.dll"));
 	DLLGETVERSIONPROC pDllGetVersion = (DLLGETVERSIONPROC)lib.getProcAddress(_T("DllGetVersion"));
 	if(pDllGetVersion) {
-		DLLVERSIONINFO dvi;
-		ZeroMemory(&dvi, sizeof(dvi));
-		dvi.cbSize = sizeof(dvi);
+		DLLVERSIONINFO dvi = { sizeof(dvi) };
 		if(SUCCEEDED((*pDllGetVersion)(&dvi)))
 			return PACK_COMCTL_VERSION(dvi.dwMajorVersion, dvi.dwMinorVersion);
 	}

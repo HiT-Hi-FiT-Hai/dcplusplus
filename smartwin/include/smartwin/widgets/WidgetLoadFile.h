@@ -28,9 +28,8 @@
 #ifndef WidgetLoadFile_h
 #define WidgetLoadFile_h
 
-#include "../WindowsHeaders.h"
+#include "../Widget.h"
 #include "../../SmartUtil.h"
-#include "../FreeCommonDialog.h"
 #include "../aspects/AspectFileFilter.h"
 #include <vector>
 
@@ -55,14 +54,12 @@ namespace SmartWin
   * and HWND in the Parent template parameter. <br>
   * the complete signature of the function will then be "HWND parent()"   
   */
-template< class Parent >
 class WidgetLoadFile
-	: public virtual AspectFileFilter,
-	public WidgetFileCommon
+	: public AspectFileFilter
 {
 public:
 	/// Class type
-	typedef WidgetLoadFile< Parent > ThisType;
+	typedef WidgetLoadFile ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -90,23 +87,18 @@ public:
 	std::vector<SmartUtil::tstring> showDialogMultiSelect();
 
 	// Constructor Taking pointer to parent
-	explicit WidgetLoadFile( Parent * parent = 0 );
+	explicit WidgetLoadFile( Widget * parent = 0 );
 
-	virtual ~WidgetLoadFile()
-	{}
+	virtual ~WidgetLoadFile() { }
 private:
-	Parent * itsParent;
+	Widget * itsParent;
+	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
 };
-
-/// \ingroup GlobalStuff
-/// A Free WidgetLoadFile dialog is a dialog which isn't "owned" by another Widget
-typedef WidgetLoadFile< FreeCommonDialog > WidgetLoadFileFree;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class Parent >
-SmartUtil::tstring WidgetLoadFile< Parent >::showDialog()
+inline SmartUtil::tstring WidgetLoadFile::showDialog()
 {
 	TCHAR szFile[PATH_BUFFER_SIZE]; // buffer for file name
 	szFile[0] = '\0';
@@ -117,7 +109,7 @@ SmartUtil::tstring WidgetLoadFile< Parent >::showDialog()
 	// function... You MUST supply a parent with a function "handle()" which
 	// returns a HWND! All the Widgetxxx classes (except LoadFile, SaveFile and
 	// MessageBox) have the "handle()" function...
-	fillOutCommonStructure( ofn, itsParent->handle(), OFN_FILEMUSTEXIST );
+	fillOutCommonStructure( ofn, getParentHandle(), OFN_FILEMUSTEXIST );
 	ofn.lpstrFile = szFile;
 	ofn.Flags |= OFN_FILEMUSTEXIST;
 
@@ -130,8 +122,7 @@ SmartUtil::tstring WidgetLoadFile< Parent >::showDialog()
 	return retVal;
 }
 
-template< class Parent > 
-std::vector<SmartUtil::tstring> WidgetLoadFile<Parent>::showDialogMultiSelect() 
+inline std::vector<SmartUtil::tstring> WidgetLoadFile::showDialogMultiSelect() 
 { 
 	TCHAR szFile[PATH_BUFFER_SIZE]; // buffer for file name 
 	szFile[0] = '\0'; 
@@ -141,7 +132,7 @@ std::vector<SmartUtil::tstring> WidgetLoadFile<Parent>::showDialogMultiSelect()
 	// If this one fizzles you have NOT supplied a parent with a "handle()" function... 
 	// You MUST supply a parent with a function "handle()" which returns a HWND! 
 	// All the Widgetxxx classes (except LoadFile, SaveFile and MessageBox) have the "handle()" function... 
-	fillOutCommonStructure( ofn, itsParent->handle(), OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER ); 
+	fillOutCommonStructure( ofn, getParentHandle(), OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER ); 
 	ofn.lpstrFile = szFile; 
 	std::vector<SmartUtil::tstring> retVal; 
 	if( ::GetOpenFileName(&ofn) ) 
@@ -174,8 +165,7 @@ std::vector<SmartUtil::tstring> WidgetLoadFile<Parent>::showDialogMultiSelect()
 	return retVal; 
 } 
 
-template< class Parent >
-WidgetLoadFile< Parent >::WidgetLoadFile( Parent * parent )
+inline WidgetLoadFile::WidgetLoadFile( Widget * parent )
 	: itsParent( parent )
 {}
 

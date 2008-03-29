@@ -28,9 +28,7 @@
 #ifndef WidgetChooseColor_h
 #define WidgetChooseColor_h
 
-#include "../WindowsHeaders.h"
-#include "../FreeCommonDialog.h"
-#include <memory>
+#include "../Widget.h"
 
 namespace SmartWin
 {
@@ -49,12 +47,11 @@ namespace SmartWin
   * This is one of few Widgets in SmartWin++ which can be used without linking in the 
   * actual library!   
   */
-template< class Parent >
 class WidgetChooseColor
 {
 public:
 	/// Class type
-	typedef WidgetChooseColor< Parent > ThisType;
+	typedef WidgetChooseColor ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -67,7 +64,7 @@ public:
 	  */
 	class ColorParams
 	{
-		friend class WidgetChooseColor< Parent >;
+		friend class WidgetChooseColor;
 		COLORREF itsColor;
 		COLORREF itsCustomColors[16];
 		bool itsUserPressedOk;
@@ -129,34 +126,23 @@ public:
 	ColorParams showDialog( const ColorParams & colorParams, bool basic = true, bool allowFullOpen = true );
 
 	/// Expicit constructor taking pointer to parent
-	explicit WidgetChooseColor( Parent * parent = 0 );
+	explicit WidgetChooseColor( Widget * parent = 0 );
 
 	virtual ~WidgetChooseColor()
 	{}
 
 private:
-	Parent * itsParent;
-
-	// Note!
-	// This one is STATIC which normally would be potentially dangerous in e.g.
-	// Multi Threaded environments, but since ColorParams is immutable in addition
-	// to that two different threads should never be allowed to manipulate GUI in
-	// Windows API this isn't dangerous after all...
-	static ColorParams itsColorParams;
+	ColorParams itsColorParams;
+	Widget* itsParent;
+	
+	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
 };
-
-template< class Parent >
-typename WidgetChooseColor< Parent >::ColorParams WidgetChooseColor< Parent >::itsColorParams;
-
-/// \ingroup GlobalStuff
-/// A Free WidgetChooseColor dialog is a dialog which isn't "owned" by another Widget
-typedef WidgetChooseColor< FreeCommonDialog > WidgetChooseColorFree;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class Parent >
-WidgetChooseColor< Parent >::ColorParams::ColorParams()
+inline
+WidgetChooseColor::ColorParams::ColorParams()
 	: itsColor( 0x0000FFFF )
 	, itsUserPressedOk( false )
 {
@@ -178,8 +164,7 @@ WidgetChooseColor< Parent >::ColorParams::ColorParams()
 	itsCustomColors[15] = 0x00997755;
 }
 
-template< class Parent >
-WidgetChooseColor< Parent >::ColorParams::ColorParams( COLORREF defaultColor )
+inline WidgetChooseColor::ColorParams::ColorParams( COLORREF defaultColor )
 	: itsColor( defaultColor )
 	, itsUserPressedOk( false )
 {
@@ -201,32 +186,28 @@ WidgetChooseColor< Parent >::ColorParams::ColorParams( COLORREF defaultColor )
 	itsCustomColors[15] = 0x00997755;
 }
 
-template< class Parent >
-COLORREF WidgetChooseColor< Parent >::ColorParams::getColor() const
+inline COLORREF WidgetChooseColor::ColorParams::getColor() const
 {
 	return itsColor;
 }
 
-template< class Parent >
-WidgetChooseColor< Parent >::ColorParams::ColorParams( COLORREF defaultColor, COLORREF customColors[16] )
+inline WidgetChooseColor::ColorParams::ColorParams( COLORREF defaultColor, COLORREF customColors[16] )
 	: itsColor( defaultColor )
 	, itsUserPressedOk( false )
 {
-	itsCustomColors = customColors;
+	memcpy(itsCustomColors, customColors, sizeof(itsCustomColors));
 }
 
-template< class Parent >
-bool WidgetChooseColor< Parent >::ColorParams::userPressedOk() const
+inline bool WidgetChooseColor::ColorParams::userPressedOk() const
 {
 	return itsUserPressedOk;
 }
 
-template< class Parent >
-typename WidgetChooseColor< Parent >::ColorParams WidgetChooseColor< Parent >::showDialog( bool basic, bool allowFullOpen )
+inline WidgetChooseColor::ColorParams WidgetChooseColor::showDialog( bool basic, bool allowFullOpen )
 {
 	CHOOSECOLOR cc;
 	cc.lStructSize = ( DWORD ) sizeof( CHOOSECOLOR );
-	cc.hwndOwner = itsParent->handle();
+	cc.hwndOwner = getParentHandle();
 	cc.hInstance = NULL;
 	cc.rgbResult = itsColorParams.itsColor;
 	cc.lpCustColors = itsColorParams.itsCustomColors;
@@ -247,12 +228,10 @@ typename WidgetChooseColor< Parent >::ColorParams WidgetChooseColor< Parent >::s
 	return itsColorParams;
 }
 
-template< class Parent >
-typename WidgetChooseColor< Parent >::ColorParams WidgetChooseColor< Parent >::showDialog( const ColorParams & colorParams, bool basic, bool allowFullOpen )
-{
+inline WidgetChooseColor::ColorParams WidgetChooseColor::showDialog( const ColorParams & colorParams, bool basic, bool allowFullOpen ){
 	CHOOSECOLOR cc;
 	cc.lStructSize = ( DWORD ) sizeof( CHOOSECOLOR );
-	cc.hwndOwner = itsParent->handle();
+	cc.hwndOwner = getParentHandle();
 	cc.hInstance = NULL;
 	cc.rgbResult = colorParams.itsColor;
 	cc.lpCustColors = itsColorParams.itsCustomColors;
@@ -273,8 +252,7 @@ typename WidgetChooseColor< Parent >::ColorParams WidgetChooseColor< Parent >::s
 	return itsColorParams;
 }
 
-template< class Parent >
-WidgetChooseColor< Parent >::WidgetChooseColor( Parent * parent )
+inline WidgetChooseColor::WidgetChooseColor( Widget * parent )
 	: itsParent( parent )
 {
 }

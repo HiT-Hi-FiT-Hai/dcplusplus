@@ -178,16 +178,16 @@ public:
 	typedef typename WidgetRadioButton::ObjectType WidgetRadioButtonPtr;
 
 	/// WidgetChooseFolder class type.
-	typedef SmartWin::WidgetChooseFolder< SmartWin::Widget > WidgetChooseFolder;
+	typedef SmartWin::WidgetChooseFolder WidgetChooseFolder;
 
 	/// LoadFileDialog class type.
-	typedef SmartWin::WidgetLoadFile< SmartWin::Widget > WidgetLoadFile;
+	typedef SmartWin::WidgetLoadFile WidgetLoadFile;
 
 	/// SaveFileDialog class and object type.
-	typedef SmartWin::WidgetSaveFile< SmartWin::Widget > WidgetSaveFile;
+	typedef SmartWin::WidgetSaveFile WidgetSaveFile;
 
 	/// WidgetChooseColor class and object type.
-	typedef SmartWin::WidgetChooseColor< SmartWin::Widget > WidgetChooseColor;
+	typedef SmartWin::WidgetChooseColor WidgetChooseColor;
 
 	/// ComboBox class type.
 	typedef SmartWin::WidgetComboBox WidgetComboBox;

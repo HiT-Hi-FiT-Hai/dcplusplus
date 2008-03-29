@@ -28,9 +28,8 @@
 #ifndef WidgetChooseFolder_h
 #define WidgetChooseFolder_h
 
-#include "../WindowsHeaders.h"
+#include "../Widget.h"
 #include "../../SmartUtil.h"
-#include "../FreeCommonDialog.h"
 #include <shlobj.h>
 
 namespace SmartWin
@@ -48,12 +47,11 @@ namespace SmartWin
   * and HWND in the Parent template parameter. <br>
   * the complete signature of the function will then be "HWND parent()"    
   */ 
-template< class Parent >
 class WidgetChooseFolder
 {
 public:
 	/// Class type
-	typedef WidgetChooseFolder< Parent > ThisType;
+	typedef WidgetChooseFolder ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -71,7 +69,7 @@ public:
 	SmartUtil::tstring showDialog();
 
 	// Constructor Taking pointer to parent
-	explicit WidgetChooseFolder( Parent * parent = 0 );
+	explicit WidgetChooseFolder( Widget * parent = 0 );
 
 	/// Sets the root directory in the WidgetChooseFolder Widget
 	/** If given your dialog will try to start with the given directory as root, otherwise it
@@ -102,60 +100,46 @@ public:
 		itsStartDir = startDir;
 	}
 
-	virtual ~WidgetChooseFolder()
+	~WidgetChooseFolder()
 	{
+		::CoTaskMemFree(itsPidlRoot);
 	}
 
 private:
 	static int CALLBACK browseCallbackProc( HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData )
 	{
-		switch( uMsg ) 
-		{
-		case BFFM_INITIALIZED: 
-			ThisType* p = (ThisType*) lpData;
-			if( p->itsStartDir.size() > 0 )
-				SendMessage( hwnd, BFFM_SETSELECTION, TRUE, (LPARAM) p->itsStartDir.c_str() );
-			break;
+		if(lpData && uMsg == BFFM_INITIALIZED) {
+			::SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
 		}
 		return 0;
 	}
 
-	Parent * itsParent;
+	Widget* itsParent;
 	SmartUtil::tstring itsTitleText;
 	LPITEMIDLIST itsPidlRoot;
 	SmartUtil::tstring itsStartDir;
-};
+	
+	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
 
-typedef WidgetChooseFolder< FreeCommonDialog > WidgetChooseFolderFree;
+};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class Parent >
-SmartUtil::tstring WidgetChooseFolder< Parent >::showDialog()
+inline SmartUtil::tstring WidgetChooseFolder::showDialog()
 {
-	// WARNING!
-	// If you ONLY include THIS file then you must explicitly link to comctl32.lib
-	// since you won't get the default linking inclusion by the whole library!!
-	CoInitialize( 0 );
 	SmartUtil::tstring retVal = _T( "" );
-	BROWSEINFO bws;
-	ZeroMemory( & bws, sizeof( bws ) );
+	BROWSEINFO bws = { 0 };
 	bws.hwndOwner = itsParent->handle();
 	bws.pidlRoot = itsPidlRoot;
 	bws.pszDisplayName = NULL;
 	bws.lpszTitle = itsTitleText.c_str();
-#ifdef __WINE__
-	bws.ulFlags = 0; // Wine 0.9.10 does not support the BIF_USENEWUI flag yet.
-#else
 	bws.ulFlags = BIF_USENEWUI;
-#endif
 	bws.lpfn = NULL;
-	bws.lParam = (LPARAM) this;
+	bws.lParam = !itsStartDir.empty() ? reinterpret_cast<LPARAM>(itsStartDir.c_str()) : 0;
 	bws.lpfn = &browseCallbackProc;
 
-	LPITEMIDLIST lpIDL = NULL;
-	lpIDL = SHBrowseForFolder( & bws );
+	LPITEMIDLIST lpIDL = SHBrowseForFolder( & bws );
 	if ( lpIDL )
 	{
 		TCHAR temp_path[MAX_PATH + 1];
@@ -165,24 +149,14 @@ SmartUtil::tstring WidgetChooseFolder< Parent >::showDialog()
 		else
 			retVal = temp_path;
 
-		LPMALLOC mal = NULL;
-		if ( SHGetMalloc( & mal ) == E_FAIL || !mal )
-			free( lpIDL );
-		else
-		{
-			mal->Free( lpIDL );
-			mal->Release();
-		}
+		::CoTaskMemFree(lpIDL);
 	}
 	return retVal;
 }
 
-template< class Parent >
-WidgetChooseFolder< Parent >::WidgetChooseFolder( Parent * parent )
- : itsParent( parent )
+inline WidgetChooseFolder::WidgetChooseFolder( Widget * parent )
+ : itsParent( parent ), itsPidlRoot(NULL)
 {
-	itsTitleText = _T( "" );
-	itsPidlRoot = NULL;
 }
 
 // end namespace SmartWin

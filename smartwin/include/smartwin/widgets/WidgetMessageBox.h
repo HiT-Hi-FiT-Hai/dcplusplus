@@ -117,7 +117,7 @@ public:
 	  * in the upper left corner )       
 	  */
 	RetVal show( const SmartUtil::tstring & body,
-		const SmartUtil::tstring & header = _T( "SmartWinMessageBox" ),
+		const SmartUtil::tstring & header = _T( "Message" ),
 		Buttons buttons = BOX_OK,
 		Icon icon = BOX_ICONINFORMATION );
 

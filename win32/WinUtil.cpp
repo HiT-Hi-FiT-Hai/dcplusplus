@@ -413,10 +413,9 @@ static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPAR
 
 bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 	TCHAR buf[MAX_PATH];
-	BROWSEINFO bi;
 	LPMALLOC ma;
 
-	ZeroMemory(&bi, sizeof(bi));
+	BROWSEINFO bi = { 0 };
 
 	bi.hwndOwner = owner;
 	bi.pszDisplayName = buf;
@@ -433,10 +432,8 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 		if(target.size() > 0 && target[target.size()-1] != _T('\\'))
 			target+=_T('\\');
 
-		if(::SHGetMalloc(&ma) != E_FAIL) {
-			ma->Free(pidl);
-			ma->Release();
-		}
+		::CoTaskMemFree(pidl);
+		
 		return true;
 	}
 	return false;
