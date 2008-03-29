@@ -58,7 +58,7 @@ class WidgetCreator;
   */
 class WidgetToolbar :
 	// Aspects
-	public AspectControl< WidgetToolbar >,
+	public AspectControl,
 	public AspectFocus< WidgetToolbar >,
 	public AspectFont< WidgetToolbar >
 {
@@ -67,7 +67,11 @@ class WidgetToolbar :
 	friend class WidgetCreator< WidgetToolbar >;
 	friend class SmartWin::AspectSizable<WidgetToolbar>;
 public:
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
+	/// Class type
+	typedef WidgetToolbar ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

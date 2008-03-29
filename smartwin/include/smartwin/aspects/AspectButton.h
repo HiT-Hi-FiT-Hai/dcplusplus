@@ -17,7 +17,7 @@ class AspectButton :
 	public AspectClickable<WidgetType>,
 	public AspectColor<WidgetType>,
 	public AspectColorCtlImpl<WidgetType>,
-	public AspectControl<WidgetType>,
+	public AspectControl,
 	public AspectDblClickable<WidgetType>,
 	public AspectFocus< WidgetType >,
 	public AspectFont< WidgetType >,
@@ -26,7 +26,12 @@ class AspectButton :
 {
 	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 public:
-	
+	/// Class type
+	typedef WidgetType ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
+
 	// Contract needed by AspectClickable Aspect class
 	Message getClickMessage();
 
@@ -53,14 +58,14 @@ Message AspectButton<WidgetType>::getDblClickMessage() {
 }
 
 template<typename WidgetType>
-AspectButton<WidgetType>::AspectButton(Widget* parent) : AspectControl<WidgetType>(parent) {
+AspectButton<WidgetType>::AspectButton(Widget* parent) : ControlType(parent) {
 	
 }
 
 template<typename WidgetType>
 template<typename SeedType>
 void AspectButton<WidgetType>::create( const SeedType & cs ) {
-	WidgetType::ControlType::create(cs);
+	ControlType::create(cs);
 	if(cs.font)
 		setFont( cs.font );
 }

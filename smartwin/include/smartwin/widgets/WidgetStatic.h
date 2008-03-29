@@ -64,7 +64,7 @@ class WidgetStatic :
 	public AspectClickable< WidgetStatic >,
 	public AspectColor< WidgetStatic >,
 	public AspectColorCtlImpl<WidgetStatic>,
-	public AspectControl<WidgetStatic>,
+	public AspectControl,
 	public AspectDblClickable< WidgetStatic >,
 	public AspectFocus< WidgetStatic >,
 	public AspectFont< WidgetStatic >,
@@ -73,6 +73,12 @@ class WidgetStatic :
 {
 	friend class WidgetCreator< WidgetStatic >;
 public:
+	/// Class type
+	typedef WidgetStatic ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
+	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget

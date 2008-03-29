@@ -65,7 +65,7 @@ class WidgetCreator;
 class WidgetTabSheet :
 	// Aspects
 	public AspectCollection<WidgetTabSheet, int>,
-	public AspectControl<WidgetTabSheet>,
+	public AspectControl,
 	public AspectFocus< WidgetTabSheet >,
 	public AspectFont< WidgetTabSheet >,
 	public AspectPainting< WidgetTabSheet >,
@@ -110,7 +110,11 @@ class WidgetTabSheet :
 	friend class WidgetCreator< WidgetTabSheet >;
 
 public:
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
+	/// Class type
+	typedef WidgetTabSheet ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

@@ -107,13 +107,19 @@ class WidgetStatusBar :
 	
 	// Aspects
 	public AspectClickable< WidgetStatusBar< TypeOfStatusBar > >,
-	public AspectControl<WidgetStatusBar< TypeOfStatusBar > >,
+	public AspectControl,
 	public AspectDblClickable< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectFont< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectPainting< WidgetStatusBar< TypeOfStatusBar > >
 {
 	friend class WidgetCreator< WidgetStatusBar >;
 public:
+	/// Class type
+	typedef WidgetStatusBar<TypeOfStatusBar> ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
+
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
@@ -229,14 +235,14 @@ const Message & WidgetStatusBar< TypeOfStatusBar >::getDblClickMessage()
 
 template< class TypeOfStatusBar >
 WidgetStatusBar< TypeOfStatusBar >::WidgetStatusBar( SmartWin::Widget * parent )
-	: AspectControl<WidgetStatusBar< TypeOfStatusBar > >( parent )
+	: ControlType( parent )
 {
 }
 
 template< class TypeOfStatusBar >
 void WidgetStatusBar< TypeOfStatusBar >::create( const Seed & cs )
 {
-	AspectControl<WidgetStatusBar< TypeOfStatusBar > >::create(cs);
+	ControlType::create(cs);
 	if(cs.font)
 		setFont( cs.font );
 }

@@ -56,7 +56,7 @@ class WidgetCreator;
 class WidgetDateTimePicker :
 	// Aspects
 	public AspectClickable< WidgetDateTimePicker >,
-	public AspectControl<WidgetDateTimePicker>,
+	public AspectControl,
 	public AspectFocus< WidgetDateTimePicker >,
 	public AspectFont< WidgetDateTimePicker >,
 	public AspectPainting< WidgetDateTimePicker >
@@ -76,8 +76,11 @@ class WidgetDateTimePicker :
 	};
 
 public:
+	/// Class type
+	typedef WidgetDateTimePicker ThisType;
 
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
+	/// Object type
+	typedef ThisType* ObjectType;
 
 	friend class WidgetCreator< WidgetDateTimePicker >;
 

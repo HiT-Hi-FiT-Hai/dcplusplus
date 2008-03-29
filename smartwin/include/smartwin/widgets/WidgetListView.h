@@ -72,7 +72,7 @@ class WidgetListView :
 	public AspectClickable< WidgetListView >,
 	public AspectCollection<WidgetListView, int>,
 	public AspectColor<WidgetListView>,
-	public AspectControl<WidgetListView>,
+	public AspectControl,
 	public AspectData<WidgetListView, int>,
 	public AspectDblClickable< WidgetListView >,
 	public AspectFocus< WidgetListView >,
@@ -102,6 +102,12 @@ class WidgetListView :
 	friend class AspectSelection<WidgetListView, int>;
 
 public:
+	/// Class type
+	typedef WidgetListView ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
+
 	typedef std::tr1::function<int (LPARAM a, LPARAM b)> SortFunction;
 	
 	/// Seed class

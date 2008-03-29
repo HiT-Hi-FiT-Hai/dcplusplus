@@ -62,7 +62,7 @@ class WidgetComboBox :
 	public AspectCollection<WidgetComboBox, int>,
 	public AspectColor< WidgetComboBox >,
 	public AspectColorCtlImpl<WidgetComboBox>,
-	public AspectControl<WidgetComboBox>,
+	public AspectControl,
 	public AspectDblClickable< WidgetComboBox >,
 	public AspectFocus< WidgetComboBox >,
 	public AspectFont< WidgetComboBox >,
@@ -75,6 +75,11 @@ class WidgetComboBox :
 	friend class AspectColor<WidgetComboBox>;
 	friend class AspectSelection<WidgetComboBox, int>;
 public:
+	/// Class type
+	typedef WidgetComboBox ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

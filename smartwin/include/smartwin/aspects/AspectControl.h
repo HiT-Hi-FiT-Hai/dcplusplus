@@ -17,50 +17,41 @@
 namespace SmartWin {
 
 /** This class is for all windows common controls */
-template<typename WidgetType >
+
 class AspectControl : 
 	public MessageMapPolicy< Policies::Subclassed >,
 
-	public AspectBorder<WidgetType>,
-	public AspectContextMenu<WidgetType>,
-	public AspectEnabled<WidgetType>,
-	public AspectHelp<WidgetType>,
-	public AspectKeyboard<WidgetType>,
-	public AspectMouse<WidgetType>,
-	public AspectRaw<WidgetType>,
-	public AspectSizable<WidgetType>,
-	public AspectVisible<WidgetType>
+	public AspectBorder<AspectControl>,
+	public AspectContextMenu<AspectControl>,
+	public AspectEnabled<AspectControl>,
+	public AspectHelp<AspectControl>,
+	public AspectKeyboard<AspectControl>,
+	public AspectMouse<AspectControl>,
+	public AspectRaw<AspectControl>,
+	public AspectSizable<AspectControl>,
+	public AspectVisible<AspectControl>
 {
 public:
-	/// Class type
-	typedef WidgetType ThisType;
-
-	/// Object type
-	typedef ThisType* ObjectType;
-	
 	unsigned int getControlId();
 	
 	virtual HWND create(const Seed& cs);
 protected:
-	typedef AspectControl<WidgetType> ControlType;
+	typedef AspectControl ControlType;
 
 	AspectControl(Widget* parent);
 };
 
-template<typename WidgetType>
-AspectControl<WidgetType>::AspectControl(Widget* parent) : PolicyType(parent) {
+inline AspectControl::AspectControl(Widget* parent) : PolicyType(parent) {
 	xAssert( parent, _T( "Common Controls must have a parent" ) );
 }
 
-template<typename WidgetType>
-HWND AspectControl<WidgetType>::create(const Seed& cs) {
+inline HWND AspectControl::create(const Seed& cs) {
 	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Common controls must have WS_CHILD style"));
 	return PolicyType::create(cs);
 }
 
-template<typename WidgetType>
-unsigned int AspectControl<WidgetType>::getControlId() {
-	return static_cast<unsigned int>(::GetWindowLongPtr(static_cast<WidgetType*>(this)->handle(), GWLP_ID));
+inline unsigned int AspectControl::getControlId() {
+	return static_cast<unsigned int>(::GetWindowLongPtr(handle(), GWLP_ID));
 }
 
 }

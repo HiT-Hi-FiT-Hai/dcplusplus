@@ -67,7 +67,7 @@ class WidgetTextBoxBase :
 	// Aspect classes
 	public AspectColor< WidgetTextBoxBase >,
 	public AspectColorCtlImpl<WidgetTextBoxBase>,
-	public AspectControl< WidgetTextBoxBase >,
+	public AspectControl,
 	public AspectFocus< WidgetTextBoxBase >,
 	public AspectFont< WidgetTextBoxBase >,
 	public AspectScrollable< WidgetTextBoxBase >,

@@ -52,11 +52,16 @@ class WidgetCreator;
   */
 class WidgetProgressBar :
 	// Aspects
-	public AspectControl<WidgetProgressBar>,
+	public AspectControl,
 	public AspectPainting< WidgetProgressBar >
 {
 	friend class WidgetCreator< WidgetProgressBar >;
 public:
+	/// Class type
+	typedef WidgetProgressBar ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
