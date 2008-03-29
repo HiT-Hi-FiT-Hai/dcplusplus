@@ -144,7 +144,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetButton::Seed cs = WinUtil::Seeds::button;
+		Button::Seed cs = WinUtil::Seeds::button;
 		cs.caption = T_("Purge");
 		purge = createButton(cs);
 		purge->setHelpId(IDH_SEARCH_PURGE);

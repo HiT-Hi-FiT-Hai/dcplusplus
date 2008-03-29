@@ -29,7 +29,7 @@
 #define WidgetRadioButton_h
 
 #include "../Widget.h"
-#include "../aspects/AspectButton.h"
+#include "Button.h"
 
 namespace SmartWin
 {
@@ -54,18 +54,22 @@ class WidgetCreator;
    */
 class WidgetRadioButton :
 	// Aspects
-	public AspectButton< WidgetRadioButton >
+	public Button
 {
 	friend class WidgetCreator< WidgetRadioButton >;
 public:
+	/// Class type
+	typedef WidgetRadioButton ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
+
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public Widget::Seed
-	{
+	class Seed : public Widget::Seed {
 	public:
 		FontPtr font;
 

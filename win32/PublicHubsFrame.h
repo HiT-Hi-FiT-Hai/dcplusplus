@@ -96,10 +96,10 @@ private:
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 
-	WidgetButtonPtr configure;
-	WidgetButtonPtr refresh;
-	WidgetButtonPtr lists;
-	WidgetButtonPtr filterDesc;
+	ButtonPtr configure;
+	ButtonPtr refresh;
+	ButtonPtr lists;
+	ButtonPtr filterDesc;
 	WidgetTextBoxPtr filter;
 	WidgetComboBoxPtr pubLists;
 	WidgetComboBoxPtr filterSel;

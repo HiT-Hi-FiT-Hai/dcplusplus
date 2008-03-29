@@ -153,7 +153,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	}
 	
 	{
-		WidgetButton::Seed cs = WinUtil::Seeds::button;
+		Button::Seed cs = WinUtil::Seeds::button;
 		
 		cs.caption = T_("Find");
 		find = createButton(cs);

@@ -68,7 +68,7 @@ bool MagnetDlg::handleInitDialog() {
 
 	::CheckRadioButton(handle(), IDC_MAGNET_1_QUEUE, IDC_MAGNET_3_NOTHING, IDC_MAGNET_2_SEARCH);
 
-	WidgetButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachButton(IDOK);
 	button->onClicked(std::tr1::bind(&MagnetDlg::handleOKClicked, this));
 
 	button = attachButton(IDCANCEL);

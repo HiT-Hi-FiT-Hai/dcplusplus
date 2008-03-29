@@ -29,10 +29,7 @@
 #define WidgetGroupBox_h
 
 #include "../Widget.h"
-#include "../aspects/AspectButton.h"
-#include "WidgetRadioButton.h"
-
-#include <vector>
+#include "Button.h"
 
 namespace SmartWin
 {
@@ -53,19 +50,22 @@ class WidgetCreator;
   * add up your WidgetRadioButtons into an object of this type   
   */
 class WidgetGroupBox :
-	// Aspects
-	public AspectButton< WidgetGroupBox >
+	public Button
 {
 	friend class WidgetCreator< WidgetGroupBox >;
 public:
+	/// Class type
+	typedef WidgetGroupBox ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
+
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
-	  * should define one of these.       
+	  * should define one of these.
 	  */
-	class Seed
-		: public Widget::Seed
-	{
+	class Seed : public Widget::Seed {
 	public:
 		FontPtr font;
 
@@ -73,57 +73,25 @@ public:
 		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
 
-	/// Add a radio button to the group box
-	void addChild( WidgetRadioButton::ObjectType btn );
-
 protected:
 	/// Constructor Taking pointer to parent
-	explicit WidgetGroupBox( SmartWin::Widget * parent );
+	explicit WidgetGroupBox( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
 	virtual ~WidgetGroupBox()
 	{}
 
-private:
-	std::vector< WidgetRadioButton::ObjectType > itsChildrenBtns;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetGroupBox::WidgetGroupBox( SmartWin::Widget * parent )
+inline WidgetGroupBox::WidgetGroupBox( Widget * parent )
 	: ButtonType( parent )
 {
 }
-
-inline void WidgetGroupBox::addChild( WidgetRadioButton::ObjectType btn )
-{
-	itsChildrenBtns.push_back( btn );
-}
-
-#ifdef PORT_ME
-
-LRESULT WidgetGroupBox::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	switch ( msg )
-	{
-		// Checking to see if it's a click event which should be routed to one of the children
-		case WM_COMMAND :
-		{
-			for ( typename std::list< typename WidgetRadioButton::ObjectType >::iterator idx = itsChildrenBtns.begin();
-				idx != itsChildrenBtns.end();
-				++idx )
-			{
-				if ( reinterpret_cast< HANDLE >( lPar ) == ( * idx )->handle() )
-					return ( * idx )->sendWidgetMessage( hWnd, msg, wPar, lPar );
-			}
-		}
-	}
-	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
-}
-#endif
 // end namespace SmartWin
 }
 

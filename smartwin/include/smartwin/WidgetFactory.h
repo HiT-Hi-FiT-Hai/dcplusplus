@@ -29,7 +29,7 @@
 #define WidgetFactory_h
 
 #include "../SmartUtil.h"
-#include "widgets/WidgetButton.h"
+#include "widgets/Button.h"
 #include "widgets/WidgetCheckBox.h"
 #include "widgets/WidgetChooseColor.h"
 #include "widgets/WidgetChooseFolder.h"
@@ -76,8 +76,8 @@ namespace SmartWin
   * MessageMapPolicyNormalWidget, if this is a Widget constructed from a dialog
   * resource, you must state so by adding SmartWin::MessageMapPolicyDialogWidget and
   * if it is a MDI Child you must add SmartWin::MessageMapPolicyMDIChildWidget as the
-  * third argument Then when you need e.g. a WidgetButton you would create that
-  * button by calling createWidgetButton. Class contains type defs for your
+  * third argument Then when you need e.g. a Button you would create that
+  * button by calling createButton. Class contains type defs for your
   * convenience for all Widget types that exists in the SmartWin library.< /p > Note!
   * <br>
   * It is CRUCIAL that you DON'T explicitly delete any of the objects returned from
@@ -130,10 +130,10 @@ public:
 	typedef typename WidgetStatusBarSections::ObjectType WidgetStatusBarSectionsPtr;
 
 	/// Button class type.
-	typedef SmartWin::WidgetButton WidgetButton;
+	typedef SmartWin::Button Button;
 
 	/// Button object type.
-	typedef typename WidgetButton::ObjectType WidgetButtonPtr;
+	typedef typename Button::ObjectType ButtonPtr;
 
 	/// MDIWindow class type.
 	typedef SmartWin::WidgetMDIParent WidgetMDIParent;
@@ -345,7 +345,7 @@ public:
 	/// Creates a Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetButtonPtr createButton( const typename WidgetButton::Seed & cs = WidgetButton::Seed() );
+	ButtonPtr createButton( const typename Button::Seed & cs = Button::Seed() );
 
 	/// Creates a Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -382,7 +382,7 @@ public:
 	/** DON'T delete the returned pointer!!!< br >
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls with this function.
 	  */
-	WidgetButtonPtr attachButton( unsigned id );
+	ButtonPtr attachButton( unsigned id );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Progress Bar Control from the given resource id.
@@ -592,10 +592,10 @@ WidgetFactory< ContainerWidgetType >::createStatusBarSections( const typename Wi
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetButtonPtr
-	WidgetFactory< ContainerWidgetType >::createButton( const typename WidgetButton::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::ButtonPtr
+	WidgetFactory< ContainerWidgetType >::createButton( const Button::Seed & cs )
 {
-	return WidgetCreator< WidgetButton >::create( this, cs );
+	return WidgetCreator< Button >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
@@ -641,10 +641,10 @@ WidgetFactory< ContainerWidgetType >::createProgressBar( const typename WidgetPr
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetButtonPtr
+typename WidgetFactory< ContainerWidgetType >::ButtonPtr
 WidgetFactory< ContainerWidgetType >::attachButton( unsigned id )
 {
-	return WidgetCreator< WidgetButton >::attach( this, id );
+	return WidgetCreator< Button >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>

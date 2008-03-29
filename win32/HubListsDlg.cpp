@@ -59,7 +59,7 @@ bool HubListsDlg::handleInitDialog() {
 	hubLists->onDblClicked(std::tr1::bind(&HubListsDlg::handleDoubleClick, this));
 	hubLists->onKeyDown(std::tr1::bind(&HubListsDlg::handleKeyDown, this, _1));
 
-	WidgetButtonPtr button = attachButton(IDC_LIST_ADD);
+	ButtonPtr button = attachButton(IDC_LIST_ADD);
 	button->setText(T_("&Add"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleAddClicked, this));
 

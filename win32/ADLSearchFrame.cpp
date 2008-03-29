@@ -62,7 +62,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 
 	{
-		WidgetButton::Seed cs = WinUtil::Seeds::button;
+		Button::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = T_("&New...");
 		add = createButton(cs);

@@ -156,7 +156,7 @@ private:
 
 	WidgetStaticPtr searchLabel;
 	WidgetComboBoxPtr searchBox;
-	WidgetButtonPtr purge;
+	ButtonPtr purge;
 
 	WidgetStaticPtr sizeLabel;
 	WidgetComboBoxPtr mode;
@@ -175,7 +175,7 @@ private:
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 
-	WidgetButtonPtr doSearch;
+	ButtonPtr doSearch;
 
 	typedef TypedListView<SearchInfo> WidgetResults;
 	typedef WidgetResults* WidgetResultsPtr;

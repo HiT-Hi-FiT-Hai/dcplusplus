@@ -29,7 +29,7 @@
 #define WidgetCheckBox_h
 
 #include "../Widget.h"
-#include "../aspects/AspectButton.h"
+#include "Button.h"
 
 namespace SmartWin
 {
@@ -50,17 +50,22 @@ class WidgetCreator;
   */
 class WidgetCheckBox :
 	// Aspect classes
-	public AspectButton< WidgetCheckBox >
+	public Button
 {
 	friend class WidgetCreator< WidgetCheckBox >;
 public:
+	/// Class type
+	typedef WidgetCheckBox ThisType;
+
+	/// Object type
+	typedef ThisType* ObjectType;
+
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
-	  * should define one of these.       
+	  * should define one of these.
 	  */
-	class Seed : public Widget::Seed
-	{
+	class Seed : public Widget::Seed {
 	public:
 		FontPtr font;
 

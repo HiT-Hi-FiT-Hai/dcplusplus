@@ -74,7 +74,7 @@ bool SettingsDialog::initDialog() {
 	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
 
 	{
-		WidgetButtonPtr button = attachButton(IDOK);
+		ButtonPtr button = attachButton(IDOK);
 		button->setText(T_("OK"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
 

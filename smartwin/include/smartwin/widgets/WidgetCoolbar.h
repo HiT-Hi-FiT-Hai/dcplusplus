@@ -38,7 +38,7 @@
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
-#include "WidgetButton.h"
+#include "Button.h"
 #include "WidgetCheckBox.h"
 #include "WidgetComboBox.h"
 #include "WidgetDateTimePicker.h"
@@ -47,6 +47,7 @@
 #include "WidgetSpinner.h"
 #include "WidgetTextBox.h"
 #include "WidgetTreeView.h"
+#include "WidgetRadioButton.h"
 
 namespace SmartWin
 {
@@ -121,7 +122,7 @@ public:
 	typedef WidgetTextBox::ObjectType WidgetTextBoxPtr;
 
 	/// Button object type.
-	typedef WidgetButton::ObjectType WidgetButtonPtr;
+	typedef Button::ObjectType ButtonPtr;
 
 	/// Button object type.
 	typedef WidgetTreeView::ObjectType WidgetTreeViewPtr;

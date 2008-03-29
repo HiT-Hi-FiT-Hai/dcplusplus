@@ -148,7 +148,7 @@ bool CommandDlg::handleInitDialog() {
 	openHelp->setChecked(bOpenHelp);
 
 	{
-		WidgetButtonPtr button = attachButton(IDOK);
+		ButtonPtr button = attachButton(IDOK);
 		button->setText(T_("OK"));
 		button->onClicked(std::tr1::bind(&CommandDlg::handleOKClicked, this));
 

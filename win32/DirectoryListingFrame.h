@@ -137,10 +137,10 @@ private:
 	WidgetFilesPtr files;
 	WidgetVPanedPtr paned;
 
-	WidgetButtonPtr find;
-	WidgetButtonPtr findNext;
-	WidgetButtonPtr listDiff;
-	WidgetButtonPtr matchQueue;
+	ButtonPtr find;
+	ButtonPtr findNext;
+	ButtonPtr listDiff;
+	ButtonPtr matchQueue;
 	
 	int64_t speed;		/**< Speed at which this file list was downloaded */
 

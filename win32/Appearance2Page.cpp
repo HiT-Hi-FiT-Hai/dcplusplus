@@ -82,7 +82,7 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	example->setColor(fg, bg);
 	example->setFont(font);
 
-	WidgetButtonPtr button = attachButton(IDC_SELWINCOLOR);
+	ButtonPtr button = attachButton(IDC_SELWINCOLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
 
 	button = attachButton(IDC_SELTEXT);

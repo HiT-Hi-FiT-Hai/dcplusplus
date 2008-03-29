@@ -36,7 +36,7 @@ namespace SmartWin
 
 /// Aspect class used by Widgets that have the possibility of being "clicked".
 /** \ingroup AspectClasses
-  * E.g. the WidgetButton have a "clicked" Aspect therefore it realizes the
+  * E.g. the Button have a "clicked" Aspect therefore it realizes the
   * AspectClickable through inheritance. When you click a Widget which realizes this
   * Aspect the onClicked event will be raised.
   */

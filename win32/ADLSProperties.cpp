@@ -88,7 +88,7 @@ bool ADLSProperties::handleInitDialog() {
 	autoQueue->setText(T_("Download Matches"));
 	autoQueue->setChecked(search->isAutoQueue);
 
-	WidgetButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachButton(IDOK);
 	button->onClicked(std::tr1::bind(&ADLSProperties::handleOKClicked, this));
 
 	button = attachButton(IDCANCEL);

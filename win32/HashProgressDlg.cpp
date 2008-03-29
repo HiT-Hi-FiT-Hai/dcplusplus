@@ -46,7 +46,7 @@ bool HashProgressDlg::handleInitDialog() {
 	progress = attachProgressBar(IDC_HASH_PROGRESS);
 	progress->setRange(0, 10000);
 
-	WidgetButtonPtr ok = attachButton(IDOK);
+	ButtonPtr ok = attachButton(IDOK);
 	ok->setText(T_("Run in background"));
 	ok->onClicked(std::tr1::bind(&HashProgressDlg::endDialog, this, IDOK));
 

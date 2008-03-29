@@ -79,7 +79,7 @@ bool FavHubProperties::handleInitDialog() {
 	userDescription->setTextLimit(35);
 	userDescription->setText(Text::toT(entry->getUserDescription()));
 
-	WidgetButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachButton(IDOK);
 	button->onClicked(std::tr1::bind(&FavHubProperties::handleOKClicked, this));
 
 	button = attachButton(IDCANCEL);

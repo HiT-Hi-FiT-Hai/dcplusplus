@@ -67,7 +67,7 @@ public:
 	static ImageMap fileIndexes;
 	
 	struct Seeds {
-		static const SmartWin::WidgetButton::Seed button;
+		static const SmartWin::Button::Seed button;
 		static const SmartWin::WidgetComboBox::Seed comboBoxStatic;
 		static const SmartWin::WidgetComboBox::Seed comboBoxEdit;
 		static const SmartWin::WidgetListView::Seed listView;

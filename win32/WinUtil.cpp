@@ -58,7 +58,7 @@ bool WinUtil::urlMagnetRegistered = false;
 WinUtil::ImageMap WinUtil::fileIndexes;
 DWORD WinUtil::helpCookie = 0;
 
-const SmartWin::WidgetButton::Seed WinUtil::Seeds::button;
+const SmartWin::Button::Seed WinUtil::Seeds::button;
 const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxStatic;
 const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxEdit;
 const SmartWin::WidgetListView::Seed WinUtil::Seeds::listView;
@@ -120,7 +120,7 @@ void WinUtil::init() {
 	}
 	
 	// Const so that noone else will change them after they've been initialized
-	//SmartWin::WidgetButton::Seed& xbutton = const_cast<SmartWin::WidgetButton::Seed&>(Seeds::button);
+	//SmartWin::Button::Seed& xbutton = const_cast<SmartWin::Button::Seed&>(Seeds::button);
 	SmartWin::WidgetComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxEdit);
 	SmartWin::WidgetComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxStatic);
 	SmartWin::WidgetListView::Seed& xlistView = const_cast<SmartWin::WidgetListView::Seed&>(Seeds::listView);

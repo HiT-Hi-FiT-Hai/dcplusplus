@@ -111,7 +111,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	total = attachStatic(IDC_TOTAL);
 	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 
-	WidgetButtonPtr button = attachButton(IDC_RENAME);
+	ButtonPtr button = attachButton(IDC_RENAME);
 	button->onClicked(std::tr1::bind(&UploadPage::handleRenameClicked, this));
 
 	button = attachButton(IDC_REMOVE);
