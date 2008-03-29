@@ -79,15 +79,7 @@ public:
 	// Constructor Taking pointer to parent
 	explicit LoadDialog( Widget * parent = 0 );
 
-<<<<<<< TREE
-<<<<<<< TREE
 	~LoadDialog() { }
-=======
-	virtual ~WidgetLoadFile() { }
->>>>>>> MERGE-SOURCE
-=======
-	virtual ~LoadDialog() { }
->>>>>>> MERGE-SOURCE
 private:
 };
 
