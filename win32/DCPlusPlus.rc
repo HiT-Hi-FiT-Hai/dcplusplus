@@ -40,6 +40,7 @@ IDB_FINISHED_DL         BITMAP                  "res/menu/FinishedDL.bmp"
 IDB_FINISHED_UL         BITMAP                  "res/menu/FinishedUL.bmp"
 IDB_FOLDERS             BITMAP                  "res/folders.bmp"
 IDB_FOLLOW              BITMAP                  "res/menu/Follow.bmp"
+IDB_HELP                BITMAP                  "res/menu/Help.bmp"
 IDB_HUB                 BITMAP                  "res/menu/Hub.bmp"
 IDB_NETWORK_STATS       BITMAP                  "res/menu/NetworkStats.bmp"
 IDB_NOTEPAD             BITMAP                  "res/menu/Notepad.bmp"
@@ -921,5 +922,4 @@ BEGIN
     "D",            IDC_MOVE_DOWN,          VIRTKEY, ALT, NOINVERT
     "C",            IDC_CONNECT,            VIRTKEY, ALT, NOINVERT
 END
-
 

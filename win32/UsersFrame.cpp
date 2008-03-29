@@ -52,7 +52,7 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		users->onDblClicked(std::tr1::bind(&UsersFrame::handleGetList, this));
 		users->onKeyDown(std::tr1::bind(&UsersFrame::handleKeyDown, this, _1));
-		users->onRaw(std::tr1::bind(&UsersFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		users->onRaw(std::tr1::bind(&UsersFrame::handleItemChanged, this, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 		users->onContextMenu(std::tr1::bind(&UsersFrame::handleContextMenu, this, _1));
 	}
 
@@ -135,7 +135,7 @@ void UsersFrame::removeUser(const FavoriteUser& aUser) {
 	}
 }
 
-void UsersFrame::handleProperties() {
+void UsersFrame::handleDescription() {
 	if(users->countSelected() == 1) {
 		int i = users->getSelected();
 		UserInfo* ui = users->getData(i);
@@ -159,13 +159,13 @@ bool UsersFrame::handleKeyDown(int c) {
 		handleRemove();
 		return true;
 	case VK_RETURN:
-		handleProperties();
+		handleDescription();
 		return true;
 	}
 	return false;
 }
 
-LRESULT UsersFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
+LRESULT UsersFrame::handleItemChanged(LPARAM lParam) {
 	LPNMITEMACTIVATE l = reinterpret_cast<LPNMITEMACTIVATE>(lParam);
 	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
 		FavoriteManager::getInstance()->setAutoGrant(users->getData(l->iItem)->user, users->isChecked(l->iItem));
@@ -182,7 +182,7 @@ bool UsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		appendUserItems(getParent(), menu);
 		menu->appendSeparatorItem();
-		menu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&UsersFrame::handleProperties, this));
+		menu->appendItem(IDC_EDIT, T_("&Description"), std::tr1::bind(&UsersFrame::handleDescription, this));
 		menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&UsersFrame::handleRemove, this));
 		
 		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);

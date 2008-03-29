@@ -104,10 +104,10 @@ private:
 	void updateUser(const UserPtr& aUser);
 	void removeUser(const FavoriteUser& aUser);
 
-	void handleProperties();
+	void handleDescription();
 	void handleRemove();
 	bool handleKeyDown(int c);
-	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
+	LRESULT handleItemChanged(LPARAM lParam);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 

@@ -240,7 +240,7 @@ void MainWindow::initMenu() {
 	{
 		WidgetMenuPtr help = mainMenu->appendPopup(T_("&Help"));
 
-		help->appendItem(IDH_STARTPAGE, T_("Help &Contents\tF1"), std::tr1::bind(&WinUtil::help, handle(), _1));
+		help->appendItem(IDH_STARTPAGE, T_("Help &Contents\tF1"), std::tr1::bind(&WinUtil::help, handle(), _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_HELP)));
 		help->appendSeparatorItem();
 		help->appendItem(IDH_CHANGELOG, T_("Change Log"), std::tr1::bind(&WinUtil::help, handle(), _1));
 		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DCPP)));

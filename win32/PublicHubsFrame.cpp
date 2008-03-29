@@ -122,12 +122,14 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
 		filter = createTextBox(cs);
+		filter->setHelpId(IDH_PUBLIC_HUBS_FILTER);
 		addWidget(filter);
 		filter->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleFilterKeyDown, this, _1));
 	}
 
 	{
 		filterSel = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		filterSel->setHelpId(IDH_PUBLIC_HUBS_FILTER);
 		addWidget(filterSel);
 
 		//populate the filter list with the column names
@@ -139,6 +141,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		filterSel->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::updateList, this));
 
 		pubLists = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		pubLists->setHelpId(IDH_PUBLIC_HUBS_LISTS);
 		addWidget(pubLists);
 		pubLists->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::handleListSelChanged, this));
 	}
@@ -148,25 +151,30 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		
 		cs.caption = T_("&Configure");
 		configure = createButton(cs);
-		configure->onClicked(std::tr1::bind(&PublicHubsFrame::handleConfigure, this));
+		configure->setHelpId(IDH_PUBLIC_HUBS_LISTS);
 		configure->setFont(WinUtil::font);
 		addWidget(configure);
+		configure->onClicked(std::tr1::bind(&PublicHubsFrame::handleConfigure, this));
 		
 		cs.caption = T_("&Refresh");
 		refresh = createButton(cs);
+		refresh->setHelpId(IDH_PUBLIC_HUBS_REFRESH);
 		refresh->onClicked(std::tr1::bind(&PublicHubsFrame::handleRefresh, this));
 		refresh->setFont(WinUtil::font);
 		addWidget(refresh);
 
 		cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_GROUPBOX;
 		cs.exStyle = WS_EX_TRANSPARENT;
-		cs.caption = T_("Configured Public Hub Lists");
-		lists = createButton(cs);
-		lists->setFont(WinUtil::font);
 
 		cs.caption = T_("F&ilter");
 		filterDesc = createButton(cs);
+		filterDesc->setHelpId(IDH_PUBLIC_HUBS_FILTER);
 		filterDesc->setFont(WinUtil::font);
+
+		cs.caption = T_("Configured Public Hub Lists");
+		lists = createButton(cs);
+		lists->setHelpId(IDH_PUBLIC_HUBS_LISTS);
+		lists->setFont(WinUtil::font);
 	}
 
 	initStatus();

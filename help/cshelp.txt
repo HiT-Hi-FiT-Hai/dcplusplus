@@ -214,3 +214,9 @@ Move up selected hubs in the list. If several hubs have auto connect enabled, th
 Move down selected hubs in the list. If several hubs have auto connect enabled, the lowest hub will be connected to last.
 .topic IDH_FAVORITE_HUBS_REMOVE
 Removes selected hubs from the favorite hubs list.
+.topic IDH_PUBLIC_HUBS_FILTER
+Here, you can filter the hublist so you will only see specific hubs in the hublist. Eg, selecting 'address' in the drop down, and writing "foo" in the filter, will only display hubs that have "foo" in their address.
+.topic IDH_PUBLIC_HUBS_LISTS
+In the dropdown, you may select different hublists you want to see. If you click on 'Configure', you will be able to change, add and remove hublists. The order in 'Configured Public Hub lists' determines the order hublists are displayed in the dropdown mentioned above.
+.topic IDH_PUBLIC_HUBS_REFRESH
+Download a fresh version of the hublist.
