@@ -159,9 +159,9 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		cs.caption = T_("&Refresh");
 		refresh = createButton(cs);
 		refresh->setHelpId(IDH_PUBLIC_HUBS_REFRESH);
-		refresh->onClicked(std::tr1::bind(&PublicHubsFrame::handleRefresh, this));
 		refresh->setFont(WinUtil::font);
 		addWidget(refresh);
+		refresh->onClicked(std::tr1::bind(&PublicHubsFrame::handleRefresh, this));
 
 		cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_GROUPBOX;
 		cs.exStyle = WS_EX_TRANSPARENT;

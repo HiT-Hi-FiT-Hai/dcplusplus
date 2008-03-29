@@ -220,3 +220,17 @@ Here, you can filter the hublist so you will only see specific hubs in the hubli
 In the dropdown, you may select different hublists you want to see. If you click on 'Configure', you will be able to change, add and remove hublists. The order in 'Configured Public Hub lists' determines the order hublists are displayed in the dropdown mentioned above.
 .topic IDH_PUBLIC_HUBS_REFRESH
 Download a fresh version of the hublist.
+.topic IDH_SEARCH_SEARCH_FOR
+This is the set of search strings to search for. Words beginning with "-" will be filtered away.
+.topic IDH_SEARCH_PURGE
+Clear the contents of the search history.
+.topic IDH_SEARCH_SEARCH
+Start searching for the set of search strings defined above. Note; you may not start too many searches in a small amount of time.
+.topic IDH_SEARCH_SIZE
+Filter away files depending on their file size.
+.topic IDH_SEARCH_TYPE
+Filter away files depending on their file type (extension).
+.topic IDH_SEARCH_SLOTS
+Filter away files depending on the user's free slots.
+.topic IDH_SEARCH_HUBS
+Search only selected hubs.

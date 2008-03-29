@@ -3,7 +3,7 @@
 namespace SmartWin {
 
 WidgetStatic::Seed::Seed(const SmartUtil::tstring& caption) :
-	Widget::Seed(_T("Static"), WS_CHILD | WS_VISIBLE, 0, caption),
+	Widget::Seed(WC_STATIC, WS_CHILD | WS_VISIBLE | SS_NOTIFY, 0, caption),
 	font(new Font(DefaultGuiFont))
 {
 
