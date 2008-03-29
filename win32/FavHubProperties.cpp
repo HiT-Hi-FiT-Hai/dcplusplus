@@ -24,6 +24,25 @@
 
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/version.h>
+#include "WinUtil.h"
+
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_FH_NAME, IDH_FAVORITE_HUB_NAME },
+	{ IDC_HUBNAME, IDH_FAVORITE_HUB_NAME },
+	{ IDC_FH_ADDRESS, IDH_FAVORITE_HUB_ADDRESS },
+	{ IDC_HUBADDR, IDH_FAVORITE_HUB_ADDRESS },
+	{ IDC_FH_HUB_DESC, IDH_FAVORITE_HUB_DESC },
+	{ IDC_HUBDESCR, IDH_FAVORITE_HUB_DESC },
+	{ IDC_FH_NICK, IDH_FAVORITE_HUB_NICK },
+	{ IDC_HUBNICK, IDH_FAVORITE_HUB_NICK },
+	{ IDC_FH_PASSWORD, IDH_FAVORITE_HUB_PASSWORD },
+	{ IDC_HUBPASS, IDH_FAVORITE_HUB_PASSWORD },
+	{ IDC_FH_USER_DESC, IDH_FAVORITE_HUB_USER_DESC },
+	{ IDC_HUBUSERDESCR, IDH_FAVORITE_HUB_USER_DESC },
+	{ IDOK, IDH_DCPP_OK },
+	{ IDCANCEL, IDH_DCPP_CANCEL },
+	{ 0, 0 }
+};
 
 FavHubProperties::FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry) :
 	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
@@ -43,16 +62,20 @@ FavHubProperties::~FavHubProperties() {
 }
 
 bool FavHubProperties::handleInitDialog() {
+	setHelpId(IDH_FAVORITE_HUB);
+
+	WinUtil::setHelpIds(this, helpItems);
+
 	// Translate dialog
 	setText(T_("Favorite Hub Properties"));
-	::SetDlgItemText(handle(), IDC_FH_HUB, CT_("Hub"));
-	::SetDlgItemText(handle(), IDC_FH_IDENT, CT_("Identification (leave blank for defaults)"));
-	::SetDlgItemText(handle(), IDC_FH_NAME, CT_("Name"));
-	::SetDlgItemText(handle(), IDC_FH_ADDRESS, CT_("Address"));
-	::SetDlgItemText(handle(), IDC_FH_HUB_DESC, CT_("Description"));
-	::SetDlgItemText(handle(), IDC_FH_NICK, CT_("Nick"));
-	::SetDlgItemText(handle(), IDC_FH_PASSWORD, CT_("Password"));
-	::SetDlgItemText(handle(), IDC_FH_USER_DESC, CT_("Description"));
+	setItemText(IDC_FH_HUB, T_("Hub"));
+	setItemText(IDC_FH_IDENT, T_("Identification (leave blank for defaults)"));
+	setItemText(IDC_FH_NAME, T_("Name"));
+	setItemText(IDC_FH_ADDRESS, T_("Address"));
+	setItemText(IDC_FH_HUB_DESC, T_("Description"));
+	setItemText(IDC_FH_NICK, T_("Nick"));
+	setItemText(IDC_FH_PASSWORD, T_("Password"));
+	setItemText(IDC_FH_USER_DESC, T_("Description"));
 
 	name = attachTextBox(IDC_HUBNAME);
 	name->setText(Text::toT(entry->getName()));

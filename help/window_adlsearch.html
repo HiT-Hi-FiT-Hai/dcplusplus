@@ -13,14 +13,13 @@ of file lists downloaded from users. Create a new ADLSearch entering
 'avi' as search string for example. When you download a directory
 listing from a user, all avi-files will be placed in a special folder
 called <span style="font-weight: bold;">&lt;&lt;&lt;ADLSearch&gt;&gt;&gt;</span>.
-<h2>Search Options</h2>
+<h2>Columns</h2>
 <dl style="margin-left: 40px;">
-  <dt>Search String</dt>
-  <dd>This is the set of search strings to search for.</dd>
+  <dt>Enabled / Search String</dt>
+  <dd>This is the set of search strings to search for. The checkbox indicates whether the search is active (box checked) or inactive (box unchecked).</dd>
   <dt>Source Type</dt>
-  <dd>One of following values:</dd>
-</dl>
-<dl style="margin-left: 80px;">
+  <dd><p>One of following values:</p>
+<dl style="margin-left: 40px;">
   <dt>Filename</dt>
   <dd>Matches search against filename.</dd>
   <dt><a name="directory"></a>Directory</dt>
@@ -29,21 +28,30 @@ structure in the special folder.</dd>
   <dt>Full Path</dt>
   <dd>Matches against whole directory + filename.</dd>
 </dl>
-<dl style="margin-left: 40px;">
-  <dt>Min/Max Filesize</dt>
-  <dd>Sets the upper and lower limits for file size. This is unused for
-    <a href="#directory">Directory</a> searches.</dd>
-  <dt>Size Type</dt>
-  <dd>Sets the units for the search sizes.</dd>
+</dd>
   <dt>Destination Directory</dt>
   <dd>Sets the output folder for a search. Multiple folders with
 different names can exist simultaneously. Each folder name gets wrapped
 in &lt;&lt;&lt; and &gt;&gt;&gt;.</dd>
-  <dt>Enabled</dt>
-  <dd>Marks the search as active or inactive.</dd>
-  <dt>Download Matches</dt>
-  <dd>When checked, matches to this search will be put into your
-Download Queue.</dd>
+  <dt>Min Size</dt>
+  <dd>Sets the lower limits for file size. This is unused for <a href="#directory">Directory</a> searches.</dd>
+  <dt>Max Size</dt>
+  <dd>Sets the upper limits for file size. This is unused for <a href="#directory">Directory</a> searches.</dd>
+</dl>
+<h2>Buttons</h2>
+<dl style="margin-left: 40px;">
+  <dt>New</dt>
+  <dd>Create a new ADLSearch entry.</dd>
+  <dt>Properties</dt>
+  <dd>Change pre-existing ADLSearch properties for the selected entries.</dd>
+  <dt>Move up</dt>
+  <dd>Move up selected ADLSearch entries in the list.</dd>
+  <dt>Move down</dt>
+  <dd>Move down selected ADLSearch entries in the list.</dd>
+  <dt>Remove</dt>
+  <dd>Removes selected ADLSearch entries from the list.</dd>
+  <dt>Help</dt>
+  <dd>Launch this help file.</dd>
 </dl>
 <h2>Extra Features</h2>
 <ol>

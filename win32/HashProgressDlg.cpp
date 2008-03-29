@@ -40,8 +40,8 @@ bool HashProgressDlg::handleInitDialog() {
 	setHelpId(IDH_HASH_PROGRESS);
 
 	setText(T_("Creating file index..."));
-	::SetDlgItemText(handle(), IDC_HASH_INDEXING, CT_("Please wait while DC++ indexes your files (they won't be shared until they've been indexed)..."));
-	::SetDlgItemText(handle(), IDC_STATISTICS, CT_("Statistics"));
+	setItemText(IDC_HASH_INDEXING, T_("Please wait while DC++ indexes your files (they won't be shared until they've been indexed)..."));
+	setItemText(IDC_STATISTICS, T_("Statistics"));
 
 	progress = attachProgressBar(IDC_HASH_PROGRESS);
 	progress->setRange(0, 10000);
@@ -82,31 +82,31 @@ bool HashProgressDlg::updateStats() {
 	}
 	double diff = tick - startTime;
 	if(diff < 1000 || files == 0 || bytes == 0) {
-		::SetDlgItemText(handle(), IDC_FILES_PER_HOUR, str(TF_("-.-- files/h, %1% files left") % (uint32_t)files).c_str());
-		::SetDlgItemText(handle(), IDC_HASH_SPEED, str(TF_("-.-- B/s, %1% left") % Text::toT(Util::formatBytes(bytes))).c_str());
-		::SetDlgItemText(handle(), IDC_TIME_LEFT, CT_("-:--:-- left"));
+		setItemText(IDC_FILES_PER_HOUR, str(TF_("-.-- files/h, %1% files left") % (uint32_t)files));
+		setItemText(IDC_HASH_SPEED, str(TF_("-.-- B/s, %1% left") % Text::toT(Util::formatBytes(bytes))));
+		setItemText(IDC_TIME_LEFT, T_("-:--:-- left"));
 		progress->setPosition(0);
 	} else {
 		double filestat = (((double)(startFiles - files)) * 60 * 60 * 1000) / diff;
 		double speedStat = (((double)(startBytes - bytes)) * 1000) / diff;
 
-		::SetDlgItemText(handle(), IDC_FILES_PER_HOUR, str(TF_("%1% files/h, %2% files left") % filestat % (uint32_t)files).c_str());
-		::SetDlgItemText(handle(), IDC_HASH_SPEED, str(TF_("%1%/s, %2% left") % Text::toT(Util::formatBytes((int64_t)speedStat)) % Text::toT(Util::formatBytes(bytes))).c_str());
+		setItemText(IDC_FILES_PER_HOUR, str(TF_("%1% files/h, %2% files left") % filestat % (uint32_t)files));
+		setItemText(IDC_HASH_SPEED, str(TF_("%1%/s, %2% left") % Text::toT(Util::formatBytes((int64_t)speedStat)) % Text::toT(Util::formatBytes(bytes))));
 
 		if(filestat == 0 || speedStat == 0) {
-			::SetDlgItemText(handle(), IDC_TIME_LEFT, CT_("-:--:-- left"));
+			setItemText(IDC_TIME_LEFT, T_("-:--:-- left"));
 		} else {
 			double fs = files * 60 * 60 / filestat;
 			double ss = bytes / speedStat;
 
-			::SetDlgItemText(handle(), IDC_TIME_LEFT, str(TF_("%1% left") % Text::toT(Util::formatSeconds((int64_t)(fs + ss) / 2))).c_str());
+			setItemText(IDC_TIME_LEFT, str(TF_("%1% left") % Text::toT(Util::formatSeconds((int64_t)(fs + ss) / 2))));
 		}
 	}
 
 	if(files == 0) {
-		::SetDlgItemText(handle(), IDC_CURRENT_FILE, CT_("Done"));
+		setItemText(IDC_CURRENT_FILE, T_("Done"));
 	} else {
-		::SetDlgItemText(handle(), IDC_CURRENT_FILE, Text::toT(file).c_str());
+		setItemText(IDC_CURRENT_FILE, Text::toT(file));
 	}
 
 	if(startFiles == 0 || startBytes == 0) {

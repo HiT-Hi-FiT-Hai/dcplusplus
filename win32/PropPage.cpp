@@ -129,5 +129,5 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 void PropPage::translate(HWND page, TextItem* items) {
 	if(items)
 		for(size_t i = 0; items[i].itemID != 0; ++i)
-			::SetDlgItemText(page, items[i].itemID, CT_(items[i].translatedString));
+			::SetDlgItemText(page, items[i].itemID, CT_(items[i].stringToTranslate));
 }

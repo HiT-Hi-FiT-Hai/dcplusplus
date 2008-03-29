@@ -76,7 +76,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		cs.caption = T_("&New...");
 		add = createButton(cs);
-		add->setHelpId(IDH_FAVORITE_HUBS_ADD);
+		add->setHelpId(IDH_FAVORITE_HUBS_NEW);
 		add->onClicked(std::tr1::bind(&FavHubsFrame::handleAdd, this));
 		addWidget(add);
 

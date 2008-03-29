@@ -57,7 +57,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		items->onDblClicked(std::tr1::bind(&ADLSearchFrame::handleDoubleClick, this));
 		items->onKeyDown(std::tr1::bind(&ADLSearchFrame::handleKeyDown, this, _1));
-		items->onRaw(std::tr1::bind(&ADLSearchFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		items->onRaw(std::tr1::bind(&ADLSearchFrame::handleItemChanged, this, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 		items->onContextMenu(std::tr1::bind(&ADLSearchFrame::handleContextMenu, this, _1));
 	}
 
@@ -66,31 +66,37 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		cs.caption = T_("&New...");
 		add = createButton(cs);
+		add->setHelpId(IDH_ADLS_NEW);
 		add->onClicked(std::tr1::bind(&ADLSearchFrame::handleAdd, this));
 		addWidget(add);
 
 		cs.caption = T_("&Properties");
 		properties = createButton(cs);
+		properties->setHelpId(IDH_ADLS_PROPERTIES);
 		properties->onClicked(std::tr1::bind(&ADLSearchFrame::handleProperties, this));
 		addWidget(properties);
 
 		cs.caption = T_("Move &Up");
 		up = createButton(cs);
+		up->setHelpId(IDH_ADLS_MOVE_UP);
 		up->onClicked(std::tr1::bind(&ADLSearchFrame::handleUp, this));
 		addWidget(up);
 
 		cs.caption = T_("Move &Down");
 		down = createButton(cs);
+		down->setHelpId(IDH_ADLS_MOVE_DOWN);
 		down->onClicked(std::tr1::bind(&ADLSearchFrame::handleDown, this));
 		addWidget(down);
 
 		cs.caption = T_("&Remove");
 		remove = createButton(cs);
+		remove->setHelpId(IDH_ADLS_REMOVE);
 		remove->onClicked(std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 		addWidget(remove);
 
 		cs.caption = T_("&Help");
 		help = createButton(cs);
+		help->setHelpId(IDH_DCPP_HELP);
 		help->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_ADL_SEARCH));
 		addWidget(help);
 	}
@@ -257,7 +263,7 @@ bool ADLSearchFrame::handleKeyDown(int c) {
 	return false;
 }
 
-LRESULT ADLSearchFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
+LRESULT ADLSearchFrame::handleItemChanged(LPARAM lParam) {
 	LPNMITEMACTIVATE item = reinterpret_cast<LPNMITEMACTIVATE>(lParam);
 
 	if((item->uChanged & LVIF_STATE) == 0)

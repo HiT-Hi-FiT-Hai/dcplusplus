@@ -90,14 +90,14 @@ bool CommandDlg::handleInitDialog() {
 
 	// Translate
 	setText(T_("Create / Modify User Command"));
-	::SetDlgItemText(handle(), IDC_SETTINGS_TYPE, CT_("Command Type"));
-	::SetDlgItemText(handle(), IDC_SETTINGS_CONTEXT, CT_("Context"));
-	::SetDlgItemText(handle(), IDC_SETTINGS_PARAMETERS, CT_("Parameters"));
-	::SetDlgItemText(handle(), IDC_SETTINGS_NAME, CT_("Name"));
-	::SetDlgItemText(handle(), IDC_SETTINGS_COMMAND, CT_("Command"));
-	::SetDlgItemText(handle(), IDC_SETTINGS_HUB, CT_("Hub IP / DNS (empty = all, 'op' = where operator)"));
-	::SetDlgItemText(handle(), IDC_SETTINGS_TO, CT_("To"));
-	::SetDlgItemText(handle(), IDC_USER_CMD_PREVIEW, CT_("Text sent to hub"));
+	setItemText(IDC_SETTINGS_TYPE, T_("Command Type"));
+	setItemText(IDC_SETTINGS_CONTEXT, T_("Context"));
+	setItemText(IDC_SETTINGS_PARAMETERS, T_("Parameters"));
+	setItemText(IDC_SETTINGS_NAME, T_("Name"));
+	setItemText(IDC_SETTINGS_COMMAND, T_("Command"));
+	setItemText(IDC_SETTINGS_HUB, T_("Hub IP / DNS (empty = all, 'op' = where operator)"));
+	setItemText(IDC_SETTINGS_TO, T_("To"));
+	setItemText(IDC_USER_CMD_PREVIEW, T_("Text sent to hub"));
 
 	separator = attachRadioButton(IDC_SETTINGS_SEPARATOR);
 	separator->setText(T_("Separator"));

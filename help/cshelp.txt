@@ -204,7 +204,7 @@ Private Message recipient
 Send only once per user from search frame, regardless of how many files you've selected from that user
 .topic IDH_FAVORITE_HUBS_CONNECT
 Connect to selected hubs.
-.topic IDH_FAVORITE_HUBS_ADD
+.topic IDH_FAVORITE_HUBS_NEW
 Create a new favorite hub.
 .topic IDH_FAVORITE_HUBS_PROPERTIES
 Change pre-existing hub properties for the selected hub.
@@ -234,3 +234,43 @@ Filter away files depending on their file type (extension).
 Filter away files depending on the user's free slots.
 .topic IDH_SEARCH_HUBS
 Search only selected hubs.
+.topic IDH_ADLS_NEW
+Create a new ADLSearch entry.
+.topic IDH_ADLS_PROPERTIES
+Change pre-existing ADLSearch properties for the selected entries.
+.topic IDH_ADLS_MOVE_UP
+Move up selected ADLSearch entries in the list.
+.topic IDH_ADLS_MOVE_DOWN
+Move down selected ADLSearch entries in the list.
+.topic IDH_ADLS_REMOVE
+Removes selected ADLSearch entries from the list.
+.topic IDH_ADLSP_SEARCH_STRING
+This is the set of search strings to search for.
+.topic IDH_ADLSP_SOURCE_TYPE
+"Filename": Matches search against filename; "Directory": Matches against current subdirectory and places the whole structure in the special folder; "Full Path": Matches against whole directory + filename.
+.topic IDH_ADLSP_MIN_FILE_SIZE
+Sets the lower limits for file size. This is unused for Directory searches.
+.topic IDH_ADLSP_MAX_FILE_SIZE
+Sets the upper limits for file size. This is unused for Directory searches.
+.topic IDH_ADLSP_SIZE_TYPE
+Sets the units for the search sizes.
+.topic IDH_ADLSP_DEST_DIR
+Sets the output folder for a search. Multiple folders with different names can exist simultaneously. Each folder name gets wrapped in <<< and >>>.
+.topic IDH_ADLSP_ENABLED
+Marks the search as active or inactive.
+.topic IDH_ADLSP_AUTOQUEUE
+When checked, matches to this search will be put into your Download Queue.
+.topic IDH_SPY_IGNORE_TTH
+Check this checkbox to filter out TTH searches. Note that DC++ will still respond to them; you will just not see them in this window.
+.topic IDH_FAVORITE_HUB_NAME
+Specifies what name the hub has.
+.topic IDH_FAVORITE_HUB_ADDRESS
+The address for the hub.
+.topic IDH_FAVORITE_HUB_DESC
+Description of the hub.
+.topic IDH_FAVORITE_HUB_NICK
+If you would like to use a special nick for a specific hub. Leave this blank for default.
+.topic IDH_FAVORITE_HUB_PASSWORD
+If you have a password attached together with your nick. Used for operators or other registered people.
+.topic IDH_FAVORITE_HUB_USER_DESC
+If you would like to use a special user description (shown in the user list) for a specific hub. Leave this blank for default.

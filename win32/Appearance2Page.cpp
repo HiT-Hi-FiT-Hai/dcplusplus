@@ -121,6 +121,7 @@ void Appearance2Page::handleBackgroundClicked() {
 	if(colorParams.userPressedOk()) {
 		bg = colorParams.getColor();
 		example->setColor(fg, bg);
+		example->invalidateWidget();
 	}
 }
 
@@ -133,6 +134,7 @@ void Appearance2Page::handleTextClicked() {
 		font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
 		example->setColor(fg, bg);
 		example->setFont(font);
+		example->invalidateWidget();
 	}
 }
 
@@ -157,6 +159,6 @@ void Appearance2Page::handleBrowseClicked() {
 	tstring x = buf;
 
 	if(WinUtil::browseFile(x, handle(), false) == IDOK) {
-		::SetDlgItemText(handle(), IDC_BEEPFILE, x.c_str());
+		setItemText(IDC_BEEPFILE, x);
 	}
 }

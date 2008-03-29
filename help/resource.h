@@ -30,6 +30,8 @@
 // dialogs
 #define IDH_HASH_PROGRESS 10200
 #define IDH_USER_COMMAND 10201
+#define IDH_FAVORITE_HUB 10202
+#define IDH_ADLSP 10203
 
 // settings pages
 #define IDH_ADVANCED3PAGE 10300

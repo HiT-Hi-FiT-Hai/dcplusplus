@@ -126,7 +126,7 @@ void DownloadPage::handleBrowseDir() {
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
 			dir += '\\';
 
-		::SetDlgItemText(handle(), IDC_DOWNLOADDIR, dir.c_str());
+		setItemText(IDC_DOWNLOADDIR, dir);
 	}
 }
 
@@ -138,7 +138,7 @@ void DownloadPage::handleBrowseTempDir() {
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
 			dir += '\\';
 
-		::SetDlgItemText(handle(), IDC_TEMP_DOWNLOAD_DIRECTORY, dir.c_str());
+		setItemText(IDC_TEMP_DOWNLOAD_DIRECTORY, dir);
 	}
 }
 

@@ -155,14 +155,14 @@ void NetworkPage::write()
 
 	while((i = x.find(' ')) != string::npos)
 		x.erase(i, 1);
-	::SetDlgItemText(handle(), IDC_EXTERNAL_IP, x.c_str());
+	setItemText(IDC_EXTERNAL_IP, x);
 
 	::GetDlgItemText(handle(), IDC_SOCKS_SERVER, tmp, 1024);
 	x = tmp;
 
 	while((i = x.find(' ')) != string::npos)
 		x.erase(i, 1);
-	::SetDlgItemText(handle(), IDC_SOCKS_SERVER, x.c_str());
+	setItemText(IDC_SOCKS_SERVER, x);
 
 	PropPage::write(handle(), items);
 

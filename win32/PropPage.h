@@ -46,7 +46,7 @@ public:
 
 	struct TextItem {
 		WORD itemID;
-		const char* translatedString;
+		const char* stringToTranslate;
 	};
 
 protected:

@@ -101,6 +101,14 @@
 			<param name="Name" value="User Command">
 			<param name="Local" value="dialog_user_command.html">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Favorite Hub Properties">
+			<param name="Local" value="dialog_favorite_hub.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADLSearch Properties">
+			<param name="Local" value="dialog_adls_properties.html">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Frequently Asked Questions">

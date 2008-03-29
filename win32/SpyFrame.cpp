@@ -63,6 +63,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		WidgetCheckBox::Seed cs(T_("Ignore TTH searches"));
 		ignoreTTH = createCheckBox(cs);
+		ignoreTTH->setHelpId(IDH_SPY_IGNORE_TTH);
 		ignoreTTH->setChecked(bIgnoreTTH);
 		ignoreTTH->onClicked(std::tr1::bind(&SpyFrame::handleIgnoreTTHClicked, this));
 	}
@@ -79,11 +80,6 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	ClientManager::getInstance()->addListener(this);
 
 	initSecond();
-#if 0
-	// for testing purposes; adds 2 dummy lines into the list
-	postMessage(WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 1")));
-	postMessage(WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 2")));
-#endif
 }
 
 SpyFrame::~SpyFrame() {

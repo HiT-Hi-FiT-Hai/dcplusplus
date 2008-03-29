@@ -71,7 +71,7 @@ private:
 	void handleRemove();
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
-	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
+	LRESULT handleItemChanged(LPARAM lParam);
 	bool handleContextMenu(SmartWin::ScreenCoordinate sc);
 
 	void addEntry(ADLSearch& search, int index = -1);

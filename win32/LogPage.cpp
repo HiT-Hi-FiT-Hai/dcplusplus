@@ -124,7 +124,7 @@ void LogPage::handleBrowseClicked() {
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
 			dir += '\\';
 
-		::SetDlgItemText(handle(), IDC_LOG_DIRECTORY, dir.c_str());
+		setItemText(IDC_LOG_DIRECTORY, dir);
 	}
 }
 

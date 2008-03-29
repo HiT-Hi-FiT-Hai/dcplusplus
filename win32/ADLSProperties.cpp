@@ -24,6 +24,27 @@
 
 #include <dcpp/ADLSearch.h>
 #include <dcpp/FavoriteManager.h>
+#include "WinUtil.h"
+
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_ADLSP_SEARCH, IDH_ADLSP_SEARCH_STRING },
+	{ IDC_SEARCH_STRING, IDH_ADLSP_SEARCH_STRING },
+	{ IDC_ADLSP_TYPE, IDH_ADLSP_SOURCE_TYPE },
+	{ IDC_SOURCE_TYPE, IDH_ADLSP_SOURCE_TYPE },
+	{ IDC_ADLSP_SIZE_MIN, IDH_ADLSP_MIN_FILE_SIZE },
+	{ IDC_MIN_FILE_SIZE, IDH_ADLSP_MIN_FILE_SIZE },
+	{ IDC_ADLSP_SIZE_MAX, IDH_ADLSP_MAX_FILE_SIZE },
+	{ IDC_MAX_FILE_SIZE, IDH_ADLSP_MAX_FILE_SIZE },
+	{ IDC_ADLSP_UNITS, IDH_ADLSP_SIZE_TYPE },
+	{ IDC_SIZE_TYPE, IDH_ADLSP_SIZE_TYPE },
+	{ IDC_ADLSP_DESTINATION, IDH_ADLSP_DEST_DIR },
+	{ IDC_DEST_DIR, IDH_ADLSP_DEST_DIR },
+	{ IDC_IS_ACTIVE, IDH_ADLSP_ENABLED },
+	{ IDC_AUTOQUEUE, IDH_ADLSP_AUTOQUEUE },
+	{ IDOK, IDH_DCPP_OK },
+	{ IDCANCEL, IDH_DCPP_CANCEL },
+	{ 0, 0 }
+};
 
 ADLSProperties::ADLSProperties(SmartWin::Widget* parent, ADLSearch *_search) :
 	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
@@ -45,14 +66,18 @@ ADLSProperties::~ADLSProperties() {
 }
 
 bool ADLSProperties::handleInitDialog() {
+	setHelpId(IDH_ADLSP);
+
+	WinUtil::setHelpIds(this, helpItems);
+
 	// Translate dialog
 	setText(T_("ADLSearch Properties"));
-	::SetDlgItemText(handle(), IDC_ADLSP_SEARCH, CT_("Search String"));
-	::SetDlgItemText(handle(), IDC_ADLSP_TYPE, CT_("Search Type"));
-	::SetDlgItemText(handle(), IDC_ADLSP_SIZE_MIN, CT_("Min FileSize"));
-	::SetDlgItemText(handle(), IDC_ADLSP_SIZE_MAX, CT_("Max FileSize"));
-	::SetDlgItemText(handle(), IDC_ADLSP_UNITS, CT_("Size Type"));
-	::SetDlgItemText(handle(), IDC_ADLSP_DESTINATION, CT_("Destination Directory"));
+	setItemText(IDC_ADLSP_SEARCH, T_("Search String"));
+	setItemText(IDC_ADLSP_TYPE, T_("Source Type"));
+	setItemText(IDC_ADLSP_SIZE_MIN, T_("Min FileSize"));
+	setItemText(IDC_ADLSP_SIZE_MAX, T_("Max FileSize"));
+	setItemText(IDC_ADLSP_UNITS, T_("Size Type"));
+	setItemText(IDC_ADLSP_DESTINATION, T_("Destination Directory"));
 
 	searchString = attachTextBox(IDC_SEARCH_STRING);
 	searchString->setText(Text::toT(search->searchString));

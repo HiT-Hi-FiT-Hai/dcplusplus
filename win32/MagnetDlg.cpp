@@ -42,16 +42,16 @@ MagnetDlg::~MagnetDlg() {
 
 bool MagnetDlg::handleInitDialog() {
 	setText(T_("MAGNET Link detected"));
-	::SetDlgItemText(handle(), IDC_MAGNET_TEXT, CT_("DC++ has detected a MAGNET link with a file hash that can be searched for on the Direct Connect network.  What would you like to do?"));
-	::SetDlgItemText(handle(), IDC_MAGNET_HASH, CT_("File Hash:"));
+	setItemText(IDC_MAGNET_TEXT, T_("DC++ has detected a MAGNET link with a file hash that can be searched for on the Direct Connect network.  What would you like to do?"));
+	setItemText(IDC_MAGNET_HASH, T_("File Hash:"));
 	attachTextBox(IDC_MAGNET_DISP_HASH)->setText(mHash.c_str());
-	attachTextBox(IDC_MAGNET_NAME)->setText(T_("Filename:"));
-	::SetDlgItemText(handle(), IDC_MAGNET_DISP_NAME, mFileName.c_str());
+	setItemText(IDC_MAGNET_NAME, T_("Filename:"));
+	attachTextBox(IDC_MAGNET_DISP_NAME)->setText(mFileName);
 
 	//queue = attachRadioButton(IDC_MAGNET_1_QUEUE);
 	//queue->setText(T_("Add this file to your download queue"));
 	//queue->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, queue));
-	::ShowWindow(::GetDlgItem(handle(), IDC_MAGNET_1_QUEUE), false);
+	::ShowWindow(getItem(IDC_MAGNET_1_QUEUE), false);
 
 	search = attachRadioButton(IDC_MAGNET_2_SEARCH);
 	search->setText(T_("Start a search for this file"));
@@ -64,7 +64,7 @@ bool MagnetDlg::handleInitDialog() {
 
 	//remember = attachCheckBox(IDC_MAGNET_REMEMBER);
 	//remember->setText(T_("Do the same action next time without asking"));
-	::ShowWindow(::GetDlgItem(handle(), IDC_MAGNET_REMEMBER), false);
+	::ShowWindow(getItem(IDC_MAGNET_REMEMBER), false);
 
 	::CheckRadioButton(handle(), IDC_MAGNET_1_QUEUE, IDC_MAGNET_3_NOTHING, IDC_MAGNET_2_SEARCH);
 

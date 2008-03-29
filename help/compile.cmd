@@ -4,8 +4,6 @@ gen_changelog.py
 
 copy ..\res\users.bmp .
 mkdir ..\build\help
-hhc.exe DCPlusPlus.hhp
+hhc.exe DCPlusPlus.hhp > compile.log
 
 del users.bmp
-
-pause
