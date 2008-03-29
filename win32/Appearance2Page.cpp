@@ -131,6 +131,7 @@ void Appearance2Page::handleTextClicked() {
 		logFont = logFont_;
 		fg = fg_;
 		font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
+		example->setColor(fg, bg);
 		example->setFont(font);
 	}
 }
