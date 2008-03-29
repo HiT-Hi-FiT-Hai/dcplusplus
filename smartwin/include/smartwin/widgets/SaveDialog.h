@@ -25,8 +25,8 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WidgetSaveFile_h
-#define WidgetSaveFile_h
+#ifndef SaveDialog_h
+#define SaveDialog_h
 
 #include "../Widget.h"
 #include "../../SmartUtil.h"
@@ -39,26 +39,16 @@ namespace SmartWin
 /// SaveFileDialog class
 /** \ingroup WidgetControls
   * \image html savefile.PNG
-  * Class for showing a Save File Dialog. <br>
-  * Either derive from it or call WidgetFactory::createSaveFile. <br>
-  * Related classes 
-  * <ul>
-  * <li>WidgetLoadFile</li>
-  * <li>AspectFileFilter</li>
-  * <li>WidgetFileCommon</li>
-  * </ul>
-  * Note!<br>
-  * If you wish to use this class with Parent classes other than those from 
-  * SmartWin++ you need to expose a public function called "parent" taking no 
-  * arguments returning an HWND. <br>
-  * the complete signature of the function will then be "HWND parent();"   
+  * Class for showing a Save File Dialog.
+  * \sa LoadDialog
+  * \sa AspectFileFilter
   */
-class WidgetSaveFile
+class SaveDialog
 	: public AspectFileFilter
 {
 public:
 	/// Class type
-	typedef WidgetSaveFile ThisType;
+	typedef SaveDialog ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -69,47 +59,40 @@ public:
 	/** Returns string() or "empty string" if user press cancel. <br>
 	  * Returns a "file path" if user presses ok.
 	  */
-	SmartUtil::tstring showDialog();
+	bool open(SmartUtil::tstring& target);
 
 	/// Constructor Taking pointer to parent
-	explicit WidgetSaveFile( Widget * parent = 0 );
+	explicit SaveDialog( Widget * parent = 0 );
 
-	virtual ~WidgetSaveFile()
+	virtual ~SaveDialog()
 	{}
 
 private:
-	Widget * itsParent;
-	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline SmartUtil::tstring WidgetSaveFile::showDialog()
+inline bool SaveDialog::open(SmartUtil::tstring& target)
 {
-	TCHAR szFile[MAX_PATH + 1]; // buffer for file name
+	TCHAR szFile[PATH_BUFFER_SIZE + 1]; // buffer for file name
 	szFile[0] = '\0';
 
-	OPENFILENAME ofn; // common dialog box structure
-	// Note!
-	// If this one fizzles you have NOT supplied a parent with a "handle()"
-	// function... You MUST supply a parent with a function "handle()" which
-	// returns a HWND! All the Widgetxxx classes (except LoadFile, SaveFile and
-	// MessageBox) have the "handle()" function...
-	fillOutCommonStructure( ofn, getParentHandle(), 0 ); // OFN_PATHMUSTEXIST ?
+	OPENFILENAME ofn = { sizeof(OPENFILENAME) }; // common dialog box structure
+	fillOFN( ofn, getParentHandle(), 0 );
 	ofn.lpstrFile = szFile;
 
-	SmartUtil::tstring retVal;
 	if ( ::GetSaveFileName( & ofn ) )
 	{
-		retVal = ofn.lpstrFile;
-		backslashToForwardSlashForUnix( retVal );
+		target = ofn.lpstrFile;
+		backslashToForwardSlashForUnix( target );
+		return true;
 	}
-	return retVal;
+	return false;
 }
 
-inline WidgetSaveFile::WidgetSaveFile( Widget * parent )
-	: itsParent( parent )
+inline SaveDialog::SaveDialog( Widget * parent )
+	: AspectFileFilter( parent )
 {
 }
 

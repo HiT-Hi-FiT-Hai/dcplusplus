@@ -21,21 +21,21 @@
 
 
 template<class ContentType>
-class TypedTreeView : public SmartWin::Tree
+class TypedTree : public SmartWin::Tree
 {
 private:
 	typedef typename SmartWin::Tree BaseType;
-	typedef TypedTreeView<ContentType> ThisType;
+	typedef TypedTree<ContentType> ThisType;
 	
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedTreeView( SmartWin::Widget* parent ) : BaseType(parent) { }
+	explicit TypedTree( SmartWin::Widget* parent ) : BaseType(parent) { }
 	
 	void create( const typename BaseType::Seed & cs = BaseType::Seed() ) {
 		BaseType::create(cs);
 		this->addCallback(
-			SmartWin::Message( WM_NOTIFY, TVN_GETDISPINFO ), &TypedTreeViewDispatcher
+			SmartWin::Message( WM_NOTIFY, TVN_GETDISPINFO ), &TypedTreeDispatcher
 		);
 	}
 
@@ -70,7 +70,7 @@ public:
 	}
 private:
 
-	static bool TypedTreeViewDispatcher(const MSG& msg, HRESULT& res) {
+	static bool TypedTreeDispatcher(const MSG& msg, HRESULT& res) {
 		NMTVDISPINFO * nm = reinterpret_cast< NMTVDISPINFO * >( msg.lParam );
 		if(nm->item.mask & TVIF_TEXT) {
 			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);

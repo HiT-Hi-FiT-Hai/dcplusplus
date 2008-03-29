@@ -21,7 +21,7 @@
 
 #include "StaticFrame.h"
 #include "TypedTable.h"
-#include "TypedTreeView.h"
+#include "TypedTree.h"
 
 #include <dcpp/TaskQueue.h>
 #include <dcpp/FastAlloc.h>
@@ -199,7 +199,7 @@ private:
 
 	TaskQueue tasks;
 
-	typedef TypedTreeView<DirItemInfo> WidgetDirs;
+	typedef TypedTree<DirItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
 	

@@ -79,7 +79,7 @@ public:
 	
 	int find(ContentType* item) {
 		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
-		return Table_FindItem(this->handle(), -1, &fi);
+		return ListView_FindItem(this->handle(), -1, &fi);
 	}
 	
 	struct CompFirst {
@@ -96,7 +96,7 @@ public:
 	}
 	void forEachSelected(void (ContentType::*func)()) {
 		int i = -1;
-		while( (i = Table_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
+		while( (i = ListView_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
 			(getData(i)->*func)();
 	}
 	template<class _Function>
@@ -109,7 +109,7 @@ public:
 	template<class _Function>
 	_Function forEachSelectedT(_Function pred) {
 		int i = -1;
-		while( (i = Table_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
+		while( (i = ListView_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
 			pred(getData(i));
 		return pred;
 	}
@@ -211,7 +211,7 @@ class TypedTable : public T::Table,
 		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
 			int count = GetItemCount();
 			for(int i = 0; i < count; ++i)
-				Table_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
+				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
 
 			return 0;
 		}

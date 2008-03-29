@@ -105,9 +105,8 @@ void Application::init( HINSTANCE hInstance, int nCmdShow )
 #endif
 
 	// Initializing Common Controls...
-	INITCOMMONCONTROLSEX init;
-	init.dwSize = sizeof( INITCOMMONCONTROLSEX );
-	init.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES | ICC_Table_CLASSES | ICC_DATE_CLASSES | ICC_PROGRESS_CLASS;
+	INITCOMMONCONTROLSEX init = { sizeof( INITCOMMONCONTROLSEX ) };
+	init.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES | ICC_DATE_CLASSES | ICC_PROGRESS_CLASS | ICC_TREEVIEW_CLASSES;
 	::InitCommonControlsEx( & init );
 
 #ifdef _MSC_VER

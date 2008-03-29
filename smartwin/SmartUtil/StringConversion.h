@@ -66,7 +66,7 @@ namespace SmartUtil
 	/// Specialized version of UnicodeConverter class for converting FROM UNICODE or wchar_t TO char (std::string)
 	/** It can in many scenarios be useful to be able to convert from wchar_t to char, one good example is when you have a
 	  * a filepath and you want to construct a std::fstream object.<br>
-	  * Often you would for instance use a WidgetLoadFile or a WidgetSaveFile Widget to retrieve a path from the user.<br>
+	  * Often you would for instance use a LoadDialog or a SaveDialog Widget to retrieve a path from the user.<br>
 	  * These classes returns their file paths in UNICODE format ifi UNICODE is defined.<br>
 	  * But the std::fstream constructors cannot take any string types other than char * types for a file path.<br>
 	  * Then you can use this class to convert from wchar_t string to char strings. <br>

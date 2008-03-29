@@ -39,13 +39,13 @@
 #include "widgets/DateTime.h"
 #include "widgets/WidgetDialog.h"
 #include "widgets/GroupBox.h"
-#include "widgets/WidgetLoadFile.h"
+#include "widgets/LoadDialog.h"
 #include "widgets/MDIChild.h"
 #include "widgets/MDIFrame.h"
 #include "widgets/MDIParent.h"
 #include "widgets/ProgressBar.h"
 #include "widgets/RadioButton.h"
-#include "widgets/WidgetSaveFile.h"
+#include "widgets/SaveDialog.h"
 #include "widgets/Slider.h"
 #include "widgets/Spinner.h"
 #include "widgets/Label.h"
@@ -179,10 +179,10 @@ public:
 	typedef typename RadioButton::ObjectType RadioButtonPtr;
 
 	/// LoadFileDialog class type.
-	typedef SmartWin::WidgetLoadFile WidgetLoadFile;
+	typedef SmartWin::LoadDialog LoadDialog;
 
 	/// SaveFileDialog class and object type.
-	typedef SmartWin::WidgetSaveFile WidgetSaveFile;
+	typedef SmartWin::SaveDialog SaveDialog;
 
 	/// ColorDialog class and object type.
 	typedef SmartWin::ColorDialog ColorDialog;
@@ -254,12 +254,12 @@ public:
 	/// Creates a LoadFileDialog and returns a pointer to it.
 	/** Use this one to construct a ( stack object ) to show a Load File Dialog
 	  */
-	WidgetLoadFile createLoadFile();
+	LoadDialog createLoadFile();
 
 	/// Creates a SaveFileDialog and returns a pointer to it.
 	/** Use this one to construct a ( stack object ) to show a Save File Dialog
 	  */
-	WidgetSaveFile createSaveFile();
+	SaveDialog createSaveFile();
 
 	/// Creates a ColorDialog and returns it.
 	/** Usable to let user choose font from the system installed fonts.
@@ -485,17 +485,17 @@ WidgetFactory< ContainerWidgetType >::createFolderDialog()
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetLoadFile
+typename WidgetFactory< ContainerWidgetType >::LoadDialog
 WidgetFactory< ContainerWidgetType >::createLoadFile()
 {
-	return WidgetLoadFile ( this );
+	return LoadDialog ( this );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetSaveFile
+typename WidgetFactory< ContainerWidgetType >::SaveDialog
 WidgetFactory< ContainerWidgetType >::createSaveFile()
 {
-	return WidgetSaveFile ( this );
+	return SaveDialog ( this );
 }
 
 template<typename ContainerWidgetType>

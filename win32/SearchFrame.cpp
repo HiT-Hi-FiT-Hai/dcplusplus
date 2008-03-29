@@ -603,7 +603,7 @@ void SearchFrame::handleShowUIClicked() {
 }
 
 LRESULT SearchFrame::handleHubItemChanged(WPARAM wParam, LPARAM lParam) {
-	LPNMTable lv = (LPNMTable)lParam;
+	LPNMLISTVIEW lv = (LPNMLISTVIEW)lParam;
 	if(lv->iItem == 0 && (lv->uNewState ^ lv->uOldState) & LVIS_STATEIMAGEMASK) {
 		if (((lv->uNewState & LVIS_STATEIMAGEMASK) >> 12) - 1) {
 			for(int iItem = 0; (iItem = hubs->getNext(iItem, LVNI_ALL)) != -1; ) {

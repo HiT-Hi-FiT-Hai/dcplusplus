@@ -190,7 +190,7 @@ inline SmartUtil::tstring ComboBox::getSelectedValue()
 {
 	int txtLength = ::GetWindowTextLength( handle() );
 	SmartUtil::tstring retVal(txtLength, '\0');
-	::GetWindowText( handle(), &txt[0], txtLength );
+	::GetWindowText( handle(), &retVal[0], txtLength );
 	return retVal;
 }
 

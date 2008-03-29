@@ -25,8 +25,8 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WidgetLoadFile_h
-#define WidgetLoadFile_h
+#ifndef LoadDialog_h
+#define LoadDialog_h
 
 #include "../Widget.h"
 #include "../../SmartUtil.h"
@@ -41,25 +41,15 @@ namespace SmartWin
 /** \ingroup WidgetControls
   * \image html loadfile.PNG
   * Class for showing a LoadFileDialog box. <br>
-  * Either derive from it or call WidgetFactory::createLoadFile. <br>
-  * Related classes 
-  * <ul>
-  * <li>WidgetSaveFile</li>
-  * <li>AspectFileFilter</li>
-  * <li>WidgetFileCommon</li>
-  * </ul>
-  * Note! <br>
-  * If you wish to use this class with Parent classes other than those from SmartWin 
-  * you need to expose a public function called "parent" taking no arguments returning 
-  * and HWND in the Parent template parameter. <br>
-  * the complete signature of the function will then be "HWND parent()"   
+  * \sa SaveDialog
+  * \sa AspectFileFilter
   */
-class WidgetLoadFile
+class LoadDialog
 	: public AspectFileFilter
 {
 public:
 	/// Class type
-	typedef WidgetLoadFile ThisType;
+	typedef LoadDialog ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -87,29 +77,30 @@ public:
 	std::vector<SmartUtil::tstring> showDialogMultiSelect();
 
 	// Constructor Taking pointer to parent
-	explicit WidgetLoadFile( Widget * parent = 0 );
+	explicit LoadDialog( Widget * parent = 0 );
 
+<<<<<<< TREE
+<<<<<<< TREE
+	~LoadDialog() { }
+=======
 	virtual ~WidgetLoadFile() { }
+>>>>>>> MERGE-SOURCE
+=======
+	virtual ~LoadDialog() { }
+>>>>>>> MERGE-SOURCE
 private:
-	Widget * itsParent;
-	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline SmartUtil::tstring WidgetLoadFile::showDialog()
+inline SmartUtil::tstring LoadDialog::showDialog()
 {
 	TCHAR szFile[PATH_BUFFER_SIZE]; // buffer for file name
 	szFile[0] = '\0';
 
-	OPENFILENAME ofn; // common dialog box structure
-	// Note!
-	// If this one fizzles you have NOT supplied a parent with a "handle()"
-	// function... You MUST supply a parent with a function "handle()" which
-	// returns a HWND! All the Widgetxxx classes (except LoadFile, SaveFile and
-	// MessageBox) have the "handle()" function...
-	fillOutCommonStructure( ofn, getParentHandle(), OFN_FILEMUSTEXIST );
+	OPENFILENAME ofn = { sizeof(OPENFILENAME) }; // common dialog box structure
+	fillOFN( ofn, getParentHandle(), OFN_FILEMUSTEXIST );
 	ofn.lpstrFile = szFile;
 	ofn.Flags |= OFN_FILEMUSTEXIST;
 
@@ -122,17 +113,13 @@ inline SmartUtil::tstring WidgetLoadFile::showDialog()
 	return retVal;
 }
 
-inline std::vector<SmartUtil::tstring> WidgetLoadFile::showDialogMultiSelect() 
+inline std::vector<SmartUtil::tstring> LoadDialog::showDialogMultiSelect() 
 { 
 	TCHAR szFile[PATH_BUFFER_SIZE]; // buffer for file name 
 	szFile[0] = '\0'; 
 
-	OPENFILENAME ofn; // common dialog box structure 
-	// Note! 
-	// If this one fizzles you have NOT supplied a parent with a "handle()" function... 
-	// You MUST supply a parent with a function "handle()" which returns a HWND! 
-	// All the Widgetxxx classes (except LoadFile, SaveFile and MessageBox) have the "handle()" function... 
-	fillOutCommonStructure( ofn, getParentHandle(), OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER ); 
+	OPENFILENAME ofn = { sizeof(OPENFILENAME) }; // common dialog box structure
+	fillOFN( ofn, getParentHandle(), OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER ); 
 	ofn.lpstrFile = szFile; 
 	std::vector<SmartUtil::tstring> retVal; 
 	if( ::GetOpenFileName(&ofn) ) 
@@ -165,8 +152,8 @@ inline std::vector<SmartUtil::tstring> WidgetLoadFile::showDialogMultiSelect()
 	return retVal; 
 } 
 
-inline WidgetLoadFile::WidgetLoadFile( Widget * parent )
-	: itsParent( parent )
+inline LoadDialog::LoadDialog( Widget * parent )
+	: AspectFileFilter( parent )
 {}
 
 // end namespace SmartWin

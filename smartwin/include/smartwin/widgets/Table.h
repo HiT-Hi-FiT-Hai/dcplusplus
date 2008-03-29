@@ -25,8 +25,8 @@
   OR TORT ( INCLUDING NEGLIGENCE OR OTHERWISE ) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef Table_h
-#define Table_h
+#ifndef ListView_h
+#define ListView_h
 
 #include "../Widget.h"
 #include "../Point.h"
@@ -42,7 +42,7 @@
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSelection.h"
 #include "Control.h"
-#include "TableEditBox.h"
+#include "WidgetListViewEditBox.h"
 
 #include <vector>
 
@@ -86,7 +86,7 @@ class Table :
 		HeaderDispatcher(const F& f_) : f(f_) { }
 
 		bool operator()(const MSG& msg, LRESULT& ret) {
-			LPNMTable p = (LPNMTable) msg.lParam; 
+			LPNMLISTVIEW p = (LPNMLISTVIEW) msg.lParam; 
 			f(p->iSubItem);
 			return true;
 		}
@@ -472,10 +472,10 @@ protected:
 	virtual ~Table() {
 	}
 
-	// Returns the rect for the item per code (wraps Table_GetItemRect)
+	// Returns the rect for the item per code (wraps ListView_GetItemRect)
 	Rectangle getRect( int item, int code );
 
-	// Returns the rect for the subitem item per code (wraps Table_GetSubItemRect)
+	// Returns the rect for the subitem item per code (wraps ListView_GetSubItemRect)
 	Rectangle getRect( int item, int subitem, int code );
 
 private:
@@ -644,10 +644,10 @@ inline void Table::onColumnClick( const HeaderDispatcher::F& f ) {
 inline void Table::resort() {
 	if(sortColumn != -1) {
 		if(sortType == SORT_CALLBACK) {
-			Table_SortItems(this->handle(), &Table::compareFuncCallback, reinterpret_cast<LPARAM>(this));
+			ListView_SortItems(this->handle(), &Table::compareFuncCallback, reinterpret_cast<LPARAM>(this));
 		} else {
 			// Wine 0.9.48 doesn't support this
-			Table_SortItemsEx(this->handle(), &Table::compareFunc, reinterpret_cast< LPARAM >(this));
+			ListView_SortItemsEx(this->handle(), &Table::compareFunc, reinterpret_cast< LPARAM >(this));
 		}
 	}
 }
@@ -657,11 +657,11 @@ inline int Table::getSelectedImpl() const {
 }
 
 inline size_t Table::countSelectedImpl() const {
-	return static_cast<size_t>(Table_GetSelectedCount( this->handle() ));
+	return static_cast<size_t>(ListView_GetSelectedCount( this->handle() ));
 }
 
 inline void Table::setText( unsigned row, unsigned column, const SmartUtil::tstring & newVal ) {
-	Table_SetItemText( this->handle(), row, column, const_cast < TCHAR * >( newVal.c_str() ) );
+	ListView_SetItemText( this->handle(), row, column, const_cast < TCHAR * >( newVal.c_str() ) );
 }
 
 inline bool Table::getReadOnly() {
@@ -681,16 +681,16 @@ inline SmartUtil::tstring Table::getColumnName( unsigned col ) {
 	colInfo.mask = LVCF_TEXT;
 	colInfo.cchTextMax = BUFFER_MAX;
 	colInfo.pszText = buffer;
-	Table_GetColumn( this->handle(), col, & colInfo );
+	ListView_GetColumn( this->handle(), col, & colInfo );
 	return colInfo.pszText;
 }
 
 inline bool Table::isChecked( unsigned row ) {
-	return Table_GetCheckState( this->handle(), row ) == TRUE;
+	return ListView_GetCheckState( this->handle(), row ) == TRUE;
 }
 
 inline void Table::setChecked( unsigned row, bool value ) {
-	Table_SetCheckState( this->handle(), row, value );
+	ListView_SetCheckState( this->handle(), row, value );
 }
 
 inline void Table::setFullRowSelect( bool value ) {
@@ -698,7 +698,7 @@ inline void Table::setFullRowSelect( bool value ) {
 }
 
 inline void Table::resize( unsigned size ) {
-	Table_SetItemCount( this->handle(), size );
+	ListView_SetItemCount( this->handle(), size );
 }
 
 inline void Table::setCheckBoxes( bool value ) {
@@ -734,11 +734,11 @@ inline void Table::setAlwaysShowSelection( bool value ) {
 
 inline void Table::eraseColumn( unsigned columnNo ) {
 	xAssert( columnNo != 0, _T( "Can't delete the leftmost column" ) );
-	Table_DeleteColumn( this->handle(), columnNo );
+	ListView_DeleteColumn( this->handle(), columnNo );
 }
 
 inline void Table::setColumnWidth( unsigned columnNo, int width ) {
-	if ( Table_SetColumnWidth( this->handle(), columnNo, width ) == FALSE )
+	if ( ListView_SetColumnWidth( this->handle(), columnNo, width ) == FALSE )
 	{
 		xCeption x( _T( "Couldn't resize columns of Table" ) );
 		throw x;
@@ -746,15 +746,15 @@ inline void Table::setColumnWidth( unsigned columnNo, int width ) {
 }
 
 inline void Table::clearImpl() {
-	Table_DeleteAllItems( this->handle() );
+	ListView_DeleteAllItems( this->handle() );
 }
 
 inline void Table::eraseImpl( int row ) {
-	Table_DeleteItem( this->handle(), row );
+	ListView_DeleteItem( this->handle(), row );
 }
 
 inline size_t Table::sizeImpl() const {
-	return Table_GetItemCount( this->handle() );
+	return ListView_GetItemCount( this->handle() );
 }
 
 #ifdef PORT_ME
@@ -769,14 +769,14 @@ bool Table::defaultValidate( EventHandlerClass * parent, Table * list, unsigned 
 inline Rectangle Table::getRect( int item, int code )
 {
 	RECT r;
-	Table_GetItemRect( this->handle(), item, &r, code );
+	ListView_GetItemRect( this->handle(), item, &r, code );
 	return r;
 }
 
 inline Rectangle Table::getRect( int item, int subitem, int code )
 {
 	RECT r;
-	Table_GetSubItemRect( this->handle(), item, subitem, code, &r );
+	ListView_GetSubItemRect( this->handle(), item, subitem, code, &r );
 	return r;
 }
 
@@ -797,35 +797,35 @@ inline bool Table::setColumnOrder(const std::vector<int>& columns) {
 }
 
 inline void Table::setTableStyle(int style) {
-	Table_SetExtendedTableStyle(this->handle(), style);
+	ListView_SetExtendedListViewStyle(this->handle(), style);
 }
 
 inline int Table::getNext(int i, int type) const {
-	return Table_GetNextItem(this->handle(), i, type);
+	return ListView_GetNextItem(this->handle(), i, type);
 }
 
 inline int Table::find(const SmartUtil::tstring& b, int start, bool aPartial) {
     LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
-    return Table_FindItem(this->handle(), start, &fi);
+    return ListView_FindItem(this->handle(), start, &fi);
 }
 
 inline int Table::findDataImpl(LPARAM data, int start) {
     LVFINDINFO fi = { LVFI_PARAM, NULL, data };
-    return Table_FindItem(this->handle(), start, &fi);
+    return ListView_FindItem(this->handle(), start, &fi);
 }
 
 inline void Table::select(int i) {
-	Table_SetItemState(this->handle(), i, LVIS_SELECTED, LVIS_SELECTED);
+	ListView_SetItemState(this->handle(), i, LVIS_SELECTED, LVIS_SELECTED);
 }
 
 inline void Table::ensureVisible(int i, bool partial) {
-	Table_EnsureVisible(this->handle(), i, false);
+	ListView_EnsureVisible(this->handle(), i, false);
 }
 
 inline void Table::setColorImpl(COLORREF text, COLORREF background) {
-	Table_SetTextColor(this->handle(), text);
-	Table_SetTextBkColor(this->handle(), background);
-	Table_SetBkColor(this->handle(), background);
+	ListView_SetTextColor(this->handle(), text);
+	ListView_SetTextBkColor(this->handle(), background);
+	ListView_SetBkColor(this->handle(), background);
 }
 
 #ifdef PORT_ME
@@ -886,7 +886,7 @@ LRESULT Table::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & l
 					if ( xOffset + r.left < 0 || xOffset + r.left > cr.right )
 					{
 						int x = xOffset - r.left;
-						Table_Scroll( this->handle(), x, 0 );
+						ListView_Scroll( this->handle(), x, 0 );
 						r.left -= x;
 					}
 					// Get column alignment
@@ -894,7 +894,7 @@ LRESULT Table::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & l
 					{0
 					};
 					lv.mask = LVCF_FMT;
-					Table_GetColumn( this->handle(), logicalColumn, & lv );
+					ListView_GetColumn( this->handle(), logicalColumn, & lv );
 					DWORD dwStyle;
 					if ( ( lv.fmt & LVCFMT_JUSTIFYMASK ) == LVCFMT_LEFT )
 						dwStyle = ES_LEFT;
@@ -903,14 +903,14 @@ LRESULT Table::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & l
 					else
 						dwStyle = ES_CENTER;
 					r.left += xOffset + 4;
-					r.right = r.left + ( Table_GetColumnWidth( this->handle(), itsEditColumn ) - 3 );
+					r.right = r.left + ( ListView_GetColumnWidth( this->handle(), itsEditColumn ) - 3 );
 					if ( r.right > cr.right )
 						r.right = cr.right;
 					dwStyle |= WS_BORDER | WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL;
 #endif
 
 					// Creating text Widget and placing it above cell
-					HWND editControl = Table_GetEditControl( this->handle() );
+					HWND editControl = ListView_GetEditControl( this->handle() );
 					if ( editControl == 0 )
 					{
 						xCeption err( _T( "Couldn't attach to List View editcontrol" ) );
@@ -931,7 +931,7 @@ LRESULT Table::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & l
 					// Getting text of cell and inserting into text Widget
 					const int BUFFER_MAX = 260; // List view cells have a maximum of 260 characters
 					TCHAR buffer[BUFFER_MAX];
-					Table_GetItemText( this->handle(), itsEditRow, itsEditColumn, buffer, BUFFER_MAX );
+					ListView_GetItemText( this->handle(), itsEditRow, itsEditColumn, buffer, BUFFER_MAX );
 					text->setText( buffer );
 
 					// Select all end give focus
@@ -963,14 +963,14 @@ LRESULT Table::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & l
 					LVHITTESTINFO info;
 					info.pt.x = itsXMousePosition;
 					info.pt.y = itsYMousePosition;
-					Table_SubItemHitTest( this->handle(), & info );
+					ListView_SubItemHitTest( this->handle(), & info );
 					// User has clicked the Table
 					if ( info.iItem != - 1 )
 					{
 						// User has clicked an ITEM in Table
 						if ( info.iSubItem >= 0 )
 						{
-							UINT state = Table_GetItemState( this->handle(), info.iItem, LVIS_FOCUSED );
+							UINT state = ListView_GetItemState( this->handle(), info.iItem, LVIS_FOCUSED );
 							if ( ! ( state & LVIS_FOCUSED ) )
 							{
 								//SetFocus( itsHandle );   // TODO: This was catched by devcpp ... what was intended?
@@ -982,7 +982,7 @@ LRESULT Table::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & l
 							{
 								itsEditRow = info.iItem;
 								itsEditColumn = info.iSubItem;
-								Table_EditLabel( this->handle(), info.iItem );
+								ListView_EditLabel( this->handle(), info.iItem );
 								return 0; // Processed
 							}
 						}

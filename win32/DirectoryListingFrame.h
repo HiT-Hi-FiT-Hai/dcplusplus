@@ -21,7 +21,7 @@
 
 #include "MDIChildFrame.h"
 #include "TypedTable.h"
-#include "TypedTreeView.h"
+#include "TypedTree.h"
 #include "AspectUserCommand.h"
 
 #include <dcpp/forward.h>
@@ -128,7 +128,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 	
-	typedef TypedTreeView<ItemInfo> WidgetDirs;
+	typedef TypedTree<ItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
 	typedef TypedTable<ItemInfo> WidgetFiles;

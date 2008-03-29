@@ -11,7 +11,7 @@ namespace SmartWin {
 bool Table::ComCtl6 = false;
 
 Table::Seed::Seed() : 
-	Widget::Seed(WC_Table, WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT | LVS_EDITLABELS),
+	Widget::Seed(WC_LISTVIEW, WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT | LVS_EDITLABELS),
 	font(new Font(DefaultGuiFont)),
 	lvStyle(0)
 {
@@ -66,7 +66,7 @@ void Table::setSort(int aColumn, SortType aType, bool aAscending) {
 void Table::updateArrow() {
 	if(ComCtl6) {
 		int flag = isAscending() ? HDF_SORTUP : HDF_SORTDOWN;
-		HWND header = Table_GetHeader(this->handle());
+		HWND header = ListView_GetHeader(this->handle());
 		int count = Header_GetItemCount(header);
 		for (int i=0; i < count; ++i)
 		{
@@ -86,7 +86,7 @@ void Table::updateArrow() {
 	
 	HBITMAP bitmap = (isAscending() ? upArrow : downArrow)->handle();
 
-	HWND header = Table_GetHeader(this->handle());
+	HWND header = ListView_GetHeader(this->handle());
 	int count = Header_GetItemCount(header);
 	for (int i=0; i < count; ++i)
 	{
@@ -106,16 +106,16 @@ void Table::updateArrow() {
 }
 
 void Table::setSelectedImpl(int item) {
-	Table_SetItemState(handle(), item, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+	ListView_SetItemState(handle(), item, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 }
 
 void Table::clearSelection() {
 	int i = -1;
 	while((i = getNext(i, LVNI_SELECTED)) != -1) {
-		Table_SetItemState(handle(), i, 0, LVIS_SELECTED | LVIS_FOCUSED);
+		ListView_SetItemState(handle(), i, 0, LVIS_SELECTED | LVIS_FOCUSED);
 	}
 	while((i = getNext(i, LVNI_FOCUSED)) != -1) {
-		Table_SetItemState(handle(), i, 0, LVIS_FOCUSED);
+		ListView_SetItemState(handle(), i, 0, LVIS_FOCUSED);
 	}
 }
 
@@ -123,7 +123,7 @@ void Table::createColumns( const std::vector< SmartUtil::tstring > & colNames )
 {
 	// Deleting all data
 	clear();
-	while ( Table_DeleteColumn( this->handle(), 0 ) == TRUE );
+	while ( ListView_DeleteColumn( this->handle(), 0 ) == TRUE );
 
 	LVCOLUMN lvColumn = { LVCF_WIDTH | LVCF_TEXT };
 
@@ -134,7 +134,7 @@ void Table::createColumns( const std::vector< SmartUtil::tstring > & colNames )
 		++idx, ++x )
 	{
 		lvColumn.pszText = const_cast < TCHAR * >( idx->c_str() );
-		if ( Table_InsertColumn( this->handle(), x, & lvColumn ) == - 1 )
+		if ( ListView_InsertColumn( this->handle(), x, & lvColumn ) == - 1 )
 		{
 			xCeption x( _T( "Error while trying to create Columns in list view" ) );
 			throw x;
@@ -145,7 +145,7 @@ void Table::createColumns( const std::vector< SmartUtil::tstring > & colNames )
 int Table::insert(const std::vector< SmartUtil::tstring > & row, LPARAM lPar, int index, int iconIndex) {
 	if (index == - 1) {
 		// Appending at bottom
-		index = Table_GetItemCount( this->handle() );
+		index = ListView_GetItemCount( this->handle() );
 	}
 	LVITEM lvi = { LVIF_TEXT | LVIF_PARAM };
 	if (itsNormalImageList || itsSmallImageList ) {
@@ -156,7 +156,7 @@ int Table::insert(const std::vector< SmartUtil::tstring > & row, LPARAM lPar, in
 	lvi.pszText = const_cast < TCHAR * >(row[0].c_str() );
 	lvi.lParam = lPar;
 	lvi.iItem = index;
-	if ( Table_InsertItem( this->handle(), & lvi ) == - 1) {
+	if ( ListView_InsertItem( this->handle(), & lvi ) == - 1) {
 		xCeption x( _T( "Error while trying to insert row in Table" ));
 		throw x;
 	}
@@ -165,7 +165,7 @@ int Table::insert(const std::vector< SmartUtil::tstring > & row, LPARAM lPar, in
 	for (std::vector< SmartUtil::tstring >::const_iterator idx = row.begin() + 1; idx != row.end(); ++idx ) {
 		lvi.pszText = const_cast < TCHAR * >(idx->c_str() );
 		lvi.cchTextMax = static_cast< int >(idx->size() );
-		if ( !Table_SetItem( this->handle(), & lvi )) {
+		if ( !ListView_SetItem( this->handle(), & lvi )) {
 			xCeption x( _T( "Error while trying to insert row in Table" ));
 			throw x;
 		}
@@ -182,7 +182,7 @@ int Table::insert(int mask, int i, LPCTSTR text, UINT state, UINT stateMask, int
 	item.pszText = const_cast<LPTSTR>(text);
 	item.iImage = image;
 	item.lParam = lparam;
-	return Table_InsertItem(this->handle(), &item);
+	return ListView_InsertItem(this->handle(), &item);
 }
 
 ScreenCoordinate Table::getContextMenuPos() {
@@ -202,7 +202,7 @@ SmartUtil::tstring Table::getText( unsigned int row, unsigned int column )
 	const int BUFFER_MAX = 2048;
 	TCHAR buffer[BUFFER_MAX + 1];
 	buffer[0] = '\0';
-	Table_GetItemText( this->handle(), row, column, buffer, BUFFER_MAX );
+	ListView_GetItemText( this->handle(), row, column, buffer, BUFFER_MAX );
 	return buffer;
 }
 
@@ -212,7 +212,7 @@ std::vector< unsigned > Table::getSelection() const
 	int tmpIdx = - 1;
 	while ( true )
 	{
-		tmpIdx = Table_GetNextItem( this->handle(), tmpIdx, LVNI_SELECTED );
+		tmpIdx = ListView_GetNextItem( this->handle(), tmpIdx, LVNI_SELECTED );
 		if ( tmpIdx == - 1 )
 			break;
 		retVal.push_back( static_cast< unsigned >( tmpIdx ) );
@@ -221,12 +221,12 @@ std::vector< unsigned > Table::getSelection() const
 }
 
 unsigned Table::getColumnCount() {
-	HWND header = Table_GetHeader(handle());
+	HWND header = ListView_GetHeader(handle());
 	return Header_GetItemCount(header);
 }
 
 void Table::addRemoveTableExtendedStyle( DWORD addStyle, bool add ) {
-	DWORD newStyle = Table_GetExtendedTableStyle( this->handle() );
+	DWORD newStyle = ListView_GetExtendedListViewStyle( this->handle() );
 	if ( add && ( newStyle & addStyle ) != addStyle )
 	{
 		newStyle |= addStyle;
@@ -235,7 +235,7 @@ void Table::addRemoveTableExtendedStyle( DWORD addStyle, bool add ) {
 	{
 		newStyle ^= addStyle;
 	}
-	Table_SetExtendedTableStyle( this->handle(), newStyle );
+	ListView_SetExtendedListViewStyle( this->handle(), newStyle );
 }
 
 std::vector<int> Table::getColumnOrder() {
@@ -264,7 +264,7 @@ LPARAM Table::getDataImpl(int idx) {
 	LVITEM item = { LVIF_PARAM };
 	item.iItem = idx;
 	
-	if(!Table_GetItem(handle(), &item)) {
+	if(!ListView_GetItem(handle(), &item)) {
 		return 0;
 	}
 	return item.lParam;
@@ -275,7 +275,7 @@ void Table::setDataImpl(int idx, LPARAM data) {
 	item.iItem = idx;
 	item.lParam = data;
 	
-	Table_SetItem(handle(), &item);
+	ListView_SetItem(handle(), &item);
 }
 
 void Table::setIcon( unsigned row, int newIconIndex ) {
@@ -283,7 +283,7 @@ void Table::setIcon( unsigned row, int newIconIndex ) {
 	it.iItem = row;
 	it.iImage = newIconIndex;
 	//Set item
-	if(Table_SetItem( this->handle(), &it) != TRUE) {
+	if(ListView_SetItem( this->handle(), &it) != TRUE) {
 		xCeption err( _T( "Something went wrong while trying to change the selected item of the Table" ) );
 		throw err;
 	}
@@ -291,17 +291,17 @@ void Table::setIcon( unsigned row, int newIconIndex ) {
 
 void Table::setNormalImageList( ImageListPtr imageList ) {
 	  itsNormalImageList = imageList;
-	  Table_SetImageList( this->handle(), imageList->getImageList(), LVSIL_NORMAL );
+	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_NORMAL );
 }
 
 void Table::setSmallImageList( ImageListPtr imageList ) {
 	  itsSmallImageList = imageList;
-	  Table_SetImageList( this->handle(), imageList->getImageList(), LVSIL_SMALL );
+	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_SMALL );
 }
 
 void Table::setStateImageList( ImageListPtr imageList ) {
 	  itsStateImageList = imageList;
-	  Table_SetImageList( this->handle(), imageList->getImageList(), LVSIL_STATE );
+	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_STATE );
 }
 
 void Table::setView( int view ) {
@@ -322,7 +322,7 @@ void Table::redraw( int firstRow, int lastRow ) {
 	if(lastRow == -1) {
 		lastRow = size();
 	}
-	if( Table_RedrawItems( this->handle(), firstRow, lastRow ) == FALSE )
+	if( ListView_RedrawItems( this->handle(), firstRow, lastRow ) == FALSE )
 	{
 		throw xCeption( _T( "Error while redrawing items in Table" ) );
 	}
@@ -357,8 +357,8 @@ int CALLBACK Table::compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSor
 	if(type == SORT_CALLBACK) {
 		result = p->fun(p->getData(na), p->getData(nb));
 	} else {
-		Table_GetItemText(p->handle(), na, p->sortColumn, buf, BUF_SIZE);
-		Table_GetItemText(p->handle(), nb, p->sortColumn, buf2, BUF_SIZE);
+		ListView_GetItemText(p->handle(), na, p->sortColumn, buf, BUF_SIZE);
+		ListView_GetItemText(p->handle(), nb, p->sortColumn, buf2, BUF_SIZE);
 		
 		if(type == SORT_STRING) {
 			result = lstrcmp(buf, buf2);
@@ -398,7 +398,7 @@ int Table::xoffFromColumn( int column, int & logicalColumn )
 			break;
 		}
 		else
-			xOffset += Table_GetColumnWidth( hWnd, myArrayOfCols[idx] );
+			xOffset += ListView_GetColumnWidth( hWnd, myArrayOfCols[idx] );
 	}
 
 	return xOffset;
