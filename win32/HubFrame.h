@@ -47,6 +47,7 @@ public:
 		STATUS_STATUS,
 		STATUS_USERS,
 		STATUS_SHARED,
+		STATUS_AVERAGE_SHARED,
 		STATUS_SHOW_USERS,
 		STATUS_LAST
 	};
@@ -208,6 +209,7 @@ private:
 	
 	tstring getStatusUsers() const;
 	tstring getStatusShared() const;
+	tstring getStatusAverageShared() const;
 	void updateStatus();
 	
 	void initSecond();
