@@ -679,6 +679,15 @@ void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSour
 	putConnection(aSource);
 }
 
+void ConnectionManager::disconnect(const UserPtr& aUser) {
+	Lock l(cs);
+	for(UserConnectionList::iterator i = userConnections.begin(); i != userConnections.end(); ++i) {
+		UserConnection* uc = *i;
+		if(uc->getUser() == aUser)
+			uc->disconnect(true);
+	}
+}
+
 void ConnectionManager::disconnect(const UserPtr& aUser, int isDownload) {
 	Lock l(cs);
 	for(UserConnectionList::iterator i = userConnections.begin(); i != userConnections.end(); ++i) {

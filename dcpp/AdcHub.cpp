@@ -88,7 +88,7 @@ OnlineUser* AdcHub::findUser(const CID& aCID) const {
 	return 0;
 }
 
-void AdcHub::putUser(const uint32_t aSID) {
+void AdcHub::putUser(const uint32_t aSID, bool disconnect) {
 	OnlineUser* ou = 0;
 	{
 		Lock l(cs);
@@ -100,7 +100,7 @@ void AdcHub::putUser(const uint32_t aSID) {
 	}
 
 	if(aSID != AdcCommand::HUB_SID)
-		ClientManager::getInstance()->putOffline(ou);
+		ClientManager::getInstance()->putOffline(ou, disconnect);
 
 	fire(ClientListener::UserRemoved(), this, *ou);
 	delete ou;
@@ -286,11 +286,7 @@ void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
 		fire(ClientListener::StatusMessage(), this, tmp, ClientListener::FLAG_IS_SPAM);
 	}
 
-	if(c.hasFlag("DI", 1)) {
-		ConnectionManager::getInstance()->disconnect(victim->getUser(), false);
-	}
-	
-	putUser(s); 
+	putUser(s, c.getParam("DI", 1, tmp)); 
 	
 	if(s == sid) {
 		if(c.getParam("TL", 1, tmp)) {

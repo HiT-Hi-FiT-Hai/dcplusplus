@@ -89,7 +89,7 @@ private:
 	OnlineUser& getUser(const uint32_t aSID, const CID& aCID);
 	OnlineUser* findUser(const uint32_t sid) const;
 	OnlineUser* findUser(const CID& cid) const;
-	void putUser(const uint32_t sid);
+	void putUser(const uint32_t sid, bool disconnect);
 
 	void clearUsers();
 

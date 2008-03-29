@@ -75,7 +75,7 @@ public:
 	CID makeCid(const string& nick, const string& hubUrl) const throw();
 
 	void putOnline(OnlineUser* ou) throw();
-	void putOffline(OnlineUser* ou) throw();
+	void putOffline(OnlineUser* ou, bool disconnect = false) throw();
 
 	UserPtr& getMe();
 

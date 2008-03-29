@@ -108,6 +108,7 @@ public:
 	void getDownloadConnection(const UserPtr& aUser);
 	void force(const UserPtr& aUser);
 
+	void disconnect(const UserPtr& aUser); // disconnect downloads and uploads
 	void disconnect(const UserPtr& aUser, int isDownload);
 
 	void shutdown();
