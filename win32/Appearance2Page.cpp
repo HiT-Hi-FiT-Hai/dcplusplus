@@ -127,7 +127,7 @@ void Appearance2Page::handleBackgroundClicked() {
 void Appearance2Page::handleTextClicked() {
 	LOGFONT logFont_ = logFont;
 	DWORD fg_ = fg;
-	if(createChooseFont().showDialog(CF_EFFECTS | CF_SCREENFONTS, &logFont_, fg_)) {
+	if(createFontDialog().open(CF_EFFECTS | CF_SCREENFONTS, logFont_, fg_)) {
 		logFont = logFont_;
 		fg = fg_;
 		font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));

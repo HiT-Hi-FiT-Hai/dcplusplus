@@ -26,11 +26,10 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef WINCE
-#ifndef WidgetChooseFont_h
-#define WidgetChooseFont_h
+#ifndef FontDialog_h
+#define FontDialog_h
 
 #include "../Widget.h"
-#include "../resources/Font.h"
 
 namespace SmartWin
 {
@@ -47,11 +46,11 @@ namespace SmartWin
   * an HWND on the template parameter class. <br>
   * the complete signature of the function will then be "HWND parent()"   
   */
-class WidgetChooseFont
+class FontDialog
 {
 public:
 	/// Class type
-	typedef WidgetChooseFont ThisType;
+	typedef FontDialog ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -59,13 +58,12 @@ public:
 	typedef ThisType ObjectType;
 
 	/// Shows the dialog
-	bool showDialog(DWORD dwFlags, LPLOGFONT lplf, DWORD& rgbColors);
+	bool open(DWORD dwFlags, LOGFONT& font, DWORD& rgbColors);
 
 	/// Constructor Taking pointer to parent
-	explicit WidgetChooseFont( Widget* parent = 0 );
+	explicit FontDialog( Widget* parent = 0 );
 
-	virtual ~WidgetChooseFont()
-	{}
+	~FontDialog() { }
 
 private:
 	Widget* itsParent;
@@ -76,26 +74,8 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool WidgetChooseFont::showDialog(DWORD dwFlags, LPLOGFONT lplf, DWORD& rgbColors)
-{
-	CHOOSEFONT cf = { sizeof(CHOOSEFONT) };
 
-	// Initialize CHOOSEFONT
-	cf.hwndOwner = getParentHandle();
-	cf.Flags = dwFlags | CF_INITTOLOGFONTSTRUCT;
-	cf.lpLogFont = lplf;
-	cf.rgbColors = rgbColors;
-
-	if ( ::ChooseFont( & cf ) )
-	{
-		lplf = cf.lpLogFont;
-		rgbColors = cf.rgbColors;
-		return true;
-	}
-	return false;
-}
-
-inline WidgetChooseFont::WidgetChooseFont( Widget * parent )
+inline FontDialog::FontDialog( Widget * parent )
 	: itsParent( parent )
 {
 }

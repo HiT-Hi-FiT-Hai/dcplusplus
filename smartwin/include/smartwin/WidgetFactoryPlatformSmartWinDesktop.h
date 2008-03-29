@@ -31,7 +31,7 @@
 
 #include "WidgetFactoryPlatformCommon.h"
 #include "widgets/WidgetRichTextBox.h"
-#include "widgets/WidgetChooseFont.h"
+#include "widgets/FontDialog.h"
 #include "widgets/WidgetMenu.h"
 #include "widgets/WidgetToolbar.h"
 #include "widgets/WidgetCoolbar.h"
@@ -63,7 +63,7 @@ public:
 	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
 
 	/// ChooseFont class and object type.
-	typedef SmartWin::WidgetChooseFont WidgetChooseFont;
+	typedef SmartWin::FontDialog FontDialog;
 
 	/// Toolbar class type.
 	typedef SmartWin::WidgetToolbar WidgetToolbar;
@@ -85,13 +85,11 @@ public:
 		: ContainerWidgetType( parent )
 	{}
 
-	/// Creates a WidgetChooseFont and returns it.
+	/// Creates a FontDialog and returns it.
 	/** Usable to let user choose font from the system installed fonts.
 	  */
-	WidgetChooseFont createChooseFont()
-	{
-		WidgetChooseFont retVal( this );
-		return retVal;
+	FontDialog createFontDialog() {
+		return FontDialog( this );
 	}
 
 	/// Creates a Rich Edit Control and returns a pointer to it.
