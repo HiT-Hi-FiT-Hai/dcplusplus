@@ -59,7 +59,7 @@ namespace SmartWin
   * "%SYSTEM%/x.dll" and "x.dll" though there probably IS no real difference, this is
   * a potential "hard to track" bug meaning always instantiate this class with the
   * EXACT SAME arguments! <br>
-  * See example usage in WidgetRichTextBox.h
+  * See example usage in RichTextBox.h
   */
 class LibraryLoader
 {

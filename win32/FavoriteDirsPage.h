@@ -32,7 +32,7 @@ public:
 private:
 	static TextItem texts[];
 
-	WidgetListViewPtr directories;
+	TablePtr directories;
 
 	void handleDoubleClick();
 	bool handleKeyDown(int c);

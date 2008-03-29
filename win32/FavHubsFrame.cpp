@@ -49,10 +49,10 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	nosave(false)
 {
 	{
-		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.style |= LVS_NOSORTHEADER;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		hubs = createListView(cs);
+		hubs = createTable(cs);
 		addWidget(hubs);
 
 		hubs->createColumns(WinUtil::getStrings(columnNames));
@@ -170,7 +170,7 @@ void FavHubsFrame::handleAdd() {
 	while(true) {
 		if(dlg.run() == IDOK) {
 			if(FavoriteManager::getInstance()->isFavoriteHub(e.getServer())) {
-				createMessageBox().show(T_("Hub already exists as a favorite"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
+				createMessageBox().show(T_("Hub already exists as a favorite"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONEXCLAMATION);
 			} else {
 				FavoriteManager::getInstance()->addFavorite(e);
 				break;
@@ -234,7 +234,7 @@ void FavHubsFrame::handleDown() {
 }
 
 void FavHubsFrame::handleRemove() {
-	if(hubs->hasSelected() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
+	if(hubs->hasSelected() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_YESNO, MessageBox::BOX_ICONQUESTION) == MessageBox::RETBOX_YES)) {
 		int i;
 		while((i = hubs->getNext(-1, LVNI_SELECTED)) != -1)
 			FavoriteManager::getInstance()->removeFavorite(reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(i)));
@@ -322,7 +322,7 @@ void FavHubsFrame::openSelected() {
 		return;
 
 	if(SETTING(NICK).empty()) {
-		createMessageBox().show(T_("Please enter a nickname in the settings dialog!"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+		createMessageBox().show(T_("Please enter a nickname in the settings dialog!"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONSTOP);
 		return;
 	}
 

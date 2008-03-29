@@ -31,19 +31,19 @@ public:
 	int run() { return createDialog(IDD_FAVORITEHUB); }
 
 private:
-	WidgetTextBoxPtr name;
-	WidgetTextBoxPtr address;
-	WidgetTextBoxPtr description;
-	WidgetTextBoxPtr nick;
-	WidgetTextBoxPtr password;
-	WidgetTextBoxPtr userDescription;
+	TextBoxPtr name;
+	TextBoxPtr address;
+	TextBoxPtr description;
+	TextBoxPtr nick;
+	TextBoxPtr password;
+	TextBoxPtr userDescription;
 
 	FavoriteHubEntry *entry;
 
 	bool handleInitDialog();
 	void handleFocus();
 
-	void handleTextChanged(WidgetTextBoxPtr textBox);
+	void handleTextChanged(TextBoxPtr textBox);
 
 	void handleOKClicked();
 };

@@ -33,7 +33,7 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	WidgetTextBoxPtr nick;
+	TextBoxPtr nick;
 
 	void handleNickTextChanged();
 };

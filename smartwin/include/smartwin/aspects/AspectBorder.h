@@ -34,7 +34,7 @@ namespace SmartWin
 
 /// Aspect class used by Widgets that have borders which can have multiple styles.
 /** \ingroup AspectClasses
-  * E.g. the WidgetListView have a "border" Aspect therefore it realizes the AspectBorder
+  * E.g. the Table have a "border" Aspect therefore it realizes the AspectBorder
   * through inheritance.
   */
 template< class WidgetType >

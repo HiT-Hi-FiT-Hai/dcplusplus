@@ -37,7 +37,7 @@ namespace SmartWin
 /// \ingroup AspectClasses
 /// Aspect class used by Widgets that have the possibility of being "Double
 /// Clicked".
-/** E.g. the WidgetStatic have a "Double Clicked" Aspect therefore it realizes the
+/** E.g. the Label have a "Double Clicked" Aspect therefore it realizes the
   * AspectDblClickable through inheritance.
   */
 template< class WidgetType >

@@ -22,20 +22,20 @@
 #include <dcpp/Util.h>
 
 template<class ContentType, bool managed = true>
-class TypedListView : public SmartWin::WidgetListView
+class TypedTable : public SmartWin::Table
 {
 private:
-	typedef typename SmartWin::WidgetListView BaseType;
-	typedef TypedListView<ContentType, managed> ThisType;
+	typedef typename SmartWin::Table BaseType;
+	typedef TypedTable<ContentType, managed> ThisType;
 	
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedListView( SmartWin::Widget * parent ) : BaseType(parent) { 
+	explicit TypedTable( SmartWin::Widget * parent ) : BaseType(parent) { 
 		
 	}
 	
-	~TypedListView() {
+	~TypedTable() {
 		if(managed)
 			this->clear();
 	}
@@ -44,7 +44,7 @@ public:
 		BaseType::create(cs);
 		
 		this->addCallback(
-			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &ThisType::TypedListViewDispatcher
+			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &ThisType::TypedTableDispatcher
 		);
 		this->onColumnClick(std::tr1::bind(&ThisType::handleColumnClick, this, _1));
 		this->onSortItems(std::tr1::bind(&ThisType::handleSort, this, _1, _2));
@@ -79,7 +79,7 @@ public:
 	
 	int find(ContentType* item) {
 		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
-		return ListView_FindItem(this->handle(), -1, &fi);
+		return Table_FindItem(this->handle(), -1, &fi);
 	}
 	
 	struct CompFirst {
@@ -96,7 +96,7 @@ public:
 	}
 	void forEachSelected(void (ContentType::*func)()) {
 		int i = -1;
-		while( (i = ListView_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
+		while( (i = Table_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
 			(getData(i)->*func)();
 	}
 	template<class _Function>
@@ -109,7 +109,7 @@ public:
 	template<class _Function>
 	_Function forEachSelectedT(_Function pred) {
 		int i = -1;
-		while( (i = ListView_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
+		while( (i = Table_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
 			pred(getData(i));
 		return pred;
 	}
@@ -171,7 +171,7 @@ private:
 		return ContentType::compareItems(reinterpret_cast<ContentType*>(lhs), reinterpret_cast<ContentType*>(rhs), this->getSortColumn());
 	}
 	
-	static bool TypedListViewDispatcher(const MSG& msg, HRESULT& res) {
+	static bool TypedTableDispatcher(const MSG& msg, HRESULT& res) {
 		NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( msg.lParam );
 		if(nm->item.mask & LVIF_TEXT) {
 			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
@@ -203,15 +203,15 @@ private:
 #ifdef PORT_ME
 
 template<class T, class ContentType>
-class TypedListView : public T::WidgetListView,
-	ListViewArrows<TypedListView<T, ctrlId> >
+class TypedTable : public T::Table,
+	TableArrows<TypedTable<T, ctrlId> >
 {
 
 	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
 			int count = GetItemCount();
 			for(int i = 0; i < count; ++i)
-				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
+				Table_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
 
 			return 0;
 		}

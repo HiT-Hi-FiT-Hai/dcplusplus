@@ -23,8 +23,8 @@ template<class WidgetType>
 class AspectStatus {
 	typedef AspectStatus<WidgetType> ThisType;
 protected:
-	typedef SmartWin::WidgetStatusBar<SmartWin::Section>::ThisType WidgetStatusBarSections;
-	typedef WidgetStatusBarSections::ObjectType WidgetStatusBarSectionsPtr;
+	typedef SmartWin::StatusBar<SmartWin::Section>::ThisType StatusBarSections;
+	typedef StatusBarSections::ObjectType StatusBarSectionsPtr;
 
 	AspectStatus() : status(0) {
 		statusSizes.resize(WidgetType::STATUS_LAST);
@@ -36,7 +36,7 @@ protected:
 	}
 
 	void initStatus(bool sizeGrip = false) {
-		WidgetStatusBarSections::Seed cs;
+		StatusBarSections::Seed cs;
 		cs.style = WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 		if(sizeGrip) {
 			cs.style |= SBARS_SIZEGRIP;
@@ -87,13 +87,13 @@ protected:
 		::MoveWindow(widget->handle(), p[0].x, p[0].y, p[1].x - p[0].x, p[1].y - p[0].y, TRUE);
 	}
 	
-	WidgetStatusBarSectionsPtr status;
+	StatusBarSectionsPtr status;
 
 	std::vector<unsigned> statusSizes;
 
 private:
 	SmartWin::Application::FilterIter filterIter;
-	typename SmartWin::WidgetToolTip::ObjectType statusTip;
+	typename SmartWin::ToolTip::ObjectType statusTip;
 	TStringList lastLines;
 	tstring tip;
 	

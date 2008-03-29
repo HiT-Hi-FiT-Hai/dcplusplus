@@ -52,8 +52,8 @@ private:
 	enum Tasks { USER_UPDATED
 	};
 
-	WidgetTextBoxPtr chat;
-	WidgetTextBoxPtr message;
+	TextBoxPtr chat;
+	TextBoxPtr message;
 
 	StringMap ucLineParams;
 	UserPtr replyTo;

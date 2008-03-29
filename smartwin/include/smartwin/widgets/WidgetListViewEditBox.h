@@ -25,10 +25,10 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WidgetListViewViewEditBox_h
-#define WidgetListViewViewEditBox_h
+#ifndef TableViewEditBox_h
+#define TableViewEditBox_h
 
-#include "WidgetTextBox.h"
+#include "TextBox.h"
 
 namespace SmartWin
 {
@@ -40,18 +40,18 @@ namespace private_
 
 // Class is only to make attaching of Edit Control in List View possible
 // TODO: Make window NOT hide the leftmost cell of row when entering "edit modus"..
-class ListViewEditBox : WidgetTextBox
+class TableEditBox : TextBox
 {
 public:
 	// Class type
-	typedef ListViewEditBox ThisType;
+	typedef TableEditBox ThisType;
 
 	// Object type
 	typedef ThisType * ObjectType;
 
-	explicit ListViewEditBox( SmartWin::Widget * parent );
+	explicit TableEditBox( SmartWin::Widget * parent );
 
-	virtual ~ListViewEditBox()
+	virtual ~TableEditBox()
 	{}
 
 	Rectangle itsRect;
@@ -60,8 +60,8 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline ListViewEditBox::ListViewEditBox( SmartWin::Widget * parent )
-	: WidgetTextBox( parent )
+inline TableEditBox::TableEditBox( SmartWin::Widget * parent )
+	: TextBox( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
@@ -69,7 +69,7 @@ inline ListViewEditBox::ListViewEditBox( SmartWin::Widget * parent )
 
 #ifdef PORT_ME
 template< class EventHandlerClass >
-LRESULT ListViewEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+LRESULT TableEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 #ifdef _MSC_VER
 #pragma warning( disable : 4060 )
@@ -77,13 +77,13 @@ LRESULT ListViewEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT
 	switch ( msg )
 	{
 			// Windows CE doesn't support WM_WINDOWPOSCHANGING message
-			// therefore we can't reposition the EditControl in the listview
+			// therefore we can't reposition the EditControl in the Table
 			// edit modus...!
 #ifndef WINCE
 		case WM_WINDOWPOSCHANGING :
 		{
 			// Ensuring position is "locked" in the rectangle initially set in
-			// WidgetListView's create func And then letting message "pass
+			// Table's create func And then letting message "pass
 			// through" the rest of the hierarchy...
 			WINDOWPOS * pos = ( WINDOWPOS * ) lPar;
 			pos->x = itsRect.pos.x;
@@ -93,7 +93,7 @@ LRESULT ListViewEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT
 		} break;
 #endif
 	}
-	return WidgetTextBox< EventHandlerClass >::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return TextBox< EventHandlerClass >::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 #endif
 // end namespace private_

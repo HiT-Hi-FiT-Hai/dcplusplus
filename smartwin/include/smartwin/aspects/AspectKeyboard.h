@@ -105,7 +105,7 @@ public:
 
 /// Aspect class used by Widgets that have the possibility of trapping keyboard events.
 /** \ingroup AspectClasses
-  * E.g. the WidgetListView can trap "key pressed events" therefore they realize the AspectKeyboard through inheritance.
+  * E.g. the Table can trap "key pressed events" therefore they realize the AspectKeyboard through inheritance.
   */
 template< class WidgetType >
 class AspectKeyboard : public AspectKeyboardBase
@@ -135,7 +135,7 @@ public:
 	  * true event is defined as "handled" meaning the system will not try itself to
 	  * handle the event.<br>
 	  *
-	  * Certain widgets, such as WidgetTextBox, will not report VK_RETURN unless you
+	  * Certain widgets, such as TextBox, will not report VK_RETURN unless you
 	  * include ES_WANTRETURN in the style field of of the creational structure
 	  * passed when you createTextBox( cs ).
 	  *

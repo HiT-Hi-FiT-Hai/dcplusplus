@@ -105,7 +105,7 @@ private:
 	WidgetHPanedPtr paned;
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
-	WidgetToolbarPtr toolbar;
+	ToolBarPtr toolbar;
 	WidgetTabViewPtr tabs;
 	
 	/** Is the tray icon visible? */

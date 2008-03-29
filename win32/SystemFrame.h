@@ -38,7 +38,7 @@ private:
 	friend class StaticFrame<SystemFrame>;
 	friend class MDIChildFrame<SystemFrame>;
 	
-	WidgetTextBoxPtr log;
+	TextBoxPtr log;
 	
 	SystemFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~SystemFrame();

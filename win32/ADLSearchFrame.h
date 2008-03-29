@@ -56,7 +56,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetListViewPtr items;
+	TablePtr items;
 	ButtonPtr add;
 	ButtonPtr properties;
 	ButtonPtr up;

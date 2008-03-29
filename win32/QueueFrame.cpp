@@ -80,7 +80,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 	
 	{
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::listView);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::Table);
 		addWidget(files, true);
 		paned->setSecond(files);
 
@@ -96,7 +96,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 	
 	{
-		WidgetCheckBox::Seed cs;
+		CheckBox::Seed cs;
 		cs.caption = _T("+/-");
 		showTree = createCheckBox(cs);
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
@@ -688,12 +688,12 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 }
 
 void QueueFrame::removeSelected() {
-	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_YESNO, MessageBox::BOX_ICONQUESTION) == IDYES)
 		files->forEachSelected(&QueueItemInfo::remove);
 }
 
 void QueueFrame::removeSelectedDir() {
-	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_YESNO, MessageBox::BOX_ICONQUESTION) == IDYES)
 		removeDir(dirs->getSelected());
 }
 

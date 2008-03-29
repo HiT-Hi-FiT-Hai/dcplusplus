@@ -30,36 +30,35 @@
 
 #include "../SmartUtil.h"
 #include "widgets/Button.h"
-#include "widgets/FolderDialog.h"
-#include "widgets/WidgetCheckBox.h"
 #include "widgets/ColorDialog.h"
-#include "widgets/WidgetComboBox.h"
-#include "widgets/WidgetListView.h"
-#include "widgets/WidgetDateTimePicker.h"
+#include "widgets/FolderDialog.h"
+#include "widgets/MessageBox.h"
+#include "widgets/CheckBox.h"
+#include "widgets/ComboBox.h"
+#include "widgets/Table.h"
+#include "widgets/DateTime.h"
 #include "widgets/WidgetDialog.h"
-#include "widgets/WidgetGroupBox.h"
+#include "widgets/GroupBox.h"
 #include "widgets/WidgetLoadFile.h"
-#include "widgets/WidgetMDIChild.h"
-#include "widgets/WidgetMDIFrame.h"
-#include "widgets/WidgetMDIParent.h"
-#include "widgets/WidgetMessageBox.h"
-#include "widgets/WidgetProgressBar.h"
-#include "widgets/WidgetRadioButton.h"
+#include "widgets/MDIChild.h"
+#include "widgets/MDIFrame.h"
+#include "widgets/MDIParent.h"
+#include "widgets/ProgressBar.h"
+#include "widgets/RadioButton.h"
 #include "widgets/WidgetSaveFile.h"
-#include "widgets/WidgetSlider.h"
-#include "widgets/WidgetSpinner.h"
-#include "widgets/WidgetStatic.h"
-#include "widgets/WidgetStatusBar.h"
+#include "widgets/Slider.h"
+#include "widgets/Spinner.h"
+#include "widgets/Label.h"
+#include "widgets/StatusBar.h"
 #include "widgets/WidgetTabView.h"
-#include "widgets/WidgetTabSheet.h"
-#include "widgets/WidgetTextBox.h"
-#include "widgets/WidgetTreeView.h"
-#include "widgets/WidgetToolTip.h"
+#include "widgets/TabSheet.h"
+#include "widgets/TextBox.h"
+#include "widgets/Tree.h"
+#include "widgets/ToolTip.h"
 #include "widgets/WidgetWindow.h"
 #include "widgets/WidgetWindowBase.h"
 #include "WidgetFactoryPlatformImplementation.h"
 #include "WidgetCreator.h"
-#include <memory>
 
 namespace SmartWin
 {
@@ -105,43 +104,43 @@ public:
 
 	
 	/// MessageBox class and object type.
-	typedef SmartWin::WidgetMessageBox WidgetMessageBox;
+	typedef SmartWin::MessageBox MessageBox;
 
 	/// DataGrid class type.
-	typedef SmartWin::WidgetListView WidgetListView;
+	typedef SmartWin::Table Table;
 
 	/// DataGrid object type.
-	typedef typename WidgetListView::ObjectType WidgetListViewPtr;
+	typedef typename Table::ObjectType TablePtr;
 
 	/// TreeView class type.
-	typedef SmartWin::WidgetTreeView WidgetTreeView;
+	typedef SmartWin::Tree Tree;
 
 	/// TreeView object type.
-	typedef typename WidgetTreeView::ObjectType WidgetTreeViewPtr;
+	typedef typename Tree::ObjectType TreePtr;
 
 	/// TextBox class type.
-	typedef SmartWin::WidgetTextBox WidgetTextBox;
+	typedef SmartWin::TextBox TextBox;
 
 	/// TextBox object type.
-	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
+	typedef typename TextBox::ObjectType TextBoxPtr;
 
 	/// StatusBar class type.
-	typedef SmartWin::WidgetStatusBar< > WidgetStatusBar;
+	typedef SmartWin::StatusBar< > StatusBar;
 
 	/// StatusBar object type.
-	typedef typename WidgetStatusBar::ObjectType WidgetStatusBarPtr;
+	typedef typename StatusBar::ObjectType StatusBarPtr;
 
 	/// StatusBarSections class type.
-	typedef SmartWin::WidgetStatusBar< Section > WidgetStatusBarSections;
+	typedef SmartWin::StatusBar< Section > StatusBarSections;
 
 	/// StatusBarSections object type.
-	typedef typename WidgetStatusBarSections::ObjectType WidgetStatusBarSectionsPtr;
+	typedef typename StatusBarSections::ObjectType StatusBarSectionsPtr;
 
 	/// MDIWindow class type.
-	typedef SmartWin::WidgetMDIParent WidgetMDIParent;
+	typedef SmartWin::MDIParent MDIParent;
 
 	/// MDIWindow object type.
-	typedef typename WidgetMDIParent::ObjectType WidgetMDIParentPtr;
+	typedef typename MDIParent::ObjectType MDIParentPtr;
 
 	/// TabView class type.
 	typedef SmartWin::WidgetTabView WidgetTabView;
@@ -150,34 +149,34 @@ public:
 	typedef typename WidgetTabView::ObjectType WidgetTabViewPtr;
 
 	/// TabSheet class type.
-	typedef SmartWin::WidgetTabSheet WidgetTabSheet;
+	typedef SmartWin::TabSheet TabSheet;
 
 	/// TabSheet object type.
-	typedef typename WidgetTabSheet::ObjectType WidgetTabSheetPtr;
+	typedef typename TabSheet::ObjectType TabSheetPtr;
 
 	/// Slider class type.
-	typedef SmartWin::WidgetSlider WidgetSlider;
+	typedef SmartWin::Slider Slider;
 
 	/// Slider object type.
-	typedef typename WidgetSlider::ObjectType WidgetSliderPtr;
+	typedef typename Slider::ObjectType SliderPtr;
 
 	/// Spinner class type.
-	typedef SmartWin::WidgetSpinner WidgetSpinner;
+	typedef SmartWin::Spinner Spinner;
 
 	/// Spinner object type.
-	typedef typename WidgetSpinner::ObjectType WidgetSpinnerPtr;
+	typedef typename Spinner::ObjectType SpinnerPtr;
 
 	/// GroupBox class type.
-	typedef SmartWin::WidgetGroupBox WidgetGroupBox;
+	typedef SmartWin::GroupBox GroupBox;
 
 	/// GroupBox object type.
-	typedef typename WidgetGroupBox::ObjectType WidgetGroupBoxPtr;
+	typedef typename GroupBox::ObjectType GroupBoxPtr;
 
 	/// RadioButton class type.
-	typedef SmartWin::WidgetRadioButton WidgetRadioButton;
+	typedef SmartWin::RadioButton RadioButton;
 
 	/// RadioButton object type.
-	typedef typename WidgetRadioButton::ObjectType WidgetRadioButtonPtr;
+	typedef typename RadioButton::ObjectType RadioButtonPtr;
 
 	/// LoadFileDialog class type.
 	typedef SmartWin::WidgetLoadFile WidgetLoadFile;
@@ -189,28 +188,28 @@ public:
 	typedef SmartWin::ColorDialog ColorDialog;
 
 	/// ComboBox class type.
-	typedef SmartWin::WidgetComboBox WidgetComboBox;
+	typedef SmartWin::ComboBox ComboBox;
 
 	/// ComboBox object type.
-	typedef typename WidgetComboBox::ObjectType WidgetComboBoxPtr;
+	typedef typename ComboBox::ObjectType ComboBoxPtr;
 
 	/// Static class type.
-	typedef SmartWin::WidgetStatic WidgetStatic;
+	typedef SmartWin::Label Label;
 
 	/// Static object type.
-	typedef typename WidgetStatic::ObjectType WidgetStaticPtr;
+	typedef typename Label::ObjectType LabelPtr;
 
 	/// CheckBox class type.
-	typedef SmartWin::WidgetCheckBox WidgetCheckBox;
+	typedef SmartWin::CheckBox CheckBox;
 
 	/// CheckBox object type.
-	typedef typename WidgetCheckBox::ObjectType WidgetCheckBoxPtr;
+	typedef typename CheckBox::ObjectType CheckBoxPtr;
 
 	/// DateTimePicker class type.
-	typedef SmartWin::WidgetDateTimePicker WidgetDateTimePicker;
+	typedef SmartWin::DateTime DateTime;
 
 	/// DateTimePicker object type.
-	typedef typename WidgetDateTimePicker::ObjectType WidgetDateTimePickerPtr;
+	typedef typename DateTime::ObjectType DateTimePtr;
 
 	/// WidgetChildWindow class type.
 	typedef SmartWin::WidgetChildWindow WidgetChildWindow;
@@ -224,21 +223,21 @@ public:
 	/// WidgetWindow object type.
 	typedef typename WidgetWindow::ObjectType WidgetWindowPtr;
 
-	/// WidgetMDIFrame class type.
-	typedef SmartWin::WidgetMDIFrame WidgetMDIFrame;
+	/// MDIFrame class type.
+	typedef SmartWin::MDIFrame MDIFrame;
 
 	/// WidgetWindow object type.
-	typedef typename WidgetMDIFrame::ObjectType WidgetMDIFramePtr;
+	typedef typename MDIFrame::ObjectType MDIFramePtr;
 
 	/// ProgressBar class type.
-	typedef SmartWin::WidgetProgressBar WidgetProgressBar;
+	typedef SmartWin::ProgressBar ProgressBar;
 
 	/// ProgressBar object type.
-	typedef typename WidgetProgressBar::ObjectType WidgetProgressBarPtr;
+	typedef typename ProgressBar::ObjectType ProgressBarPtr;
 
-	typedef SmartWin::WidgetToolTip WidgetToolTip;
+	typedef SmartWin::ToolTip ToolTip;
 	
-	typedef typename WidgetToolTip::ObjectType WidgetToolTipPtr;
+	typedef typename ToolTip::ObjectType ToolTipPtr;
 	
 	/// Default Constructor creating a factory Widget
 	/** Default Constructor creating a factory Widget without a parent, if you need
@@ -271,12 +270,12 @@ public:
 	/// Creates a Message Box and returns a pointer to it.
 	/** Use this one to construct a ( stack object ) to show a message box
 	  */
-	WidgetMessageBox createMessageBox();
+	MessageBox createMessageBox();
 
 	/// Creates a List View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetListViewPtr createListView( const typename WidgetListView::Seed & cs = WidgetListView::Seed() );
+	TablePtr createTable( const typename Table::Seed & cs = Table::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Check Box from the given resource id.
@@ -284,12 +283,12 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetListViewPtr attachList( unsigned id );
+	TablePtr attachList( unsigned id );
 
 	/// Creates a Check Box and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetCheckBoxPtr createCheckBox( const typename WidgetCheckBox::Seed & cs = WidgetCheckBox::Seed() );
+	CheckBoxPtr createCheckBox( const typename CheckBox::Seed & cs = CheckBox::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Check Box from the given resource id.
@@ -297,7 +296,7 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetCheckBoxPtr attachCheckBox( unsigned id );
+	CheckBoxPtr attachCheckBox( unsigned id );
 
 	/// Creates a child window and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -307,7 +306,7 @@ public:
 	/// Creates a Tree View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetTreeViewPtr createTreeView( const typename WidgetTreeView::Seed & cs = WidgetTreeView::Seed() );
+	TreePtr createTreeView( const typename Tree::Seed & cs = Tree::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Tree View Control from the given resource id.
@@ -315,12 +314,12 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetTreeViewPtr attachTreeView( unsigned id );
+	TreePtr attachTreeView( unsigned id );
 
 	/// Creates a Edit Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetTextBoxPtr createTextBox( const typename WidgetTextBox::Seed & cs = WidgetTextBox::Seed() );
+	TextBoxPtr createTextBox( const typename TextBox::Seed & cs = TextBox::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Text Box Control from the given resource id.
@@ -328,18 +327,18 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetTextBoxPtr attachTextBox( unsigned id );
+	TextBoxPtr attachTextBox( unsigned id );
 
 	// TODO: Is there any point in attaching a status bar ? ! ?
 	/// Creates a Status Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetStatusBarPtr createStatusBar( const typename WidgetStatusBar::Seed & cs = WidgetStatusBar::Seed() );
+	StatusBarPtr createStatusBar( const typename StatusBar::Seed & cs = StatusBar::Seed() );
 
 	/// Creates a Status Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetStatusBarSectionsPtr createStatusBarSections( const typename WidgetStatusBarSections::Seed & cs = WidgetStatusBarSections::Seed() );
+	StatusBarSectionsPtr createStatusBarSections( const typename StatusBarSections::Seed & cs = StatusBarSections::Seed() );
 
 	/// Creates a Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -349,7 +348,7 @@ public:
 	/// Creates a Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetMDIParentPtr createMDIParent( const typename WidgetMDIParent::Seed & cs = WidgetMDIParent::Seed() );
+	MDIParentPtr createMDIParent( const typename MDIParent::Seed & cs = MDIParent::Seed() );
 
 	/// Creates a Tab View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -359,22 +358,22 @@ public:
 	/// Creates a Tab Sheet and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetTabSheetPtr createTabSheet( const typename WidgetTabSheet::Seed & cs = WidgetTabSheet::Seed() );
+	TabSheetPtr createTabSheet( const typename TabSheet::Seed & cs = TabSheet::Seed() );
 
 	/// Creates a Slider Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetSliderPtr createSlider( const typename WidgetSlider::Seed & cs = WidgetSlider::Seed() );
+	SliderPtr createSlider( const typename Slider::Seed & cs = Slider::Seed() );
 
 	/// Creates a Spinner Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetSpinnerPtr createSpinner( const typename WidgetSpinner::Seed & cs = WidgetSpinner::Seed() );
+	SpinnerPtr createSpinner( const typename Spinner::Seed & cs = Spinner::Seed() );
 
 	/// Creates a Progress Bar Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetProgressBarPtr createProgressBar( const typename WidgetProgressBar::Seed & cs = WidgetProgressBar::Seed() );
+	ProgressBarPtr createProgressBar( const typename ProgressBar::Seed & cs = ProgressBar::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Button Control from the given resource id.
@@ -388,7 +387,7 @@ public:
 	/** DON'T delete the returned pointer!!!< br >
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls with this function.
 	  */
-	WidgetProgressBarPtr attachProgressBar( unsigned id );
+	ProgressBarPtr attachProgressBar( unsigned id );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Slider Control from the given resource id.
@@ -396,7 +395,7 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetSliderPtr attachSlider( unsigned id );
+	SliderPtr attachSlider( unsigned id );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Spinner Control from the given resource id.
@@ -404,42 +403,42 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetSpinnerPtr attachSpinner( unsigned id );
+	SpinnerPtr attachSpinner( unsigned id );
 
 	/// Creates a Group Box Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetGroupBoxPtr createGroupBox( const typename WidgetGroupBox::Seed & cs = WidgetGroupBox::Seed() );
+	GroupBoxPtr createGroupBox( const typename GroupBox::Seed & cs = GroupBox::Seed() );
 
 	/// Subclasses a Group Box Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetGroupBoxPtr attachGroupBox( unsigned id );
+	GroupBoxPtr attachGroupBox( unsigned id );
 
 	/// Creates a DateTime Picker Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetDateTimePickerPtr createDateTimePicker( const typename WidgetDateTimePicker::Seed & cs = WidgetDateTimePicker::Seed() );
+	DateTimePtr createDateTimePicker( const typename DateTime::Seed & cs = DateTime::Seed() );
 
 	/// Suvclasses a DateTime Picker Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetDateTimePickerPtr attachDateTimePicker( unsigned id );
+	DateTimePtr attachDateTimePicker( unsigned id );
 
 	/// Creates a Radio Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetRadioButtonPtr createRadioButton( WidgetGroupBoxPtr parent, const typename WidgetRadioButton::Seed & cs = WidgetRadioButton::Seed() );
+	RadioButtonPtr createRadioButton( GroupBoxPtr parent, const typename RadioButton::Seed & cs = RadioButton::Seed() );
 
 	/// Subclasses a Radio Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetRadioButtonPtr attachRadioButton( unsigned id );
+	RadioButtonPtr attachRadioButton( unsigned id );
 
 	/// Creates a Comb Box and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetComboBoxPtr createComboBox( const typename WidgetComboBox::Seed & cs = WidgetComboBox::Seed() );
+	ComboBoxPtr createComboBox( const typename ComboBox::Seed & cs = ComboBox::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a ComboBox Control from the given resource id.
@@ -447,12 +446,12 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetComboBoxPtr attachComboBox( unsigned id );
+	ComboBoxPtr attachComboBox( unsigned id );
 
 	/// Creates a Static Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetStaticPtr createStatic( const typename WidgetStatic::Seed & cs = WidgetStatic::Seed() );
+	LabelPtr createStatic( const typename Label::Seed & cs = Label::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Static Control from the given resource id.
@@ -460,9 +459,9 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetStaticPtr attachStatic( unsigned id );
+	LabelPtr attachStatic( unsigned id );
 
-	WidgetToolTipPtr createToolTip( const typename WidgetToolTip::Seed & cs = WidgetToolTip::Seed() );
+	ToolTipPtr createToolTip( const typename ToolTip::Seed & cs = ToolTip::Seed() );
 protected:
 	// Protected to try to avoid stack creation...
 	virtual ~WidgetFactory()
@@ -507,38 +506,38 @@ WidgetFactory< ContainerWidgetType >::createColorDialog()
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetMessageBox
+typename WidgetFactory< ContainerWidgetType >::MessageBox
 WidgetFactory< ContainerWidgetType >::createMessageBox()
 {
-	return WidgetMessageBox( this );
+	return MessageBox( this );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetListViewPtr
-WidgetFactory< ContainerWidgetType >::createListView( const typename WidgetListView::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::TablePtr
+WidgetFactory< ContainerWidgetType >::createTable( const typename Table::Seed & cs )
 {
-	return WidgetCreator< WidgetListView >::create( this, cs );
+	return WidgetCreator< Table >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetListViewPtr
+typename WidgetFactory< ContainerWidgetType >::TablePtr
 WidgetFactory< ContainerWidgetType >::attachList( unsigned id )
 {
-	return WidgetCreator< WidgetListView >::attach( this, id );
+	return WidgetCreator< Table >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetCheckBoxPtr
-	WidgetFactory< ContainerWidgetType >::createCheckBox( const typename WidgetCheckBox::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::CheckBoxPtr
+	WidgetFactory< ContainerWidgetType >::createCheckBox( const typename CheckBox::Seed & cs )
 {
-	return WidgetCreator< WidgetCheckBox >::create( this, cs );
+	return WidgetCreator< CheckBox >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetCheckBoxPtr
+typename WidgetFactory< ContainerWidgetType >::CheckBoxPtr
 WidgetFactory< ContainerWidgetType >::attachCheckBox( unsigned id )
 {
-	return WidgetCreator< WidgetCheckBox >::attach( this, id );
+	return WidgetCreator< CheckBox >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
@@ -549,45 +548,45 @@ WidgetFactory< ContainerWidgetType >::createWidgetChildWindow( const typename Wi
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetTreeViewPtr
-WidgetFactory< ContainerWidgetType >::createTreeView( const typename WidgetTreeView::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::TreePtr
+WidgetFactory< ContainerWidgetType >::createTreeView( const typename Tree::Seed & cs )
 {
-	return WidgetCreator< WidgetTreeView >::create( this, cs );
+	return WidgetCreator< Tree >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetTreeViewPtr
+typename WidgetFactory< ContainerWidgetType >::TreePtr
 WidgetFactory< ContainerWidgetType >::attachTreeView( unsigned id )
 {
-	return WidgetCreator< WidgetTreeView >::attach( this, id );
+	return WidgetCreator< Tree >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetTextBoxPtr
-WidgetFactory< ContainerWidgetType >::createTextBox( const typename WidgetTextBox::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::TextBoxPtr
+WidgetFactory< ContainerWidgetType >::createTextBox( const typename TextBox::Seed & cs )
 {
-	return WidgetCreator< WidgetTextBox >::create( this, cs );
+	return WidgetCreator< TextBox >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetTextBoxPtr
+typename WidgetFactory< ContainerWidgetType >::TextBoxPtr
 WidgetFactory< ContainerWidgetType >::attachTextBox( unsigned id )
 {
-	return WidgetCreator< WidgetTextBox >::attach( this, id );
+	return WidgetCreator< TextBox >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetStatusBarPtr
-WidgetFactory< ContainerWidgetType >::createStatusBar( const typename WidgetStatusBar::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::StatusBarPtr
+WidgetFactory< ContainerWidgetType >::createStatusBar( const typename StatusBar::Seed & cs )
 {
-	return WidgetCreator< WidgetStatusBar >::create( this, cs );
+	return WidgetCreator< StatusBar >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetStatusBarSectionsPtr
-WidgetFactory< ContainerWidgetType >::createStatusBarSections( const typename WidgetStatusBarSections::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::StatusBarSectionsPtr
+WidgetFactory< ContainerWidgetType >::createStatusBarSections( const typename StatusBarSections::Seed & cs )
 {
-	return WidgetCreator< WidgetStatusBarSections >::create( this, cs );
+	return WidgetCreator< StatusBarSections >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
@@ -598,10 +597,10 @@ typename WidgetFactory< ContainerWidgetType >::ButtonPtr
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetMDIParentPtr
-WidgetFactory< ContainerWidgetType >::createMDIParent( const typename WidgetMDIParent::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::MDIParentPtr
+WidgetFactory< ContainerWidgetType >::createMDIParent( const typename MDIParent::Seed & cs )
 {
-	return WidgetCreator< WidgetMDIParent >::create( this, cs );
+	return WidgetCreator< MDIParent >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
@@ -612,31 +611,31 @@ WidgetFactory< ContainerWidgetType >::createTabView( const typename WidgetTabVie
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetTabSheetPtr
-WidgetFactory< ContainerWidgetType >::createTabSheet( const typename WidgetTabSheet::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::TabSheetPtr
+WidgetFactory< ContainerWidgetType >::createTabSheet( const typename TabSheet::Seed & cs )
 {
-	return WidgetCreator< WidgetTabSheet >::create( this, cs );
+	return WidgetCreator< TabSheet >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetSliderPtr
-WidgetFactory< ContainerWidgetType >::createSlider( const typename WidgetSlider::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::SliderPtr
+WidgetFactory< ContainerWidgetType >::createSlider( const typename Slider::Seed & cs )
 {
-	return WidgetCreator< WidgetSlider >::create( this, cs );
+	return WidgetCreator< Slider >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetSpinnerPtr
-WidgetFactory< ContainerWidgetType >::createSpinner( const typename WidgetSpinner::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::SpinnerPtr
+WidgetFactory< ContainerWidgetType >::createSpinner( const typename Spinner::Seed & cs )
 {
-	return WidgetCreator< WidgetSpinner >::create( this, cs );
+	return WidgetCreator< Spinner >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetProgressBarPtr
-WidgetFactory< ContainerWidgetType >::createProgressBar( const typename WidgetProgressBar::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::ProgressBarPtr
+WidgetFactory< ContainerWidgetType >::createProgressBar( const typename ProgressBar::Seed & cs )
 {
-	return WidgetCreator< WidgetProgressBar >::create( this, cs );
+	return WidgetCreator< ProgressBar >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
@@ -647,106 +646,106 @@ WidgetFactory< ContainerWidgetType >::attachButton( unsigned id )
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetProgressBarPtr
+typename WidgetFactory< ContainerWidgetType >::ProgressBarPtr
 WidgetFactory< ContainerWidgetType >::attachProgressBar( unsigned id )
 {
-	return WidgetCreator< WidgetProgressBar >::attach( this, id );
+	return WidgetCreator< ProgressBar >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetSliderPtr
+typename WidgetFactory< ContainerWidgetType >::SliderPtr
 WidgetFactory< ContainerWidgetType >::attachSlider( unsigned id )
 {
-	return WidgetCreator< WidgetSlider >::attach( this, id );
+	return WidgetCreator< Slider >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetSpinnerPtr
+typename WidgetFactory< ContainerWidgetType >::SpinnerPtr
 WidgetFactory< ContainerWidgetType >::attachSpinner( unsigned id )
 {
-	return WidgetCreator< WidgetSpinner >::attach( this, id );
+	return WidgetCreator< Spinner >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetGroupBoxPtr
-WidgetFactory< ContainerWidgetType >::createGroupBox( const typename WidgetGroupBox::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::GroupBoxPtr
+WidgetFactory< ContainerWidgetType >::createGroupBox( const typename GroupBox::Seed & cs )
 {
-	return WidgetCreator< WidgetGroupBox >::create( this, cs );
+	return WidgetCreator< GroupBox >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetGroupBoxPtr
+typename WidgetFactory< ContainerWidgetType >::GroupBoxPtr
 WidgetFactory< ContainerWidgetType >::attachGroupBox( unsigned id )
 {
-	return WidgetCreator< WidgetGroupBox >::attach( this, id );
+	return WidgetCreator< GroupBox >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetDateTimePickerPtr
-WidgetFactory< ContainerWidgetType >::createDateTimePicker( const typename WidgetDateTimePicker::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::DateTimePtr
+WidgetFactory< ContainerWidgetType >::createDateTimePicker( const typename DateTime::Seed & cs )
 {
-	return WidgetCreator< WidgetDateTimePicker >::create( this, cs );
+	return WidgetCreator< DateTime >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetDateTimePickerPtr
+typename WidgetFactory< ContainerWidgetType >::DateTimePtr
 WidgetFactory< ContainerWidgetType >::attachDateTimePicker( unsigned id )
 {
-	return WidgetCreator< WidgetDateTimePicker >::attach( this, id );
+	return WidgetCreator< DateTime >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetRadioButtonPtr
-WidgetFactory< ContainerWidgetType >::createRadioButton( WidgetGroupBoxPtr parent, const typename WidgetRadioButton::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::RadioButtonPtr
+WidgetFactory< ContainerWidgetType >::createRadioButton( GroupBoxPtr parent, const typename RadioButton::Seed & cs )
 {
 #ifdef PORT_ME	
-	WidgetRadioButtonPtr retVal = WidgetCreator< WidgetRadioButton >::create( parent, internal_::getTypedParentOrThrow < EventHandlerClass * >( this ), cs );
+	RadioButtonPtr retVal = WidgetCreator< RadioButton >::create( parent, internal_::getTypedParentOrThrow < EventHandlerClass * >( this ), cs );
 	parent->addChild( retVal );
 	return retVal;
 #endif
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetRadioButtonPtr
+typename WidgetFactory< ContainerWidgetType >::RadioButtonPtr
 WidgetFactory< ContainerWidgetType >::attachRadioButton( unsigned id )
 {
-	WidgetRadioButtonPtr retVal = WidgetCreator< WidgetRadioButton >::attach( this, id );
+	RadioButtonPtr retVal = WidgetCreator< RadioButton >::attach( this, id );
 	return retVal;
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetComboBoxPtr
-WidgetFactory< ContainerWidgetType >::createComboBox( const typename WidgetComboBox::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::ComboBoxPtr
+WidgetFactory< ContainerWidgetType >::createComboBox( const typename ComboBox::Seed & cs )
 {
-	return WidgetCreator< WidgetComboBox >::create( this, cs );
+	return WidgetCreator< ComboBox >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetComboBoxPtr
+typename WidgetFactory< ContainerWidgetType >::ComboBoxPtr
 WidgetFactory< ContainerWidgetType >::attachComboBox( unsigned id )
 {
-	return WidgetCreator< WidgetComboBox >::attach( this, id );
+	return WidgetCreator< ComboBox >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetStaticPtr
-WidgetFactory< ContainerWidgetType >::createStatic( const typename WidgetStatic::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::LabelPtr
+WidgetFactory< ContainerWidgetType >::createStatic( const typename Label::Seed & cs )
 {
-	return WidgetCreator< WidgetStatic >::create( this, cs );
+	return WidgetCreator< Label >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetStaticPtr
+typename WidgetFactory< ContainerWidgetType >::LabelPtr
 WidgetFactory< ContainerWidgetType >::attachStatic( unsigned id )
 {
-	return WidgetCreator< WidgetStatic >::attach( this, id );
+	return WidgetCreator< Label >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetToolTipPtr
-WidgetFactory< ContainerWidgetType >::createToolTip( const typename WidgetToolTip::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::ToolTipPtr
+WidgetFactory< ContainerWidgetType >::createToolTip( const typename ToolTip::Seed & cs )
 {
-	return WidgetCreator< WidgetToolTip >::create( this, cs );
+	return WidgetCreator< ToolTip >::create( this, cs );
 }
 
 // end namespace SmartWin

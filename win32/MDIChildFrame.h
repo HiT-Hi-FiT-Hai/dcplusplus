@@ -132,9 +132,9 @@ private:
 
 	bool reallyClose;
 
-	void addDlgCodeMessage(WidgetComboBox* widget) {
+	void addDlgCodeMessage(ComboBox* widget) {
 		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
-		WidgetTextBox* text = widget->getTextBox();
+		TextBox* text = widget->getTextBox();
 		if(text)
 			text->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
 	}
@@ -144,9 +144,9 @@ private:
 		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
 	}
 
-	void addColor(WidgetComboBox* widget) {
+	void addColor(ComboBox* widget) {
 		widget->setColor(WinUtil::textColor, WinUtil::bgColor);
-		WidgetTextBox* text = widget->getTextBox();
+		TextBox* text = widget->getTextBox();
 		if(text)
 			text->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}

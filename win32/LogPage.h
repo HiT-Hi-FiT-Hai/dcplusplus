@@ -35,9 +35,9 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
-	WidgetListViewPtr dataGrid;
-	WidgetTextBoxPtr logFormat;
-	WidgetTextBoxPtr logFile;
+	TablePtr dataGrid;
+	TextBoxPtr logFormat;
+	TextBoxPtr logFile;
 
 	int oldSelection;
 

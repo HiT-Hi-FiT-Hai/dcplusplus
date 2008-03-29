@@ -37,7 +37,7 @@ namespace SmartWin
 /// \ingroup AspectClasses
 /// Aspect class used by Widgets that have the possibility of manipulating the
 /// visibility property
-/** E.g. the WidgetListView have a Visibility Aspect to it therefore WidgetListView
+/** E.g. the Table have a Visibility Aspect to it therefore Table
   * realizes AspectVisible through inheritance. <br>
   * Most Widgets realize this Aspect since they can become visible and invisible.
   * When the visibilty state of the Widget changes in one way or another the visible

@@ -59,12 +59,12 @@ WinUtil::ImageMap WinUtil::fileIndexes;
 DWORD WinUtil::helpCookie = 0;
 
 const SmartWin::Button::Seed WinUtil::Seeds::button;
-const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxStatic;
-const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxEdit;
-const SmartWin::WidgetListView::Seed WinUtil::Seeds::listView;
+const SmartWin::ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
+const SmartWin::ComboBox::Seed WinUtil::Seeds::comboBoxEdit;
+const SmartWin::Table::Seed WinUtil::Seeds::Table;
 const SmartWin::WidgetMenu::Seed WinUtil::Seeds::menu;
-const SmartWin::WidgetTextBox::Seed WinUtil::Seeds::textBox;
-const SmartWin::WidgetTreeView::Seed WinUtil::Seeds::treeView;
+const SmartWin::TextBox::Seed WinUtil::Seeds::textBox;
+const SmartWin::Tree::Seed WinUtil::Seeds::treeView;
 
 void WinUtil::init() {
 
@@ -121,20 +121,20 @@ void WinUtil::init() {
 	
 	// Const so that noone else will change them after they've been initialized
 	//SmartWin::Button::Seed& xbutton = const_cast<SmartWin::Button::Seed&>(Seeds::button);
-	SmartWin::WidgetComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxEdit);
-	SmartWin::WidgetComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxStatic);
-	SmartWin::WidgetListView::Seed& xlistView = const_cast<SmartWin::WidgetListView::Seed&>(Seeds::listView);
+	SmartWin::ComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::ComboBox::Seed&>(Seeds::comboBoxEdit);
+	SmartWin::ComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::ComboBox::Seed&>(Seeds::comboBoxStatic);
+	SmartWin::Table::Seed& xTable = const_cast<SmartWin::Table::Seed&>(Seeds::Table);
 	SmartWin::WidgetMenu::Seed& xmenu = const_cast<SmartWin::WidgetMenu::Seed&>(Seeds::menu);
-	SmartWin::WidgetTextBox::Seed& xtextBox = const_cast<SmartWin::WidgetTextBox::Seed&>(Seeds::textBox);
-	SmartWin::WidgetTreeView::Seed& xtreeView =  const_cast<SmartWin::WidgetTreeView::Seed&>(Seeds::treeView);
+	SmartWin::TextBox::Seed& xtextBox = const_cast<SmartWin::TextBox::Seed&>(Seeds::textBox);
+	SmartWin::Tree::Seed& xtreeView =  const_cast<SmartWin::Tree::Seed&>(Seeds::treeView);
 
 	xcomboBoxStatic.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
 	xcomboBoxEdit.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
 	
-	xlistView.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-	xlistView.exStyle = WS_EX_CLIENTEDGE;
-	xlistView.lvStyle = LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER;
-	xlistView.font = font;
+	xTable.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
+	xTable.exStyle = WS_EX_CLIENTEDGE;
+	xTable.lvStyle = LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER;
+	xTable.font = font;
 
 	if(BOOLSETTING(OWNER_DRAWN_MENUS))
 		xmenu.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
@@ -1022,7 +1022,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 				MagnetDlg(mainWindow, fhash, fname).run();
 			//}
 		} else {
-			SmartWin::WidgetMessageBox(mainWindow).show(T_("A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."), T_("MAGNET Link detected"), SmartWin::WidgetMessageBox::BOX_OK, SmartWin::WidgetMessageBox::BOX_ICONEXCLAMATION);
+			SmartWin::MessageBox(mainWindow).show(T_("A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."), T_("MAGNET Link detected"), SmartWin::MessageBox::BOX_OK, SmartWin::MessageBox::BOX_ICONEXCLAMATION);
 		}
 	}
 }

@@ -96,7 +96,7 @@
   * \EventHandlerGenericInfo
   */
 
-/** \defgroup EventHandlersWidgetListView Event Handlers for WidgetListView
+/** \defgroup EventHandlersTable Event Handlers for Table
   * \EventHandlerGenericInfo
   */
 
@@ -104,11 +104,11 @@
   * \EventHandlerGenericInfo
   */
 
-/** \defgroup EventHandlersWidgetToolbar Event Handlers for WidgetToolbar
+/** \defgroup EventHandlersToolBar Event Handlers for ToolBar
   * \EventHandlerGenericInfo
   */
 
-/** \defgroup EventHandlersWidgetTreeView Event Handlers for WidgetTreeView
+/** \defgroup EventHandlersTree Event Handlers for Tree
   * \EventHandlerGenericInfo
   */
 

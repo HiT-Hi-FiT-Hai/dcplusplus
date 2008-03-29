@@ -83,7 +83,7 @@ void MagnetDlg::handleFocus() {
 	search->setFocus();
 }
 
-//void MagnetDlg::handleRadioButtonClicked(WidgetRadioButtonPtr radioButton) {
+//void MagnetDlg::handleRadioButtonClicked(RadioButtonPtr radioButton) {
 	//if(radioButton == queue || radioButton == search)
 		//remember->setEnabled(true);
 	//else if(radioButton == doNothing) {

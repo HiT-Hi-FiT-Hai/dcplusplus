@@ -36,17 +36,17 @@ public:
 	int run() { return createDialog(IDD_MAGNET); }
 
 private:
-	//WidgetRadioButtonPtr queue;
-	WidgetRadioButtonPtr search;
-	WidgetRadioButtonPtr doNothing;
-	//WidgetCheckBoxPtr remember;
+	//RadioButtonPtr queue;
+	RadioButtonPtr search;
+	RadioButtonPtr doNothing;
+	//CheckBoxPtr remember;
 
 	tstring mHash;
 	tstring mFileName;
 
 	bool handleInitDialog();
 	void handleFocus();
-	//void handleRadioButtonClicked(WidgetRadioButtonPtr radioButton);
+	//void handleRadioButtonClicked(RadioButtonPtr radioButton);
 	void handleOKClicked();
 };
 

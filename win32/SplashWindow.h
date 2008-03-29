@@ -8,7 +8,7 @@ public:
 	void operator()(const string& str);
 private:
 	SmartWin::WidgetWindow* tmp;
-	WidgetTextBoxPtr text;
+	TextBoxPtr text;
 };
 
 #endif /*SPLASHWINDOW_H_*/

@@ -37,21 +37,21 @@ public:
 	tstring getHub() { return hub; }
 
 private:
-	WidgetRadioButtonPtr separator;
-	WidgetRadioButtonPtr raw;
-	WidgetRadioButtonPtr chat;
-	WidgetRadioButtonPtr PM;
-	WidgetCheckBoxPtr hubMenu;
-	WidgetCheckBoxPtr userMenu;
-	WidgetCheckBoxPtr searchMenu;
-	WidgetCheckBoxPtr fileListMenu;
-	WidgetTextBoxPtr nameBox;
-	WidgetTextBoxPtr commandBox;
-	WidgetTextBoxPtr hubBox;
-	WidgetTextBoxPtr nick;
-	WidgetCheckBoxPtr once;
-	WidgetTextBoxPtr result;
-	WidgetCheckBoxPtr openHelp;
+	RadioButtonPtr separator;
+	RadioButtonPtr raw;
+	RadioButtonPtr chat;
+	RadioButtonPtr PM;
+	CheckBoxPtr hubMenu;
+	CheckBoxPtr userMenu;
+	CheckBoxPtr searchMenu;
+	CheckBoxPtr fileListMenu;
+	TextBoxPtr nameBox;
+	TextBoxPtr commandBox;
+	TextBoxPtr hubBox;
+	TextBoxPtr nick;
+	CheckBoxPtr once;
+	TextBoxPtr result;
+	CheckBoxPtr openHelp;
 
 	int type;
 	int ctx;

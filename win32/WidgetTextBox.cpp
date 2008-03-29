@@ -18,12 +18,12 @@
 
 #include "stdafx.h"
 
-#include "WidgetTextBox.h"
+#include "TextBox.h"
 
 #include "WinUtil.h"
 
-WidgetTextBox::WidgetTextBox( SmartWin::Widget * parent ) : BaseType(parent), menuOpened(false) {
-	this->onLeftMouseDblClick(std::tr1::bind(&WidgetTextBox::handleLeftDblClick, this, _1));
+TextBox::TextBox( SmartWin::Widget * parent ) : BaseType(parent), menuOpened(false) {
+	this->onLeftMouseDblClick(std::tr1::bind(&TextBox::handleLeftDblClick, this, _1));
 
 	/*
 	* unlike usual controls, the edit control doesn't send WM_INITMENUPOPUP when its standard
@@ -31,15 +31,15 @@ WidgetTextBox::WidgetTextBox( SmartWin::Widget * parent ) : BaseType(parent), me
 	*
 	* method described by Jeff Partch in http://groups.google.com/group/microsoft.public.vc.mfc/msg/5e07dc60be3d3baa
 	*/
-	this->onRaw(std::tr1::bind(&WidgetTextBox::handleEnterIdle, this, _1, _2), SmartWin::Message(WM_ENTERIDLE));
-	this->onRaw(std::tr1::bind(&WidgetTextBox::handleMenuSelect, this, _1, _2), SmartWin::Message(WM_MENUSELECT));
+	this->onRaw(std::tr1::bind(&TextBox::handleEnterIdle, this, _1, _2), SmartWin::Message(WM_ENTERIDLE));
+	this->onRaw(std::tr1::bind(&TextBox::handleMenuSelect, this, _1, _2), SmartWin::Message(WM_MENUSELECT));
 }
 
-void WidgetTextBox::handleLeftDblClick(const SmartWin::MouseEventResult& ev) {
+void TextBox::handleLeftDblClick(const SmartWin::MouseEventResult& ev) {
 	WinUtil::parseDBLClick(textUnderCursor(ev.pos));
 }
 
-LRESULT WidgetTextBox::handleEnterIdle(WPARAM wParam, LPARAM lParam) {
+LRESULT TextBox::handleEnterIdle(WPARAM wParam, LPARAM lParam) {
 	if(wParam == MSGF_MENU && !menuOpened) {
 		GUITHREADINFO gti = { sizeof(gti) };
 		if(::GetGUIThreadInfo(NULL, &gti) && (gti.flags & GUI_POPUPMENUMODE) && (gti.hwndMenuOwner == handle())) {
@@ -66,7 +66,7 @@ LRESULT WidgetTextBox::handleEnterIdle(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-LRESULT WidgetTextBox::handleMenuSelect(WPARAM wParam, LPARAM lParam) {
+LRESULT TextBox::handleMenuSelect(WPARAM wParam, LPARAM lParam) {
 	if((HIWORD(wParam) == 0xFFFF) && (lParam == 0))
 		menuOpened = false;
 	return 0;

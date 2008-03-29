@@ -79,7 +79,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::read(handle(), items);
 
 	directories = attachList(IDC_DIRECTORIES);
-	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+	directories->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
 	columns.push_back(T_("Virtual name"));
@@ -105,7 +105,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	onDragDrop(std::tr1::bind(&UploadPage::handleDragDrop, this, _1));
 
-	WidgetCheckBoxPtr shareHidden = attachCheckBox(IDC_SHAREHIDDEN);
+	CheckBoxPtr shareHidden = attachCheckBox(IDC_SHAREHIDDEN);
 	shareHidden->onClicked(std::tr1::bind(&UploadPage::handleShareHiddenClicked, this, shareHidden));
 
 	total = attachStatic(IDC_TOTAL);
@@ -120,7 +120,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	button = attachButton(IDC_ADD);
 	button->onClicked(std::tr1::bind(&UploadPage::handleAddClicked, this));
 
-	WidgetSpinnerPtr spinner = attachSpinner(IDC_SLOTSPIN);
+	SpinnerPtr spinner = attachSpinner(IDC_SLOTSPIN);
 	spinner->setRange(1, UD_MAXVAL);
 
 	spinner = attachSpinner(IDC_MIN_UPLOAD_SPIN);
@@ -176,7 +176,7 @@ void UploadPage::handleDragDrop(const TStringList& files) {
 			addDirectory(*i);
 }
 
-void UploadPage::handleShareHiddenClicked(WidgetCheckBoxPtr checkBox) {
+void UploadPage::handleShareHiddenClicked(CheckBoxPtr checkBox) {
 	// Save the checkbox state so that ShareManager knows to include/exclude hidden files
 	Item i = items[1]; // The checkbox. Explicit index used - bad!
 	SettingsManager::getInstance()->set((SettingsManager::IntSetting)i.setting, checkBox->getChecked());
@@ -219,11 +219,11 @@ void UploadPage::handleRenameClicked() {
 
 					setDirty = true;
 				} else {
-					createMessageBox().show(T_("New virtual name matches old name, skipping..."), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONINFORMATION);
+					createMessageBox().show(T_("New virtual name matches old name, skipping..."), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONINFORMATION);
 				}
 			}
 		} catch(const ShareException& e) {
-			createMessageBox().show(Text::toT(e.getError()), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+			createMessageBox().show(Text::toT(e.getError()), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONSTOP);
 		}
 	}
 
@@ -266,6 +266,6 @@ void UploadPage::addDirectory(const tstring& aPath) {
 			total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 		}
 	} catch(const ShareException& e) {
-		createMessageBox().show(Text::toT(e.getError()), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+		createMessageBox().show(Text::toT(e.getError()), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONSTOP);
 	}
 }

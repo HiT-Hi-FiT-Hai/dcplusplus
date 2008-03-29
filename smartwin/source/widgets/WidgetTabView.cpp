@@ -26,10 +26,10 @@ void WidgetTabView::create(const Seed & cs) {
 	PolicyType::create(cs);
 	toggleActive = cs.toggleActive;
 
-	WidgetTabSheet::Seed tcs;
+	TabSheet::Seed tcs;
 	tcs.style = WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE |
 		 TCS_HOTTRACK | TCS_MULTILINE | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER;
-	tab = WidgetCreator<WidgetTabSheet>::create(this, tcs);
+	tab = WidgetCreator<TabSheet>::create(this, tcs);
 	tab->setImageList(ImageListPtr(new ImageList(16, 16, ILC_COLOR32 | ILC_MASK)));
 	tab->onSelectionChanged(std::tr1::bind(&WidgetTabView::handleTabSelected, this));
 	onSized(std::tr1::bind(&WidgetTabView::handleSized, this, _1));
@@ -38,7 +38,7 @@ void WidgetTabView::create(const Seed & cs) {
 	tab->onContextMenu(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1));
 	tab->onMiddleMouseDown(std::tr1::bind(&WidgetTabView::handleMiddleMouseDown, this, _1));
 
-	tip = WidgetCreator<WidgetToolTip>::attach(this, tab->getToolTips()); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
+	tip = WidgetCreator<ToolTip>::attach(this, tab->getToolTips()); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
 	if(tip) {
 		tip->addRemoveStyle(TTS_NOPREFIX, true);
 		tip->onRaw(std::tr1::bind(&WidgetTabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));

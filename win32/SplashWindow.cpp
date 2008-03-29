@@ -44,7 +44,7 @@ SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0
 	}
 	tstring caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
 	{
-		WidgetTextBox::Seed cs;
+		TextBox::Seed cs;
 		cs.style = WS_CHILD | ES_CENTER | ES_READONLY;
 		cs.exStyle = WS_EX_STATICEDGE;
 		text = createTextBox(cs);

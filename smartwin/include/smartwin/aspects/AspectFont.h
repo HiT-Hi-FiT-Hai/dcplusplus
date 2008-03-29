@@ -37,7 +37,7 @@ namespace SmartWin
 /// Aspect class used by Widgets that have the possibility of setting the
 /// "font" property of their objects.
 /** \ingroup AspectClasses
-  * E.g. the WidgetListView have a "font" Aspect therefore it realizes the AspectFont
+  * E.g. the Table have a "font" Aspect therefore it realizes the AspectFont
   * through inheritance. <br>
   * Realizing the AspectFont means that a Widget can set the font used to render text
   * in the Widget, for a ComboBox this means that it will render items in the

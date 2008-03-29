@@ -22,15 +22,15 @@
 #include <SmartWin.h>
 
 template<class T>
-class ListViewArrows {
+class TableArrows {
 public:
-	ListViewArrows() {
+	TableArrows() {
 		rebuildArrows();
 	}
 
-	virtual ~ListViewArrows() { }
+	virtual ~TableArrows() { }
 
-	typedef ListViewArrows<T> thisClass;
+	typedef TableArrows<T> thisClass;
 
 	void updateArrow() {
 		if (upArrow.IsNull())

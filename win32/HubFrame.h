@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_HUB_FRAME_H
 
 #include "MDIChildFrame.h"
-#include "TypedListView.h"
+#include "TypedTable.h"
 #include "AspectUserCommand.h"
 #include "UserInfoBase.h"
 
@@ -143,14 +143,14 @@ private:
 		}
 	};
 
-	WidgetTextBoxPtr chat;
-	WidgetTextBoxPtr message;
-	WidgetTextBoxPtr filter;
-	WidgetComboBoxPtr filterType;
+	TextBoxPtr chat;
+	TextBoxPtr message;
+	TextBoxPtr filter;
+	ComboBoxPtr filterType;
 	WidgetVPanedPtr paned;
-	WidgetCheckBoxPtr showUsers;
+	CheckBoxPtr showUsers;
 	
-	typedef TypedListView<UserInfo, false> WidgetUsers;
+	typedef TypedTable<UserInfo, false> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
 	

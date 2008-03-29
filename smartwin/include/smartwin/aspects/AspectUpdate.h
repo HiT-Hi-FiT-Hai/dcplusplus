@@ -36,7 +36,7 @@ namespace SmartWin
 
 /// Aspect class used by Widgets that have the possibility of Updating their text property
 /** \ingroup AspectClasses
-  * E.g. the WidgetTextBox have an Update Aspect to it therefore WidgetTextBox
+  * E.g. the TextBox have an Update Aspect to it therefore TextBox
   * realize the AspectUpdate through inheritance. When a Widget realizes the Update
   * Aspect it normally means that when the "value" part of the Widget changes, like
   * for instance when a TextBox changes the text value the update event fill be

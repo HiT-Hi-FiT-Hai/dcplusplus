@@ -37,7 +37,7 @@ namespace SmartWin
 /// Aspect class used by Widgets that have the possibility of being "selecting"
 /// item(s).
 /** \ingroup AspectClasses
-  * E.g. the WidgetComboBox have a "selected" Aspect therefore it realizes the
+  * E.g. the ComboBox have a "selected" Aspect therefore it realizes the
   * AspectSelection through inheritance.
   */
 template< class WidgetType, typename IndexType >

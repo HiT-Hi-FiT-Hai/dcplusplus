@@ -19,8 +19,8 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETFACTORY2_H_
 #define DCPLUSPLUS_WIN32_WIDGETFACTORY2_H_
 
-#include "WidgetTextBox.h"
-#include "WidgetComboBox.h"
+#include "TextBox.h"
+#include "ComboBox.h"
 #include "WidgetPaned.h"
 
 /**
@@ -32,31 +32,31 @@ public:
 	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType>(parent) { }
 
 	/// TextBox class type.
-	typedef ::WidgetTextBox WidgetTextBox;
+	typedef ::TextBox TextBox;
 
 	/// TextBox object type.
-	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
+	typedef typename TextBox::ObjectType TextBoxPtr;
 
-	WidgetTextBoxPtr createTextBox( const WidgetTextBox::Seed & cs = WidgetTextBox::Seed() ) {
-		return SmartWin::WidgetCreator< WidgetTextBox >::create( this, cs );
+	TextBoxPtr createTextBox( const TextBox::Seed & cs = TextBox::Seed() ) {
+		return SmartWin::WidgetCreator< TextBox >::create( this, cs );
 	}
 
-	WidgetTextBoxPtr attachTextBox( unsigned id ) {
-		return SmartWin::WidgetCreator< WidgetTextBox >::attach( this, id );
+	TextBoxPtr attachTextBox( unsigned id ) {
+		return SmartWin::WidgetCreator< TextBox >::attach( this, id );
 	}
 
 	/// ComboBox class type.
-	typedef ::WidgetComboBox WidgetComboBox;
+	typedef ::ComboBox ComboBox;
 
 	/// ComboBox object type.
-	typedef typename WidgetComboBox::ObjectType WidgetComboBoxPtr;
+	typedef typename ComboBox::ObjectType ComboBoxPtr;
 
-	WidgetComboBoxPtr createComboBox( const WidgetComboBox::Seed & cs = WidgetComboBox::Seed() ) {
-		return SmartWin::WidgetCreator< WidgetComboBox >::create( this, cs );
+	ComboBoxPtr createComboBox( const ComboBox::Seed & cs = ComboBox::Seed() ) {
+		return SmartWin::WidgetCreator< ComboBox >::create( this, cs );
 	}
 
-	WidgetComboBoxPtr attachComboBox( unsigned id ) {
-		return SmartWin::WidgetCreator< WidgetComboBox >::attach( this, id );
+	ComboBoxPtr attachComboBox( unsigned id ) {
+		return SmartWin::WidgetCreator< ComboBox >::attach( this, id );
 	}
 
 	/// VPaned class type.

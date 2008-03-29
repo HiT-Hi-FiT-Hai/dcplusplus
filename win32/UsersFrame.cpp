@@ -40,7 +40,7 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 	startup(true)
 {
 	{
-		WidgetUsers::Seed cs = WinUtil::Seeds::listView;
+		WidgetUsers::Seed cs = WinUtil::Seeds::Table;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
 		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
 		addWidget(users);

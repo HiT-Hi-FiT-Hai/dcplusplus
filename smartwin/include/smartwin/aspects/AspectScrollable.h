@@ -36,7 +36,7 @@ namespace SmartWin
 
 /// Aspect class used by Widgets that have the possibility of scrolling
 /** \ingroup AspectClasses
-  * E.g. the WidgetSlider have a scroll Aspect to it therefore WidgetSlider realize
+  * E.g. the Slider have a scroll Aspect to it therefore Slider realize
   * the AspectScrollable through inheritance.
   */
 template< class WidgetType >
@@ -50,7 +50,7 @@ public:
 
 	/// \ingroup EventHandlersAspectScrollable
 	/// Setting the event handler for the "scrolling horizontally" event
-	/** A scrolling event occurs when for instance a WidgetSliders value is being
+	/** A scrolling event occurs when for instance a Sliders value is being
 	  * manipulated through user interaction. Such an action would raise this event.
 	  * <br>
 	  * No parameters are passed.
@@ -61,7 +61,7 @@ public:
 
 	/// \ingroup EventHandlersAspectScrollable
 	/// Setting the event handler for the "scrolling vertically" event
-	/** A scrolling event occurs when for instance a WidgetSliders value is being
+	/** A scrolling event occurs when for instance a Sliders value is being
 	  * manipulated through user interaction. Such an action would raise this event.
 	  * <br>
 	  * No parameters are passed.

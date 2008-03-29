@@ -21,10 +21,10 @@
 
 
 template<class ContentType>
-class TypedTreeView : public SmartWin::WidgetTreeView
+class TypedTreeView : public SmartWin::Tree
 {
 private:
-	typedef typename SmartWin::WidgetTreeView BaseType;
+	typedef typename SmartWin::Tree BaseType;
 	typedef TypedTreeView<ContentType> ThisType;
 	
 public:

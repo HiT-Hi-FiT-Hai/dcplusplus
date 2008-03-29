@@ -33,7 +33,7 @@ public:
 	
 	tstring getLine() { return initial; }
 private:
-	WidgetTextBoxPtr line;
+	TextBoxPtr line;
 
 	tstring title;
 	tstring desc;

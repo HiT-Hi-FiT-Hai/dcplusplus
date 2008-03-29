@@ -31,14 +31,14 @@ public:
 	int run() { return createDialog(IDD_ADLS_PROPERTIES); }
 
 private:
-	WidgetTextBoxPtr searchString;
-	WidgetComboBoxPtr searchType;
-	WidgetTextBoxPtr minSize;
-	WidgetTextBoxPtr maxSize;
-	WidgetComboBoxPtr sizeType;
-	WidgetTextBoxPtr destDir;
-	WidgetCheckBoxPtr active;
-	WidgetCheckBoxPtr autoQueue;
+	TextBoxPtr searchString;
+	ComboBoxPtr searchType;
+	TextBoxPtr minSize;
+	TextBoxPtr maxSize;
+	ComboBoxPtr sizeType;
+	TextBoxPtr destDir;
+	CheckBoxPtr active;
+	CheckBoxPtr autoQueue;
 
 	ADLSearch* search;
 

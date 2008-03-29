@@ -53,7 +53,7 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 	PropPage::translate(handle(), texts);
 
 	directories = attachList(IDC_FAVORITE_DIRECTORIES);
-	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+	directories->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
 	columns.push_back(T_("Favorite name"));
@@ -134,7 +134,7 @@ void FavoriteDirsPage::handleRenameClicked() {
 			if (FavoriteManager::getInstance()->renameFavoriteDir(Text::fromT(old), Text::fromT(line))) {
 				directories->setText(i, 0, line);
 			} else {
-				createMessageBox().show(T_("Directory or directory name already exists"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+				createMessageBox().show(T_("Directory or directory name already exists"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONSTOP);
 			}
 		}
 	}
@@ -168,7 +168,7 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath) {
 			row.push_back(path);
 			directories->insert(row);
 		} else {
-			createMessageBox().show(T_("Directory or directory name already exists"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+			createMessageBox().show(T_("Directory or directory name already exists"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONSTOP);
 		}
 	}
 }

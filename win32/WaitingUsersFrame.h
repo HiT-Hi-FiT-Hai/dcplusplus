@@ -75,7 +75,7 @@ private:
 	};
 
 	// Contained controls
-	WidgetTreeViewPtr queued;
+	TreePtr queued;
 
 	HTREEITEM getParentItem();
 

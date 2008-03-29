@@ -37,7 +37,7 @@ namespace SmartWin
 /// Aspect class used by Widgets that have the possibility of changing the enabled
 /// property
 /** \ingroup AspectClasses
-  * The WidgetListView has an enabled Aspect to it; therefore it realizes this
+  * The Table has an enabled Aspect to it; therefore it realizes this
   * AspectEnabled through inheritance. <br>
   * When a Widget is enabled it is possible to interact with it in some way, e.g. a
   * button can be pushed, a ComboBox can change value etc. When the Widget is not

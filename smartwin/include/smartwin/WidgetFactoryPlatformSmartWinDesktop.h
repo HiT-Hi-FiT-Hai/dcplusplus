@@ -30,11 +30,11 @@
 #define WidgetFactoryPlatformSmartWinDesktop_h
 
 #include "WidgetFactoryPlatformCommon.h"
-#include "widgets/WidgetRichTextBox.h"
+#include "widgets/RichTextBox.h"
 #include "widgets/FontDialog.h"
 #include "widgets/WidgetMenu.h"
-#include "widgets/WidgetToolbar.h"
-#include "widgets/WidgetCoolbar.h"
+#include "widgets/ToolBar.h"
+#include "widgets/CoolBar.h"
 #include "WidgetCreator.h"
 
 namespace SmartWin
@@ -51,10 +51,10 @@ class WidgetFactoryPlatformImplementation< ContainerWidgetType,  SmartWinDesktop
 {
 public:
 	/// RichEditBox class type.
-	typedef SmartWin::WidgetRichTextBox WidgetRichTextBox;
+	typedef SmartWin::RichTextBox RichTextBox;
 
 	/// RichEditBox object type.
-	typedef typename WidgetRichTextBox::ObjectType WidgetRichTextBoxPtr;
+	typedef typename RichTextBox::ObjectType RichTextBoxPtr;
 
 	/// Menu class type.
 	typedef SmartWin::WidgetMenu WidgetMenu;
@@ -66,16 +66,16 @@ public:
 	typedef SmartWin::FontDialog FontDialog;
 
 	/// Toolbar class type.
-	typedef SmartWin::WidgetToolbar WidgetToolbar;
+	typedef SmartWin::ToolBar ToolBar;
 
 	/// Toolbar object type.
-	typedef typename WidgetToolbar::ObjectType WidgetToolbarPtr;
+	typedef typename ToolBar::ObjectType ToolBarPtr;
 
 	/// Coolbar class type.
-	typedef SmartWin::WidgetCoolbar WidgetCoolbar;
+	typedef SmartWin::CoolBar CoolBar;
 
 	/// Coolbar object type.
-	typedef typename WidgetCoolbar::ObjectType WidgetCoolbarPtr;
+	typedef typename CoolBar::ObjectType CoolBarPtr;
 
 	/// Constructor taking a pointer to it's parent.
 	/** If you for instance create a WidgetChildWindow then use this Constructor
@@ -95,9 +95,9 @@ public:
 	/// Creates a Rich Edit Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetRichTextBoxPtr createRichTextBox( const typename WidgetRichTextBox::Seed & cs = WidgetRichTextBox::Seed() )
+	RichTextBoxPtr createRichTextBox( const typename RichTextBox::Seed & cs = RichTextBox::Seed() )
 	{
-		return WidgetCreator< WidgetRichTextBox >::create( this, cs );
+		return WidgetCreator< RichTextBox >::create( this, cs );
 	}
 
 	/// \ingroup SubclassDialog
@@ -106,9 +106,9 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetRichTextBoxPtr attachRichTextBox( unsigned id )
+	RichTextBoxPtr attachRichTextBox( unsigned id )
 	{
-		return WidgetCreator< WidgetRichTextBox >::attach( this, id );
+		return WidgetCreator< RichTextBox >::attach( this, id );
 	}
 
 	/// Creates a Menu
@@ -129,17 +129,17 @@ public:
 	/// Creates a Tool Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetToolbarPtr createToolbar( const typename WidgetToolbar::Seed & cs = WidgetToolbar::Seed() )
+	ToolBarPtr createToolbar( const typename ToolBar::Seed & cs = ToolBar::Seed() )
 	{
-		return WidgetCreator< WidgetToolbar >::create( this, cs );
+		return WidgetCreator< ToolBar >::create( this, cs );
 	}
 
 	/// Creates a Cool Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetCoolbarPtr createCoolbar( const typename WidgetCoolbar::Seed & cs = WidgetCoolbar::Seed() )
+	CoolBarPtr createCoolbar( const typename CoolBar::Seed & cs = CoolBar::Seed() )
 	{
-		return WidgetCreator< WidgetCoolbar >::create( this, cs );
+		return WidgetCreator< CoolBar >::create( this, cs );
 	}
 };
 

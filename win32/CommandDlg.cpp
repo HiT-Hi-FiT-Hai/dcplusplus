@@ -237,7 +237,7 @@ void CommandDlg::handleTypeChanged() {
 void CommandDlg::handleOKClicked() {
 	name = nameBox->getText();
 	if((type != 0) && (name.empty() || commandBox->getText().empty())) {
-		createMessageBox().show(T_("Name and command must not be empty"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
+		createMessageBox().show(T_("Name and command must not be empty"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONEXCLAMATION);
 		return;
 	}
 

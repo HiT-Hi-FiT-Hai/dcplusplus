@@ -62,7 +62,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetListViewPtr hubs;
+	TablePtr hubs;
 	ButtonPtr connect;
 	ButtonPtr add;
 	ButtonPtr properties;

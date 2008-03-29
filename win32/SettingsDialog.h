@@ -36,7 +36,7 @@ private:
 	PageList pages;
 	PropPage* currentPage;
 	
-	WidgetTreeViewPtr pageTree;
+	TreePtr pageTree;
 	
 	void addPage(const tstring& title, PropPage* page);
 	void write();

@@ -63,25 +63,25 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 	}
 
 	if(listItems != NULL) {
-		ListView_SetExtendedListViewStyle(list, LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
+		Table_SetExtendedTableStyle(list, LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 
 		RECT rc;
 		::GetClientRect(list, &rc);
 		LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH };
 		lv.fmt = LVCFMT_LEFT;
 		lv.cx = rc.right - rc.left;
-		ListView_InsertColumn(list, 0, &lv);
+		Table_InsertColumn(list, 0, &lv);
 
 		LVITEM lvi = { LVIF_TEXT };
 		for(int i = 0; listItems[i].setting != 0; i++) {
 			tstring str = T_(listItems[i].desc);
 			lvi.iItem = i;
 			lvi.pszText = const_cast<TCHAR*>(str.c_str());
-			ListView_InsertItem(list, &lvi);
-			ListView_SetCheckState(list, i, settings->getBool(SettingsManager::IntSetting(listItems[i].setting), true));
+			Table_InsertItem(list, &lvi);
+			Table_SetCheckState(list, i, settings->getBool(SettingsManager::IntSetting(listItems[i].setting), true));
 		}
 
-		ListView_SetColumnWidth(list, 0, LVSCW_AUTOSIZE);
+		Table_SetColumnWidth(list, 0, LVSCW_AUTOSIZE);
 	}
 }
 
@@ -123,7 +123,7 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 
 	if(listItems)
 		for(size_t i = 0; listItems[i].setting != 0; ++i)
-			settings->set(SettingsManager::IntSetting(listItems[i].setting), ListView_GetCheckState(list, i) > 0);
+			settings->set(SettingsManager::IntSetting(listItems[i].setting), Table_GetCheckState(list, i) > 0);
 }
 
 void PropPage::translate(HWND page, TextItem* items) {

@@ -136,7 +136,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	}
 	
 	{
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::listView);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::Table);
 		addWidget(files);
 		paned->setSecond(files);
 

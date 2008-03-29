@@ -42,7 +42,7 @@ namespace SmartWin
 /// \ingroup WidgetLayout
 /// Aspect class used by Widgets that have the possibility of setting and getting a
 /// "size" property of their objects.
-/** E.g. the WidgetTextBox have a "size" Aspect therefore it realizes the
+/** E.g. the TextBox have a "size" Aspect therefore it realizes the
   * AspectSizable through inheritance. <br>
   * Note! <br>
   * All coordinates have zenith top-left corner of either the desktop display or the

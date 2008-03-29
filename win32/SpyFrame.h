@@ -67,9 +67,9 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetListViewPtr searches;
+	TablePtr searches;
 
-	WidgetCheckBoxPtr ignoreTTH;
+	CheckBoxPtr ignoreTTH;
 	bool bIgnoreTTH;
 
 	size_t total, cur, perSecond[AVG_TIME];

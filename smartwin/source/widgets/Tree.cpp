@@ -1,0 +1,143 @@
+#include "../../include/smartwin/widgets/Tree.h"
+
+namespace SmartWin {
+
+Tree::Seed::Seed() :
+	Widget::Seed(WC_TREEVIEW, WS_CHILD | WS_VISIBLE | WS_TABSTOP),
+	font(new Font(DefaultGuiFont))
+{
+}
+
+void Tree::create( const Seed & cs )
+{
+	ControlType::create(cs);
+
+	if(cs.font)
+		setFont( cs.font );
+}
+
+HTREEITEM Tree::insert( const SmartUtil::tstring & text, HTREEITEM parent, LPARAM param, int iconIndex, int selectedIconIndex )
+{
+	TVINSERTSTRUCT tv = { 0 };
+	tv.hParent = parent;
+	tv.hInsertAfter = TVI_LAST;
+
+	TVITEMEX t = { 0 };
+	t.mask = TVIF_TEXT;
+	if ( param != 0 )
+	{
+		t.mask |= TVIF_PARAM;
+		t.lParam = param;
+	}
+	if ( itsNormalImageList )
+	{
+		t.mask |= TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+		t.iImage = ( iconIndex == - 1 ? I_IMAGECALLBACK : iconIndex );
+		t.iSelectedImage = ( selectedIconIndex == - 1 ? t.iImage : selectedIconIndex );
+	}
+	t.pszText = const_cast < TCHAR * >( text.c_str() );
+#ifdef WINCE
+	tv.item = t;
+#else
+	tv.itemex = t;
+#endif
+	return reinterpret_cast< HTREEITEM >( this->sendMessage(TVM_INSERTITEM, 0, reinterpret_cast< LPARAM >( & tv ) ) );
+}
+
+SmartUtil::tstring Tree::getSelectedText() {
+	HTREEITEM hSelItem = TreeView_GetSelection( this->handle() );
+	return getText( hSelItem );
+}
+
+SmartUtil::tstring Tree::getText( HTREEITEM node )
+{
+	if(node == NULL) {
+		return SmartUtil::tstring();
+	}
+	
+	TVITEMEX item;
+	item.mask = TVIF_HANDLE | TVIF_TEXT;
+	item.hItem = node;
+	TCHAR buffer[1024];
+	buffer[0] = '\0';
+	item.cchTextMax = 1022;
+	item.pszText = buffer;
+	if ( TreeView_GetItem( this->handle(), & item ) )
+	{
+		return buffer;
+	}
+	return SmartUtil::tstring();
+}
+
+void Tree::eraseChildren( HTREEITEM node )
+{
+	HTREEITEM next_node, current_node;
+
+	if ( (current_node = getNext( node, TVGN_CHILD ) ) == NULL ) 
+		return;
+
+	while ( (next_node = getNext( current_node, TVGN_NEXT )) != NULL )
+	{
+		erase( current_node );
+		current_node = next_node;
+	}
+
+	erase( current_node );
+}
+
+void Tree::setNormalImageList( ImageListPtr imageList ) {
+	  itsNormalImageList = imageList;
+	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_NORMAL );
+}
+
+void Tree::setStateImageList( ImageListPtr imageList ) {
+	  itsStateImageList = imageList;
+	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_STATE );
+}
+
+LPARAM Tree::getDataImpl(HTREEITEM item) {
+	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
+	tvitem.hItem = item;
+	if(!TreeView_GetItem(this->handle(), &tvitem)) {
+		return 0;
+	}
+	return tvitem.lParam;
+}
+
+void Tree::setDataImpl(HTREEITEM item, LPARAM lParam) {
+	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
+	tvitem.hItem = item;
+	tvitem.lParam = lParam;
+	TreeView_SetItem(this->handle(), &tvitem);
+}
+
+ScreenCoordinate Tree::getContextMenuPos() {
+	HTREEITEM item = getSelected();
+	POINT pt = { 0 };
+	if(item) {
+		RECT trc = this->getItemRect(item);
+		pt.x = trc.left;
+		pt.y = trc.top + ((trc.bottom - trc.top) / 2);
+	} 
+	return ClientCoordinate(pt, this);
+}
+
+void Tree::select(const ScreenCoordinate& pt) {
+	HTREEITEM ht = this->hitTest(pt);
+	if(ht != NULL && ht != this->getSelected()) {
+		this->setSelected(ht);
+	}
+}
+
+/// Returns true if fired, else false
+bool Tree::tryFire( const MSG & msg, LRESULT & retVal ) {
+	bool handled = PolicyType::tryFire(msg, retVal);
+	if(!handled && msg.message == WM_RBUTTONDOWN) {
+		// Tree view control does strange things to rbuttondown, preventing wm_contextmenu from reaching it
+		retVal = ::DefWindowProc(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+		return true;
+	}
+	return handled;
+}
+
+}

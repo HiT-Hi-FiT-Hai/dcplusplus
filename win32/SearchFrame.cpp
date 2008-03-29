@@ -109,7 +109,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	droppedResults(0)
 {
 	{
-		WidgetStatic::Seed cs;
+		Label::Seed cs;
 		cs.exStyle = WS_EX_TRANSPARENT;
 
 		cs.caption = T_("Search for");
@@ -168,7 +168,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style |= ES_AUTOHSCROLL | ES_NUMBER;
 		size = createTextBox(cs);
 		size->setHelpId(IDH_SEARCH_SIZE);
@@ -204,7 +204,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetCheckBox::Seed cs(T_("Only users with free slots"));
+		CheckBox::Seed cs(T_("Only users with free slots"));
 		slots = createCheckBox(cs);
 		slots->setHelpId(IDH_SEARCH_SLOTS);
 		slots->setChecked(onlyFree);
@@ -213,7 +213,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.style |= LVS_NOCOLUMNHEADER;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
@@ -231,7 +231,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		results = SmartWin::WidgetCreator<WidgetResults>::create(this, WinUtil::Seeds::listView);
+		results = SmartWin::WidgetCreator<WidgetResults>::create(this, WinUtil::Seeds::Table);
 		addWidget(results);
 
 		results->createColumns(WinUtil::getStrings(columnNames));
@@ -246,7 +246,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetCheckBox::Seed cs(_T("+/-"));
+		CheckBox::Seed cs(_T("+/-"));
 		showUI = createCheckBox(cs);
 		showUI->setChecked(bShowUI);
 
@@ -603,7 +603,7 @@ void SearchFrame::handleShowUIClicked() {
 }
 
 LRESULT SearchFrame::handleHubItemChanged(WPARAM wParam, LPARAM lParam) {
-	LPNMLISTVIEW lv = (LPNMLISTVIEW)lParam;
+	LPNMTable lv = (LPNMTable)lParam;
 	if(lv->iItem == 0 && (lv->uNewState ^ lv->uOldState) & LVIS_STATEIMAGEMASK) {
 		if (((lv->uNewState & LVIS_STATEIMAGEMASK) >> 12) - 1) {
 			for(int iItem = 0; (iItem = hubs->getNext(iItem, LVNI_ALL)) != -1; ) {

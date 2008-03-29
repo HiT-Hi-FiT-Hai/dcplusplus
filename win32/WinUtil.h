@@ -68,12 +68,12 @@ public:
 	
 	struct Seeds {
 		static const SmartWin::Button::Seed button;
-		static const SmartWin::WidgetComboBox::Seed comboBoxStatic;
-		static const SmartWin::WidgetComboBox::Seed comboBoxEdit;
-		static const SmartWin::WidgetListView::Seed listView;
+		static const SmartWin::ComboBox::Seed comboBoxStatic;
+		static const SmartWin::ComboBox::Seed comboBoxEdit;
+		static const SmartWin::Table::Seed Table;
 		static const SmartWin::WidgetMenu::Seed menu;
-		static const SmartWin::WidgetTextBox::Seed textBox;
-		static const SmartWin::WidgetTreeView::Seed treeView;
+		static const SmartWin::TextBox::Seed textBox;
+		static const SmartWin::Tree::Seed treeView;
 	};
 
 	struct HelpItem {

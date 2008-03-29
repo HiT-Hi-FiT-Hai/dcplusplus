@@ -141,7 +141,7 @@ MainWindow::MainWindow() :
 	::ShowWindow(handle(), ((cmdShow == SW_SHOWDEFAULT) || (cmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : cmdShow);
 
 	if(SmartWin::LibraryLoader::getCommonControlsVersion() < PACK_COMCTL_VERSION(5,80))
-		createMessageBox().show(T_("Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
+		createMessageBox().show(T_("Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONEXCLAMATION);
 }
 
 void MainWindow::initWindow() {
@@ -260,7 +260,7 @@ void MainWindow::initMenu() {
 }
 
 void MainWindow::initToolbar() {
-	WidgetToolbar::Seed cs;
+	ToolBar::Seed cs;
 	cs.style |= TBSTYLE_FLAT;
 	toolbar = createToolbar(cs);
 	{
@@ -473,7 +473,7 @@ void MainWindow::saveWindowSettings() {
 
 bool MainWindow::closing() {
 	if (stopperThread == NULL) {
-		if ( !BOOLSETTING(CONFIRM_EXIT) || (createMessageBox().show(T_("Really exit?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)) {
+		if ( !BOOLSETTING(CONFIRM_EXIT) || (createMessageBox().show(T_("Really exit?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_YESNO, MessageBox::BOX_ICONQUESTION) == IDYES)) {
 			if (c != NULL) {
 				c->removeListener(this);
 				delete c;
@@ -625,12 +625,12 @@ void MainWindow::startSocket() {
 		try {
 			ConnectionManager::getInstance()->listen();
 		} catch(const Exception&) {
-			WidgetMessageBox().show(T_("Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+			MessageBox().show(T_("Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONSTOP);
 		}
 		try {
 			SearchManager::getInstance()->listen();
 		} catch(const Exception&) {
-			WidgetMessageBox().show(T_("Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+			MessageBox().show(T_("Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONSTOP);
 		}
 	}
 
@@ -861,7 +861,7 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 							const string& msg = xml.getChildData();
 							createMessageBox().show(Text::toT(msg), Text::toT(title));
 						} else {
-							if(createMessageBox().show(str(TF_("%1%\nOpen download page?") % Text::toT(xml.getChildData())), Text::toT(title), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES) {
+							if(createMessageBox().show(str(TF_("%1%\nOpen download page?") % Text::toT(xml.getChildData())), Text::toT(title), MessageBox::BOX_YESNO, MessageBox::BOX_ICONQUESTION) == IDYES) {
 								WinUtil::openLink(Text::toT(url));
 							}
 						}

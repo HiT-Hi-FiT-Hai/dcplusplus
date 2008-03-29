@@ -18,18 +18,18 @@
 
 #include "stdafx.h"
 
-#include "WidgetComboBox.h"
+#include "ComboBox.h"
 
-WidgetComboBox::WidgetComboBox( SmartWin::Widget * parent ) : BaseType(parent), textBox(0) {
+ComboBox::ComboBox( SmartWin::Widget * parent ) : BaseType(parent), textBox(0) {
 }
 
-WidgetComboBox::WidgetTextBoxPtr WidgetComboBox::getTextBox() {
+ComboBox::TextBoxPtr ComboBox::getTextBox() {
 	if(!textBox) {
 		LONG_PTR style = ::GetWindowLongPtr(handle(), GWL_STYLE);
 		if((style & CBS_SIMPLE)  == CBS_SIMPLE || (style & CBS_DROPDOWN) == CBS_DROPDOWN) {
 			HWND wnd = ::FindWindowEx(handle(), NULL, _T("EDIT"), NULL);
 			if(wnd && wnd != handle())
-				textBox = SmartWin::WidgetCreator< WidgetTextBox >::attach(this, wnd);
+				textBox = SmartWin::WidgetCreator< TextBox >::attach(this, wnd);
 		}
 	}
 	return textBox;

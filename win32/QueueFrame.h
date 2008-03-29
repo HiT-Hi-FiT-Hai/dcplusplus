@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_QUEUE_FRAME_H
 
 #include "StaticFrame.h"
-#include "TypedListView.h"
+#include "TypedTable.h"
 #include "TypedTreeView.h"
 
 #include <dcpp/TaskQueue.h>
@@ -122,7 +122,7 @@ private:
 
 		void remove();
 
-		// TypedListView functions
+		// TypedTable functions
 		const tstring& getText(int col) {
 			return getDisplay()->columns[col];
 		}
@@ -203,11 +203,11 @@ private:
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
 	
-	typedef TypedListView<QueueItemInfo, false> WidgetFiles;
+	typedef TypedTable<QueueItemInfo, false> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	WidgetFilesPtr files;
 	WidgetVPanedPtr paned;
-	WidgetCheckBoxPtr showTree;
+	CheckBoxPtr showTree;
 
 	typedef unordered_multimap<string, QueueItemInfo*, noCaseStringHash, noCaseStringEq> DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;

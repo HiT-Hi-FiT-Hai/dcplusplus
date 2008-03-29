@@ -34,7 +34,7 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
-	WidgetComboBox* languages;
+	ComboBox* languages;
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_APPEARANCE_PAGE_H)

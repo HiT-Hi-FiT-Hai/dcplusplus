@@ -38,7 +38,7 @@ namespace SmartWin
 /// Aspect class used by Widgets that have the possibility of handling the
 /// erase background property
 /** \ingroup AspectClasses
-  * E.g. the WidgetWindow has a background Aspect to it, therefore WidgetListView
+  * E.g. the WidgetWindow has a background Aspect to it, therefore Table
   * realizes the AspectEnabled through inheritance.
   */
 template<class WidgetType>

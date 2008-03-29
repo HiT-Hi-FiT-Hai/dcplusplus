@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_FINISHED_FRAME_BASE_H
 
 #include "StaticFrame.h"
-#include "TypedListView.h"
+#include "TypedTable.h"
 #include "TextFrame.h"
 #include "ShellContextMenu.h"
 #include "HoldRedraw.h"
@@ -54,11 +54,11 @@ protected:
 		totalTime(0)
 	{
 		{
-			typename MDIChildType::WidgetListView::Seed cs;
+			typename MDIChildType::Table::Seed cs;
 			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 			cs.exStyle = WS_EX_CLIENTEDGE;
 			items = SmartWin::WidgetCreator<WidgetItems>::create(static_cast<T*>(this), cs);
-			items->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+			items->setTableStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 			addWidget(items);
 
 			items->createColumns(WinUtil::getStrings(columnNames));
@@ -172,7 +172,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 
-	typedef TypedListView<ItemInfo> WidgetItems;
+	typedef TypedTable<ItemInfo> WidgetItems;
 	typedef WidgetItems* WidgetItemsPtr;
 	WidgetItemsPtr items;
 

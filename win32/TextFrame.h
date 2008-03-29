@@ -34,7 +34,7 @@ private:
 	typedef MDIChildFrame<TextFrame> BaseType;
 	friend class MDIChildFrame<TextFrame>;
 
-	WidgetTextBoxPtr pad;
+	TextBoxPtr pad;
 	
 	virtual ~TextFrame() { }
 	

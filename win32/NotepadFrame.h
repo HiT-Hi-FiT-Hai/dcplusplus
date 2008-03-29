@@ -41,7 +41,7 @@ protected:
 	bool preClosing();
 
 private:
-	WidgetTextBoxPtr pad;
+	TextBoxPtr pad;
 };
 
 #endif

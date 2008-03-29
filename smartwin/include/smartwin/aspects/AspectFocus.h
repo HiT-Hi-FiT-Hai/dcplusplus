@@ -36,7 +36,7 @@ namespace SmartWin
 
 /// Aspect class used by Widgets that have the possibility of retrieving the focus
 /** \ingroup AspectClasses
-  * E.g. the WidgetListView have a Focus Aspect to it therefore WidgetListView
+  * E.g. the Table have a Focus Aspect to it therefore Table
   * realize the AspectFocus through inheritance. This Aspect is closely related to
   * the AspectActivate and when a Widget is being activated it means that it is the
   * "active" Widget meaning that it receives keyboard input for one and normally if

@@ -33,7 +33,7 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	WidgetStaticPtr example;
+	LabelPtr example;
 
 	COLORREF fg, bg, upBar, downBar;
 	SmartWin::FontPtr font;

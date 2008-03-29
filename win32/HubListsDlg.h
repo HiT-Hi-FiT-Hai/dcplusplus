@@ -30,8 +30,8 @@ public:
 	int run() { return createDialog(IDD_HUB_LIST); }
 
 private:
-	WidgetTextBoxPtr editBox;
-	WidgetListViewPtr hubLists;
+	TextBoxPtr editBox;
+	TablePtr hubLists;
 
 	bool handleInitDialog();
 	void handleFocus();

@@ -117,7 +117,7 @@ void FavHubProperties::handleFocus() {
 	name->setFocus();
 }
 
-void FavHubProperties::handleTextChanged(WidgetTextBoxPtr textBox) {
+void FavHubProperties::handleTextChanged(TextBoxPtr textBox) {
 	tstring text = textBox->getText();
 	bool update = false;
 
@@ -139,7 +139,7 @@ void FavHubProperties::handleTextChanged(WidgetTextBoxPtr textBox) {
 void FavHubProperties::handleOKClicked() {
 	tstring addressText = address->getText();
 	if(addressText.empty()) {
-		createMessageBox().show(T_("Hub address cannot be empty"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
+		createMessageBox().show(T_("Hub address cannot be empty"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONEXCLAMATION);
 		return;
 	}
 	entry->setServer(Text::fromT(addressText));

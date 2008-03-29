@@ -1,8 +1,8 @@
 #ifndef WIDGETTABVIEW_H_
 #define WIDGETTABVIEW_H_
 
-#include "WidgetTabSheet.h"
-#include "WidgetToolTip.h"
+#include "TabSheet.h"
+#include "ToolTip.h"
 #include "WidgetWindow.h"
 #include "../WindowClass.h"
 #include <list>
@@ -56,7 +56,7 @@ public:
 
 	bool filter(const MSG& msg);
 	
-	WidgetTabSheet::ObjectType getTab();
+	TabSheet::ObjectType getTab();
 
 	virtual bool tryFire(const MSG& msg, LRESULT& retVal);
 	
@@ -82,8 +82,8 @@ private:
 	
 	static WindowClass windowClass;
 	
-	WidgetTabSheet::ObjectType tab;
-	WidgetToolTip::ObjectType tip;
+	TabSheet::ObjectType tab;
+	ToolTip::ObjectType tip;
 
 	std::tr1::function<void (const SmartUtil::tstring&)> titleChangedFunction;
 
@@ -124,7 +124,7 @@ private:
 	void swapWidgets(WidgetChildWindow* oldW, WidgetChildWindow* newW);
 };
 
-inline WidgetTabSheet::ObjectType WidgetTabView::getTab()
+inline TabSheet::ObjectType WidgetTabView::getTab()
 {
 	return tab;
 }

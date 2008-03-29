@@ -16,19 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
-#define DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
+#ifndef DCPLUSPLUS_WIN32_TextBox_H_
+#define DCPLUSPLUS_WIN32_TextBox_H_
 
 /** Our own flavour of text boxes that handle double clicks and have fancy menus */
-class WidgetTextBox : public SmartWin::WidgetTextBox {
+class TextBox : public SmartWin::TextBox {
 private:
-	typedef SmartWin::WidgetTextBox BaseType;
+	typedef SmartWin::TextBox BaseType;
 public:
-	typedef WidgetTextBox ThisType;
+	typedef TextBox ThisType;
 	
 	typedef ThisType* ObjectType;
 
-	explicit WidgetTextBox( SmartWin::Widget * parent );
+	explicit TextBox( SmartWin::Widget * parent );
 
 private:
 	void handleLeftDblClick(const SmartWin::MouseEventResult& ev);
@@ -40,4 +40,4 @@ private:
 	bool menuOpened;
 };
 
-#endif /*WIDGETTEXTBOX_H_*/
+#endif /*TextBox_H_*/

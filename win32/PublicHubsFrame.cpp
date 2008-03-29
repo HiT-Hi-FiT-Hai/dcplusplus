@@ -103,7 +103,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	users(0)
 {
 	{
-		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.style |= LVS_SINGLESEL;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
 		addWidget(hubs);
@@ -119,7 +119,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 
 	{
-		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
 		filter = createTextBox(cs);
 		filter->setHelpId(IDH_PUBLIC_HUBS_FILTER);
@@ -221,7 +221,7 @@ void PublicHubsFrame::layout() {
 
 	int const comboH = 140;
 
-	// listview
+	// Table
 	int ymessage = filter->getTextSize(_T("A")).y + 10;
 
 	r.size.y -= ymessage*2 + 8 + border * 2;

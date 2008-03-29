@@ -28,7 +28,7 @@ public:
 	int run() { return createDialog(IDD_HASH_PROGRESS); }
 
 private:
-	WidgetProgressBarPtr progress;
+	ProgressBarPtr progress;
 
 	bool autoClose;
 	int64_t startBytes;

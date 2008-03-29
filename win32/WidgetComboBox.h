@@ -16,26 +16,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_WIN32_WIDGETCOMBOBOX_H_
-#define DCPLUSPLUS_WIN32_WIDGETCOMBOBOX_H_
+#ifndef DCPLUSPLUS_WIN32_ComboBox_H_
+#define DCPLUSPLUS_WIN32_ComboBox_H_
 
-#include "WidgetTextBox.h"
+#include "TextBox.h"
 
-class WidgetComboBox : public SmartWin::WidgetComboBox {
+class ComboBox : public SmartWin::ComboBox {
 private:
-	typedef SmartWin::WidgetComboBox BaseType;
+	typedef SmartWin::ComboBox BaseType;
 public:
-	typedef WidgetComboBox ThisType;
+	typedef ComboBox ThisType;
 	
 	typedef ThisType* ObjectType;
 
-	explicit WidgetComboBox( SmartWin::Widget * parent );
+	explicit ComboBox( SmartWin::Widget * parent );
 
-	typedef WidgetTextBox::ObjectType WidgetTextBoxPtr;
-	WidgetTextBoxPtr getTextBox();
+	typedef TextBox::ObjectType TextBoxPtr;
+	TextBoxPtr getTextBox();
 
 private:
-	WidgetTextBoxPtr textBox;
+	TextBoxPtr textBox;
 };
 
-#endif /*WIDGETCOMBOBOX_H_*/
+#endif /*ComboBox_H_*/

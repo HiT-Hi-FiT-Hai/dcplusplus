@@ -92,7 +92,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	paned->setRelativePos(0.7);
 
 	{
-		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		message = createTextBox(cs);
 		addWidget(message, true, false);
@@ -102,7 +102,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	}
 
 	{
-		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
 		filter = createTextBox(cs);
 		addWidget(filter);
@@ -122,7 +122,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	}
 
 	{
-		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		chat = createTextBox(cs);
 		chat->setTextLimit(0);
@@ -132,7 +132,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	}
 
 	{
-		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, WinUtil::Seeds::listView);
+		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, WinUtil::Seeds::Table);
 		addWidget(users);
 		paned->setSecond(users);
 		
@@ -149,7 +149,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	}
 	
 	{
-		WidgetCheckBox::Seed cs(_T("+/-"));
+		CheckBox::Seed cs(_T("+/-"));
 		cs.style &= ~WS_TABSTOP;
 		showUsers = createCheckBox(cs);
 		showUsers->setChecked(BOOLSETTING(GET_USER_INFO));

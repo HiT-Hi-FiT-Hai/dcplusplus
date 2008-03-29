@@ -29,7 +29,7 @@
 #include <dcpp/Util.h>
 
 #include "AspectSpeaker.h"
-#include "TypedListView.h"
+#include "TypedTable.h"
 #include "WidgetFactory.h"
 #include "AspectUserCommand.h"
 
@@ -230,17 +230,17 @@ private:
 	static int downloadIndexes[DOWNLOAD_COLUMN_LAST];
 	static int downloadSizes[DOWNLOAD_COLUMN_LAST];
 
-	typedef TypedListView<ConnectionInfo> WidgetConnections;
+	typedef TypedTable<ConnectionInfo> WidgetConnections;
 	typedef WidgetConnections* WidgetConnectionsPtr;
 	WidgetConnectionsPtr connections;
 	WidgetChildWindowPtr connectionsWindow;
 	
-	typedef TypedListView<DownloadInfo> WidgetDownloads;
+	typedef TypedTable<DownloadInfo> WidgetDownloads;
 	typedef WidgetDownloads* WidgetDownloadsPtr;
 	WidgetDownloadsPtr downloads;
 	WidgetChildWindowPtr downloadsWindow;
 
-	WidgetTabSheetPtr tabs;
+	TabSheetPtr tabs;
 	
 	SmartWin::WidgetTabView* mdi;
 	SmartWin::ImageListPtr arrows;

@@ -35,14 +35,14 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	WidgetListViewPtr directories;
-	WidgetStaticPtr total;
+	TablePtr directories;
+	LabelPtr total;
 
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged();
 	void handleDragDrop(const TStringList& files);
-	void handleShareHiddenClicked(WidgetCheckBoxPtr checkBox);
+	void handleShareHiddenClicked(CheckBoxPtr checkBox);
 	void handleRenameClicked();
 	void handleRemoveClicked();
 	void handleAddClicked();

@@ -65,7 +65,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent), nick(0) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	WidgetComboBoxPtr connections = attachComboBox(IDC_CONNECTION);
+	ComboBoxPtr connections = attachComboBox(IDC_CONNECTION);
 
 	int selected = 0, j = 0;
 	for(StringIter i = SettingsManager::connectionSpeeds.begin(); i != SettingsManager::connectionSpeeds.end(); ++i, ++j) {

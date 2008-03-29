@@ -60,7 +60,7 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::read(handle(), items);
 
 	commands = attachList(IDC_MENU_ITEMS);
-	commands->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+	commands->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
 	columns.push_back(T_("Name"));

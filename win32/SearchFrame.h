@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_SEARCH_FRAME_H
 
 #include "MDIChildFrame.h"
-#include "TypedListView.h"
+#include "TypedTable.h"
 #include "AspectUserCommand.h"
 
 #include <dcpp/SearchManager.h>
@@ -154,34 +154,34 @@ private:
 	typedef FrameSet::iterator FrameIter;
 	static FrameSet frames;
 
-	WidgetStaticPtr searchLabel;
-	WidgetComboBoxPtr searchBox;
+	LabelPtr searchLabel;
+	ComboBoxPtr searchBox;
 	ButtonPtr purge;
 
-	WidgetStaticPtr sizeLabel;
-	WidgetComboBoxPtr mode;
-	WidgetTextBoxPtr size;
-	WidgetComboBoxPtr sizeMode;
+	LabelPtr sizeLabel;
+	ComboBoxPtr mode;
+	TextBoxPtr size;
+	ComboBoxPtr sizeMode;
 
-	WidgetStaticPtr typeLabel;
-	WidgetComboBoxPtr fileType;
+	LabelPtr typeLabel;
+	ComboBoxPtr fileType;
 
-	WidgetStaticPtr optionLabel;
-	WidgetCheckBoxPtr slots;
+	LabelPtr optionLabel;
+	CheckBoxPtr slots;
 	bool onlyFree;
 
-	WidgetStaticPtr hubsLabel;
-	typedef TypedListView<HubInfo> WidgetHubs;
+	LabelPtr hubsLabel;
+	typedef TypedTable<HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 
 	ButtonPtr doSearch;
 
-	typedef TypedListView<SearchInfo> WidgetResults;
+	typedef TypedTable<SearchInfo> WidgetResults;
 	typedef WidgetResults* WidgetResultsPtr;
 	WidgetResultsPtr results;
 
-	WidgetCheckBoxPtr showUI;
+	CheckBoxPtr showUI;
 	bool bShowUI;
 	bool isHash;
 
