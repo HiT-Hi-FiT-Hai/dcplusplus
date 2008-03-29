@@ -673,14 +673,14 @@ void SearchFrame::handleDownloadTo() {
 			}
 		} else {
 			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-			if(WinUtil::browseDirectory(target, handle())) {
+			if(createFolderDialog().open(target)) {
 				WinUtil::addLastDir(target);
 				results->forEachSelectedT(SearchInfo::Download(target));
 			}
 		}
 	} else {
 		tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-		if(WinUtil::browseDirectory(target, handle())) {
+		if(createFolderDialog().open(target)) {
 			WinUtil::addLastDir(target);
 			results->forEachSelectedT(SearchInfo::Download(target));
 		}
@@ -716,7 +716,7 @@ void SearchFrame::handleDownloadWholeTarget(unsigned id) {
 
 void SearchFrame::handleDownloadDirTo() {
 	tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-	if(WinUtil::browseDirectory(target, handle())) {
+	if(createFolderDialog().open(target)) {
 		WinUtil::addLastDir(target);
 		results->forEachSelectedT(SearchInfo::DownloadWhole(target));
 	}

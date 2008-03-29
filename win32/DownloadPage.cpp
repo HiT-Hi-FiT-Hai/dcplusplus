@@ -120,7 +120,7 @@ void DownloadPage::write()
 
 void DownloadPage::handleBrowseDir() {
 	tstring dir = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-	if(WinUtil::browseDirectory(dir, handle()))
+	if(createFolderDialog().open(dir))
 	{
 		// Adjust path string
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
@@ -132,7 +132,7 @@ void DownloadPage::handleBrowseDir() {
 
 void DownloadPage::handleBrowseTempDir() {
 	tstring dir = Text::toT(SETTING(TEMP_DOWNLOAD_DIRECTORY));
-	if(WinUtil::browseDirectory(dir, handle()))
+	if(createFolderDialog().open(dir))
 	{
 		// Adjust path string
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')

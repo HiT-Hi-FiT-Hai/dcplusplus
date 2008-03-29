@@ -106,9 +106,7 @@ void WidgetListView::updateArrow() {
 }
 
 void WidgetListView::setSelectedImpl(int item) {
-	clearSelection();
 	ListView_SetItemState(handle(), item, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-	ListView_EnsureVisible(handle(), item, FALSE);
 }
 
 void WidgetListView::clearSelection() {

@@ -102,7 +102,7 @@ void CertificatesPage::handleBrowseCertificateClicked() {
 
 void CertificatesPage::handleBrowseTrustedPathClicked() {
 	tstring target = trustedCertificatesPath->getText();
-	if(WinUtil::browseDirectory(target, handle()))
+	if(createFolderDialog().open(target))
 		trustedCertificatesPath->setText(target);
 }
 

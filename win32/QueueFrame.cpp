@@ -727,7 +727,7 @@ void QueueFrame::moveSelected() {
 		if(showTree->getChecked()) {
 			name = Text::toT(curDir);
 		}
-		if(WinUtil::browseDirectory(name, handle())) {
+		if(createFolderDialog().open(name)) {
 			int i = -1;
 			while( (i = files->getNext(i, LVNI_SELECTED)) != -1) {
 				QueueItemInfo* ii = files->getData(i);
@@ -745,7 +745,7 @@ void QueueFrame::moveSelectedDir() {
 	dcassert(!curDir.empty());
 	tstring name = Text::toT(curDir);
 
-	if(WinUtil::browseDirectory(name, handle())) {
+	if(createFolderDialog().open(name)) {
 		moveDir(item, Text::fromT(name));
 	}
 }

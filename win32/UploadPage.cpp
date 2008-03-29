@@ -242,7 +242,7 @@ void UploadPage::handleRemoveClicked() {
 
 void UploadPage::handleAddClicked() {
 	tstring target;
-	if(WinUtil::browseDirectory(target, handle())) {
+	if(createFolderDialog().open(target)) {
 		addDirectory(target);
 		HashProgressDlg(this, true).run();
 	}

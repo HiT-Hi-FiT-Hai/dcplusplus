@@ -406,7 +406,6 @@ inline HTREEITEM WidgetTreeView::getSelectedImpl() const {
 
 inline void WidgetTreeView::setSelectedImpl(HTREEITEM item) {
 	TreeView_SelectItem( this->handle(), item );
-	TreeView_EnsureVisible(this->handle(), item);
 }
 
 inline size_t WidgetTreeView::countSelectedImpl() const {

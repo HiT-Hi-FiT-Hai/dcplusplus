@@ -402,43 +402,6 @@ void WinUtil::addLastDir(const tstring& dir) {
 	lastDirs.push_back(dir);
 }
 
-static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData) {
-	switch(uMsg) {
-	case BFFM_INITIALIZED:
-		SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
-		break;
-	}
-	return 0;
-}
-
-bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
-	TCHAR buf[MAX_PATH];
-	LPMALLOC ma;
-
-	BROWSEINFO bi = { 0 };
-
-	bi.hwndOwner = owner;
-	bi.pszDisplayName = buf;
-	tstring title = T_("Choose folder");
-	bi.lpszTitle = title.c_str();
-	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
-	bi.lParam = (LPARAM)target.c_str();
-	bi.lpfn = &browseCallbackProc;
-	LPITEMIDLIST pidl = ::SHBrowseForFolder(&bi);
-	if(pidl != NULL) {
-		::SHGetPathFromIDList(pidl, buf);
-		target = buf;
-
-		if(target.size() > 0 && target[target.size()-1] != _T('\\'))
-			target+=_T('\\');
-
-		::CoTaskMemFree(pidl);
-		
-		return true;
-	}
-	return false;
-}
-
 bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
 	TCHAR buf[MAX_PATH];
 	OPENFILENAME ofn = { 0 };		// common dialog box structure

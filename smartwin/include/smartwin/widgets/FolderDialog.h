@@ -47,16 +47,19 @@ namespace SmartWin
   * and HWND in the Parent template parameter. <br>
   * the complete signature of the function will then be "HWND parent()"    
   */ 
-class WidgetChooseFolder
+class FolderDialog
 {
 public:
 	/// Class type
-	typedef WidgetChooseFolder ThisType;
+	typedef FolderDialog ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
 	  */
 	typedef ThisType ObjectType;
+
+	// Constructor Taking pointer to parent
+	explicit FolderDialog( Widget * parent = 0 );
 
 	/// Shows the dialog
 	/** Returns string() or "empty string" if user press cancel. <br>
@@ -66,44 +69,17 @@ public:
 	  * before calling this function, if you wish the dialog to show only certain
 	  * types of folders.
 	  */
-	SmartUtil::tstring showDialog();
-
-	// Constructor Taking pointer to parent
-	explicit WidgetChooseFolder( Widget * parent = 0 );
+	bool open(SmartUtil::tstring& folder);
 
 	/// Sets the root directory in the WidgetChooseFolder Widget
 	/** If given your dialog will try to start with the given directory as root, otherwise it
 	  * will use the desktop directory.
 	  */ 
-	void setRootDirectory( const int CSIDL = CSIDL_DESKTOPDIRECTORY )
-	{
-		bool ok = false;
-		///WARNING: WINDOWSNT SHOULD NOT SUPPORT THIS FUNCTION
-		if ( itsParent != NULL )
-			ok = SUCCEEDED( SHGetSpecialFolderLocation( itsParent->handle(), CSIDL, & itsPidlRoot ) );
-		else
-			ok = SUCCEEDED( SHGetSpecialFolderLocation( NULL, CSIDL, & itsPidlRoot ) );
-		if ( !ok )
-			itsPidlRoot = NULL;
-	}
+	FolderDialog& setRoot( const int CSIDL = CSIDL_DESKTOPDIRECTORY );
 
-	void setTitleText( SmartUtil::tstring TitleText )
-	{
-		itsTitleText = TitleText;
-	}
-
-	/// Sets the starting directory selected in the WidgetChooseFolder widget
-	/** If given your dialog will try to start with the given directory selected.
-	  */
-	void setStartDirectory( SmartUtil::tstring startDir )
-	{
-		itsStartDir = startDir;
-	}
-
-	~WidgetChooseFolder()
-	{
-		::CoTaskMemFree(itsPidlRoot);
-	}
+	FolderDialog& setTitle( const SmartUtil::tstring& title );
+	
+	~FolderDialog();
 
 private:
 	static int CALLBACK browseCallbackProc( HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData )
@@ -115,9 +91,8 @@ private:
 	}
 
 	Widget* itsParent;
-	SmartUtil::tstring itsTitleText;
+	SmartUtil::tstring itsTitle;
 	LPITEMIDLIST itsPidlRoot;
-	SmartUtil::tstring itsStartDir;
 	
 	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
 
@@ -126,37 +101,19 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline SmartUtil::tstring WidgetChooseFolder::showDialog()
-{
-	SmartUtil::tstring retVal = _T( "" );
-	BROWSEINFO bws = { 0 };
-	bws.hwndOwner = itsParent->handle();
-	bws.pidlRoot = itsPidlRoot;
-	bws.pszDisplayName = NULL;
-	bws.lpszTitle = itsTitleText.c_str();
-	bws.ulFlags = BIF_USENEWUI;
-	bws.lpfn = NULL;
-	bws.lParam = !itsStartDir.empty() ? reinterpret_cast<LPARAM>(itsStartDir.c_str()) : 0;
-	bws.lpfn = &browseCallbackProc;
 
-	LPITEMIDLIST lpIDL = SHBrowseForFolder( & bws );
-	if ( lpIDL )
-	{
-		TCHAR temp_path[MAX_PATH + 1];
-		temp_path[0] = _T( '\0' );
-		if ( !SHGetPathFromIDList( lpIDL, & temp_path[0] ) )
-			temp_path[0] = _T( '\0' );
-		else
-			retVal = temp_path;
-
-		::CoTaskMemFree(lpIDL);
-	}
-	return retVal;
-}
-
-inline WidgetChooseFolder::WidgetChooseFolder( Widget * parent )
+inline FolderDialog::FolderDialog( Widget * parent )
  : itsParent( parent ), itsPidlRoot(NULL)
 {
+}
+
+inline FolderDialog& FolderDialog::setTitle( const SmartUtil::tstring& title ) {
+	itsTitle = title;
+	return *this;
+}
+
+inline FolderDialog::~FolderDialog() {
+	::CoTaskMemFree(itsPidlRoot);
 }
 
 // end namespace SmartWin

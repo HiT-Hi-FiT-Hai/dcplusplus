@@ -149,8 +149,9 @@ void FavoriteDirsPage::handleRemoveClicked() {
 
 void FavoriteDirsPage::handleAddClicked() {
 	tstring target;
-	if(WinUtil::browseDirectory(target, handle()))
+	if(createFolderDialog().open(target)) {
 		addDirectory(target);
+	}
 }
 
 void FavoriteDirsPage::addDirectory(const tstring& aPath) {

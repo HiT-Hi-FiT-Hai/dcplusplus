@@ -30,9 +30,9 @@
 
 #include "../SmartUtil.h"
 #include "widgets/Button.h"
+#include "widgets/FolderDialog.h"
 #include "widgets/WidgetCheckBox.h"
 #include "widgets/WidgetChooseColor.h"
-#include "widgets/WidgetChooseFolder.h"
 #include "widgets/WidgetComboBox.h"
 #include "widgets/WidgetListView.h"
 #include "widgets/WidgetDateTimePicker.h"
@@ -96,6 +96,14 @@ class WidgetFactory
 	: public WidgetFactoryPlatformImplementation< ContainerWidgetType, CurrentPlatform >
 {
 public:
+	// Bring widgets into the namespace of the class that inherits from us
+	
+	typedef SmartWin::Button Button;
+	typedef typename Button::ObjectType ButtonPtr;
+
+	typedef SmartWin::FolderDialog FolderDialog;
+
+	
 	/// MessageBox class and object type.
 	typedef SmartWin::WidgetMessageBox WidgetMessageBox;
 
@@ -128,12 +136,6 @@ public:
 
 	/// StatusBarSections object type.
 	typedef typename WidgetStatusBarSections::ObjectType WidgetStatusBarSectionsPtr;
-
-	/// Button class type.
-	typedef SmartWin::Button Button;
-
-	/// Button object type.
-	typedef typename Button::ObjectType ButtonPtr;
 
 	/// MDIWindow class type.
 	typedef SmartWin::WidgetMDIParent WidgetMDIParent;
@@ -176,9 +178,6 @@ public:
 
 	/// RadioButton object type.
 	typedef typename WidgetRadioButton::ObjectType WidgetRadioButtonPtr;
-
-	/// WidgetChooseFolder class type.
-	typedef SmartWin::WidgetChooseFolder WidgetChooseFolder;
 
 	/// LoadFileDialog class type.
 	typedef SmartWin::WidgetLoadFile WidgetLoadFile;
@@ -251,7 +250,7 @@ public:
 	/// Creates a ChooseFolderDialog and returns a pointer to it.
 	/** Use this one to construct a ( stack object ) to show a Choose folder Dialog
 	  */
-	WidgetChooseFolder createChooseFolder();
+	FolderDialog createFolderDialog();
 
 	/// Creates a LoadFileDialog and returns a pointer to it.
 	/** Use this one to construct a ( stack object ) to show a Load File Dialog
@@ -480,10 +479,10 @@ WidgetFactory< ContainerWidgetType >::WidgetFactory( SmartWin::Widget * parent )
 {}
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetChooseFolder
-WidgetFactory< ContainerWidgetType >::createChooseFolder()
+typename WidgetFactory< ContainerWidgetType >::FolderDialog
+WidgetFactory< ContainerWidgetType >::createFolderDialog()
 {
-	return WidgetChooseFolder ( this );
+	return FolderDialog ( this );
 }
 
 template<typename ContainerWidgetType>

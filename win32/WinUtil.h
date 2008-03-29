@@ -155,7 +155,6 @@ public:
 
 	static void openLink(const tstring& url);
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringT, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
-	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
 	static int getOsMajor();
 	static int getOsMinor();
