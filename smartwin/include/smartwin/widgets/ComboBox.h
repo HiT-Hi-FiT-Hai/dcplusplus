@@ -74,6 +74,8 @@ class ComboBox :
 	friend class AspectCollection<ComboBox, int>;
 	friend class AspectColor<ComboBox>;
 	friend class AspectSelection<ComboBox, int>;
+	friend class AspectClickable<ComboBox>;
+	friend class AspectDblClickable<ComboBox>;
 public:
 	/// Class type
 	typedef ComboBox ThisType;
@@ -98,15 +100,6 @@ public:
 		/// Fills with default parameters
 		Seed();
 	};
-
-	// Aspect expectation implementation
-	Message getSelectionChangedMessage();
-
-	// Aspect expectation implementation
-	Message getClickMessage();
-
-	// Aspect expectation implementation
-	Message getDblClickMessage();
 
 	/// Return the selected value of the ComboBox
 	/** If no item is actually selected the return value is "".
@@ -157,25 +150,31 @@ private:
 	void clearImpl();
 	size_t sizeImpl() const;
 	
+	// Aspect expectation implementation
+	static Message getSelectionChangedMessage();
+
+	// Aspect expectation implementation
+	static Message getClickMessage();
+
+	// Aspect expectation implementation
+	static Message getDblClickMessage();
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Message ComboBox::getSelectionChangedMessage()
-{
-	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_SELENDOK) );
+inline Message ComboBox::getSelectionChangedMessage() {
+	return Message( WM_COMMAND, MAKEWPARAM(0, CBN_SELENDOK) );
 }
 
-inline Message ComboBox::getClickMessage()
-{
-	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_DROPDOWN) );
+inline Message ComboBox::getClickMessage() {
+	return Message( WM_COMMAND, MAKEWPARAM(0, CBN_DROPDOWN) );
 }
 
-inline Message ComboBox::getDblClickMessage()
-{
-	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_DBLCLK) );
+inline Message ComboBox::getDblClickMessage() {
+	return Message( WM_COMMAND, MAKEWPARAM(0, CBN_DBLCLK) );
 }
 
 inline int ComboBox::getSelectedImpl() const {

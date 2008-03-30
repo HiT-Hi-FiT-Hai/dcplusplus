@@ -75,13 +75,11 @@ class TextBoxBase :
 	public AspectUpdate< TextBoxBase >
 {
 	friend class WidgetCreator< TextBoxBase >;
-
+	friend class AspectUpdate<TextBoxBase>;
+	
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 
 public:
-	// Contract needed by AspectUpdate Aspect class
-	Message getUpdateMessage();
-
 	/// Sets the current selection of the Edit Control
 	/** Start means the offset of where the current selection shall start, if it is
 	  * omitted it defaults to 0. <br>
@@ -187,6 +185,12 @@ protected:
 	// is supposed to do so when parent is killed...
 	virtual ~TextBoxBase()
 	{}
+
+private:
+	// Contract needed by AspectUpdate Aspect class
+	static Message getUpdateMessage();
+
+
 };
 
 class TextBox : 
@@ -280,9 +284,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Message TextBoxBase::getUpdateMessage()
-{
-	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), EN_UPDATE) );
+inline Message TextBoxBase::getUpdateMessage() {
+	return Message( WM_COMMAND, MAKEWPARAM(0, EN_UPDATE) );
 }
 
 inline void TextBoxBase::setSelection( long start, long end )
@@ -356,7 +359,7 @@ inline DWORD TextBoxBase::getTextLimit() const {
 
 inline void TextBoxBase::onTextChanged( const Dispatcher::F& f ) {
 	this->addCallback(
-		Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), EN_CHANGE) ), Dispatcher(f)
+		Message( WM_COMMAND, MAKEWPARAM(0, EN_CHANGE) ), Dispatcher(f)
 	);
 }
 

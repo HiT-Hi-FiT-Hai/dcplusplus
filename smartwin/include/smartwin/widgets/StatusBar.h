@@ -113,6 +113,8 @@ class StatusBar :
 	public AspectPainting< StatusBar< TypeOfStatusBar > >
 {
 	friend class WidgetCreator< StatusBar >;
+	friend class AspectClickable< StatusBar< TypeOfStatusBar > >;
+	friend class AspectDblClickable< StatusBar< TypeOfStatusBar > >;
 public:
 	/// Class type
 	typedef StatusBar<TypeOfStatusBar> ThisType;
@@ -145,12 +147,6 @@ public:
 	  */
 	void refresh();
 
-	// Contract needed by AspectClickable Aspect class
-	static const Message& getClickMessage();
-
-	// Contract needed by AspectDblClickable Aspect class
-	static const Message& getDblClickMessage();
-
 	/// Actually creates the StatusBar
 	/** You should call WidgetFactory::createStatusBar if you instantiate class
 	  * directly. <br>
@@ -166,6 +162,12 @@ protected:
 	// WidgetFactory class which is friend
 	virtual ~StatusBar()
 	{}
+	
+	// Contract needed by AspectClickable Aspect class
+	static Message getClickMessage();
+
+	// Contract needed by AspectDblClickable Aspect class
+	static Message getDblClickMessage();
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,17 +222,15 @@ void StatusBar< TypeOfStatusBar >::refresh()
 }
 
 template< class TypeOfStatusBar >
-const Message & StatusBar< TypeOfStatusBar >::getClickMessage()
+Message StatusBar< TypeOfStatusBar >::getClickMessage()
 {
-	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
-	return retVal;
+	return Message( WM_NOTIFY, NM_CLICK );
 }
 
 template< class TypeOfStatusBar >
-const Message & StatusBar< TypeOfStatusBar >::getDblClickMessage()
+Message StatusBar< TypeOfStatusBar >::getDblClickMessage()
 {
-	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
-	return retVal;
+	return Message( WM_NOTIFY, NM_DBLCLK );
 }
 
 template< class TypeOfStatusBar >

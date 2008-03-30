@@ -55,7 +55,7 @@ public:
 	  * something else. No parameters are passed.
 	  */
 	void onClicked(const typename Dispatcher::F& f) {
-		W().addCallback(W().getClickMessage(), Dispatcher(f));
+		W().addCallback(WidgetType::getClickMessage(), Dispatcher(f));
 	}
 
 protected:

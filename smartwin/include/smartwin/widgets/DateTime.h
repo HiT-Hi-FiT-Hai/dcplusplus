@@ -61,6 +61,9 @@ class DateTime :
 	public AspectFont< DateTime >,
 	public AspectPainting< DateTime >
 {
+	friend class WidgetCreator< DateTime >;
+	friend class AspectClickable<DateTime>;
+	
 	struct Dispatcher
 	{
 		typedef std::tr1::function<void (const SYSTEMTIME &)> F;
@@ -81,8 +84,6 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
-
-	friend class WidgetCreator< DateTime >;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -107,9 +108,6 @@ public:
 		/// Fills with default parameters
 		Seed();
 	};
-
-	// Aspect expectation implementation
-	static Message & getClickMessage();
 
 	/// Member function Setting the event handler for the "date changed" event
 	/** The event handler must have the signature "void foo( DateTimePtr
@@ -209,16 +207,18 @@ protected:
 	// WidgetFactory class which is friend
 	virtual ~DateTime()
 	{}
+	
+private:
+	// Aspect expectation implementation
+	static Message getClickMessage();
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Message & DateTime::getClickMessage()
-{
-	static Message retVal = Message( WM_NOTIFY, DTN_DROPDOWN );
-	return retVal;
+inline Message DateTime::getClickMessage() {
+	return Message( WM_NOTIFY, DTN_DROPDOWN );
 }
 
 inline SYSTEMTIME DateTime::getDateTime()

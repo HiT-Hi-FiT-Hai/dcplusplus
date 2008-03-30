@@ -72,6 +72,8 @@ class Label :
 	public AspectText< Label >
 {
 	friend class WidgetCreator< Label >;
+	friend class AspectClickable<Label>;
+	friend class AspectDblClickable<Label>;
 public:
 	/// Class type
 	typedef Label ThisType;
@@ -93,12 +95,6 @@ public:
 		/// Fills with default parameters
 		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
-
-	// Contract needed by AspectClickable Aspect class
-	Message getClickMessage();
-
-	// Contract needed by AspectDblClickable Aspect class
-	Message getDblClickMessage();
 
 	/// Actually creates the Static Control
 	/** You should call WidgetFactory::createStatic if you instantiate class
@@ -126,16 +122,20 @@ private:
 	BitmapPtr itsBitmap;
 
 	void setBitmap( HBITMAP bitmap );
+
+	// Contract needed by AspectClickable Aspect class
+	static Message getClickMessage();
+
+	// Contract needed by AspectDblClickable Aspect class
+	static Message getDblClickMessage();
 };
 
-inline Message Label::getClickMessage()
-{
-	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), STN_CLICKED) );
+inline Message Label::getClickMessage() {
+	return Message( WM_COMMAND, MAKEWPARAM(0, STN_CLICKED) );
 }
 
-inline Message Label::getDblClickMessage()
-{
-	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), STN_DBLCLK) );
+inline Message Label::getDblClickMessage() {
+	return Message( WM_COMMAND, MAKEWPARAM(0, STN_DBLCLK) );
 }
 
 inline Label::Label( Widget * parent )

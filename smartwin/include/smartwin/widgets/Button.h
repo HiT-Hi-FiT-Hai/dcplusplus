@@ -28,6 +28,8 @@ class Button :
 	public AspectPainting< Button >,
 	public AspectText< Button >
 {
+	friend class AspectClickable<Button>;
+	friend class AspectDblClickable<Button>;
 	friend class WidgetCreator<Button>;
 public:
 	/// Class type
@@ -49,12 +51,6 @@ public:
 		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
 
-	// Contract needed by AspectClickable Aspect class
-	Message getClickMessage();
-
-	// Contract needed by AspectDblClickable Aspect class
-	Message getDblClickMessage();
-	
 	template<typename SeedType>
 	void create(const SeedType& cs);
 	
@@ -62,14 +58,22 @@ protected:
 	typedef Button ButtonType;
 	
 	Button(Widget* parent);
+	
+private:
+	// Contract needed by AspectClickable Aspect class
+	static Message getClickMessage();
+
+	// Contract needed by AspectDblClickable Aspect class
+	static Message getDblClickMessage();
+
 };
 
 inline Message Button::getClickMessage() {
-	return Message( WM_COMMAND, MAKEWPARAM(getControlId(), BN_CLICKED) );
+	return Message( WM_COMMAND, MAKEWPARAM(0, BN_CLICKED) );
 }
 
 inline Message Button::getDblClickMessage() {
-	return Message( WM_COMMAND, MAKEWPARAM(getControlId(), BN_DBLCLK) );
+	return Message( WM_COMMAND, MAKEWPARAM(0, BN_DBLCLK) );
 }
 
 inline Button::Button(Widget* parent) : ControlType(parent) {

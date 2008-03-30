@@ -34,7 +34,6 @@
 #include "../../SmartUtil/tstring.h"
 
 #include <boost/noncopyable.hpp>
-#include <memory>
 #include <list>
 #include <functional>
 #include <tr1/unordered_map>

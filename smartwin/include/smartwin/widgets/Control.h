@@ -17,7 +17,6 @@
 namespace SmartWin {
 
 /** Base class is for windows common controls */
-
 class Control : 
 	public MessageMap< Policies::Subclassed >,
 

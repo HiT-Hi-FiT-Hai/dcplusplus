@@ -71,9 +71,9 @@ Message::Message(const MSG& msg_ ) :
 		} break;
 	case WM_COMMAND: {
 			if(msg_.lParam == 0) {
-				param = LOWORD( msg_.wParam );
+				param = LOWORD(msg_.wParam);
 			} else {
-				param = msg_.wParam;
+				param = HIWORD(msg_.wParam);
 			}
 		} break;
 	}
