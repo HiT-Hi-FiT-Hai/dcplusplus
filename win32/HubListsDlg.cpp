@@ -26,6 +26,20 @@
 #include <dcpp/StringTokenizer.h>
 #include "HoldRedraw.h"
 #include "LineDlg.h"
+#include "WinUtil.h"
+
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_LIST_EDIT_BOX, IDH_PUBLIC_HUB_LISTS_EDIT_BOX },
+	{ IDC_LIST_ADD, IDH_PUBLIC_HUB_LISTS_ADD },
+	{ IDC_LIST_LIST, IDH_PUBLIC_HUB_LISTS_LIST },
+	{ IDC_LIST_UP, IDH_PUBLIC_HUB_LISTS_MOVE_UP },
+	{ IDC_LIST_DOWN, IDH_PUBLIC_HUB_LISTS_MOVE_DOWN },
+	{ IDC_LIST_EDIT, IDH_PUBLIC_HUB_LISTS_EDIT },
+	{ IDC_LIST_REMOVE, IDH_PUBLIC_HUB_LISTS_REMOVE },
+	{ IDOK, IDH_DCPP_OK },
+	{ IDCANCEL, IDH_DCPP_CANCEL },
+	{ 0, 0 }
+};
 
 HubListsDlg::HubListsDlg(SmartWin::Widget* parent) :
 	WidgetFactory<SmartWin::ModalDialog>(parent),
@@ -40,6 +54,10 @@ HubListsDlg::~HubListsDlg() {
 }
 
 bool HubListsDlg::handleInitDialog() {
+	setHelpId(IDH_PUBLIC_HUB_LISTS);
+
+	WinUtil::setHelpIds(this, helpItems);
+
 	setText(T_("Configured Public Hub Lists"));
 
 	editBox = attachTextBox(IDC_LIST_EDIT_BOX);

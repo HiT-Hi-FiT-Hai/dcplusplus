@@ -95,6 +95,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		message = createTextBox(cs);
+		message->setHelpId(IDH_HUB_MESSAGE);
 		addWidget(message, true, false);
 		message->onRaw(std::tr1::bind(&HubFrame::handleMessageGetDlgCode, this), SmartWin::Message(WM_GETDLGCODE));
 		message->onKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
@@ -105,12 +106,14 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
 		filter = createTextBox(cs);
+		filter->setHelpId(IDH_HUB_FILTER);
 		addWidget(filter);
 		filter->onKeyUp(std::tr1::bind(&HubFrame::handleFilterKey, this, _1));
 	}
 
 	{
 		filterType = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		filterType->setHelpId(IDH_HUB_FILTER);
 		addWidget(filterType);
 		
 		for(int j=0; j<COLUMN_LAST; j++) {
@@ -125,6 +128,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		chat = createTextBox(cs);
+		chat->setHelpId(IDH_HUB_CHAT);
 		chat->setTextLimit(0);
 		addWidget(chat);
 		paned->setFirst(chat);

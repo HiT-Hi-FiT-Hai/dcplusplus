@@ -8,29 +8,31 @@
 <body>
 <h1>Sharing</h1>
 <h2>Shared Directories</h2>
+<span cshelp=IDH_SETTINGS_UPLOAD_DIRECTORIES>
 To add directories to your share, you can use the Add and Remove
 buttons, or drag and drop folders from a Windows Explorer window.
 <em style="font-weight: bold;">Beginning with version
 0.4032, files will be shared only once they have been hashed.</em>
 <br>
+</span>
 <span style="font-weight: bold;">If you enter the Sharing tab and press OK; the client may appear to
 freeze, this is due to a refresh of the file list.</span><br>
 <dl style="margin-left: 40px;">
   <dt>Share Hidden Files</dt>
-  <dd>Share files with the Hidden attribute set and files inside
+  <dd cshelp=IDH_SETTINGS_UPLOAD_SHAREHIDDEN>Share files with the Hidden attribute set and files inside
 directory with the Hidden attribute set. With this option off, files
 starting with a . (full stop) will not be shared. Note: this option requires a
 refresh of the file list, and may cause the client to appear to freeze.<br>
   </dd>
   <dt>Rename</dt>
-  <dd>Change the virtual name on a shared folder. Note: the
+  <dd cshelp=IDH_SETTINGS_UPLOAD_RENAME>Change the virtual name on a shared folder. Note: the
 client will
 appear to freeze when you exit settings, this is due to a refresh of
 the file list.</dd>
   <dt>Remove</dt>
-  <dd>Remove the selected folder(s).</dd>
+  <dd cshelp=IDH_SETTINGS_UPLOAD_REMOVE>Remove the selected folder(s).</dd>
   <dt>Add Folder</dt>
-  <dd>Browse for a new folder to add to your share. If another
+  <dd cshelp=IDH_SETTINGS_UPLOAD_ADD>Browse for a new folder to add to your share. If another
 existing file shares that name, the new name will be made unique by
 adding another letter to its name.<span style="font-weight: bold;">
     </span>After
@@ -42,13 +44,13 @@ choose to let it display, or let hashing continue in the background.</dd>
 </dl>
 <dl>
   <dt>Automatically Open an Extra Slot if Speed is Below ...</dt>
-  <dd>If the average upload speed drops below the given number,
+  <dd cshelp=IDH_SETTINGS_UPLOAD_MIN_UPLOAD_SPEED>If the average upload speed drops below the given number,
 an
 additional upload slot will be granted. These slots are granted
 once every 30 seconds at maximum. If the speed of the original
 uploads increases, the granted slot will not be closed.</dd>
   <dt><a name="slots"></a>Upload Slots</dt>
-  <dd>Configure the number of slots
+  <dd cshelp=IDH_SETTINGS_UPLOAD_SLOTS>Configure the number of slots
 that other users can occupy to
 download files from you. A remote user can use only one slot for
 each hub that they're on with you. DC++ supports uploading

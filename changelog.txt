@@ -1,6 +1,5 @@
 ﻿-- 0.706 --
 * [L#202563] Fixed some missing translations
-* Fixed help links (thanks poy)
 * Use setenv on unix (thanks yakov suraev)
 * Fixed out of focus window when restoring from icon (poy)
 * [L#203865] Fixed multiple instances (poy)

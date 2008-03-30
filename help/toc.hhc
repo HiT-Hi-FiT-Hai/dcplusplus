@@ -34,7 +34,7 @@
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="File List">
-			<param name="Local" value="window_directory_listing.html">
+			<param name="Local" value="window_file_list.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Public Hubs">
@@ -108,6 +108,10 @@
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="ADLSearch Properties">
 			<param name="Local" value="dialog_adls_properties.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Configured Public Hub Lists">
+			<param name="Local" value="dialog_public_hub_lists.html">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">

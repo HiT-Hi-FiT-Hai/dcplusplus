@@ -40,7 +40,7 @@ netiquette.html
 credits.html
 window_hub.html
 window_pm.html
-window_directory_listing.html
+window_file_list.html
 window_public_hubs.html
 window_favorite_hubs.html
 window_favorite_users.html
@@ -58,6 +58,7 @@ dialog_indexing_progress.html
 dialog_user_command.html
 dialog_favorite_hub.html
 dialog_adls_properties.html
+dialog_public_hub_lists.html
 fdl.html
 faq_keyboard_commands.html
 faq_upnp.html
@@ -79,7 +80,7 @@ IDH_CHANGELOG=changelog.html
 IDH_KEYBOARD=faq_keyboard_commands.html
 IDH_HUB=window_hub.html
 IDH_PM=window_pm.html
-IDH_DIRECTORY_LISTING=window_directory_listing.html
+IDH_FILE_LIST=window_file_list.html
 IDH_PUBLIC_HUBS=window_public_hubs.html
 IDH_FAVORITE_HUBS=window_favorite_hubs.html
 IDH_FAVUSERS=window_favorite_users.html
@@ -97,6 +98,7 @@ IDH_HASH_PROGRESS=dialog_indexing_progress.html
 IDH_USER_COMMAND=dialog_user_command.html
 IDH_FAVORITE_HUB=dialog_favorite_hub.html
 IDH_ADLSP=dialog_adls_properties.html
+IDH_PUBLIC_HUB_LISTS=dialog_public_hub_lists.html
 IDH_ADVANCED3PAGE=settings_expert.html
 IDH_ADVANCEDPAGE=settings_advanced.html
 IDH_APPEARANCE2PAGE=settings_colors_and_sounds.html

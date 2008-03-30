@@ -15,11 +15,11 @@ that DC++ will use.</p>
 <div style="margin-left: 40px;">
 <dl>
   <dt>Default Download Directory</dt>
-  <dd>After a download is complete, DC++ tries to move your
+  <dd cshelp=IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR>After a download is complete, DC++ tries to move your
 just&nbsp;finished file to this directory. It defaults to the
 "Downloads\" subdirectory under where the DC++ executable is located.</dd>
   <dt>Unfinished Downloads Directory</dt>
-  <dd>All incomplete downloads will be stored in this directory.
+  <dd cshelp=IDH_SETTINGS_DOWNLOAD_TEMP_DOWNLOAD_DIRECTORY>All incomplete downloads will be stored in this directory.
 If empty, temporary downloads will be stored in the "Incomplete\"
 subdirectory under where the DC++ executable is located. You can
 use <span style="font-weight: bold;">%[targetdrive]</span> for optional unfinished directory for target
@@ -35,22 +35,22 @@ the end of it's name. As in
 </dl>
 </div>
 <h2>Limits</h2>
-<p>For both values listed below, certain conditions can result in the
+<p cshelp=IDH_SETTINGS_DOWNLOAD_LIMITS>For both values listed below, certain conditions can result in the
 limits not being obeyed.&nbsp;Specifically, up to 3 files that are set
 to the 'highest' priority can be transferred while other downloads are
 going.&nbsp;&nbsp;File lists and small files (64 kibibytes or
 smaller) are queued with 'highest' as their priority. When either
-of the limits are hit, DC++ shows "<em>All download slots taken"</em>
+of the limits are hit, DC++ shows <em>"All download slots taken"</em>
 next to each source in the Transfer View.</p>
 <div style="margin-left: 40px;">
 <dl>
   <dt>Maximum Simultaneous Downloads</dt>
-  <dd>This limits the number of simultaneous downloads. The
-default value&nbsp;of this option is 3, and a value of 0 means no limit.</dd>
+  <dd cshelp=IDH_SETTINGS_DOWNLOAD_DOWNLOADS>This limits the number of simultaneous downloads. The
+default value of this option is 3, and a value of 0 means no limit.</dd>
   <dt>No New Downloads if Speed Exceeds</dt>
-  <dd>This is another method of limiting simultaneous downloads,
+  <dd cshelp=IDH_SETTINGS_DOWNLOAD_MAXSPEED>This is another method of limiting simultaneous downloads,
 designed to prevent new downloads if your existing downloads exceed a
-specific threshold.&nbsp;It's measured in kibibytes per second, and a
+specific threshold. It's measured in kibibytes per second, and a
 value of zero will disable this limit. <span
  style="font-style: italic;">Note: because of changing download speeds,
 this is not 100% accurate</span></dd>
@@ -60,9 +60,9 @@ this is not 100% accurate</span></dd>
 <div style="margin-left: 40px;">
 <dl>
   <dt>Public Hub List URL</dt>
-  <dd><a href="window_public_hubs.html">Public hubs window</a></dd>
+  <dd><a href="dialog_public_hub_lists.html">Configured Public Hubs Lists</a></dd>
   <dt>HTTP Proxy</dt>
-  <dd>This HTTP proxy will <u>only</u> be used to request the Public
+  <dd cshelp=IDH_SETTINGS_DOWNLOAD_PROXY>This HTTP proxy will <u>only</u> be used to request the Public
 Hub List specified above. It's <u>not</u> used for uploads,
 downloads, or connecting to a hub.</dd>
 </dl>

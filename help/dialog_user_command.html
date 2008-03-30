@@ -10,40 +10,42 @@
 <h2>Command Types:</h2>
 <dl style="margin-left: 40px;">
   <dt>Separator</dt>
-  <dd>Adds a separator to the menu</dd>
+  <dd cshelp=IDH_USER_COMMAND_SEPARATOR>Adds a separator to the menu</dd>
   <dt>Raw</dt>
-  <dd>Sends raw command to the hub (experts only, end it with '|' in NMDC hubs and '\n' in ADC hubs!)</dd>
+  <dd cshelp=IDH_USER_COMMAND_RAW>Sends raw command to the hub (experts only, end it with '|' in NMDC hubs and '\n' in ADC hubs!)</dd>
   <dt>Chat</dt>
-  <dd>Sends command as if you were typing it in the chat</dd>
+  <dd cshelp=IDH_USER_COMMAND_CHAT>Sends command as if you were typing it in the chat</dd>
   <dt>PM</dt>
-  <dd>Sends command as if you sent it by PM</dd>
+  <dd cshelp=IDH_USER_COMMAND_PM>Sends command as if you sent it by PM</dd>
 </dl>
 <h2>Context</h2>
+<span cshelp=IDH_USER_COMMAND_CONTEXT>
 Contexts determine where the command is shown.<br>
+</span>
 <dl style="margin-left: 40px;">
   <dt>Hub Menu</dt>
-  <dd>Hub tab (at the bottom of the screen) right-click menu</dd>
+  <dd cshelp=IDH_USER_COMMAND_HUB_MENU>Hub tab (at the bottom of the screen) right-click menu</dd>
   <dt>Chat Menu </dt>
-  <dd>User right-click menu in chat and PM tab menu</dd>
+  <dd cshelp=IDH_USER_COMMAND_USER_MENU>User right-click menu in chat and PM tab menu</dd>
   <dt>Search Menu</dt>
-  <dd>Search right-click menu </dd>
+  <dd cshelp=IDH_USER_COMMAND_SEARCH_MENU>Search right-click menu </dd>
   <dt>File list Menu</dt>
-  <dd>File list right-click menu</dd>
+  <dd cshelp=IDH_USER_COMMAND_FILELIST_MENU>File list right-click menu</dd>
 </dl>
 <h2>Parameters</h2>
 <dl style="margin-left: 40px;">
   <dt>Name</dt>
-  <dd>Name (use '\' to create submenus)</dd>
+  <dd cshelp=IDH_USER_COMMAND_NAME>Name (use '\' to create submenus)</dd>
   <dt>Command</dt>
-  <dd>Command text (may contain any of the variables listed below). Use Ctrl + Enter to create a new line.</dd>
+  <dd cshelp=IDH_USER_COMMAND_COMMAND>Command text (may contain any of the variables listed below). Use Ctrl + Enter to create a new line.</dd>
   <dt>Hub </dt>
-  <dd>Hub ip as typed when connecting (empty = all NMDC hubs, "op" = NMDC hubs
+  <dd cshelp=IDH_USER_COMMAND_HUB>Hub ip as typed when connecting (empty = all NMDC hubs, "op" = NMDC hubs
 where you're an operator, "adc://" = all ADC hubs, "adc://op" = ADC hubs where you're an operator, 
 "adcs://" = all <a href="settings_certs.html">TLS</a> enabled hubs)</dd>
   <dt>To</dt>
-  <dd>Private Message recipient</dd>
+  <dd cshelp=IDH_USER_COMMAND_NICK>Private Message recipient</dd>
   <dt>Send Once Per Nick</dt>
-  <dd>Send only once per user from search frame, regardless of how many
+  <dd cshelp=IDH_USER_COMMAND_ONCE>Send only once per user from search frame, regardless of how many
 files you've selected from that user</dd>
 </dl>
 <h2>Variables</h2>

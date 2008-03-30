@@ -106,7 +106,7 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const
 }
 
 DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
-	BaseType(mdiParent, _T(""), IDH_DIRECTORY_LISTING, SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
+	BaseType(mdiParent, _T(""), IDH_FILE_LIST, SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),
 	paned(0),
@@ -128,6 +128,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 
 	{
 		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, WinUtil::Seeds::treeView);
+		dirs->setHelpId(IDH_FILE_LIST_DIRS);
 		addWidget(dirs);
 		paned->setFirst(dirs);
 		dirs->setNormalImageList(WinUtil::fileImages);
@@ -137,6 +138,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	
 	{
 		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::Table);
+		files->setHelpId(IDH_FILE_LIST_FILES);
 		addWidget(files);
 		paned->setSecond(files);
 
@@ -154,22 +156,26 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	
 	{
 		Button::Seed cs = WinUtil::Seeds::button;
-		
-		cs.caption = T_("Find");
-		find = createButton(cs);
-		find->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFind, this));
-		
-		cs.caption = T_("Next");
-		findNext = createButton(cs);
-		findNext->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFindNext, this));
+
+		cs.caption = T_("Subtract list");
+		listDiff = createButton(cs);
+		listDiff->setHelpId(IDH_FILE_LIST_SUBSTRACT);
+		listDiff->onClicked(std::tr1::bind(&DirectoryListingFrame::handleListDiff, this));
 
 		cs.caption = T_("Match queue");
 		matchQueue = createButton(cs);
+		matchQueue->setHelpId(IDH_FILE_LIST_MATCH_QUEUE);
 		matchQueue->onClicked(std::tr1::bind(&DirectoryListingFrame::handleMatchQueue, this));
-		
-		cs.caption = T_("Subtract list");
-		listDiff = createButton(cs);
-		listDiff->onClicked(std::tr1::bind(&DirectoryListingFrame::handleListDiff, this));
+
+		cs.caption = T_("Find");
+		find = createButton(cs);
+		find->setHelpId(IDH_FILE_LIST_FIND);
+		find->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFind, this));
+
+		cs.caption = T_("Next");
+		findNext = createButton(cs);
+		findNext->setHelpId(IDH_FILE_LIST_NEXT);
+		findNext->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFindNext, this));
 	}
 	
 	initStatus();

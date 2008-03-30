@@ -8,6 +8,7 @@
 <body>
 <h1>Queue settings</h1>
 <h2>Autoprio settings</h2>
+<span cshelp=IDH_SETTINGS_QUEUE_AUTOPRIO>
 Autoprio allows setting the queue item priority automatically when
 adding it to the download queue. A user can then change the priority of
 a file manually.<br>
@@ -16,49 +17,52 @@ priority, when assigning a priority to a new queue item. A zero means
 that the given priority level won't be used - except Normal priority,
 which is the default priority. Lowest possible value for the Highest
 priority is 16 KiB.
+</span>
 <div style="margin-left: 40px;">
 <dl>
   <dt>Highest prio max size</dt>
-  <dd>Files with the same or under the entered size will be set to
+  <dd cshelp=IDH_SETTINGS_QUEUE_PRIO_HIGHEST>Files with the same or under the entered size will be set to
 Highest as priority. (default: 64 KiB) </dd>
   <dt>Normal prio max size</dt>
-  <dd>Files with the same or under the entered size, but above Highest
+  <dd cshelp=IDH_SETTINGS_QUEUE_PRIO_NORMAL>Files with the same or under the entered size, but above Highest
 and High prio max size, will be set to Normal as priority. (default: 0
 KiB) </dd>
   <dt>High prio max size</dt>
-  <dd>Files with the same or under the entered size, but above Highest
+  <dd cshelp=IDH_SETTINGS_QUEUE_PRIO_HIGH>Files with the same or under the entered size, but above Highest
 prio max size, will be set to High as priority. (default: 0 KiB)</dd>
   <dt>Low prio max size</dt>
-  <dd>Files with the same or under the entered size, but above Highest,
+  <dd cshelp=IDH_SETTINGS_QUEUE_PRIO_LOW>Files with the same or under the entered size, but above Highest,
 High and Normal prio max size, will be set to Low as priority.
 (default: 0 KiB)</dd>
 </dl>
 </div>
 <h2>Autodrop settings</h2>
+<span cshelp=IDH_SETTINGS_QUEUE_AUTODROP>
 Autodrop allows automatical removal (or disconnecting) of slow download
 sources. By default, slow sources are removed.<br>
 All of these autodrop options are necessary to estimate and
 disconnect/drop sources properly.
+</span>
 <div style="margin-left: 40px;">
 <dl>
   <dt>Drop sources below x B/s</dt>
-  <dd>If the download speed of a file is below the entered value, the
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTODROP_SPEED>If the download speed of a file is below the entered value, the
 source will be dropped. (default: 1024 B/s) </dd>
   <dt>Min elapsed</dt>
-  <dd>Amount of time (in seconds) that has to pass since the download
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTODROP_ELAPSED>Amount of time (in seconds) that has to pass since the download
 started before a source can be dropped. (default: 15 s) </dd>
   <dt>Min sources online</dt>
-  <dd>Minimum amount of sources before any sources will be dropped.
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTODROP_MINSOURCES>Minimum amount of sources before any sources will be dropped.
 (default: 1) </dd>
   <dt>Check every x s</dt>
-  <dd>Check every x second(s) if the source is slow. (default: 10 s) </dd>
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTODROP_INTERVAL>Check every x second(s) if the source is slow. (default: 10 s) </dd>
   <dt>Max inactivity</dt>
-  <dd>This is the maximal time since the last chunk of data for the
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTODROP_INACTIVITY>This is the maximal time since the last chunk of data for the
 file was recieved. It is meant to improve speed measurement accuracy
 and to prevent dropping sources that are going to be disconnected only
 because of their current inactivity. (default: 10 s) </dd>
   <dt>Min filesize</dt>
-  <dd>Minimum filesize before sources will be dropped (in KiB).
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTODROP_FILESIZE>Minimum filesize before sources will be dropped (in KiB).
 (default: 0 KiB)</dd>
 </dl>
 </div>

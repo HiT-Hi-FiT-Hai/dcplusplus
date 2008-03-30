@@ -10,4 +10,5 @@ custom.py
 natupnp.h
 ./help/changelog.html
 ./help/compile.log
+./help/cshelp.txt
 ./.pydevproject

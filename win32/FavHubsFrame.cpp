@@ -282,7 +282,7 @@ bool FavHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&FavHubsFrame::openSelected, this));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_NEWFAV, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));
+	menu->appendItem(IDC_ADD, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));
 	menu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&FavHubsFrame::handleProperties, this));
 	menu->appendItem(IDC_MOVE_UP, T_("Move &Up"), std::tr1::bind(&FavHubsFrame::handleUp, this));
 	menu->appendItem(IDC_MOVE_DOWN, T_("Move &Down"), std::tr1::bind(&FavHubsFrame::handleDown, this));

@@ -9,44 +9,44 @@
 <h1>Experts only</h1>
 <dl style="margin-left: 40px;">
   <dt>Rollback</dt>
-  <dd>This option is not used currently.</dd>
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_ROLLBACK>This option is not used currently.</dd>
   <dt>Max Hash Speed</dt>
-  <dd>This is the speed at which DC++ will hash your files, in
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_MAX_HASH_SPEED>This is the speed at which DC++ will hash your files, in
 MiB/s.
 It is limited by the speed of your disk subsystem, but it can be
 used to make hashing slower and less noticable. A "normal" hash
 speed may be anywhere from 20 to 30 MiB/s.  (no default)</dd>
   <dt>PM history</dt>
-  <dd>The number of lines that will be read from the private
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_PM_HISTORY>The number of lines that will be read from the private
 message
 log and displayed when a new PM is received. (no default)</dd>
   <dt><a name="minislotsize"></a>Mini slot size</dt>
-  <dd>This defines the size of the <a href="settings_sharing.html#slots">mini slot</a>. The
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_MINISLOT_SIZE>This defines the size of the <a href="settings_sharing.html#slots">mini slot</a>. The
 minimum value for this setting is&nbsp;64 KiB. (default: 64 KiB)</dd>
   <dt>Max filelist size</dt>
-  <dd>This setting controls the size of the maximum file list
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_MAX_FILELIST_SIZE>This setting controls the size of the maximum file list
 that DC++
 will open, in mebibytes. This setting helps protect against
 malformed file lists that require large amounts of memory to decode.
 &nbsp;You may need to reduce or increase the value of this setting
 based on personal experience. (default: 512 MiB)</dd>
   <dt>PID</dt>
-  <dd>This is your unique private ID (PID). This will later with an algorithm be used to identify you on ADC hubs. <span style="font-weight: bold;">Do not share this with other users.</span></dd>
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_PRIVATE_ID>This is your unique private ID (PID). This will later with an algorithm be used to identify you on ADC hubs. <span style="font-weight: bold;">Do not share this with other users.</span></dd>
   <dt>Auto refresh time</dt>
-  <dd>This controls the interval at which your shared directories
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_AUTO_REFRESH_TIME>This controls the interval at which your shared directories
 are rescanned for new and changed content. This is measured
 in minutes. (default: 60 minutes)</dd>
   <dt>Write Buffer Size</dt>
-  <dd>This controls the size of the chunks that DC++ writes to
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_BUFFERSIZE>This controls the size of the chunks that DC++ writes to
 disk for downloads. Measured in kibibytes. (default: 16 KiB)</dd>
   <dt>Auto-search limit</dt>
-  <dd>This will limit the amount of sources a file can have before it will no longer be auto searched for. For example, if this option is set to 2, if a file has more than or exactly 2 sources, the file will be excluded from the auto-search list.</dd>
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_AUTO_SEARCH_LIMIT>This will limit the amount of sources a file can have before it will no longer be auto searched for. For example, if this option is set to 2, if a file has more than or exactly 2 sources, the file will be excluded from the auto-search list.</dd>
   <dt><a name="searchhistory"></a>Search
 history</dt>
-  <dd>Number of old search lines that will be shown in the Search
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_SEARCH_HISTORY>Number of old search lines that will be shown in the Search
 Window. (default: 10)</dd>
   <dt>Bind address</dt>
-  <dd>This setting allows you to bind DC++ to a particular IP
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_BIND_ADDRESS>This setting allows you to bind DC++ to a particular IP
 address
 on your machine. Most users do not need to change the default value,
 0.0.0.0. However, if you&nbsp;have more than one network interface
@@ -58,13 +58,13 @@ connection problems make sure that this is set to default. (default:
     <span style="font-style: italic;"> This feature
 requires a restart to be fully effective.</span></dd>
   <dt>Socket read buffer</dt>
-  <dd>The size of the buffer DC++ use to read sockets. Measured
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_SOCKET_IN_BUFFER>The size of the buffer DC++ use to read sockets. Measured
 in bytes. (default: 8192 bytes)</dd>
   <dt>Socket write buffer</dt>
-  <dd>The size of the buffer DC++ use to write to sockets.
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_SOCKET_OUT_BUFFER>The size of the buffer DC++ use to write to sockets.
 Measured in bytes. (default: 8192 bytes)</dd>
   <dt>Min segment size</dt>
-  <dd>DC++ now uses segment downloading. i.e. it downloads each file in many little parts.  This setting lets you specifiy the mimium size of these parts. (default: 1MiB)</dd>
+  <dd cshelp=IDH_SETTINGS_ADVANCED3_MIN_SEGMENT_SIZE>DC++ now uses segment downloading. i.e. it downloads each file in many little parts.  This setting lets you specifiy the mimium size of these parts. (default: 1MiB)</dd>
 </dl>
 </body>
 </html>
