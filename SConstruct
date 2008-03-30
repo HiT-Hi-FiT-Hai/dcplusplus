@@ -17,7 +17,7 @@ opts.AddOptions(
 )
 
 gcc_flags = {
-	'common': ['-g', '-Wall', '-Wextra', '-pipe', '-Wno-unused-parameter', '-Wno-missing-field-initializers', '-fexceptions', '-mthreads'],
+	'common': ['-g', '-Wall', '-Wextra', '-Wno-unused-parameter', '-Wno-missing-field-initializers', '-fexceptions', '-mthreads'],
 	'debug': [], 
 	'release' : ['-O2', '-mwindows']
 }
@@ -105,9 +105,12 @@ if not env['nativestl']:
 		env.Append(LIBS = ['stlport.5.1'])	
 elif 'gcc' in env['TOOLS']:
 	env.Append(CPPDEFINES = ['BOOST_HAS_GCC_TR1'])
-	
-if env['savetemps'] and 'gcc' in env['TOOLS']:
-	env.Append(CCFLAGS = ['-save-temps', '-fverbose-asm'])
+
+if 'gcc' in env['TOOLS']:
+	if env['savetemps']:
+		env.Append(CCFLAGS = ['-save-temps', '-fverbose-asm'])
+	else:
+		env.Append(CCFLAGS = ['-pipe'])
 
 if env['unicode']:
 	env.Append(CPPDEFINES = ['UNICODE', '_UNICODE'])
