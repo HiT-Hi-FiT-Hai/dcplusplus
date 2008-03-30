@@ -16,42 +16,35 @@
 
 namespace SmartWin {
 
-/** Base class is for windows common controls */
-class Control : 
-	public MessageMap< Policies::Subclassed >,
+/** Base class for all windows */
+template<typename Policy>
+class Control: 
+	public MessageMap<Policy>,
 
-	public AspectBorder<Control>,
-	public AspectContextMenu<Control>,
-	public AspectEnabled<Control>,
-	public AspectHelp<Control>,
-	public AspectKeyboard<Control>,
-	public AspectMouse<Control>,
-	public AspectRaw<Control>,
-	public AspectSizable<Control>,
-	public AspectVisible<Control>
+	public AspectBorder<Control<Policy> >,
+	public AspectContextMenu<Control<Policy> >,
+	public AspectEnabled<Control<Policy> >,
+	public AspectHelp<Control<Policy> >,
+	public AspectKeyboard<Control<Policy> >,
+	public AspectMouse<Control<Policy> >,
+	public AspectRaw<Control<Policy> >,
+	public AspectSizable<Control<Policy> >,
+	public AspectVisible<Control<Policy> >
 {
 public:
-	unsigned int getControlId();
 	
-	virtual HWND create(const Seed& cs);
 protected:
-	typedef Control ControlType;
+	typedef Control<Policy> ControlType;
 
 	Control(Widget* parent);
 };
 
-inline Control::Control(Widget* parent) : PolicyType(parent) {
-	xAssert( parent, _T( "Common Controls must have a parent" ) );
+template<typename Policy>
+Control<Policy>::Control(Widget* parent) : MessageMap<Policy>(parent) {
+	
 }
 
-inline HWND Control::create(const Seed& cs) {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Common controls must have WS_CHILD style"));
-	return PolicyType::create(cs);
-}
-
-inline unsigned int Control::getControlId() {
-	return static_cast<unsigned int>(::GetWindowLongPtr(handle(), GWLP_ID));
-}
+typedef Control<Policies::Subclassed> CommonControl;
 
 }
 

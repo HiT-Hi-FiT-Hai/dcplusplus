@@ -58,8 +58,6 @@ public:
 	
 	TabSheet::ObjectType getTab();
 
-	virtual bool tryFire(const MSG& msg, LRESULT& retVal);
-	
 	const Rectangle& getClientSize() const { return clientSize; }
 	
 	void create( const Seed & cs = Seed() );

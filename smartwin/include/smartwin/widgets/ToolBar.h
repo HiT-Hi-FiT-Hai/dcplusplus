@@ -38,6 +38,8 @@
 #include "../resources/ImageList.h"
 #include "Control.h"
 
+#include <vector>
+
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -57,7 +59,7 @@ class WidgetCreator;
   * to view the log of URL's you have been to etc...   
   */
 class ToolBar :
-	public Control,
+public CommonControl,
 	// Aspects
 	public AspectFocus< ToolBar >,
 	public AspectFont< ToolBar >
@@ -109,7 +111,7 @@ public:
 	  */
 	void appendSeparator();
 
-	void appendItem(unsigned int id, int image, const SmartUtil::tstring& toolTip, const Dispatcher::F& f = Dispatcher::F());
+	void appendItem(int image, const SmartUtil::tstring& toolTip, const Dispatcher::F& f = Dispatcher::F());
 	
 	/// Set the image list with the normal button images.
 	/** normalImageList is the image list that contains the images
@@ -180,7 +182,7 @@ private:
 	ImageListPtr itsHotImageList;
 	ImageListPtr itsDisabledImageList;
 
-		//void addBitmap( HBITMAP hBit, unsigned int noButtonsInBitmap );
+	std::vector<Dispatcher::F> commands;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

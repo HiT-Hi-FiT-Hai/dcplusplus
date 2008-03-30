@@ -68,7 +68,7 @@ class WidgetCreator;
   * to "map" an LPARAM value to a physical rownumber and vice versa.
   */
 class Table :
-	public Control,
+	public CommonControl,
 	// Aspect classes
 	public AspectClickable< Table >,
 	public AspectCollection<Table, int>,

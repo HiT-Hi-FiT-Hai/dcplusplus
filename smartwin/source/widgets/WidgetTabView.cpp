@@ -397,15 +397,4 @@ bool WidgetTabView::filter(const MSG& msg) {
 	return false;
 }
 
-bool WidgetTabView::tryFire(const MSG& msg, LRESULT& retVal) {
-	bool handled = PolicyType::tryFire(msg, retVal);
-	if(!handled && msg.message == WM_COMMAND && getTab()) {
-		TabInfo* ti = getTabInfo(getTab()->getSelected());
-		if(ti) {
-			handled = ti->w->tryFire(msg, retVal);
-		}
-	}
-	return handled;
-}
-
 }

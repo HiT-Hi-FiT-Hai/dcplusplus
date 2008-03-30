@@ -18,7 +18,7 @@ class WidgetCreator;
 
 /** Common stuff for all buttons */
 class Button :
-	public Control,
+	public CommonControl,
 	public AspectClickable<Button>,
 	public AspectColor<Button>,
 	public AspectColorCtlImpl<Button>,

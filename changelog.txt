@@ -14,6 +14,7 @@
 * Minor improvements to load / save dialogs
 * [L#208684] Fixed line history when "Use Ctrl ..." is disabled (poy)
 * [L#208917] Fixed menu background colors (poy)
+* [L#208344] Fix about dialog up/down stats
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)

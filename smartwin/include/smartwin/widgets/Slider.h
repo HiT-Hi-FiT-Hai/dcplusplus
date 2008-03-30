@@ -56,7 +56,7 @@ class WidgetCreator;
   * the Spinner control, but have another visual appearance.
   */
 class Slider :
-	public Control,
+	public CommonControl,
 	// Aspects
 	public AspectFocus< Slider >,
 	public AspectPainting< Slider >,

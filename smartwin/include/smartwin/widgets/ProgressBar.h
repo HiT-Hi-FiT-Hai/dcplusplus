@@ -51,7 +51,7 @@ class WidgetCreator;
   * jobs, often used when downloading from internet or installing applications etc.   
   */
 class ProgressBar :
-	public Control,
+	public CommonControl,
 	// Aspects
 	public AspectPainting< ProgressBar >
 {

@@ -64,7 +64,7 @@ class WidgetCreator;
   * < ul > < li >RichTextBox< /li > < /ul >
   */
 class TextBoxBase :
-	public Control,
+	public CommonControl,
 	// Aspect classes
 	public AspectColor< TextBoxBase >,
 	public AspectColorCtlImpl<TextBoxBase>,

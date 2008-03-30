@@ -28,8 +28,22 @@ void ToolBar::appendSeparator()
 	}
 }
 
-void ToolBar::appendItem( unsigned int id, int image, const SmartUtil::tstring& toolTip, const Dispatcher::F& f)
+void ToolBar::appendItem( int image, const SmartUtil::tstring& toolTip, const Dispatcher::F& f)
 {
+	int id = -1;
+	
+	if(f) {
+		for(id = 0; id < (int)commands.size(); ++id) {
+			if(!commands[id])
+				break;
+		}
+		if(id == (int)commands.size()) {
+			commands.push_back(f);
+		} else {
+			commands[id] = f;
+		}
+	}
+	
 	// Adding button
 	TBBUTTON tb = { 0 };
 	tb.iBitmap = image;
@@ -42,24 +56,17 @@ void ToolBar::appendItem( unsigned int id, int image, const SmartUtil::tstring& 
 		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
 		throw x;
 	}
-
-	if(f)
-		addCallback(Message(WM_COMMAND, id), Dispatcher(f));
 }
 
-bool ToolBar::tryFire( const MSG & msg, LRESULT & retVal )
-{
-	bool handled = PolicyType::tryFire(msg, retVal);
-	
-	if(!handled && msg.message == WM_COMMAND) {
-		Widget* parent = getParent();
-		if(parent != NULL) {
-			// Maybe parent knows what to do with the WM_COMMAND (in case of shared menu/toolbar id's)
-			handled = parent->tryFire(msg, retVal);
+bool ToolBar::tryFire( const MSG & msg, LRESULT & retVal ) {
+	if(msg.message == WM_COMMAND && msg.lParam == reinterpret_cast<LPARAM>(handle())) {
+		size_t id = LOWORD(msg.wParam);
+		if(id < commands.size() && commands[id]) {
+			commands[id]();
+			return true;
 		}
 	}
-	
-	return handled;
+	return PolicyType::tryFire(msg, retVal);
 }
 
 }

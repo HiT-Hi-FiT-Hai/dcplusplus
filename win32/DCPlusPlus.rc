@@ -99,7 +99,7 @@ BEGIN
     GROUPBOX        "Latest stable version",IDC_LATEST_VERSION,7,239,229,24,BS_CENTER
     CTEXT           "0.xxx",IDC_LATEST,13,250,218,8
     GROUPBOX        "Totals",IDC_TOTALS,7,197,229,39,BS_CENTER
-    CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,13,208,218,8
+    CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_UPDOWN,13,208,218,8
     CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,221,218,8
     EDITTEXT        IDC_THANKS,13,122,218,66,ES_MULTILINE | ES_READONLY | WS_VSCROLL
     CTEXT           "Static",IDC_VERSION,13,37,218,54

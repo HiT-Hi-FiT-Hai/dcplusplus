@@ -30,26 +30,16 @@
 
 #include "../Application.h"
 #include "../Rectangle.h"
-#include "../Policies.h"
 #include "../aspects/AspectActivate.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectCommand.h"
-#include "../aspects/AspectContextMenu.h"
 #include "../aspects/AspectDragDrop.h"
-#include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectEraseBackground.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectHelp.h"
-#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMinMax.h"
-#include "../aspects/AspectMouse.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectVisible.h"
-#include "../xCeption.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -83,27 +73,18 @@ namespace SmartWin
   */
 template< class Policy >
 class Frame :
-	public MessageMap< Policy >,
+	public Control< Policy >,
 
 	// Aspects
 	public AspectActivate< Frame< Policy > >,
-	public AspectBorder< Frame< Policy > >,
 	public AspectCommand< Frame< Policy > >,
-	public AspectContextMenu< Frame< Policy > >,
 	public AspectDragDrop< Frame< Policy > >,
-	public AspectEnabled< Frame< Policy > >,
 	public AspectEraseBackground< Frame< Policy > >,
 	public AspectFocus< Frame< Policy > >,
 	public AspectFont< Frame< Policy > >,
-	public AspectHelp< Frame< Policy > >,
-	public AspectKeyboard< Frame< Policy > >,
 	public AspectMinMax<Frame<Policy> >,
-	public AspectMouse< Frame< Policy > >,
 	public AspectPainting< Frame< Policy > >,
-	public AspectRaw< Frame< Policy > >,
-	public AspectSizable< Frame< Policy > >,
-	public AspectText< Frame< Policy > >,
-	public AspectVisible< Frame< Policy > >
+	public AspectText< Frame< Policy > >
 {
 	struct CloseDispatcher
 	{
@@ -359,7 +340,7 @@ void Frame< Policy >::setCursor( const SmartUtil::tstring & filePathName )
 
 template< class Policy >
 Frame< Policy >::Frame( Widget * parent )
-	: Frame<Policy>::PolicyType( parent )
+	: Control<Policy>( parent )
 {
 }
 

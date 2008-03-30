@@ -104,7 +104,7 @@ class NoSection :
 template< class TypeOfStatusBar = NoSection >
 class StatusBar :
 	public TypeOfStatusBar,
-	public Control,
+	public CommonControl,
 	
 	// Aspects
 	public AspectClickable< StatusBar< TypeOfStatusBar > >,

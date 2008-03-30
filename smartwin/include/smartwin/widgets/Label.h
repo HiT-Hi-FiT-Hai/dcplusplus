@@ -60,7 +60,7 @@ class WidgetCreator;
   * It can load a bitmap.
   */
 class Label :
-	public Control,
+	public CommonControl,
 	// Aspects
 	public AspectClickable< Label >,
 	public AspectColor< Label >,

@@ -61,7 +61,7 @@ class WidgetCreator;
    */
 
 class Tree :
-	public Control,
+	public CommonControl,
 	// Aspects
 	public AspectClickable< Tree >,
 	public AspectCollection<Tree, HTREEITEM>,

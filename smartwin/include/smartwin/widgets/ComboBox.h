@@ -57,12 +57,12 @@ class WidgetCreator;
   * value at a time from a list of values.
   */
 class ComboBox :
+	public CommonControl,
 	// Aspects
 	public AspectClickable< ComboBox >,
 	public AspectCollection<ComboBox, int>,
 	public AspectColor< ComboBox >,
 	public AspectColorCtlImpl<ComboBox>,
-	public Control,
 	public AspectDblClickable< ComboBox >,
 	public AspectFocus< ComboBox >,
 	public AspectFont< ComboBox >,

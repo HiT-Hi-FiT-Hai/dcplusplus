@@ -54,7 +54,7 @@ class WidgetCreator;
   * declare a point in time within 1800 - 2100   
   */
 class DateTime :
-	public Control,
+	public CommonControl,
 	// Aspects
 	public AspectClickable< DateTime >,
 	public AspectFocus< DateTime >,

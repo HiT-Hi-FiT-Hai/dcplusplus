@@ -54,7 +54,7 @@ class WidgetCreator;
   * other for softer.
   */
 class Spinner :
-	public Control,
+	public CommonControl,
 	// Aspects
 	public AspectFocus< Spinner >,
 	public AspectPainting< Spinner >,

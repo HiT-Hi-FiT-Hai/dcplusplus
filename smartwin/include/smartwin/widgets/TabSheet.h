@@ -63,7 +63,7 @@ class WidgetCreator;
   * has.
   */
 class TabSheet :
-	public Control,
+	public CommonControl,
 	// Aspects
 	public AspectCollection<TabSheet, int>,
 	public AspectFocus< TabSheet >,

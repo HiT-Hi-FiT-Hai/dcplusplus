@@ -159,6 +159,7 @@ private:
 	void handleWhatsThis();
 	void handleSize();
 	void handleActivate(bool active);
+	void handleForward(WPARAM wParam);
 	LRESULT handleEndSession();
 	LRESULT handleTrayIcon(LPARAM lParam);
 	
