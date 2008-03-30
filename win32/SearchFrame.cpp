@@ -667,7 +667,7 @@ void SearchFrame::handleDownloadTo() {
 
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + si->columns[COLUMN_FILENAME];
-			if(WinUtil::browseFile(target, handle())) {
+			if(WinUtil::browseSaveFile(createSaveDialog(), target)) {
 				WinUtil::addLastDir(Util::getFilePath(target));
 				results->forEachSelectedT(SearchInfo::DownloadTarget(target));
 			}

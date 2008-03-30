@@ -703,23 +703,8 @@ void QueueFrame::moveSelected() {
 		// Single file, get the full filename and move...
 		QueueItemInfo* ii = files->getSelectedData();
 		tstring target = Text::toT(ii->getTarget());
-		tstring ext = Util::getFileExt(target);
-		tstring ext2;
-		if (!ext.empty())
-		{
-			ext = ext.substr(1); // remove leading dot so default extension works when browsing for file
-			ext2 = _T("*.") + ext;
-			ext2 += (TCHAR)0;
-			ext2 += _T("*.") + ext;
-		}
-		ext2 += _T("*.*");
-		ext2 += (TCHAR)0;
-		ext2 += _T("*.*");
-		ext2 += (TCHAR)0;
-
-		tstring path = Text::toT(ii->getPath());
 		
-		if(WinUtil::browseFile(target, handle(), true, path, ext2.c_str(), ext.empty() ? NULL : ext.c_str())) {
+		if(WinUtil::browseSaveFile(createSaveDialog(), target)) {
 			QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(target));
 		}
 	} else if(n > 1) {

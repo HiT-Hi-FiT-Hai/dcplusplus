@@ -90,13 +90,13 @@ void CertificatesPage::write() {
 
 void CertificatesPage::handleBrowsePrivateKeyClicked() {
 	tstring target = privateKeyFile->getText();
-	if(WinUtil::browseFile(target, handle(), false, target))
+	if(createLoadDialog().setInitialDirectory(target).open(target))
 		privateKeyFile->setText(target);
 }
 
 void CertificatesPage::handleBrowseCertificateClicked() {
 	tstring target = certificateFile->getText();
-	if(WinUtil::browseFile(target, handle(), false, target))
+	if(createLoadDialog().setInitialDirectory(target).open(target))
 		certificateFile->setText(target);
 }
 

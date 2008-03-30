@@ -254,7 +254,7 @@ public:
 	/// Creates a LoadFileDialog and returns a pointer to it.
 	/** Use this one to construct a ( stack object ) to show a Load File Dialog
 	  */
-	LoadDialog createLoadFile();
+	LoadDialog createLoadDialog();
 
 	/// Creates a SaveFileDialog and returns a pointer to it.
 	/** Use this one to construct a ( stack object ) to show a Save File Dialog
@@ -486,7 +486,7 @@ WidgetFactory< ContainerWidgetType >::createFolderDialog()
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::LoadDialog
-WidgetFactory< ContainerWidgetType >::createLoadFile()
+WidgetFactory< ContainerWidgetType >::createLoadDialog()
 {
 	return LoadDialog ( this );
 }

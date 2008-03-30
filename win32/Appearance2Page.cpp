@@ -157,7 +157,7 @@ void Appearance2Page::handleBrowseClicked() {
 	::GetDlgItemText(handle(), IDC_BEEPFILE, buf, MAX_PATH);
 	tstring x = buf;
 
-	if(WinUtil::browseFile(x, handle(), false) == IDOK) {
+	if(createLoadDialog().open(x)) {
 		setItemText(IDC_BEEPFILE, x);
 	}
 }

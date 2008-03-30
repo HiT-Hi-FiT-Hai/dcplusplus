@@ -154,8 +154,9 @@ public:
 	static void addLastDir(const tstring& dir);
 
 	static void openLink(const tstring& url);
-	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringT, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
-
+	static bool browseSaveFile(SmartWin::SaveDialog dialog, tstring& file);
+	static bool browseFileList(SmartWin::LoadDialog dialog, tstring& file);
+	
 	static int getOsMajor();
 	static int getOsMinor();
 

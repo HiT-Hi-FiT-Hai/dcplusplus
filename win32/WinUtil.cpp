@@ -402,31 +402,26 @@ void WinUtil::addLastDir(const tstring& dir) {
 	lastDirs.push_back(dir);
 }
 
-bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
-	TCHAR buf[MAX_PATH];
-	OPENFILENAME ofn = { 0 };		// common dialog box structure
-	target = Text::toT(Util::validateFileName(Text::fromT(target)));
-	_tcscpy(buf, target.c_str());
-	// Initialize OPENFILENAME
-	ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400;
-	ofn.hwndOwner = owner;
-	ofn.lpstrFile = buf;
-	ofn.lpstrFilter = types;
-	ofn.lpstrDefExt = defExt;
-	ofn.nFilterIndex = 1;
-
-	if(!initialDir.empty()) {
-		ofn.lpstrInitialDir = initialDir.c_str();
+bool WinUtil::browseSaveFile(SmartWin::SaveDialog dlg, tstring& file) {
+	tstring ext = Util::getFileExt(file);
+	tstring path = Util::getFilePath(file);
+	
+	if(!ext.empty()) {
+		ext = ext.substr(1); // remove leading dot so default extension works when browsing for file
+		dlg.addFilter(str(TF_("%1% files") % ext), _T("*.") + ext);
+		dlg.setDefaultExtension(ext);
 	}
-	ofn.nMaxFile = sizeof(buf);
-	ofn.Flags = (save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST);
+	dlg.addFilter(T_("All files"), _T("*.*"));
+	dlg.setInitialDirectory(path);
+	
+	return dlg.open(file);
+}
 
-	// Display the Open dialog box.
-	if ( (save ? ::GetSaveFileName(&ofn) : ::GetOpenFileName(&ofn) ) ==TRUE) {
-		target = ofn.lpstrFile;
-		return true;
-	}
-	return false;
+bool WinUtil::browseFileList(SmartWin::LoadDialog dialog, tstring& file) {
+	return dialog.addFilter(T_("File Lists"), _T("*.xml.bz2"))
+		.addFilter(T_("All files"), _T("*.*"))
+		.setInitialDirectory(Text::toT(Util::getListPath()))
+		.open(file);
 }
 
 int WinUtil::getOsMajor() {

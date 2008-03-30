@@ -78,6 +78,7 @@ public:
 	
 	WidgetType& setDefaultExtension(const SmartUtil::tstring& defExt) {
 		itsDefExt = defExt;
+		return *static_cast<WidgetType*>(this);
 	}
 
 	/// Returns the active filter of the object

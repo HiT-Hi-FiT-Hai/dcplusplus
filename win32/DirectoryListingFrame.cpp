@@ -260,7 +260,7 @@ void DirectoryListingFrame::handleMatchQueue() {
 
 void DirectoryListingFrame::handleListDiff() {
 	tstring file;
-	if(WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), _T("File Lists\0*.xml.bz2\0All Files\0*.*\0"))) {
+	if(WinUtil::browseFileList(createLoadDialog(), file)) {
 		DirectoryListing dirList(dl->getUser());
 		try {
 			dirList.loadFile(Text::fromT(file));
@@ -493,7 +493,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 			try {
 				if(ii->type == ItemInfo::FILE) {
 					tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + ii->getText(COLUMN_FILENAME);
-					if(WinUtil::browseFile(target, handle())) {
+					if(createSaveDialog().open(target)) {
 						WinUtil::addLastDir(Util::getFilePath(target));
 						dl->download(ii->file, Text::fromT(target), false, WinUtil::isShift());
 					}

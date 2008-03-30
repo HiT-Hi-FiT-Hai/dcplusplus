@@ -696,11 +696,9 @@ void MainWindow::stopUPnP() {
 	UPnP_TCPConnection = UPnP_UDPConnection = NULL;
 }
 
-static const TCHAR types[]= _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");
-
 void MainWindow::handleOpenFileList() {
 	tstring file;
-	if (WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), types)) {
+	if(WinUtil::browseFileList(createLoadDialog(), file)) {
 		UserPtr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
 		if (u) {
 			DirectoryListingFrame::openWindow(getMDIParent(), file, Text::toT(Util::emptyString), u, 0);
