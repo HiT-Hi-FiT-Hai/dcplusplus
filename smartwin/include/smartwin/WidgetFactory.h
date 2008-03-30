@@ -259,7 +259,7 @@ public:
 	/// Creates a SaveFileDialog and returns a pointer to it.
 	/** Use this one to construct a ( stack object ) to show a Save File Dialog
 	  */
-	SaveDialog createSaveFile();
+	SaveDialog createSaveDialog();
 
 	/// Creates a ColorDialog and returns it.
 	/** Usable to let user choose font from the system installed fonts.
@@ -493,7 +493,7 @@ WidgetFactory< ContainerWidgetType >::createLoadFile()
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::SaveDialog
-WidgetFactory< ContainerWidgetType >::createSaveFile()
+WidgetFactory< ContainerWidgetType >::createSaveDialog()
 {
 	return SaveDialog ( this );
 }
