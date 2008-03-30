@@ -387,18 +387,8 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	ItemDataWrapper * wrapper = reinterpret_cast< ItemDataWrapper * >( drawInfo->itemData );
 	xAssert( wrapper != 0, _T( "Unsupported menu item in drawItem()" ) );
 
-	// setup colors
-	MenuColorInfo colorInfo = wrapper->menu->itsColorInfo;
-	COLORREF colorMenuBar = colorInfo.colorMenuBar;
-	COLORREF colorMenuDraw = colorInfo.colorMenu; // color for drawing menu
-	COLORREF colorFillHighlighted = ColorUtilities::lightenColor( colorInfo.colorHighlight, 0.7 );
-
 	// if processing menu bar
 	const bool isMenuBar = ::GetMenu( wrapper->menu->getParent()->handle() ) == wrapper->menu->handle();
-
-	// change menu draw color for menubars
-	if ( isMenuBar )
-		colorMenuDraw = colorMenuBar;
 
 	// init struct for menu item info
 	MENUITEMINFO info;
@@ -493,6 +483,8 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		itemRectangle.size.x -= sidebarWidth;
 	}
 
+	const MenuColorInfo& colorInfo = wrapper->menu->itsColorInfo;
+
 	// draw sidebar with menu title
 	if ( ( drawInfo->itemAction & ODA_DRAWENTIRE ) && ( wrapper->menu->drawSidebar ) && !wrapper->menu->itsTitle.empty() )
 	{
@@ -512,7 +504,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		Rectangle textRectangle( 0, 0, sidebarWidth, rect.bottom - rect.top );
 
 		// draw background
-		Brush brush ( colorInfo.colorMenuBar );
+		Brush brush ( colorInfo.colorStrip );
 		canvas.fillRectangle( textRectangle, brush );
 
 		// draw title
@@ -531,19 +523,9 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	::DeleteObject( titleFont );
 
 	// set item background
-	if ( wrapper->isMenuTitleItem ) // for title
 	{
-		Brush brush ( colorMenuBar );
-		canvas.fillRectangle( itemRectangle, brush );
-
-		// draw raised border
-		RECT rc( itemRectangle );
-		::DrawEdge( canvas.handle(), & rc, EDGE_RAISED, BF_RECT );
-	}
-	else // for normal items
-	{
-		Brush brush ( colorMenuDraw );
-		canvas.fillRectangle( itemRectangle, brush );
+		Brush brush((wrapper->isMenuTitleItem || isMenuBar) ? colorInfo.colorStrip : colorInfo.colorMenu);
+		canvas.fillRectangle(itemRectangle, brush);
 	}
 
 	if ( isMenuBar && isSelected ) // draw selected menu bar item
@@ -554,8 +536,6 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		// and brush for filling item
 		COLORREF colorBorder = 0;
 		Canvas::Selector select_pen(canvas, *PenPtr(new Pen(colorBorder)));
-		Canvas::Selector select_brush(canvas, *BrushPtr(new Brush(ColorUtilities::lightenColor( colorMenuBar, 0.5 ))));
-
 		canvas.rectangle( itemRectangle );
 	} // end if
 	else if ( ( isSelected || isHighlighted ) && !isDisabled ) // draw selected or highlighted menu item (if not inactive)
@@ -563,7 +543,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		// select pen for drawing broder
 		// and brush for filling item
 		Canvas::Selector select_pen(canvas, *PenPtr(new Pen(colorInfo.colorHighlight)));
-		Canvas::Selector select_brush(canvas, *BrushPtr(new Brush(colorFillHighlighted)));
+		Canvas::Selector select_brush(canvas, *BrushPtr(new Brush(ColorUtilities::lightenColor( colorInfo.colorHighlight, 0.7 ))));
 
 		canvas.rectangle( itemRectangle );
 	} // end if
