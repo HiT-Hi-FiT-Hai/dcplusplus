@@ -87,9 +87,9 @@ class NoSection :
   * \image html status.PNG
   * Class for creating a Status Bar Control. <br>
   * A status bar is a status info line normally residing in the bottom of a
-  * WidgetWindow or other container type of Widget. <br>
+  * Window or other container type of Widget. <br>
   * You can then send text to that window to show e.g. "status info" regarding the
-  * WidgetWindow which owns the Status Bar Control. A good example of an application
+  * Window which owns the Status Bar Control. A good example of an application
   * with a status bar is for instance Internet Explorer which ( unless you have made
   * it invisible ) has a strip of status information at the bottom showing for
   * instance the security settings of the current page and how far in the download
@@ -140,8 +140,8 @@ public:
 	  * status bar, typical example is when you have resized the container Widget.
 	  * <br>
 	  * Normally you would call this function after _EVERY_ single resize the main
-	  * WidgetWindow which owns the status bar gets. <br>
-	  * Call this one in the onSized event handler for your WidgetWindow.
+	  * Window which owns the status bar gets. <br>
+	  * Call this one in the onSized event handler for your Window.
 	  */
 	void refresh();
 

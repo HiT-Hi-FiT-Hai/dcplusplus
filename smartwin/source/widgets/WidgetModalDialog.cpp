@@ -1,8 +1,8 @@
-#include "../../include/smartwin/widgets/WidgetModalDialog.h"
+#include "../../include/smartwin/widgets/ModalDialog.h"
 
 namespace SmartWin {
 
-int WidgetModalDialog::createDialog( unsigned resourceId )
+int ModalDialog::createDialog( unsigned resourceId )
 {
 	// this will not return until the dialog is closed by calling endDialog() with
 	// a retv
@@ -21,7 +21,7 @@ int WidgetModalDialog::createDialog( unsigned resourceId )
 	return static_cast< int >( retv );
 }
 
-int WidgetModalDialog::createDialog()
+int ModalDialog::createDialog()
 {
 	// Arrange so the DLGTEMPLATE is followed by 0000 for menu, winclass and title.
 	unsigned char dlg_menu_winclass_title[ sizeof( DLGTEMPLATE ) + 30 ];

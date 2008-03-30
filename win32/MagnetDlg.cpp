@@ -25,7 +25,7 @@
 #include "WinUtil.h"
 
 MagnetDlg::MagnetDlg(SmartWin::Widget* parent, const tstring& aHash, const tstring& aFileName) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	WidgetFactory<SmartWin::ModalDialog>(parent),
 	//queue(0),
 	search(0),
 	doNothing(0),

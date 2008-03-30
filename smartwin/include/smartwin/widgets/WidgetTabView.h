@@ -3,7 +3,7 @@
 
 #include "TabSheet.h"
 #include "ToolTip.h"
-#include "WidgetWindow.h"
+#include "Window.h"
 #include "../WindowClass.h"
 #include <list>
 #include <vector>
@@ -13,7 +13,7 @@ namespace SmartWin {
  * A container that keeps widgets in tabs and handles switching etc
  */
 class WidgetTabView :
-	public MessageMapPolicy< Policies::Normal >,
+	public MessageMap< Policies::Normal >,
 
 	public AspectRaw<WidgetTabView>,
 	public AspectSizable<WidgetTabView>
@@ -25,7 +25,7 @@ public:
 	/// Object type
 	typedef ThisType * ObjectType;
 	
-	typedef MessageMapPolicy<Policies::Normal> PolicyType;
+	typedef MessageMap<Policies::Normal> PolicyType;
 
 	class Seed : public Widget::Seed {
 	public:

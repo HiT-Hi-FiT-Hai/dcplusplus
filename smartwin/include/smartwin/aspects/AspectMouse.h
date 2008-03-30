@@ -78,7 +78,7 @@ struct MouseEventResult
 /// Aspect class used by Widgets that have the possibility of trapping "mouse
 /// clicked" events.
 /** \ingroup AspectClasses
-  * E.g. the WidgetWindow can trap "mouse clicked events" therefore it realize the
+  * E.g. the Window can trap "mouse clicked events" therefore it realize the
   * AspectMouse through inheritance.
   */
 template< class WidgetType >

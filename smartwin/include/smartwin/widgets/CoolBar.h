@@ -69,7 +69,7 @@ class WidgetCreator;
   * complex Widgets lke for instance a ComboBox, a TextBox and so on...          
   */
 class CoolBar :
-	public MessageMapPolicy< Policies::Subclassed >,
+	public MessageMap< Policies::Subclassed >,
 
 	// Aspects
 	public AspectEnabled< CoolBar >,
@@ -100,8 +100,6 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
-
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

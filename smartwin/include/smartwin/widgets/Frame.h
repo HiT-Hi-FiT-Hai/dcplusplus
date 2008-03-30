@@ -25,8 +25,8 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WidgetWindowBase_h
-#define WidgetWindowBase_h
+#ifndef Frame_h
+#define Frame_h
 
 #include "../Application.h"
 #include "../Rectangle.h"
@@ -66,14 +66,14 @@ namespace SmartWin
   * as the first template parameter. <br>
   * The second parameter would then be YOUR CLASS. <br>
   * Example <br>
-  * <b>class MyMainWindow : public SmartWin::WidgetFactory<SmartWin::WidgetWindow, 
+  * <b>class MyMainWindow : public SmartWin::WidgetFactory<SmartWin::Window, 
   * MyMainWindow> { ... };</b> <br>
   * Note especially that the second template argument to the WidgetFactory template 
   * class would almost ALWAYS be the name of your class derived from WidgetFactory. 
   * <br>
-  * You can also derive directly from WidgetWindow and skip around the WidgetFactory 
+  * You can also derive directly from Window and skip around the WidgetFactory 
   * factory class, the inheritance string would then become: <br>
-  * <b>class MyMainWindow : public SmartWin::WidgetWindow<MyMainWindow></b> <br>
+  * <b>class MyMainWindow : public SmartWin::Window<MyMainWindow></b> <br>
   * But then you wouldn't have access to all the "createxxx" functions from class 
   * WidgetFactory which automatically gurantees that your Widgets get the right parent 
   * etc. <br>
@@ -82,28 +82,28 @@ namespace SmartWin
   * use  this class with the factory class WidgetFactory.   
   */
 template< class Policy >
-class WidgetWindowBase :
-	public MessageMapPolicy< Policy >,
+class Frame :
+	public MessageMap< Policy >,
 
 	// Aspects
-	public AspectActivate< WidgetWindowBase< Policy > >,
-	public AspectBorder< WidgetWindowBase< Policy > >,
-	public AspectCommand< WidgetWindowBase< Policy > >,
-	public AspectContextMenu< WidgetWindowBase< Policy > >,
-	public AspectDragDrop< WidgetWindowBase< Policy > >,
-	public AspectEnabled< WidgetWindowBase< Policy > >,
-	public AspectEraseBackground< WidgetWindowBase< Policy > >,
-	public AspectFocus< WidgetWindowBase< Policy > >,
-	public AspectFont< WidgetWindowBase< Policy > >,
-	public AspectHelp< WidgetWindowBase< Policy > >,
-	public AspectKeyboard< WidgetWindowBase< Policy > >,
-	public AspectMinMax<WidgetWindowBase<Policy> >,
-	public AspectMouse< WidgetWindowBase< Policy > >,
-	public AspectPainting< WidgetWindowBase< Policy > >,
-	public AspectRaw< WidgetWindowBase< Policy > >,
-	public AspectSizable< WidgetWindowBase< Policy > >,
-	public AspectText< WidgetWindowBase< Policy > >,
-	public AspectVisible< WidgetWindowBase< Policy > >
+	public AspectActivate< Frame< Policy > >,
+	public AspectBorder< Frame< Policy > >,
+	public AspectCommand< Frame< Policy > >,
+	public AspectContextMenu< Frame< Policy > >,
+	public AspectDragDrop< Frame< Policy > >,
+	public AspectEnabled< Frame< Policy > >,
+	public AspectEraseBackground< Frame< Policy > >,
+	public AspectFocus< Frame< Policy > >,
+	public AspectFont< Frame< Policy > >,
+	public AspectHelp< Frame< Policy > >,
+	public AspectKeyboard< Frame< Policy > >,
+	public AspectMinMax<Frame<Policy> >,
+	public AspectMouse< Frame< Policy > >,
+	public AspectPainting< Frame< Policy > >,
+	public AspectRaw< Frame< Policy > >,
+	public AspectSizable< Frame< Policy > >,
+	public AspectText< Frame< Policy > >,
+	public AspectVisible< Frame< Policy > >
 {
 	struct CloseDispatcher
 	{
@@ -146,13 +146,11 @@ class WidgetWindowBase :
 
 public:
 	/// Class type
-	typedef WidgetWindowBase< Policy > ThisType;
+	typedef Frame< Policy > ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
 
-	typedef MessageMapPolicy< Policy > PolicyType;
-	
 	// TODO: Outfactor into WidgetClosable
 	/// Event Handler setter for the Closing Event
 	/** If supplied event handler is called before the window is closed. <br>
@@ -243,11 +241,11 @@ public:
 
 protected:
 	// Protected since this Widget we HAVE to inherit from
-	explicit WidgetWindowBase( Widget * parent = 0 );
+	explicit Frame( Widget * parent = 0 );
 
 	// Protected to avoid direct instantiation, you can inherit but NOT instantiate
 	// directly
-	virtual ~WidgetWindowBase()
+	virtual ~Frame()
 	{}
 
 
@@ -258,7 +256,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template< class Policy >
-void WidgetWindowBase< Policy >::createTimer( const typename TimerDispatcher::F& f,
+void Frame< Policy >::createTimer( const typename TimerDispatcher::F& f,
 	unsigned int milliSecond, unsigned int id)
 {
 
@@ -269,7 +267,7 @@ void WidgetWindowBase< Policy >::createTimer( const typename TimerDispatcher::F&
 }
 
 template< class Policy >
-void WidgetWindowBase< Policy >::close( bool asyncron )
+void Frame< Policy >::close( bool asyncron )
 {
 	if ( asyncron )
 		this->postMessage(WM_CLOSE); // Return now
@@ -279,7 +277,7 @@ void WidgetWindowBase< Policy >::close( bool asyncron )
 
 #ifndef WINCE
 template< class Policy >
-void WidgetWindowBase< Policy >::animateSlide( bool show, bool left, unsigned int time )
+void Frame< Policy >::animateSlide( bool show, bool left, unsigned int time )
 {
 	::AnimateWindow( this->handle(), static_cast< DWORD >( time ),
 		show ?
@@ -293,75 +291,75 @@ void WidgetWindowBase< Policy >::animateSlide( bool show, bool left, unsigned in
 
 //HC: This function gives problems with some non-Microsoft visual styles
 template< class Policy >
-void WidgetWindowBase< Policy >::animateBlend( bool show, int msTime )
+void Frame< Policy >::animateBlend( bool show, int msTime )
 {
 	::AnimateWindow( this->handle(), static_cast< DWORD >( msTime ), show ? AW_BLEND : AW_HIDE | AW_BLEND );
 }
 
 template< class Policy >
-void WidgetWindowBase< Policy >::animateCollapse( bool show, int msTime )
+void Frame< Policy >::animateCollapse( bool show, int msTime )
 {
 	::AnimateWindow( this->handle(), static_cast< DWORD >( msTime ), show ? AW_CENTER : AW_HIDE | AW_CENTER );
 }
 #endif
 
 template< class Policy >
-void WidgetWindowBase< Policy >::setMinimizeBox( bool value )
+void Frame< Policy >::setMinimizeBox( bool value )
 {
 	Widget::addRemoveStyle( WS_MINIMIZEBOX, value );
 }
 
 template< class Policy >
-void WidgetWindowBase< Policy >::setMaximizeBox( bool value )
+void Frame< Policy >::setMaximizeBox( bool value )
 {
 	Widget::addRemoveStyle( WS_MAXIMIZEBOX, value );
 }
 
 template< class Policy >
-void WidgetWindowBase< Policy >::setIconSmall( int resourceId )
+void Frame< Policy >::setIconSmall( int resourceId )
 {
 	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR );
 	::SendMessage( this->handle(), WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
 template< class Policy >
-void WidgetWindowBase< Policy >::setIconLarge( int resourceId )
+void Frame< Policy >::setIconLarge( int resourceId )
 {
 	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE );
 	::SendMessage( this->handle(), WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
 template< class Policy >
-void WidgetWindowBase< Policy >::setIconSmall( const SmartUtil::tstring & filePathName )
+void Frame< Policy >::setIconSmall( const SmartUtil::tstring & filePathName )
 {
 	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR | LR_LOADFROMFILE );
 	::SendMessage( this->handle(), WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
 template< class Policy >
-void WidgetWindowBase< Policy >::setIconLarge( const SmartUtil::tstring & filePathName )
+void Frame< Policy >::setIconLarge( const SmartUtil::tstring & filePathName )
 {
 	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
 	::SendMessage( this->handle(), WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
 template< class Policy >
-void WidgetWindowBase< Policy >::setCursor( int resourceId )
+void Frame< Policy >::setCursor( int resourceId )
 {
 	HCURSOR hCur = ::LoadCursor( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) );
 	::SetClassLongPtr( this->handle(), GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
 }
 
 template< class Policy >
-void WidgetWindowBase< Policy >::setCursor( const SmartUtil::tstring & filePathName )
+void Frame< Policy >::setCursor( const SmartUtil::tstring & filePathName )
 {
 	HICON hCur = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
 	::SetClassLongPtr( this->handle(), GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
 }
 
 template< class Policy >
-WidgetWindowBase< Policy >::WidgetWindowBase( Widget * parent )
-	: PolicyType( parent )
+Frame< Policy >::Frame( Widget * parent )
+	: Frame<Policy>::PolicyType( parent )
 {
 }
 

@@ -28,7 +28,7 @@
 #include "LineDlg.h"
 
 HubListsDlg::HubListsDlg(SmartWin::Widget* parent) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	WidgetFactory<SmartWin::ModalDialog>(parent),
 	editBox(0),
 	hubLists(0)
 {

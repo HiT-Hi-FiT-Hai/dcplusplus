@@ -25,11 +25,11 @@
   OR TORT ( INCLUDING NEGLIGENCE OR OTHERWISE ) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WidgetModalDialog_h
-#define WidgetModalDialog_h
+#ifndef ModalDialog_h
+#define ModalDialog_h
 
 #include "../aspects/AspectDialog.h"
-#include "WidgetWindowBase.h"
+#include "Frame.h"
 
 namespace SmartWin
 {
@@ -42,10 +42,10 @@ namespace SmartWin
   * Use createDialog( unsigned resourceId ) if you define the dialog in a .rc file, 
   * and use createDialog() if you define the dialog completly in C++ source. <br>
   * Use the createDialog function to actually create a dialog. <br>
-  * Class is a public superclass of WidgetWindowBase and therefore can use all 
-  * features of WidgetWindowBase. <br>
+  * Class is a public superclass of Frame and therefore can use all 
+  * features of Frame. <br>
   * Note! <br>
-  * Usually you create a WidgetModalDialog on the stack. <br>
+  * Usually you create a ModalDialog on the stack. <br>
   * This Widget does NOT have selfdestructive semantics and should normally be 
   * constructed on the stack! <br>
   * The createDialog function does NOT return before the Widget is destroyed! <br>
@@ -54,9 +54,9 @@ namespace SmartWin
   * called before createDialog();   
   */
 
-class WidgetModalDialog : 
-	public WidgetWindowBase< Policies::ModalDialog >,
-	public AspectDialog<WidgetModalDialog >
+class ModalDialog : 
+	public Frame< Policies::ModalDialog >,
+	public AspectDialog<ModalDialog >
 {
 	struct Dispatcher
 	{
@@ -73,10 +73,10 @@ class WidgetModalDialog :
 	};
 
 public:
-	typedef WidgetWindowBase< Policies::ModalDialog > BaseType;
+	typedef Frame< Policies::ModalDialog > BaseType;
 	
 	/// Class type
-	typedef WidgetModalDialog ThisType;
+	typedef ModalDialog ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -116,7 +116,7 @@ public:
 	/// Ends the Modal Dialog Window started with createDialog().
 	/** Pass a return value for createDialog() and close the dialog. <br>
 	  * To be called by the dialog class when it should close. <br>
-	  * Note that the member variables of the WidgetModalDialog class still exist, 
+	  * Note that the member variables of the ModalDialog class still exist, 
 	  * but not any subwindows or Control Widgets.       
 	  */
 	void endDialog( int returnValue );
@@ -141,9 +141,9 @@ public:
 
 protected:
 	// Protected since this Widget we HAVE to inherit from
-	explicit WidgetModalDialog( Widget * parent = 0 );
+	explicit ModalDialog( Widget * parent = 0 );
 
-	virtual ~WidgetModalDialog()
+	virtual ~ModalDialog()
 	{}
 
 	/// Specify how a resourceless dialog's window appears.
@@ -168,7 +168,7 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetModalDialog::WidgetModalDialog( Widget * parent )
+inline ModalDialog::ModalDialog( Widget * parent )
 	: BaseType( parent )
 {
 	// Default parameters for pure modal dialogs
@@ -192,7 +192,7 @@ inline WidgetModalDialog::WidgetModalDialog( Widget * parent )
 // doing so.
 //
 
-inline void WidgetModalDialog::setDlgTemplate( DLGTEMPLATE inTemplate )
+inline void ModalDialog::setDlgTemplate( DLGTEMPLATE inTemplate )
 {
 	itsDefaultDlgTemplate = inTemplate;
 }
@@ -202,7 +202,7 @@ inline void WidgetModalDialog::setDlgTemplate( DLGTEMPLATE inTemplate )
 // calling layer.
 //
 
-inline void WidgetModalDialog::endDialog( int retv )
+inline void ModalDialog::endDialog( int retv )
 {
 	// Causes createDialog() to return with retv.
 	//

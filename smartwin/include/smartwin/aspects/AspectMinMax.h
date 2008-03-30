@@ -69,21 +69,21 @@ public:
 	/** This will make the window fill the whole area that the window has available.
 	  * <br>
 	  * This function cannot be called for any Widget types other than those derived
-	  * from WidgetWindowBase.
+	  * from Frame.
 	  */
 	void maximize();
 
 	/// Minimize your window
 	/** This will make the window become minimized. <br>
 	  * This function cannot be called for any Widget types other than those derived
-	  * from WidgetWindowBase.
+	  * from Frame.
 	  */
 	void minimize();
 
 	/// Restores your window
 	/** This will make the window become restored. <br>
 	  * This function cannot be called for any Widget types other than those derived
-	  * from WidgetWindowBase.
+	  * from Frame.
 	  */
 	void restore();
 

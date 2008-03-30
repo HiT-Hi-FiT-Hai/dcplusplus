@@ -234,7 +234,7 @@ public:
 	/// Sets the event handler for what function to be called when a label is edited.
 	/** Event handler signature is must be "bool foo( Tree *,
 	  * SmartUtil::tstring & )" and it must be contained as a member of the class
-	  * that is defined as the EventHandlerClass, normally either the WidgetWindow
+	  * that is defined as the EventHandlerClass, normally either the Window
 	  * derived class or the class derived from Tree. <br>
 	  * Return true from your event handler if you wish the label to actually become
 	  * updated or false if you want to disallow the item to actually become updated!

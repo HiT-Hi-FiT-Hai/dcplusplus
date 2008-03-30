@@ -25,7 +25,7 @@
 #include "AspectSpeaker.h"
 
 class AboutDlg :
-	public WidgetFactory<SmartWin::WidgetModalDialog>,
+	public WidgetFactory<SmartWin::ModalDialog>,
 	public AspectSpeaker<AboutDlg>,
 	private HttpConnectionListener
 {

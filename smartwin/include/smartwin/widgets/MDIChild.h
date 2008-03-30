@@ -36,7 +36,7 @@
 #include "../Policies.h"
 #include "../WindowClass.h"
 #include "MDIParent.h"
-#include "WidgetWindowBase.h"
+#include "Frame.h"
 #include <sstream>
 #include <boost/scoped_ptr.hpp>
 
@@ -51,7 +51,7 @@ namespace SmartWin
   * \WidgetUsageInfo
   * \image html mdi.PNG
   * Class for creating a MDI Child Widget. <br>
-  * An MDI Child is a Widget which is kind of like a special case of WidgetWindow, it 
+  * An MDI Child is a Widget which is kind of like a special case of Window, it 
   * exists only for two purposes which is 1. Contained in the MDIParent class 
   * and 2. To serve as a container widget for your control widgets. <br>
   * Use either the MDIParent::createMDIChild or inherit from this class and roll 
@@ -60,10 +60,10 @@ namespace SmartWin
   * MDIParent 
   */
 class MDIChild
-	: public WidgetWindowBase< Policies::MDIChild >
+	: public Frame< Policies::MDIChild >
 {
 public:
-	typedef WidgetWindowBase<Policies::MDIChild> BaseType;
+	typedef Frame<Policies::MDIChild> BaseType;
 	
 	/// Class type
 	typedef MDIChild ThisType;
@@ -93,7 +93,7 @@ public:
 	};
 
 	/// Creates a MDIChild Window
-	/** This version creates a MessageMapPolicyMDIChildWidget to plug into MDIParent
+	/** This version creates a MessageMapMDIChildWidget to plug into MDIParent
 	  * container window.
 	  */
 	void createMDIChild( Seed cs = Seed() );

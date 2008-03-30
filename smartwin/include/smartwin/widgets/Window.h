@@ -25,12 +25,12 @@
   OR TORT ( INCLUDING NEGLIGENCE OR OTHERWISE ) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WidgetWindow_h
-#define WidgetWindow_h
+#ifndef Window_h
+#define Window_h
 
 #include "../Rectangle.h"
 #include "../WindowClass.h"
-#include "WidgetWindowBase.h"
+#include "Frame.h"
 
 #include <boost/scoped_ptr.hpp>
 
@@ -48,15 +48,15 @@ class WidgetCreator;
   * Class for creating a "normal" window. <br>
   * A normal window is what most applications would use as the basic main structure, 
   * in it you can add other Widgets like for instance buttons, comboboxes etc. <br>
-  * A WidgetWindow is basically a container Widget for other Widgets to reside in. 
+  * A Window is basically a container Widget for other Widgets to reside in. 
   * <br>
-  * Class is a public superclass of WidgetWindowBase and therefore can use all 
-  * features of WidgetWindowBase.   
+  * Class is a public superclass of Frame and therefore can use all 
+  * features of Frame.   
   */
-class WidgetWindow
-	: public WidgetWindowBase< Policies::Normal >
+class Window
+	: public Frame< Policies::Normal >
 {
-	typedef WidgetWindowBase< Policies::Normal > BaseType;
+	typedef Frame< Policies::Normal > BaseType;
 	struct CreateDispatcher
 	{
 		typedef std::tr1::function<void (const CREATESTRUCT&)> F;
@@ -77,7 +77,7 @@ class WidgetWindow
 
 public:
 	/// Class type
-	typedef WidgetWindow ThisType;
+	typedef Window ThisType;
 
 	/// Object type
 	typedef ThisType* ObjectType;
@@ -91,7 +91,7 @@ public:
 		: public Widget::Seed
 	{
 	public:
-		typedef WidgetWindow::ThisType WidgetType;
+		typedef Window::ThisType WidgetType;
 
 		IconPtr icon;
 		IconPtr smallIcon;
@@ -105,7 +105,7 @@ public:
 
 	/// Actually creates the window
 	/** This one creates the window. <br>
-	  * All WidgetWindows, and classes derived from them must create the Window
+	  * All Windows, and classes derived from them must create the Window
 	  * before using it with functions such as setBounds() or setVisible( false ). <br>
       * The simple version "createWindow()" uses a default Seed for the window attributes.
 	  * The seed is not taken a constant because the class name will be generated at registration.
@@ -160,15 +160,15 @@ public:
 
 protected:
 	// Protected since this Widget we HAVE to inherit from
-	explicit WidgetWindow( Widget * parent = 0 );
+	explicit Window( Widget * parent = 0 );
 
-	virtual ~WidgetWindow();
+	virtual ~Window();
 private:
 	boost::scoped_ptr<WindowClass> windowClass;
 };
 
 class WidgetChildWindow
-	: public WidgetWindow
+	: public Window
 {
 public:
 	typedef WidgetChildWindow ThisType;
@@ -180,30 +180,30 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public WidgetWindow::Seed
+		: public Window::Seed
 	{
 	public:
 		/// Fills with default parameters
 		Seed();
 	};
 
-	//TODO: This could be specialized to take WNDPROC from MessageMapPolicy
+	//TODO: This could be specialized to take WNDPROC from MessageMap
 	/// Actually creates the window
 	/** This one creates the window. It is implemented in case somebody wants to use
 	  * createWindow() without parameters. If it wasn't declared, the compiler would
-	  * call WidgetWindow::create with WidgetWindow::Seed, which wouldn't
+	  * call Window::create with Window::Seed, which wouldn't
 	  * create a child window.
 	  */
 	void createWindow( const Seed& cs = Seed() )
 	{
-		WidgetWindow::createWindow( cs );
+		Window::createWindow( cs );
 	}
 
 protected:
 	friend class WidgetCreator<WidgetChildWindow>;
 	
-	// Unlike WidgetWindow, WidgetChildWindow must have a parent!!!
-	explicit WidgetChildWindow( Widget * parent ) : WidgetWindow( parent ) 
+	// Unlike Window, WidgetChildWindow must have a parent!!!
+	explicit WidgetChildWindow( Widget * parent ) : Window( parent ) 
 	{};
 };
 
@@ -211,21 +211,21 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetWindow::WidgetWindow( Widget * parent )
+inline Window::Window( Widget * parent )
 	: BaseType( parent )
 {}
 
-inline WidgetWindow::~WidgetWindow()
+inline Window::~Window()
 {
 }
 
-inline void WidgetWindow::createInvisibleWindow( Seed cs )
+inline void Window::createInvisibleWindow( Seed cs )
 {
 	cs.style=  cs.style & ( ~ WS_VISIBLE );
-	WidgetWindow::createWindow( cs );
+	Window::createWindow( cs );
 }
 
-inline void WidgetWindow::activatePreviousInstance()
+inline void Window::activatePreviousInstance()
 {
 #ifdef PORT_ME
 	int iTries = 5;

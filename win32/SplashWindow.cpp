@@ -26,13 +26,13 @@
 
 #include "WinUtil.h"
 
-SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0) {
+SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::Window>(0) {
 	{
 		Seed cs;
 		cs.style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 		cs.exStyle = WS_EX_STATICEDGE;
 		cs.caption = _T(APPNAME);
-		tmp = new SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0);
+		tmp = new SmartWin::WidgetFactory<SmartWin::Window>(0);
 		tmp->createWindow(cs);
 	}
 	{

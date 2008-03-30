@@ -47,7 +47,7 @@ static const WinUtil::HelpItem helpItems[] = {
 };
 
 ADLSProperties::ADLSProperties(SmartWin::Widget* parent, ADLSearch *_search) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	WidgetFactory<SmartWin::ModalDialog>(parent),
 	searchString(0),
 	searchType(0),
 	minSize(0),

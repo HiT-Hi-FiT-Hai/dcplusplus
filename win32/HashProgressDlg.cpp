@@ -25,7 +25,7 @@
 #include <dcpp/HashManager.h>
 
 HashProgressDlg::HashProgressDlg(SmartWin::Widget* parent, bool aAutoClose) :
-	SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	SmartWin::WidgetFactory<SmartWin::ModalDialog>(parent),
 	progress(0),
 	autoClose(aAutoClose)
 {

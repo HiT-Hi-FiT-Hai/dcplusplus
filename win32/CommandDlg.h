@@ -22,7 +22,7 @@
 #include <dcpp/Util.h>
 #include "WidgetFactory.h"
 
-class CommandDlg : public WidgetFactory<SmartWin::WidgetModalDialog>
+class CommandDlg : public WidgetFactory<SmartWin::ModalDialog>
 {
 public:
 	CommandDlg(SmartWin::Widget* parent, int type_ = 0, int ctx_ = 0, const tstring& name_ = Util::emptyStringT, const tstring& command_ = Util::emptyStringT, const tstring& hub_ = Util::emptyStringT);

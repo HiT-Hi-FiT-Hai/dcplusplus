@@ -31,7 +31,7 @@
 #include "../WindowsHeaders.h"
 #include "../Rectangle.h"
 #include "../WindowClass.h"
-#include "WidgetWindowBase.h"
+#include "Frame.h"
 #include <boost/scoped_ptr.hpp>
 
 namespace SmartWin
@@ -53,9 +53,9 @@ class MDIParent;
   * features of MDIFrameBase.   
   */
 class MDIFrame
-	: public WidgetWindowBase< Policies::MDIFrame<MDIFrame > >
+	: public Frame< Policies::MDIFrame<MDIFrame > >
 {
-	typedef WidgetWindowBase< Policies::MDIFrame<MDIFrame > > BaseType;
+	typedef Frame< Policies::MDIFrame<MDIFrame > > BaseType;
 
 public:
 	/// Class type

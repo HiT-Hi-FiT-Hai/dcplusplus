@@ -27,7 +27,7 @@
 
 #include "WidgetFactory.h"
 
-class MagnetDlg : public WidgetFactory<SmartWin::WidgetModalDialog>
+class MagnetDlg : public WidgetFactory<SmartWin::ModalDialog>
 {
 public:
 	MagnetDlg(SmartWin::Widget* parent, const tstring& aHash, const tstring& aFileName);

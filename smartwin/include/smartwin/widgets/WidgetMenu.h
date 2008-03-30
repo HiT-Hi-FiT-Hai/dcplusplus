@@ -122,7 +122,7 @@ struct MenuColorInfo
 * \WidgetUsageInfo
 * \image html menu.png
 * Class for creating a Menu Control which then can be attached to e.g. a
-* WidgetWindow. <br>
+* Window. <br>
 * Note for Desktop version only! <br>
 */
 class WidgetMenu : public boost::noncopyable
@@ -276,7 +276,7 @@ public:
 	* Event handler's signature must be "void foo( ObjectType, unsigned
 	* int )" and it must be contained as a member <br>
 	* of the class that is defined as the Widget, normally either the
-	* WidgetWindow derived class or the class derived from WidgetMenu. <br>
+	* Window derived class or the class derived from WidgetMenu. <br>
 	* See e.g. WidgetMenu for an example. <br>
 	* The reason to why we have this "id" is because the same event handler can be
 	* defined for several menu items even in fact across menu objects, therefore

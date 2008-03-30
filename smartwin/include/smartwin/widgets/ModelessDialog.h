@@ -25,11 +25,11 @@
   OR TORT ( INCLUDING NEGLIGENCE OR OTHERWISE ) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WidgetDialog_h
-#define WidgetDialog_h
+#ifndef ModelessDialog_h
+#define ModelessDialog_h
 
 #include "../aspects/AspectDialog.h"
-#include "WidgetWindowBase.h"
+#include "Frame.h"
 
 namespace SmartWin
 {
@@ -41,17 +41,17 @@ namespace SmartWin
   * \image html dialog.PNG
   * Class for creating a Modeless Dialog based upon an embedded resource. <br>
   * Use the createDialog function to actually create a dialog. <br>
-  * Class is a public superclass of WidgetWindowBase and therefor can use all features 
-  * of WidgetWindowBase. 
+  * Class is a public superclass of Frame and therefor can use all features 
+  * of Frame. 
   */
-class WidgetDialog :
-	public WidgetWindowBase< Policies::Dialog >,
-	public AspectDialog<WidgetDialog >
+class ModelessDialog :
+	public Frame< Policies::ModelessDialog >,
+	public AspectDialog<ModelessDialog >
 {
 public:
-	typedef WidgetWindowBase< Policies::Dialog > BaseType;
+	typedef Frame< Policies::ModelessDialog > BaseType;
 	/// Class type
-	typedef WidgetDialog ThisType;
+	typedef ModelessDialog ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -63,16 +63,16 @@ public:
 
 protected:
 	// Protected since this Widget we HAVE to inherit from
-	explicit WidgetDialog( Widget * parent = 0 );
+	explicit ModelessDialog( Widget * parent = 0 );
 
-	virtual ~WidgetDialog()
+	virtual ~ModelessDialog()
 	{}
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline WidgetDialog::WidgetDialog( Widget * parent )
+inline ModelessDialog::ModelessDialog( Widget * parent )
 	: BaseType( parent )
 {}
 

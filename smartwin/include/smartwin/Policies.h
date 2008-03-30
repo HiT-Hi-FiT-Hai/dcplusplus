@@ -35,11 +35,11 @@ namespace SmartWin
 // begin namespace SmartWin
 
 template<typename Policy>
-class MessageMapPolicy : public Policy {
+class MessageMap : public Policy {
 public:
-	typedef MessageMapPolicy<Policy> PolicyType;
+	typedef MessageMap<Policy> PolicyType;
 	
-	MessageMapPolicy(Widget* parent) : Policy(parent) { }
+	MessageMap(Widget* parent) : Policy(parent) { }
 
 	static LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		// Check if this is an init type message - a message that will set the window pointer correctly
@@ -119,15 +119,12 @@ private:
 };
 
 namespace Policies {
-/// Aspect classes for a MessageMapPolicyDialogWidget
-/** Used as the third template argument to WidgetFactory if you're creating a
-  * MessageMapPolicyDialogWidget
-  */
-class Dialog
+/// Policy for modeless dialogs
+class ModelessDialog
 	: public Widget
 {
 public:
-	Dialog(Widget* parent) : Widget(parent) { }
+	ModelessDialog(Widget* parent) : Widget(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
 		return FALSE;
@@ -162,21 +159,18 @@ public:
 		if ( uMsg == WM_INITDIALOG )
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
-			Dialog* This = reinterpret_cast<Dialog*>(lParam);
+			ModelessDialog* This = reinterpret_cast<ModelessDialog*>(lParam);
 			This->attach( hwnd );
 		}
 	}
 };
 
-/// Aspect classes for a MessageMapPolicyModalDialogWidget
-/** Used as the third template argument to WidgetFactory if you're creating a
-  * MessageMapPolicyModalDialogWidget
-  */
+/// Policy for modal dialogs - these are treated the same as modeless dialogs but are not automagically deleted
 class ModalDialog
-	: public Dialog
+	: public ModelessDialog
 {
 public:
-	ModalDialog(Widget* parent) : Dialog(parent) { }
+	ModalDialog(Widget* parent) : ModelessDialog(parent) { }
 	
 	virtual void kill() {
 		// Modal dialogs are stack allocated, so no delete
@@ -242,7 +236,7 @@ public:
 	
 	virtual void attach(HWND hWnd) {
 		Normal::attach(hWnd);
-		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( hWnd, GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
+		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( hWnd, GWL_WNDPROC, ( LONG_PTR ) &MessageMap<Subclassed>::wndProc ) );
 	}
 	using Widget::attach;
 private:

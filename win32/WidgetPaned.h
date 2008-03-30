@@ -23,7 +23,7 @@
 
 template< bool horizontal >
 class WidgetPaned :
-	public SmartWin::MessageMapPolicy< SmartWin::Policies::Normal >,
+	public SmartWin::MessageMap< SmartWin::Policies::Normal >,
 	public SmartWin::AspectMouse< WidgetPaned< horizontal > >,
 	public SmartWin::AspectSizable< WidgetPaned< horizontal > >,
 	public SmartWin::AspectVisible< WidgetPaned< horizontal > >,
@@ -34,7 +34,7 @@ public:
 	/// Class type
 	typedef WidgetPaned< horizontal > ThisType;
 
-	typedef SmartWin::MessageMapPolicy< SmartWin::Policies::Normal > PolicyType;
+	typedef SmartWin::MessageMap< SmartWin::Policies::Normal > PolicyType;
 	
 	/// Object type
 	typedef ThisType * ObjectType;

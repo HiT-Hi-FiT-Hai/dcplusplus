@@ -37,7 +37,7 @@ namespace SmartWin
 /// Aspect class used by Widgets that have the possibility of handling the erase
 /// background property
 /** \ingroup AspectClasses
-  * E.g. the WidgetWindow have a AspectEraseBackground Aspect to it therefore
+  * E.g. the Window have a AspectEraseBackground Aspect to it therefore
   * Table realize the AspectEraseBackground through  inheritance. When the
   * Widget needs to erase its background this event will be called with a Canvas
   * object which can be used for  manipulating the colors etc the system uses to

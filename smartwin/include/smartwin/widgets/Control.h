@@ -19,7 +19,7 @@ namespace SmartWin {
 /** Base class is for windows common controls */
 
 class Control : 
-	public MessageMapPolicy< Policies::Subclassed >,
+	public MessageMap< Policies::Subclassed >,
 
 	public AspectBorder<Control>,
 	public AspectContextMenu<Control>,

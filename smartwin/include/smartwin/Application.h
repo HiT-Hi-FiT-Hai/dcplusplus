@@ -59,7 +59,7 @@ namespace SmartWin
 class Widget;
 
 namespace Policies {
-class ModalDialog;
+class ModelessDialog;
 }
 
 /// Class declaration for the application class
@@ -94,7 +94,7 @@ class Application
 #endif
 
 	friend class Widget;
-	friend class Policies::ModalDialog;
+	friend class Policies::ModelessDialog;
 public:
 	/// Returns the Application object
 	/** Use this static function to access the Application object.

@@ -50,7 +50,7 @@
 #include <dcpp/Download.h>
 
 MainWindow::MainWindow() :
-	WidgetFactory<SmartWin::WidgetWindow>(0), 
+	WidgetFactory<SmartWin::Window>(0), 
 	paned(0), 
 	transfers(0), 
 	toolbar(0),
@@ -976,7 +976,7 @@ void MainWindow::handleRestore() {
 }
 
 bool MainWindow::tryFire(const MSG& msg, LRESULT& retVal) {
-	bool handled = SmartWin::WidgetWindow::tryFire(msg, retVal);
+	bool handled = SmartWin::Window::tryFire(msg, retVal);
 	if(!handled && msg.message == WM_COMMAND && tabs) {
 		handled = tabs->tryFire(msg, retVal);
 	}

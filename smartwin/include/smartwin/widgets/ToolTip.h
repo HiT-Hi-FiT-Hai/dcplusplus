@@ -14,7 +14,7 @@ template< class WidgetType >
 class WidgetCreator;
 
 class ToolTip :
-	public MessageMapPolicy< Policies::Subclassed >,
+	public MessageMap< Policies::Subclassed >,
 	
 	// Aspects
 	public AspectEnabled< ToolTip >,
@@ -45,8 +45,6 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
-
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	class Seed
 		: public Widget::Seed

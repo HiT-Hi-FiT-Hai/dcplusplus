@@ -38,7 +38,7 @@ namespace SmartWin
 // begin namespace SmartWin
 /// Aspect class used by dialog Widgets that have the possibility of trapping "drop files events".
 /** \ingroup AspectClasses
-  * E.g. the WidgetModalDialog can trap "drop files events" therefore they realize the AspectDragDrop through inheritance.
+  * E.g. the ModalDialog can trap "drop files events" therefore they realize the AspectDragDrop through inheritance.
   */
 template< class WidgetType >
 class AspectDragDrop

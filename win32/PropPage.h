@@ -23,7 +23,7 @@
 
 #include "WidgetFactory.h"
 
-class PropPage : public WidgetFactory<SmartWin::WidgetDialog>
+class PropPage : public WidgetFactory<SmartWin::ModelessDialog>
 {
 public:
 	PropPage(SmartWin::Widget* parent);

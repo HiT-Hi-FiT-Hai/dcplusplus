@@ -200,7 +200,7 @@ private:
 	Widget * itsParent;
 	HWND itsHandle;
 
-	/// The atom with which the pointer to the MessageMapBase is registered on the HWND
+	/// The atom with which the pointer to the Widget is registered on the HWND
 	static GlobalAtom propAtom;
 };
 

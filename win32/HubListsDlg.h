@@ -21,7 +21,7 @@
 
 #include "WidgetFactory.h"
 
-class HubListsDlg : public WidgetFactory<SmartWin::WidgetModalDialog>
+class HubListsDlg : public WidgetFactory<SmartWin::ModalDialog>
 {
 public:
 	HubListsDlg(SmartWin::Widget* parent);

@@ -22,7 +22,7 @@
 #include <dcpp/ADLSearch.h>
 #include "WidgetFactory.h"
 
-class ADLSProperties : public WidgetFactory<SmartWin::WidgetModalDialog>
+class ADLSProperties : public WidgetFactory<SmartWin::ModalDialog>
 {
 public:
 	ADLSProperties(SmartWin::Widget* parent, ADLSearch *_search);

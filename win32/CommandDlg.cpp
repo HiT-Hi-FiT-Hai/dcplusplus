@@ -53,7 +53,7 @@ static const WinUtil::HelpItem helpItems[] = {
 };
 
 CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstring& name_, const tstring& command_, const tstring& hub_) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	WidgetFactory<SmartWin::ModalDialog>(parent),
 	separator(0),
 	raw(0),
 	chat(0),

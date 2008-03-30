@@ -34,7 +34,7 @@ class UPnP;
 class TransferView;
 
 class MainWindow : 
-	public WidgetFactory<SmartWin::WidgetWindow>, 
+	public WidgetFactory<SmartWin::Window>, 
 	public AspectSpeaker<MainWindow>,
 	private HttpConnectionListener, 
 	private QueueManagerListener, 

@@ -42,7 +42,7 @@ struct AnchoredItem {
 * the files in the current directory, grows or shrinks according to the size of the dialog. 
 *  
 * That's what Anchors does. After the widgets were created, you add them to a special list,
-* and in the event handler of OnSize (of your WidgetWindow), you call a special method that
+* and in the event handler of OnSize (of your Window), you call a special method that
 * resizes all the widgets you've added before.  
 *  
 * Supposed to be simple. 

@@ -63,7 +63,8 @@
 #include "resources/Icon.h"
 #include "resources/ImageList.h"
 #include "resources/Pen.h"
-#include "widgets/WidgetModalDialog.h"
+#include "widgets/ModalDialog.h"
+#include "widgets/ModelessDialog.h"
 
 namespace sw = SmartWin;
 

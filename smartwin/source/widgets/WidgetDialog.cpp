@@ -1,8 +1,8 @@
-#include "../../include/smartwin/widgets/WidgetDialog.h"
+#include "../../include/smartwin/widgets/ModelessDialog.h"
 
 namespace SmartWin {
 
-void WidgetDialog::createDialog( unsigned resourceId )
+void ModelessDialog::createDialog( unsigned resourceId )
 {
 	HWND wnd = ::CreateDialogParam( Application::instance().getAppHandle(),
 		MAKEINTRESOURCE( resourceId ),

@@ -37,7 +37,6 @@
 #include "widgets/ComboBox.h"
 #include "widgets/Table.h"
 #include "widgets/DateTime.h"
-#include "widgets/WidgetDialog.h"
 #include "widgets/GroupBox.h"
 #include "widgets/LoadDialog.h"
 #include "widgets/MDIChild.h"
@@ -55,8 +54,8 @@
 #include "widgets/TextBox.h"
 #include "widgets/Tree.h"
 #include "widgets/ToolTip.h"
-#include "widgets/WidgetWindow.h"
-#include "widgets/WidgetWindowBase.h"
+#include "widgets/Window.h"
+#include "widgets/Frame.h"
 #include "WidgetFactoryPlatformImplementation.h"
 #include "WidgetCreator.h"
 
@@ -66,15 +65,15 @@ namespace SmartWin
 
 /// Factory class for creating Widgets from a derived custom class
 /** This is the class you would normally derive from in your own application. <br>
-  * < p >Derive directly from WidgetFactory and then supply WidgetWindow as the first
+  * < p >Derive directly from WidgetFactory and then supply Window as the first
   * template parameter. The second parameter would then be YOUR CLASS ( this is
   * needed for the SmartWin type system to function ) Example : < b >class
-  * MyMainWindow : public SmartWin::WidgetFactory< SmartWin::WidgetWindow,
+  * MyMainWindow : public SmartWin::WidgetFactory< SmartWin::Window,
   * MyMainWindow >   { ... };< /b > The third template argument is for declaring what
   * type of Widget you're declaring, for a "normal Widget" this defaults to
-  * MessageMapPolicyNormalWidget, if this is a Widget constructed from a dialog
-  * resource, you must state so by adding SmartWin::MessageMapPolicyDialogWidget and
-  * if it is a MDI Child you must add SmartWin::MessageMapPolicyMDIChildWidget as the
+  * MessageMapNormalWidget, if this is a Widget constructed from a dialog
+  * resource, you must state so by adding SmartWin::MessageMapDialogWidget and
+  * if it is a MDI Child you must add SmartWin::MessageMapMDIChildWidget as the
   * third argument Then when you need e.g. a Button you would create that
   * button by calling createButton. Class contains type defs for your
   * convenience for all Widget types that exists in the SmartWin library.< /p > Note!
@@ -217,16 +216,16 @@ public:
 	/// WidgetChildWindow object type.
 	typedef typename WidgetChildWindow::ObjectType WidgetChildWindowPtr;
 
-	/// WidgetWindow class type.
-	typedef SmartWin::WidgetWindow WidgetWindow;
+	/// Window class type.
+	typedef SmartWin::Window Window;
 
-	/// WidgetWindow object type.
-	typedef typename WidgetWindow::ObjectType WidgetWindowPtr;
+	/// Window object type.
+	typedef typename Window::ObjectType WindowPtr;
 
 	/// MDIFrame class type.
 	typedef SmartWin::MDIFrame MDIFrame;
 
-	/// WidgetWindow object type.
+	/// Window object type.
 	typedef typename MDIFrame::ObjectType MDIFramePtr;
 
 	/// ProgressBar class type.
