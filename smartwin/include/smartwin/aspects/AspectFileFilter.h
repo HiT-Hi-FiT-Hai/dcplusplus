@@ -29,8 +29,7 @@
 #define AspectFileFilter_h
 
 #include "../WindowsHeaders.h"
-#include <vector>
-#include "SmartUtil.h"
+#include "../../SmartUtil.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -44,6 +43,7 @@ namespace SmartWin
   * Help the LoadDialog and the SaveDialog to add up filters on which file
   * types to look for!
   */
+template<typename WidgetType>
 class AspectFileFilter
 {
 public:
@@ -52,12 +52,13 @@ public:
 	  * "HTML Files" etc. filter is the actual filter to filter in files to show
 	  * normally this would be e.g. "*.html".
 	  */
-	void addFilter( const SmartUtil::tstring & filterName, const SmartUtil::tstring & filter )
+	WidgetType& addFilter( const SmartUtil::tstring & filterName, const SmartUtil::tstring & filter )
 	{
 		itsFilter.insert( itsFilter.end(), filterName.begin(), filterName.end() );
 		itsFilter.push_back( '\0' );
 		itsFilter.insert( itsFilter.end(), filter.begin(), filter.end() );
 		itsFilter.push_back( '\0' );
+		return *static_cast<WidgetType*>(this);
 	}
 
 	/// Sets the active filter to the specified index
@@ -65,21 +66,24 @@ public:
 	  * filter you added will be the active filter. Active filter means the default
 	  * filter used when first showing the dialog.
 	  */
-	void activeFilter( unsigned filterNo )
-	{
+	WidgetType& setActiveFilter( unsigned filterNo ) {
 		if ( filterNo >= itsFilter.size() )
 		{
 			xCeption x( _T( "Tried to set active filter to more than number of filters in filter..." ) );
 			throw x;
 		}
 		itsActiveFilter = filterNo;
+		return *static_cast<WidgetType*>(this);
+	}
+	
+	WidgetType& setDefaultExtension(const SmartUtil::tstring& defExt) {
+		itsDefExt = defExt;
 	}
 
 	/// Returns the active filter of the object
 	/** The active filter is the "currently selected" filter of the filter class
 	  */
-	unsigned getActiveFilter() const
-	{
+	unsigned getActiveFilter() const {
 		// Filter index is NOT a zero indexed array...
 		return itsActiveFilter + 1;
 	}
@@ -88,73 +92,47 @@ public:
 	/** If given your dialog will try to start in the given directory, otherwise it
 	  * will use the working directory of the process.
 	  */
-	void setStartDirectory( SmartUtil::tstring startDir )
-	{
-		itsStartDir = startDir;
+	WidgetType& setInitialDirectory( const SmartUtil::tstring& initialDir ) {
+		itsInitialDir = initialDir;
+		return *static_cast<WidgetType*>(this);
 	}
-
-	/// Ensure filename meets OS expectations for path separators.
-	/** We want SaveDialog and LoadDialog to always return a pathname that
-	  * meets the OS expectations. <br>
-	  * Windows wants: C:\dir\dir\file.ext <br>
-	  * and UnixLinux: /dir/dir/file.ext <br>
-	  *
-	  * Wine produces z:\dir\dir\file.exe from GetLoadFileName(&ofn) )and
-	  * GetSaveFileName(&ofn). <br>
-	  *
-	  * So if we are building for wine, we need to convert from the wine output to
-	  * the Linux format. <br>
-	  * IE: convert z:\home\awebb\file.txt to /home/awebb/file.txt <br>
-	  *
-	  * The assumption is that the C++ standard library is Linux native, and thus
-	  * needs / pathnames.
-	  */
-	//TODO: use boost filenames
-	void backslashToForwardSlashForUnix( SmartUtil::tstring & filename )
-	{
-		// wineg++ defines __WINE__  Note we can't use WIN32 because that is also true for wine builds.
-#ifdef __WINE__
-		if ( 0 != filename.find( "z:" ) ) return; // Not a WINE produced path ?, nothing to do.
-		filename.erase( 0, 2 ); // Remove "z:" prefix.
-
-		// Unix file system do not use "\", so convert to "/"
-		size_t pos_n;
-		while ( std::string::npos != ( pos_n = filename.find( '\\' ) ) )
-		{
-			filename.replace( pos_n, 1, "/" );
-		}
-#endif
-	}
-
 
 protected:
-	Widget * itsParent;
+	Widget* itsParent;
+
+	static const int PATH_BUFFER_SIZE = 32768;
+
+	TCHAR szFile[PATH_BUFFER_SIZE];
+	
 	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
 
 	AspectFileFilter(Widget* parent)
 		: itsParent(parent), itsActiveFilter( 0 )
 	{}
 
-	static const int PATH_BUFFER_SIZE = 32768; //really arbitrary, but 32K sounds reasonable. size in number of TCHARS!
-
 	// Fills out the common members of the OPENFILENAME struct.
 	// This is called for both LoadDialog and for SaveDialog Widgets
-	void fillOFN( OPENFILENAME & ofn, HWND parent, int flags )
-	{
-		ofn.hwndOwner = parent;
+	void fillOFN( OPENFILENAME & ofn, int flags ) {
+		ofn.hwndOwner = getParentHandle();
 
 		ofn.nMaxFile = PATH_BUFFER_SIZE;
-		ofn.lpstrFilter = itsFilter.c_str();
+		ofn.lpstrFile = szFile;
+		ofn.lpstrDefExt = ifNotEmpty(itsDefExt);
+		ofn.lpstrInitialDir = ifNotEmpty(itsInitialDir);
+		ofn.lpstrFilter = ifNotEmpty(itsFilter);
 		ofn.nFilterIndex = this->getActiveFilter();
-		ofn.lpstrInitialDir = itsStartDir.c_str();
 		ofn.Flags = flags;
 	}
 
-
 private:
 	unsigned int itsActiveFilter;
-	SmartUtil::tstring itsStartDir;
+	SmartUtil::tstring itsInitialDir;
 	SmartUtil::tstring itsFilter;
+	SmartUtil::tstring itsDefExt;
+	
+	static const TCHAR* ifNotEmpty(const SmartUtil::tstring& str) {
+		return str.empty() ? NULL : str.c_str();
+	}
 };
 
 // end namespace SmartWin

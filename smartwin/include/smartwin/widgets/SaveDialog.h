@@ -44,7 +44,7 @@ namespace SmartWin
   * \sa AspectFileFilter
   */
 class SaveDialog
-	: public AspectFileFilter
+	: public AspectFileFilter<SaveDialog>
 {
 public:
 	/// Class type
@@ -73,26 +73,9 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool SaveDialog::open(SmartUtil::tstring& target)
-{
-	TCHAR szFile[PATH_BUFFER_SIZE + 1]; // buffer for file name
-	szFile[0] = '\0';
-
-	OPENFILENAME ofn = { sizeof(OPENFILENAME) }; // common dialog box structure
-	fillOFN( ofn, getParentHandle(), 0 );
-	ofn.lpstrFile = szFile;
-
-	if ( ::GetSaveFileName( & ofn ) )
-	{
-		target = ofn.lpstrFile;
-		backslashToForwardSlashForUnix( target );
-		return true;
-	}
-	return false;
-}
 
 inline SaveDialog::SaveDialog( Widget * parent )
-	: AspectFileFilter( parent )
+	: AspectFileFilter<SaveDialog>( parent )
 {
 }
 
