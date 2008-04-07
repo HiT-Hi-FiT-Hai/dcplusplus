@@ -53,7 +53,7 @@ void QueueFrame::QueueItemInfo::remove() {
 	QueueManager::getInstance()->remove(getTarget()); 
 }
 
-QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
+QueueFrame::QueueFrame(SmartWin::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Download Queue"), IDH_QUEUE, IDR_QUEUE),
 	dirs(0),
 	files(0),

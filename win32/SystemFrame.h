@@ -40,7 +40,7 @@ private:
 	
 	TextBoxPtr log;
 	
-	SystemFrame(SmartWin::WidgetTabView* mdiParent);
+	SystemFrame(SmartWin::TabView* mdiParent);
 	virtual ~SystemFrame();
 
 	void layout();

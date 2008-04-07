@@ -25,7 +25,7 @@
 class FinishedDLFrame : public FinishedFrameBase<FinishedDLFrame, false>
 {
 public:
-	FinishedDLFrame(SmartWin::WidgetTabView* mdiParent);
+	FinishedDLFrame(SmartWin::TabView* mdiParent);
 	virtual ~FinishedDLFrame() { }
 
 	typedef FinishedFrameBase<FinishedDLFrame, false> BaseType;

@@ -1,10 +1,11 @@
 #ifndef WIDGETTABVIEW_H_
 #define WIDGETTABVIEW_H_
 
-#include "TabSheet.h"
-#include "ToolTip.h"
-#include "Container.h"
 #include "../WindowClass.h"
+#include "../Policies.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectMouse.h"
 #include <list>
 #include <vector>
 
@@ -12,11 +13,11 @@ namespace SmartWin {
 /** 
  * A container that keeps widgets in tabs and handles switching etc
  */
-class WidgetTabView :
+class TabView :
 	public MessageMap< Policies::Normal >,
 
-	public AspectRaw<WidgetTabView>,
-	public AspectSizable<WidgetTabView>
+	public AspectRaw<TabView>,
+	public AspectSizable<TabView>
 {
 	typedef std::tr1::function<void (const SmartUtil::tstring&)> TitleChangedFunction;
 	typedef std::tr1::function<void (HWND, unsigned)> HelpFunction;
@@ -24,10 +25,10 @@ class WidgetTabView :
 
 public:
 	/// Class type
-	typedef WidgetTabView ThisType;
+	typedef TabView ThisType;
 
 	/// Object type
-	typedef ThisType * ObjectType;
+	typedef ThisType* ObjectType;
 	
 	typedef MessageMap<Policies::Normal> BaseType;
 
@@ -40,24 +41,24 @@ public:
 		Seed(bool toggleActive_ = false);
 	};
 
-	void add(Container* w, const IconPtr& icon);
+	void add(ContainerPtr w, const IconPtr& icon);
 
-	void mark(Container* w);
+	void mark(ContainerPtr w);
 	
-	void remove(Container* w);
+	void remove(ContainerPtr w);
 	
 	void next(bool reverse = false);
 	
-	Container* getActive();
-	void setActive(Container* w) { setActive(findTab(w)); }
+	ContainerPtr getActive();
+	void setActive(ContainerPtr w) { setActive(findTab(w)); }
 
-	SmartUtil::tstring getTabText(Container* w);
+	SmartUtil::tstring getTabText(ContainerPtr w);
 
 	void onTitleChanged(const TitleChangedFunction& f) {
 		titleChangedFunction = f;
 	}
 
-	void onTabContextMenu(Container* w, const ContextMenuFunction& f);
+	void onTabContextMenu(ContainerPtr w, const ContextMenuFunction& f);
 
 	void onHelp(const HelpFunction& f) {
 		helpFunction = f;
@@ -65,32 +66,32 @@ public:
 
 	bool filter(const MSG& msg);
 	
-	TabSheet::ObjectType getTab();
+	TabSheetPtr getTab();
 
 	const Rectangle& getClientSize() const { return clientSize; }
 	
 	void create( const Seed & cs = Seed() );
 
 protected:
-	friend class WidgetCreator<WidgetTabView>;
+	friend class WidgetCreator<TabView>;
 	
-	explicit WidgetTabView(Widget* parent);
+	explicit TabView(Widget* parent);
 	
-	virtual ~WidgetTabView() { }
+	virtual ~TabView() { }
 
 private:
 	enum { MAX_TITLE_LENGTH = 20 };
 
 	struct TabInfo {
-		TabInfo(Container* w_) : w(w_) { }
-		Container* w;
+		TabInfo(ContainerPtr w_) : w(w_) { }
+		ContainerPtr w;
 		ContextMenuFunction handleContextMenu;
 	};
 	
 	static WindowClass windowClass;
 	
-	TabSheet::ObjectType tab;
-	ToolTip::ObjectType tip;
+	TabSheetPtr tab;
+	ToolTipPtr tip;
 
 	TitleChangedFunction titleChangedFunction;
 	HelpFunction helpFunction;
@@ -99,24 +100,24 @@ private:
 
 	bool inTab;
 	
-	typedef std::list<Container*> WindowList;
+	typedef std::list<ContainerPtr> WindowList;
 	typedef WindowList::iterator WindowIter;
 	WindowList viewOrder;
 	Rectangle clientSize;
 	std::vector<IconPtr> icons;
 	int active;
-	Container* dragging;
+	ContainerPtr dragging;
 	SmartUtil::tstring tipText;
 	
-	int findTab(Container* w);
+	int findTab(ContainerPtr w);
 	
 	void setActive(int i);
-	TabInfo* getTabInfo(Container* w);
+	TabInfo* getTabInfo(ContainerPtr w);
 	TabInfo* getTabInfo(int i);
 	
-	void setTop(Container* w);
+	void setTop(ContainerPtr w);
 
-	bool handleTextChanging(Container* w, const SmartUtil::tstring& newText);
+	bool handleTextChanging(ContainerPtr w, const SmartUtil::tstring& newText);
 	void handleSized(const SizedEvent&);
 	void handleTabSelected();
 	LRESULT handleToolTip(LPARAM lParam);
@@ -130,11 +131,10 @@ private:
 	void layout();
 	
 	int addIcon(const IconPtr& icon);
-	void swapWidgets(Container* oldW, Container* newW);
+	void swapWidgets(ContainerPtr oldW, ContainerPtr newW);
 };
 
-inline TabSheet::ObjectType WidgetTabView::getTab()
-{
+inline TabSheetPtr TabView::getTab() {
 	return tab;
 }
 

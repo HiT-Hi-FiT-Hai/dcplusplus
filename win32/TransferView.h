@@ -46,7 +46,7 @@ class TransferView :
 	public AspectUserCommand<TransferView>
 {
 public:
-	TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi);
+	TransferView(SmartWin::Widget* parent, SmartWin::TabView* mdi);
 
 	void prepareClose();
 
@@ -243,7 +243,7 @@ private:
 
 	TabSheetPtr tabs;
 	
-	SmartWin::WidgetTabView* mdi;
+	SmartWin::TabView* mdi;
 	SmartWin::ImageListPtr arrows;
 
 	bool startup;

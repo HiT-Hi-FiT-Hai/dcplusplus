@@ -21,7 +21,7 @@
 
 #include "FinishedDLFrame.h"
 
-FinishedDLFrame::FinishedDLFrame(SmartWin::WidgetTabView* mdiParent) :
+FinishedDLFrame::FinishedDLFrame(SmartWin::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Finished Downloads"), IDH_FINISHED_DL, IDR_FINISHED_DL)
 {
 }

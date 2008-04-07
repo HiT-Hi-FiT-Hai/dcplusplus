@@ -44,7 +44,7 @@ public:
 		STATUS_LAST
 	};
 
-	static void openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& str = Util::emptyStringT, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
+	static void openWindow(SmartWin::TabView* mdiParent, const tstring& str = Util::emptyStringT, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
 	static void closeAll();
 
 private:
@@ -202,7 +202,7 @@ private:
 	
 	std::string token;
 
-	SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
+	SearchFrame(SmartWin::TabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
 	virtual ~SearchFrame();
 
 	void handlePurgeClicked();

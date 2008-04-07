@@ -227,7 +227,7 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
-	QueueFrame(SmartWin::WidgetTabView* mdiParent);
+	QueueFrame(SmartWin::TabView* mdiParent);
 	virtual ~QueueFrame();
 	
 	void updateStatus();

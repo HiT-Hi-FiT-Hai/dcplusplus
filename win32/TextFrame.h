@@ -24,7 +24,7 @@
 class TextFrame : public MDIChildFrame<TextFrame>
 {
 public:
-	TextFrame(SmartWin::WidgetTabView* mdiParent, const string& fileName);
+	TextFrame(SmartWin::TabView* mdiParent, const string& fileName);
 	enum Status {
 		STATUS_STATUS,
 		STATUS_LAST

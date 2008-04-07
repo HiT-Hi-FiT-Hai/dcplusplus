@@ -55,7 +55,7 @@ public:
 		STATUS_LAST
 	};
 
-	WidgetTabView* getTabView() { return tabs; }
+	SmartWin::TabViewPtr getTabView() { return tabs; }
 
 	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 
@@ -105,7 +105,7 @@ private:
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
 	ToolBarPtr toolbar;
-	WidgetTabViewPtr tabs;
+	SmartWin::TabViewPtr tabs;
 	
 	/** Is the tray icon visible? */
 	bool trayIcon;

@@ -36,7 +36,7 @@ static const char* columnNames[] = {
 	N_("Time")
 };
 
-SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
+SpyFrame::SpyFrame(SmartWin::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Search Spy"), IDH_SEARCH_SPY, IDR_SPY),
 	searches(0),
 	ignoreTTH(0),

@@ -55,7 +55,7 @@ void HubFrame::closeDisconnected() {
 	}
 }
 
-void HubFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const string& url) {
+void HubFrame::openWindow(SmartWin::TabView* mdiParent, const string& url) {
 	for(FrameIter i = frames.begin(); i!= frames.end(); ++i) {
 		HubFrame* frame = *i;
 		if(frame->url == url) {
@@ -67,7 +67,7 @@ void HubFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const string& url)
 	new HubFrame(mdiParent, url);
 }
 
-HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) : 
+HubFrame::HubFrame(SmartWin::TabView* mdiParent, const string& url_) : 
 	BaseType(mdiParent, Text::toT(url_), IDH_HUB, SmartWin::IconPtr(new SmartWin::Icon(IDR_HUB))),
 	chat(0),
 	message(0),

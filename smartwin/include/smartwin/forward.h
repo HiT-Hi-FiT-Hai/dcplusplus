@@ -57,8 +57,14 @@ typedef Table* TablePtr;
 class TabSheet;
 typedef TabSheet* TabSheetPtr;
 
+class TabView;
+typedef TabView* TabViewPtr;
+
 class ToolBar;
 typedef ToolBar* ToolBarPtr;
+
+class ToolTip;
+typedef ToolTip* ToolTipPtr;
 
 class Tree;
 typedef Tree* TreePtr;

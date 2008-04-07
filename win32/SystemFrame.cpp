@@ -22,7 +22,7 @@
 #include "HoldRedraw.h"
 #include "WinUtil.h"
 
-SystemFrame::SystemFrame(SmartWin::WidgetTabView* mdiParent) : 
+SystemFrame::SystemFrame(SmartWin::TabView* mdiParent) : 
 	BaseType(mdiParent, T_("System Log"), IDH_SYSTEM_LOG, IDR_MAINFRAME),
 	log(0) 
 {

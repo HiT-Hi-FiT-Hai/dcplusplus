@@ -92,7 +92,7 @@ protected:
 
 private:
 	SmartWin::Application::FilterIter filterIter;
-	typename SmartWin::ToolTip::ObjectType statusTip;
+	SmartWin::ToolTipPtr statusTip;
 	TStringList lastLines;
 	tstring tip;
 	

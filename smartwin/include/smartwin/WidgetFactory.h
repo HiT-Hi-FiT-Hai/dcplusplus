@@ -37,9 +37,7 @@
 #include "widgets/LoadDialog.h"
 #include "widgets/SaveDialog.h"
 #include "widgets/StatusBar.h"
-#include "widgets/WidgetTabView.h"
 #include "widgets/TextBox.h"
-#include "widgets/ToolTip.h"
 #include "WidgetFactoryPlatformImplementation.h"
 #include "WidgetCreator.h"
 
@@ -107,12 +105,6 @@ public:
 	/// StatusBarSections object type.
 	typedef typename StatusBarSections::ObjectType StatusBarSectionsPtr;
 
-	/// TabView class type.
-	typedef SmartWin::WidgetTabView WidgetTabView;
-
-	/// TabView object type.
-	typedef typename WidgetTabView::ObjectType WidgetTabViewPtr;
-
 	/// LoadFileDialog class type.
 	typedef SmartWin::LoadDialog LoadDialog;
 
@@ -128,10 +120,6 @@ public:
 	/// CheckBox object type.
 	typedef typename CheckBox::ObjectType CheckBoxPtr;
 
-	typedef SmartWin::ToolTip ToolTip;
-	
-	typedef typename ToolTip::ObjectType ToolTipPtr;
-	
 	/// Default Constructor creating a factory Widget
 	/** Default Constructor creating a factory Widget without a parent, if you need
 	  * to explicitly state a parent like for instance you often would want in a
@@ -207,19 +195,12 @@ public:
 	  */
 	ButtonPtr createButton( const typename Button::Seed & cs = Button::Seed() );
 
-	/// Creates a Tab View and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	WidgetTabViewPtr createTabView( const typename WidgetTabView::Seed& cs = WidgetTabView::Seed() );
-	
 	/// \ingroup SubclassDialog
 	/// Subclasses a Button Control from the given resource id.
 	/** DON'T delete the returned pointer!!!< br >
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls with this function.
 	  */
 	ButtonPtr attachButton( unsigned id );
-
-	ToolTipPtr createToolTip( const typename ToolTip::Seed & cs = ToolTip::Seed() );
 protected:
 	// Protected to try to avoid stack creation...
 	virtual ~WidgetFactory()
@@ -320,24 +301,10 @@ typename WidgetFactory< ContainerWidgetType >::ButtonPtr
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetTabViewPtr
-WidgetFactory< ContainerWidgetType >::createTabView( const typename WidgetTabView::Seed & cs )
-{
-	return WidgetCreator< WidgetTabView >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::ButtonPtr
 WidgetFactory< ContainerWidgetType >::attachButton( unsigned id )
 {
 	return WidgetCreator< Button >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::ToolTipPtr
-WidgetFactory< ContainerWidgetType >::createToolTip( const typename ToolTip::Seed & cs )
-{
-	return WidgetCreator< ToolTip >::create( this, cs );
 }
 
 // end namespace SmartWin

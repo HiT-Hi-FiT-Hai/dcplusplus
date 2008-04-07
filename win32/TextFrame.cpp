@@ -25,7 +25,7 @@
 
 static const size_t MAX_TEXT_LEN = 64*1024;
 
-TextFrame::TextFrame(SmartWin::WidgetTabView* mdiParent, const string& fileName) : 
+TextFrame::TextFrame(SmartWin::TabView* mdiParent, const string& fileName) : 
 	BaseType(mdiParent, Text::toT(Util::getFileName(fileName))),
 	pad(0) 
 {

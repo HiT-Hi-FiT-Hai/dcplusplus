@@ -47,7 +47,7 @@ protected:
 	friend class MDIChildFrame<T>;
 	typedef FinishedFrameBase<T, in_UL> ThisType;
 	
-	FinishedFrameBase(SmartWin::WidgetTabView* mdiParent, const tstring& title, unsigned helpId, int icon) :
+	FinishedFrameBase(SmartWin::TabView* mdiParent, const tstring& title, unsigned helpId, int icon) :
 		BaseType(mdiParent, title, helpId, icon),
 		items(0),
 		totalBytes(0),

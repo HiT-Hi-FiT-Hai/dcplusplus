@@ -1,17 +1,21 @@
-#include "../../include/smartwin/widgets/WidgetTabView.h"
+#include "../../include/smartwin/widgets/TabView.h"
+
+#include "../../include/smartwin/widgets/Container.h"
+#include "../../include/smartwin/widgets/ToolTip.h"
+#include "../../include/smartwin/widgets/TabSheet.h"
 #include "../../include/smartwin/WidgetCreator.h"
 
 namespace SmartWin {
 
-WindowClass WidgetTabView::windowClass(_T("WidgetTabView"), &WidgetTabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
+WindowClass TabView::windowClass(_T("TabView"), &TabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
 
-WidgetTabView::Seed::Seed(bool toggleActive_) :
+TabView::Seed::Seed(bool toggleActive_) :
 	BaseType::Seed(windowClass.getClassName(), WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE),
 	toggleActive(toggleActive_)
 {
 }
 
-WidgetTabView::WidgetTabView(Widget* w) :
+TabView::TabView(Widget* w) :
 	BaseType(w),
 	tab(0),
 	tip(0),
@@ -21,7 +25,7 @@ WidgetTabView::WidgetTabView(Widget* w) :
 	dragging(0)
 	{ }
 
-void WidgetTabView::create(const Seed & cs) {
+void TabView::create(const Seed & cs) {
 	PolicyType::create(cs);
 	toggleActive = cs.toggleActive;
 
@@ -30,22 +34,22 @@ void WidgetTabView::create(const Seed & cs) {
 		 TCS_HOTTRACK | TCS_MULTILINE | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER;
 	tab = WidgetCreator<TabSheet>::create(this, tcs);
 	tab->setImageList(ImageListPtr(new ImageList(16, 16, ILC_COLOR32 | ILC_MASK)));
-	tab->onSelectionChanged(std::tr1::bind(&WidgetTabView::handleTabSelected, this));
-	onSized(std::tr1::bind(&WidgetTabView::handleSized, this, _1));
-	tab->onLeftMouseDown(std::tr1::bind(&WidgetTabView::handleLeftMouseDown, this, _1));
-	tab->onLeftMouseUp(std::tr1::bind(&WidgetTabView::handleLeftMouseUp, this, _1));
-	tab->onContextMenu(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1));
-	tab->onMiddleMouseDown(std::tr1::bind(&WidgetTabView::handleMiddleMouseDown, this, _1));
-	tab->onHelp(std::tr1::bind(&WidgetTabView::handleHelp, this, _1, _2));
+	tab->onSelectionChanged(std::tr1::bind(&TabView::handleTabSelected, this));
+	onSized(std::tr1::bind(&TabView::handleSized, this, _1));
+	tab->onLeftMouseDown(std::tr1::bind(&TabView::handleLeftMouseDown, this, _1));
+	tab->onLeftMouseUp(std::tr1::bind(&TabView::handleLeftMouseUp, this, _1));
+	tab->onContextMenu(std::tr1::bind(&TabView::handleContextMenu, this, _1));
+	tab->onMiddleMouseDown(std::tr1::bind(&TabView::handleMiddleMouseDown, this, _1));
+	tab->onHelp(std::tr1::bind(&TabView::handleHelp, this, _1, _2));
 
 	tip = WidgetCreator<ToolTip>::attach(this, tab->getToolTips()); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
 	if(tip) {
 		tip->addRemoveStyle(TTS_NOPREFIX, true);
-		tip->onRaw(std::tr1::bind(&WidgetTabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
+		tip->onRaw(std::tr1::bind(&TabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
 	}
 }
 
-void WidgetTabView::add(Container* w, const IconPtr& icon) {
+void TabView::add(Container* w, const IconPtr& icon) {
 	int image = addIcon(icon);
 	size_t tabs = tab->size();
 	TabInfo* ti = new TabInfo(w);
@@ -64,15 +68,15 @@ void WidgetTabView::add(Container* w, const IconPtr& icon) {
 	
 	layout();
 
-	w->onTextChanging(std::tr1::bind(&WidgetTabView::handleTextChanging, this, w, _1));
+	w->onTextChanging(std::tr1::bind(&TabView::handleTextChanging, this, w, _1));
 }
 
-Container* WidgetTabView::getActive() {
+Container* TabView::getActive() {
 	TabInfo* ti = getTabInfo(tab->getSelected());
 	return ti ? ti->w : 0;
 }
 
-void WidgetTabView::remove(Container* w) {
+void TabView::remove(Container* w) {
 	if(viewOrder.size() > 1 && viewOrder.back() == w) {
 		setActive(*(--(--viewOrder.end())));
 	}
@@ -97,21 +101,21 @@ void WidgetTabView::remove(Container* w) {
 		titleChangedFunction(SmartUtil::tstring());
 }
 
-SmartUtil::tstring WidgetTabView::getTabText(Container* w) {
+SmartUtil::tstring TabView::getTabText(Container* w) {
 	int i = findTab(w);
 	if(i != -1)
 		return tab->getText(i);
 	return SmartUtil::tstring();
 }
 
-void WidgetTabView::onTabContextMenu(Container* w, const ContextMenuFunction& f) {
+void TabView::onTabContextMenu(Container* w, const ContextMenuFunction& f) {
 	TabInfo* ti = getTabInfo(w);
 	if(ti) {
 		ti->handleContextMenu = f;
 	}
 }
 
-void WidgetTabView::setActive(int i) {
+void TabView::setActive(int i) {
 	if(i == -1)
 		return;
 
@@ -119,7 +123,7 @@ void WidgetTabView::setActive(int i) {
 	handleTabSelected();
 }
 
-void WidgetTabView::swapWidgets(Container* oldW, Container* newW) {
+void TabView::swapWidgets(Container* oldW, Container* newW) {
 	sendMessage(WM_SETREDRAW, FALSE);
 
 	if(oldW) {
@@ -136,7 +140,7 @@ void WidgetTabView::swapWidgets(Container* oldW, Container* newW) {
 	
 }
 
-void WidgetTabView::handleTabSelected() {
+void TabView::handleTabSelected() {
 	int i = tab->getSelected();
 	if(i == active) {
 		return;
@@ -160,14 +164,14 @@ void WidgetTabView::handleTabSelected() {
 		titleChangedFunction(ti->w->getText());
 }
 
-void WidgetTabView::mark(Container* w) {
+void TabView::mark(Container* w) {
 	int i = findTab(w);
 	if(i != -1 && i != tab->getSelected()) {
 		tab->setHighlight(i, true);
 	}
 }
 
-int WidgetTabView::findTab(Container* w) {
+int TabView::findTab(Container* w) {
 	for(size_t i = 0; i < tab->size(); ++i) {
 		if(getTabInfo(i)->w == w) {
 			return static_cast<int>(i);
@@ -176,15 +180,15 @@ int WidgetTabView::findTab(Container* w) {
 	return -1;
 }
 
-WidgetTabView::TabInfo* WidgetTabView::getTabInfo(Container* w) {
+TabView::TabInfo* TabView::getTabInfo(Container* w) {
 	return getTabInfo(findTab(w));
 }
 
-WidgetTabView::TabInfo* WidgetTabView::getTabInfo(int i) {
+TabView::TabInfo* TabView::getTabInfo(int i) {
 	return i == -1 ? 0 : reinterpret_cast<TabInfo*>(tab->getData(i));
 }
 
-bool WidgetTabView::handleTextChanging(Container* w, const SmartUtil::tstring& newText) {
+bool TabView::handleTextChanging(Container* w, const SmartUtil::tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
 		tab->setText(i, formatTitle(newText));
@@ -196,18 +200,18 @@ bool WidgetTabView::handleTextChanging(Container* w, const SmartUtil::tstring& n
 	return true;
 }
 
-SmartUtil::tstring WidgetTabView::formatTitle(SmartUtil::tstring title) {
+SmartUtil::tstring TabView::formatTitle(SmartUtil::tstring title) {
 	if(title.length() > MAX_TITLE_LENGTH)
 		title = title.substr(0, MAX_TITLE_LENGTH - 3) + _T("...");
 	return SmartUtil::escapeMenu(title);
 }
 
-void WidgetTabView::handleSized(const SizedEvent& sz) {
+void TabView::handleSized(const SizedEvent& sz) {
 	tab->setBounds(Rectangle(sz.size));
 	layout();
 }
 
-void WidgetTabView::layout() {
+void TabView::layout() {
 	Rectangle tmp = tab->getUsableArea(true);
 	if(!(tmp == clientSize)) {
 		int i = tab->getSelected();
@@ -218,7 +222,7 @@ void WidgetTabView::layout() {
 	}
 }
 
-void WidgetTabView::next(bool reverse) {
+void TabView::next(bool reverse) {
 	if(viewOrder.size() < 2) {
 		return;
 	}
@@ -257,7 +261,7 @@ void WidgetTabView::next(bool reverse) {
 	return;
 }
 
-void WidgetTabView::setTop(Container* wnd) {
+void TabView::setTop(Container* wnd) {
 	WindowIter i = std::find(viewOrder.begin(), viewOrder.end(), wnd);
 	if(i != viewOrder.end() && i != --viewOrder.end()) {
 		viewOrder.erase(i);
@@ -265,7 +269,7 @@ void WidgetTabView::setTop(Container* wnd) {
 	}
 }
 
-int WidgetTabView::addIcon(const IconPtr& icon) {
+int TabView::addIcon(const IconPtr& icon) {
 	int image = -1;
 	if(icon) {
 		for(size_t i = 0; i < icons.size(); ++i) {
@@ -283,7 +287,7 @@ int WidgetTabView::addIcon(const IconPtr& icon) {
 	return image;
 }
 
-LRESULT WidgetTabView::handleToolTip(LPARAM lParam) {
+LRESULT TabView::handleToolTip(LPARAM lParam) {
 	LPNMTTDISPINFO ttdi = reinterpret_cast<LPNMTTDISPINFO>(lParam);
 	TabInfo* ti = getTabInfo(ttdi->hdr.idFrom); // here idFrom corresponds to the index of the tab
 	if(ti) {
@@ -293,7 +297,7 @@ LRESULT WidgetTabView::handleToolTip(LPARAM lParam) {
 	return 0;
 }
 
-void WidgetTabView::handleLeftMouseDown(const MouseEventResult& mouseEventResult) {
+void TabView::handleLeftMouseDown(const MouseEventResult& mouseEventResult) {
 	TabInfo* ti = getTabInfo(tab->hitTest(mouseEventResult.pos));
 	if(ti) {
 		if(mouseEventResult.isShiftPressed)
@@ -305,7 +309,7 @@ void WidgetTabView::handleLeftMouseDown(const MouseEventResult& mouseEventResult
 	}
 }
 
-void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) {
+void TabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) {
 	::ReleaseCapture();
 
 	if(dragging) {
@@ -346,7 +350,7 @@ void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) 
 	}
 }
 
-bool WidgetTabView::handleContextMenu(ScreenCoordinate pt) {
+bool TabView::handleContextMenu(ScreenCoordinate pt) {
 	TabInfo* ti = 0;
 	if(pt.x() == -1 && pt.y() == -1) {
 		int i = tab->getSelected();
@@ -372,13 +376,13 @@ bool WidgetTabView::handleContextMenu(ScreenCoordinate pt) {
 	return false;
 }
 
-void WidgetTabView::handleMiddleMouseDown(const MouseEventResult& mouseEventResult) {
+void TabView::handleMiddleMouseDown(const MouseEventResult& mouseEventResult) {
 	TabInfo* ti = getTabInfo(tab->hitTest(mouseEventResult.pos));
 	if(ti)
 		ti->w->close();
 }
 
-void WidgetTabView::handleHelp(HWND hWnd, unsigned id) {
+void TabView::handleHelp(HWND hWnd, unsigned id) {
 	if(helpFunction) {
 		// hWnd and id are those of the whole tab control; not those of the specific tab on which the user wants help for
 		TabInfo* ti = getTabInfo(tab->hitTest(ScreenCoordinate(Point::fromLParam(::GetMessagePos()))));
@@ -390,7 +394,7 @@ void WidgetTabView::handleHelp(HWND hWnd, unsigned id) {
 	}
 }
 
-bool WidgetTabView::filter(const MSG& msg) {
+bool TabView::filter(const MSG& msg) {
 	if(tip)
 		tip->relayEvent(msg);
 

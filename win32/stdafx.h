@@ -39,8 +39,11 @@
 #include <smartwin/widgets/RadioButton.h>
 #include <smartwin/widgets/Spinner.h>
 #include <smartwin/widgets/Table.h>
+#include <smartwin/widgets/TabSheet.h>
+#include <smartwin/widgets/TabView.h>
 #include <smartwin/widgets/TextBox.h>
 #include <smartwin/widgets/Tree.h>
+#include <smartwin/widgets/ToolTip.h>
 #include <smartwin/widgets/Window.h>
 
 enum {

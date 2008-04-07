@@ -36,7 +36,7 @@ static const char* columnNames[] = {
 	N_("Max Size")
 };
 
-ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
+ADLSearchFrame::ADLSearchFrame(SmartWin::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Automatic Directory Listing Search"), IDH_ADL_SEARCH, IDR_ADLSEARCH),
 	add(0),
 	properties(0),

@@ -30,11 +30,11 @@ public:
 	void getList();
 	void browseList();
 	void matchQueue();
-	void pm(SmartWin::WidgetTabView*);
+	void pm(SmartWin::TabView*);
 	void grant();
 	void addFav();
 	void removeAll();
-	void connectFav(SmartWin::WidgetTabView*);
+	void connectFav(SmartWin::TabView*);
 
 	UserPtr& getUser() { return user; }
 	UserPtr user;
@@ -70,13 +70,13 @@ public:
 	// std::tr1::bind(&UserInfoBase::connectFav, _1, parent) doesn't seem to work with g++ svn 2007-07-30...
 	// wonder if it's me or the implementation as boost::bind/function swallows it...
 	struct Caller {
-		Caller(SmartWin::WidgetTabView* parent_, void (UserInfoBase::*f_)(SmartWin::WidgetTabView*)) : parent(parent_), f(f_) { }
+		Caller(SmartWin::TabView* parent_, void (UserInfoBase::*f_)(SmartWin::TabView*)) : parent(parent_), f(f_) { }
 		void operator()(UserInfoBase* uib) { (uib->*f)(parent); }
-		SmartWin::WidgetTabView* parent;
-		void (UserInfoBase::*f)(SmartWin::WidgetTabView*);
+		SmartWin::TabView* parent;
+		void (UserInfoBase::*f)(SmartWin::TabView*);
 	};
 	
-	void handlePrivateMessage(SmartWin::WidgetTabView* parent) {
+	void handlePrivateMessage(SmartWin::TabView* parent) {
 		static_cast<T*>(this)->getUserList()->forEachSelectedT(Caller(parent, &UserInfoBase::pm));
 	}
 	void handleGrantSlot() {
@@ -85,12 +85,12 @@ public:
 	void handleRemoveAll() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::removeAll);
 	}
-	void handleConnectFav(SmartWin::WidgetTabView* parent) {
+	void handleConnectFav(SmartWin::TabView* parent) {
 		static_cast<T*>(this)->getUserList()->forEachSelectedT(Caller(parent, &UserInfoBase::connectFav));
 	}
 
 	template<typename MenuType>
-	void appendUserItems(SmartWin::WidgetTabView* parent, MenuType menu) {
+	void appendUserItems(SmartWin::TabView* parent, MenuType menu) {
 		T* This = static_cast<T*>(this);
 		UserInfoBase::UserTraits traits = This->getUserList()->forEachSelectedT(UserInfoBase::UserTraits());
 		menu->appendItem(IDC_GETLIST, T_("&Get file list"), std::tr1::bind(&T::handleGetList, This));

@@ -38,7 +38,7 @@ public:
 	typedef WidgetFactory< SmartWin::Container > BaseType;
 protected:
 
-	MDIChildFrame(SmartWin::WidgetTabView* tabView, const tstring& title, unsigned helpId = 0, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) :
+	MDIChildFrame(SmartWin::TabView* tabView, const tstring& title, unsigned helpId = 0, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) :
 		BaseType(tabView->getTab()),
 		lastFocus(NULL),
 		alwaysSameFocus(false),
@@ -122,8 +122,8 @@ protected:
 		getParent()->setActive(this);
 	}
 	
-	SmartWin::WidgetTabView* getParent() {
-		return static_cast<SmartWin::WidgetTabView*>(BaseType::getParent()->getParent());
+	SmartWin::TabView* getParent() {
+		return static_cast<SmartWin::TabView*>(BaseType::getParent()->getParent());
 	}
 	
 private:

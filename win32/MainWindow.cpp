@@ -315,7 +315,7 @@ void MainWindow::initStatusBar() {
 
 void MainWindow::initTabs() {
 	dcdebug("initTabs\n");
-	tabs = addChild(WidgetTabView::Seed(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)));
+	tabs = addChild(SmartWin::TabView::Seed(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)));
 	tabs->onTitleChanged(std::tr1::bind(&MainWindow::handleTabsTitleChanged, this, _1));
 	tabs->onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
 	paned->setFirst(tabs);

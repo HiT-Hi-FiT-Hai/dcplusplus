@@ -23,7 +23,7 @@
 #include <dcpp/Socket.h>
 #include <dcpp/TimerManager.h>
 
-StatsFrame::StatsFrame(SmartWin::WidgetTabView* mdiParent) :
+StatsFrame::StatsFrame(SmartWin::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Network Statistics"), IDH_NET_STATS, IDR_NET_STATS),
 	pen(new SmartWin::Pen(WinUtil::textColor)),
 	upPen(new SmartWin::Pen(SETTING(UPLOAD_BAR_COLOR))),

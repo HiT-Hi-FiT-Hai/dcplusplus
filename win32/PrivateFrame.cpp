@@ -35,7 +35,7 @@
 
 PrivateFrame::FrameMap PrivateFrame::frames;
 
-void PrivateFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
+void PrivateFrame::openWindow(SmartWin::TabView* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
 	PrivateFrame* pf = 0;
 	FrameIter i = frames.find(replyTo_);
 	if(i == frames.end()) {
@@ -49,7 +49,7 @@ void PrivateFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr&
 	
 }
 
-void PrivateFrame::gotMessage(SmartWin::WidgetTabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage) {
+void PrivateFrame::gotMessage(SmartWin::TabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = 0;
 	const UserPtr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
 
@@ -91,7 +91,7 @@ void PrivateFrame::closeAllOffline() {
 	}
 }
 
-PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo_, bool activate) : 
+PrivateFrame::PrivateFrame(SmartWin::TabView* mdiParent, const UserPtr& replyTo_, bool activate) : 
 	BaseType(mdiParent, _T(""), IDH_PM, SmartWin::IconPtr(new SmartWin::Icon(IDR_PRIVATE)), activate),
 	chat(0),
 	message(0),

@@ -80,8 +80,10 @@
 #include "widgets/Spinner.h"
 #include "widgets/Table.h"
 #include "widgets/TabSheet.h"
+#include "widgets/TabView.h"
 #include "widgets/Tree.h"
 #include "widgets/ToolBar.h"
+#include "widgets/ToolTip.h"
 #include "widgets/Window.h"
 
 namespace sw = SmartWin;

@@ -76,7 +76,7 @@ int DirectoryListingFrame::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int 
 	}
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(SmartWin::TabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -94,7 +94,7 @@ void DirectoryListingFrame::closeAll(){
 		::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(SmartWin::TabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -105,7 +105,7 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const
 	}
 }
 
-DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
+DirectoryListingFrame::DirectoryListingFrame(SmartWin::TabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
 	BaseType(mdiParent, _T(""), IDH_FILE_LIST, SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),

@@ -45,7 +45,7 @@ protected:
 	friend class MDIChildFrame<UsersFrame>;
 	friend class AspectUserInfo<UsersFrame>;
 
-	UsersFrame(SmartWin::WidgetTabView* mdiParent);
+	UsersFrame(SmartWin::TabView* mdiParent);
 	virtual ~UsersFrame();
 
 	void layout();

@@ -37,7 +37,7 @@ static const char* columnNames[] = {
 	N_("User Description")
 };
 
-FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
+FavHubsFrame::FavHubsFrame(SmartWin::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Favorite Hubs"), IDH_FAVORITE_HUBS, IDR_FAVORITES),
 	hubs(0),
 	connect(0),

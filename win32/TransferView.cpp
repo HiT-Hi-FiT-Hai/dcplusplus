@@ -60,7 +60,7 @@ static const char* downloadNames[] = {
 	N_("Size")
 };
 
-TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi_) : 
+TransferView::TransferView(SmartWin::Widget* parent, SmartWin::TabView* mdi_) : 
 	WidgetFactory<SmartWin::Container>(parent),
 	connections(0),
 	connectionsWindow(0),

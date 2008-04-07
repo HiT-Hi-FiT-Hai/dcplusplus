@@ -72,6 +72,8 @@ public:
 	typedef SmartWin::TabSheetPtr TabSheetPtr;
 	typedef SmartWin::ToolBar ToolBar;
 	typedef SmartWin::ToolBarPtr ToolBarPtr;
+	typedef SmartWin::ToolTip ToolTip;
+	typedef SmartWin::ToolTipPtr ToolTipPtr;
 	typedef SmartWin::Tree Tree;
 	typedef SmartWin::TreePtr TreePtr;
 	

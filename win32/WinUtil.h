@@ -60,7 +60,7 @@ public:
 	static int dirMaskedIndex;
 	static TStringList lastDirs;
 	static MainWindow* mainWindow;
-	//static SmartWin::WidgetTabView* mdiParent;
+	//static SmartWin::TabView* mdiParent;
 	static DWORD helpCookie;
 	
 	typedef unordered_map<string, int> ImageMap;

@@ -39,7 +39,7 @@ private:
 	enum { LINE_HEIGHT = 10 };
 	enum { AVG_SIZE = 5 };
 
-	StatsFrame(SmartWin::WidgetTabView* mdiParent);
+	StatsFrame(SmartWin::TabView* mdiParent);
 	virtual ~StatsFrame();
 
 	SmartWin::PenPtr pen;

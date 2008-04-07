@@ -34,7 +34,7 @@ static const char* columnNames[] = {
 	N_("CID")
 };
 
-UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) : 
+UsersFrame::UsersFrame(SmartWin::TabView* mdiParent) : 
 	BaseType(mdiParent, T_("Favorite Users"), IDH_FAVUSERS, IDR_USERS),
 	users(0),
 	startup(true)

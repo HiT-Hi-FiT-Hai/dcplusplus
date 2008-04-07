@@ -29,7 +29,7 @@
 #include <dcpp/UploadManager.h>
 
 // Constructor
-WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
+WaitingUsersFrame::WaitingUsersFrame(SmartWin::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Waiting Users"), IDH_WAITING_USERS, IDR_WAITING_USERS)
 {
 	UploadManager::getInstance()->addListener(this);
