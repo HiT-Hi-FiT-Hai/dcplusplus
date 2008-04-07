@@ -188,8 +188,8 @@ void MainWindow::initMenu() {
 		WidgetMenuPtr file = mainMenu->appendPopup(T_("&File"));
 
 		file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_HUB)));
-		file->appendItem(IDC_FOLLOW, T_("Follow last redirec&t\tCtrl+T"), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FOLLOW)));
-		file->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_RECONNECT)));
+		file->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&MainWindow::handleForward, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_RECONNECT)));
+		file->appendItem(IDC_FOLLOW, T_("Follow last redirec&t\tCtrl+T"), std::tr1::bind(&MainWindow::handleForward, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FOLLOW)));
 		file->appendSeparatorItem();
 
 		file->appendItem(IDC_OPEN_FILE_LIST, T_("Open file list...\tCtrl+L"), std::tr1::bind(&MainWindow::handleOpenFileList, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_OPEN_FILE_LIST)));
@@ -282,7 +282,7 @@ void MainWindow::initToolbar() {
 	int image = 0;
 	toolbar->appendItem(image++, T_("Public Hubs"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_PUBLIC_HUBS));
 	toolbar->appendSeparator();
-	toolbar->appendItem(image++, T_("Reconnect"), std::tr1::bind(&MainWindow::handleForward, this, IDC_PUBLIC_HUBS));
+	toolbar->appendItem(image++, T_("Reconnect"), std::tr1::bind(&MainWindow::handleForward, this, IDC_RECONNECT));
 	toolbar->appendItem(image++, T_("Follow last redirect"), std::tr1::bind(&MainWindow::handleForward, this, IDC_FOLLOW));
 	toolbar->appendSeparator();
 	toolbar->appendItem(image++, T_("Favorite Hubs"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FAVORITE_HUBS));
@@ -328,7 +328,7 @@ void MainWindow::initTransfers() {
 }
 
 bool MainWindow::filter(MSG& msg) {
-	if(tabs->filter(msg)) {
+	if(tabs && tabs->filter(msg)) {
 		return true;
 	}
 	
@@ -336,7 +336,7 @@ bool MainWindow::filter(MSG& msg) {
 		return true;
 	}
 
-	SmartWin::Container* active = getTabView()->getActive();
+	Container* active = getTabView()->getActive();
 	if(active) {
 		if(::IsDialogMessage( active->handle(), & msg )) {
 			return true;
@@ -355,9 +355,9 @@ void MainWindow::handleExit() {
 }
 
 void MainWindow::handleForward(WPARAM wParam) {
-	SmartWin::Container* active = getTabView()->getActive();
+	Container* active = getTabView()->getActive();
 	if(active) {
-		active->sendMessage(WM_COMMAND, wParam, 0);
+		active->sendMessage(WM_COMMAND, wParam);
 	}
 }
 
@@ -803,7 +803,7 @@ void MainWindow::handleMatchAll() {
 
 void MainWindow::handleActivate(bool active) {
 	// Forward to active tab window
-	Container* w = tabs->getActive();
+	Container* w = getTabView()->getActive();
 	if(w) {
 		w->sendMessage(WM_ACTIVATE, active ? WA_ACTIVE : WA_INACTIVE);
 	}
