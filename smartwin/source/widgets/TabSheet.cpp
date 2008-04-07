@@ -10,7 +10,7 @@ TabSheet::Seed::Seed() :
 
 void TabSheet::create( const Seed & cs )
 {
-	ControlType::create(cs);
+	BaseType::create(cs);
 	if(cs.font)
 		setFont( cs.font );
 }

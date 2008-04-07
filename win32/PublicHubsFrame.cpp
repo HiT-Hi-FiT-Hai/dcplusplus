@@ -103,9 +103,9 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	users(0)
 {
 	{
-		Table::Seed cs = WinUtil::Seeds::Table;
+		WidgetHubs::Seed cs;
 		cs.style |= LVS_SINGLESEL;
-		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
+		hubs = addChild(cs);
 		addWidget(hubs);
 		
 		hubs->createColumns(WinUtil::getStrings(columnNames));

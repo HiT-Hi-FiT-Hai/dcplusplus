@@ -40,9 +40,9 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 	startup(true)
 {
 	{
-		WidgetUsers::Seed cs = WinUtil::Seeds::Table;
+		WidgetUsers::Seed cs;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
+		users = addChild(cs);
 		addWidget(users);
 
 		users->createColumns(WinUtil::getStrings(columnNames));

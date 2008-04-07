@@ -85,7 +85,7 @@ inline Button::Button(Widget* parent) : BaseType(parent) {
 
 template<typename SeedType>
 void Button::create( const SeedType & cs ) {
-	ControlType::create(cs);
+	BaseType::create(cs);
 	if(cs.font)
 		setFont( cs.font );
 }

@@ -137,7 +137,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	}
 
 	{
-		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, WinUtil::Seeds::Table);
+		users = addChild(WidgetUsers::Seed());
 		addWidget(users);
 		paned->setSecond(users);
 		

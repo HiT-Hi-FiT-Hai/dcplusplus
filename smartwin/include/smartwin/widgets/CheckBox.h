@@ -69,8 +69,6 @@ public:
 	  */
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;
-		
-		FontPtr font;
 
 		/// Fills with default parameters
 		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
@@ -111,7 +109,7 @@ inline bool CheckBox::getChecked()
 }
 
 inline CheckBox::CheckBox( SmartWin::Widget * parent )
-	: ButtonType( parent )
+	: BaseType( parent )
 {
 }
 

@@ -147,7 +147,6 @@ void WinUtil::init() {
 	xtreeView.style |= TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
 	xtreeView.exStyle = WS_EX_CLIENTEDGE;
 	xtreeView.font = font;
-	
 
 	::HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
 }

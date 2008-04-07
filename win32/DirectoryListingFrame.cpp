@@ -127,7 +127,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	paned->setRelativePos(0.3);
 
 	{
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, WinUtil::Seeds::treeView);
+		dirs = addChild(WidgetDirs::Seed());
 		dirs->setHelpId(IDH_FILE_LIST_DIRS);
 		addWidget(dirs);
 		paned->setFirst(dirs);
@@ -137,7 +137,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	}
 	
 	{
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::Table);
+		files = addChild(WidgetFiles::Seed());
 		files->setHelpId(IDH_FILE_LIST_FILES);
 		addWidget(files);
 		paned->setSecond(files);

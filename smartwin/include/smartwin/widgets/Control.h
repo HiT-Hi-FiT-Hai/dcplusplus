@@ -51,7 +51,7 @@ protected:
 typedef Control<Policies::Subclassed> CommonControl;
 
 template<typename Policy>
-Control<Policy>::Control(Widget* parent) : MessageMap<Policy>(parent) {
+Control<Policy>::Control(Widget* parent) : BaseType(parent) {
 	
 }
 

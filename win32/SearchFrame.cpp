@@ -213,10 +213,10 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		Table::Seed cs = WinUtil::Seeds::Table;
+		WidgetHubs::Seed cs;
 		cs.style |= LVS_NOCOLUMNHEADER;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
+		hubs = addChild(cs);
 		hubs->setHelpId(IDH_SEARCH_HUBS);
 		addWidget(hubs);
 
@@ -231,7 +231,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		results = SmartWin::WidgetCreator<WidgetResults>::create(this, WinUtil::Seeds::Table);
+		results = addChild(WidgetResults::Seed());
 		addWidget(results);
 
 		results->createColumns(WinUtil::getStrings(columnNames));

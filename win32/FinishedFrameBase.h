@@ -54,10 +54,7 @@ protected:
 		totalTime(0)
 	{
 		{
-			typename MDIChildType::Table::Seed cs;
-			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-			cs.exStyle = WS_EX_CLIENTEDGE;
-			items = SmartWin::WidgetCreator<WidgetItems>::create(static_cast<T*>(this), cs);
+			items = static_cast<T*>(this)->addChild(typename WidgetItems::Seed());
 			items->setTableStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 			addWidget(items);
 

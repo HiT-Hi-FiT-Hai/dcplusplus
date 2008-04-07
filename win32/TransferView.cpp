@@ -72,23 +72,20 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 	
 	{
 		TabSheet::Seed tcs;
-		tcs.style = WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE |
-			 TCS_HOTTRACK | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER;
+		tcs.style |= TCS_HOTTRACK | TCS_RAGGEDRIGHT | TCS_FOCUSNEVER;
 		tabs = addChild(tcs);
 		tabs->onSelectionChanged(std::tr1::bind(&TransferView::handleTabSelected, this));
 	}
 	
 	{
 		Container::Seed cs;
-		cs.style |= WS_CLIPCHILDREN | WS_VISIBLE;
+		cs.style |= WS_VISIBLE;
 		cs.caption = T_("Connections");
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.location = tabs->getUsableArea(true);
-		
 		connectionsWindow = SmartWin::WidgetCreator<Container>::create(tabs, cs);
-		
 		tabs->addPage(T_("Connections"), 0);
-		
+
 		cs.style &= ~WS_VISIBLE;
 		cs.caption = T_("Downloads");
 		downloadsWindow = SmartWin::WidgetCreator<Container>::create(tabs, cs);
@@ -101,7 +98,7 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 		arrows->add(tmp, RGB(255, 0, 255));
 	}
 	{
-		connections = SmartWin::WidgetCreator<WidgetConnections>::create(connectionsWindow, WinUtil::Seeds::Table);
+		connections = connectionsWindow->addChild(WidgetConnections::Seed());
 
 		connections->setSmallImageList(arrows);
 		connections->createColumns(WinUtil::getStrings(connectionNames));
@@ -115,7 +112,7 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 	}
 	
 	{
-		downloads = SmartWin::WidgetCreator<WidgetDownloads>::create(downloadsWindow, WinUtil::Seeds::Table);
+		downloads = downloadsWindow->addChild(WidgetDownloads::Seed());
 
 		downloads->createColumns(WinUtil::getStrings(downloadNames));
 		downloads->setColumnOrder(WinUtil::splitTokens(SETTING(DOWNLOADS_ORDER), downloadIndexes));

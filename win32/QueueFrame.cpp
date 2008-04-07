@@ -65,10 +65,11 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	queueItems(0),
 	fileLists(0)
 {		
-	paned = createVPaned();
+	paned = addChild(WidgetVPaned::Seed());
 	paned->setRelativePos(0.3);
+
 	{
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, WinUtil::Seeds::treeView);
+		dirs = addChild(WidgetDirs::Seed());
 		addWidget(dirs);
 		paned->setFirst(dirs);
 
@@ -80,7 +81,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 	
 	{
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::Table);
+		files = addChild(WidgetFiles::Seed());
 		addWidget(files, true);
 		paned->setSecond(files);
 

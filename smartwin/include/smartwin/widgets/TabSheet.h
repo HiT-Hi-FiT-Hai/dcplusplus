@@ -124,7 +124,6 @@ public:
 	  * should define one of these.       
 	  */
 	struct Seed : public BaseType::Seed {
-	public:
 		typedef ThisType WidgetType;
 
 		FontPtr font;
@@ -332,7 +331,7 @@ inline void TabSheet::setData( unsigned index, LPARAM lParam )
 }
 
 inline TabSheet::TabSheet( SmartWin::Widget * parent )
-	: ControlType( parent )
+	: BaseType( parent )
 {
 }
 
