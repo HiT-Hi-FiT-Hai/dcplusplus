@@ -1,4 +1,10 @@
-Copyright (c) 2005, Thomas Hansen
+DC++ Widget Toolkit
+
+Copyright (c) 2007-2008, Jacek Sieka
+
+Based on SmartWin++
+Copyright (c) 2005 Thomas Hansen
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, 
@@ -9,7 +15,7 @@ are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright notice, 
       this list of conditions and the following disclaimer in the documentation 
       and/or other materials provided with the distribution.
-    * Neither the name of the SmartWin++ nor the names of its contributors 
+    * Neither the name of the DWT nor SmartWin++ nor the names of its contributors 
       may be used to endorse or promote products derived from this software 
       without specific prior written permission.
 

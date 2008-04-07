@@ -172,7 +172,7 @@ env.Append(BUILDERS = {'PotBuild' : pot_bld})
 dev.zlib = dev.build('zlib/')
 dev.bzip2 = dev.build('bzip2/')
 dev.intl = dev.build('intl/')
+dev.dwt = dev.build('dwt/')
 dev.client = dev.build('dcpp/')
-dev.smartwin = dev.build('smartwin/')
 dev.win32 = dev.build('win32/')
 

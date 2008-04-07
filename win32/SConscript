@@ -11,11 +11,11 @@ res = env.RES(dev.get_sources(source_path, '*.rc'))
 env.Depends(res, 'resource.h')
 
 env.Prepend(LIBS=["ssl", "crypto", "comctl32", "ws2_32", "ole32", "gdi32", "comdlg32", "winmm", "shlwapi", "htmlhelp", "oleaut32", "uuid"])
-env.Append(CPPPATH=['#/openssl/include', "#/smartwin/include", "#/"])
+env.Append(CPPPATH=['#/openssl/include', "#/dwt/include", "#/"])
 env.Append(LIBPATH=["#/openssl/lib"])
 
 headers=dev.get_sources(source_path, "*.h")
 dev.i18n(source_path, env, [sources,headers], 'dcpp-win32')
 
-ret = env.Program(target, [sources, res, dev.client, dev.zlib, dev.bzip2, dev.smartwin, dev.intl])
+ret = env.Program(target, [sources, res, dev.client, dev.zlib, dev.bzip2, dev.dwt, dev.intl])
 Return('ret')
