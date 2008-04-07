@@ -85,18 +85,18 @@ public:
 	}
 private:
 
-	static HWND getHandler(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam) {
+	static HWND getHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		HWND handler;
 		// Check who should handle the message - parent or child
 		switch(uMsg) {
-		case WM_CTLCOLORSTATIC :
-		case WM_CTLCOLORBTN :
-		case WM_CTLCOLOREDIT :
-		case WM_CTLCOLORLISTBOX :
-		case WM_CTLCOLORSCROLLBAR : {
+		case WM_CTLCOLORBTN:
+		case WM_CTLCOLORDLG:
+		case WM_CTLCOLOREDIT:
+		case WM_CTLCOLORLISTBOX:
+		case WM_CTLCOLORMSGBOX:
+		case WM_CTLCOLORSCROLLBAR:
+		case WM_CTLCOLORSTATIC: {
 			handler = reinterpret_cast<HWND>(lParam);
-			// We change message to avoid handling different messages of read-only vs normal edit controls
-			uMsg = WM_CTLCOLOR;  
 		} break;
 		case WM_NOTIFY : {
 			NMHDR* nmhdr = reinterpret_cast<NMHDR*>(lParam);

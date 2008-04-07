@@ -60,22 +60,33 @@ Message::Message(const MSG& msg_ ) :
 {
 	switch ( msg ) {
 	case WM_NOTIFY: {
-			NMHDR * ptrOriginal = reinterpret_cast< NMHDR * >( msg_.lParam );
-			param = ptrOriginal->code;
-		} break;
+		NMHDR * ptrOriginal = reinterpret_cast< NMHDR * >( msg_.lParam );
+		param = ptrOriginal->code;
+	} break;
 	case WM_SYSCOMMAND: {
-			param = msg_.wParam & 0xfff0;
-		} break;
+		param = msg_.wParam & 0xfff0;
+	} break;
 	case WM_TIMER: {
-			param = msg_.wParam;
-		} break;
+		param = msg_.wParam;
+	} break;
 	case WM_COMMAND: {
-			if(msg_.lParam == 0) {
-				param = LOWORD(msg_.wParam);
-			} else {
-				param = HIWORD(msg_.wParam);
-			}
-		} break;
+		if(msg_.lParam == 0) {
+			param = LOWORD(msg_.wParam);
+		} else {
+			param = HIWORD(msg_.wParam);
+		}
+	} break;
+	case WM_CTLCOLORBTN:
+	case WM_CTLCOLORDLG:
+	case WM_CTLCOLOREDIT:
+	case WM_CTLCOLORLISTBOX:
+	case WM_CTLCOLORMSGBOX:
+	case WM_CTLCOLORSCROLLBAR:
+	case WM_CTLCOLORSTATIC: {
+		// We change message to avoid handling different messages of read-only vs normal edit controls
+		msg = WM_CTLCOLOR;
+	} break;
+
 	}
 }
 
