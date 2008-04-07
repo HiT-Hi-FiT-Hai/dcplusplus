@@ -26,7 +26,7 @@
 #include "WinUtil.h"
 #include "HubListsDlg.h"
 
-#include <smartwin/widgets/Spinner.h>
+#include <dwt/widgets/Spinner.h>
 
 static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_DOWNLOAD_DIRECTORY, IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR },

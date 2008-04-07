@@ -27,24 +27,24 @@
 #include <htmlhelp.h>
 #include <libintl.h>
 
-#include <smartwin/WidgetFactory.h>
-#include <smartwin/resources/Accelerator.h>
-#include <smartwin/resources/Pen.h>
-#include <smartwin/widgets/Button.h>
-#include <smartwin/widgets/CheckBox.h>
-#include <smartwin/widgets/ComboBox.h>
-#include <smartwin/widgets/Container.h>
-#include <smartwin/widgets/Label.h>
-#include <smartwin/widgets/ModalDialog.h>
-#include <smartwin/widgets/ModelessDialog.h>
-#include <smartwin/widgets/RadioButton.h>
-#include <smartwin/widgets/Table.h>
-#include <smartwin/widgets/TabSheet.h>
-#include <smartwin/widgets/TabView.h>
-#include <smartwin/widgets/TextBox.h>
-#include <smartwin/widgets/Tree.h>
-#include <smartwin/widgets/ToolTip.h>
-#include <smartwin/widgets/Window.h>
+#include <dwt/WidgetFactory.h>
+#include <dwt/resources/Accelerator.h>
+#include <dwt/resources/Pen.h>
+#include <dwt/widgets/Button.h>
+#include <dwt/widgets/CheckBox.h>
+#include <dwt/widgets/ComboBox.h>
+#include <dwt/widgets/Container.h>
+#include <dwt/widgets/Label.h>
+#include <dwt/widgets/ModalDialog.h>
+#include <dwt/widgets/ModelessDialog.h>
+#include <dwt/widgets/RadioButton.h>
+#include <dwt/widgets/Table.h>
+#include <dwt/widgets/TabSheet.h>
+#include <dwt/widgets/TabView.h>
+#include <dwt/widgets/TextBox.h>
+#include <dwt/widgets/Tree.h>
+#include <dwt/widgets/ToolTip.h>
+#include <dwt/widgets/Window.h>
 
 enum {
 	WM_SPEAKER  = WM_APP + 500

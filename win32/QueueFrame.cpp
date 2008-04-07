@@ -27,6 +27,8 @@
 #include <dcpp/QueueManager.h>
 #include <dcpp/version.h>
 
+#include <dwt/util/StringUtils.h>
+
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
 COLUMN_USERS, COLUMN_PATH, COLUMN_EXACT_SIZE, COLUMN_ERRORS, COLUMN_ADDED, COLUMN_TTH, COLUMN_TYPE };
 

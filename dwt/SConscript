@@ -2,9 +2,6 @@
  
 Import('dev source_path')
 
-ret = []
-
-ret += dev.build('source/')
-ret += dev.build('SmartUtil/')
+ret = dev.build('src/')
 
 Return('ret')

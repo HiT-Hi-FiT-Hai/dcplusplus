@@ -25,7 +25,7 @@
 #include <dcpp/SettingsManager.h>
 #include "WinUtil.h"
 
-#include <smartwin/widgets/Spinner.h>
+#include <dwt/widgets/Spinner.h>
 
 static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_ROLLBACK, IDH_SETTINGS_ADVANCED3_ROLLBACK },

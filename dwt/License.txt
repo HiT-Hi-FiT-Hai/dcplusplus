@@ -2,7 +2,7 @@ DC++ Widget Toolkit
 
 Copyright (c) 2007-2008, Jacek Sieka
 
-Based on SmartWin++
+Parts of DWT are based on SmartWin++
 Copyright (c) 2005 Thomas Hansen
 
 All rights reserved.

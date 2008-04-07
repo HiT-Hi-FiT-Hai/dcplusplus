@@ -29,7 +29,7 @@
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 
-#include <smartwin/widgets/Spinner.h>
+#include <dwt/widgets/Spinner.h>
 
 static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, IDH_SETTINGS_UPLOAD_DIRECTORIES },

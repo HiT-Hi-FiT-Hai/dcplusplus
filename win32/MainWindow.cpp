@@ -49,8 +49,8 @@
 #include <dcpp/ClientManager.h>
 #include <dcpp/Download.h>
 
-#include <smartwin/widgets/ToolBar.h>
-#include <smartwin/LibraryLoader.h>
+#include <dwt/widgets/ToolBar.h>
+#include <dwt/LibraryLoader.h>
 
 MainWindow::MainWindow() :
 	WidgetFactory<SmartWin::Window>(0), 

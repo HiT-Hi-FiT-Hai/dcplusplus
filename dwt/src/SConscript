@@ -1,0 +1,17 @@
+# vim: set filetype=py
+ 
+Import('dev source_path')
+
+env, target, sources = dev.prepare_build(source_path, 'dwt', in_bin=False)
+
+env.Append(CPPPATH=["#dwt/include"])
+
+ret = []
+
+ret += env.StaticLibrary(target, sources)
+
+ret += dev.build('util/')
+ret += dev.build('widgets/')
+
+Return('ret')
+

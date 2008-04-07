@@ -23,7 +23,7 @@
 #include "HashProgressDlg.h"
 
 #include <dcpp/HashManager.h>
-#include <smartwin/widgets/ProgressBar.h>
+#include <dwt/widgets/ProgressBar.h>
 
 HashProgressDlg::HashProgressDlg(SmartWin::Widget* parent, bool aAutoClose) :
 	SmartWin::WidgetFactory<SmartWin::ModalDialog>(parent),
