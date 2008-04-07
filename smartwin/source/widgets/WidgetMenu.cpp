@@ -66,8 +66,8 @@ void WidgetMenu::createHelper(const Seed& cs) {
 		}
 
 		// set default drawing
-		itsParent->addCallback(Message(WM_DRAWITEM), DrawItemDispatcher(std::tr1::bind(&WidgetMenu::handleDrawItem, this, _1, _2)));
-		itsParent->addCallback(Message(WM_MEASUREITEM), MeasureItemDispatcher(std::tr1::bind(&WidgetMenu::handleMeasureItem, this, _1)));
+		itsParent->setCallback(Message(WM_DRAWITEM), DrawItemDispatcher(std::tr1::bind(&WidgetMenu::handleDrawItem, this, _1, _2)));
+		itsParent->setCallback(Message(WM_MEASUREITEM), MeasureItemDispatcher(std::tr1::bind(&WidgetMenu::handleMeasureItem, this, _1)));
 	}
 }
 
