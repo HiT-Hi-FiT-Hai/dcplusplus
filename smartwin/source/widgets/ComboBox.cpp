@@ -10,7 +10,7 @@ ComboBox::Seed::Seed() :
 }
 
 void ComboBox::create( const Seed & cs ) {
-	ControlType::create(cs);
+	BaseType::create(cs);
 	if(cs.font)
 		setFont( cs.font );
 	if(cs.extended)

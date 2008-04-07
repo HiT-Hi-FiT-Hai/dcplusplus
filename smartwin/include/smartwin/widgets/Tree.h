@@ -98,7 +98,9 @@ protected:
 	friend class AspectColor<Tree>;
 	friend class AspectData<Tree, HTREEITEM>;
 	friend class AspectSelection<Tree, HTREEITEM>;
-	
+	friend class AspectClickable<Tree>;
+	friend class AspectDblClickable<Tree>;
+
 public:
 	/// Class type
 	typedef Tree ThisType;
@@ -246,15 +248,6 @@ public:
 		);		
 	}
 
-	// Contract needed by AspectClickable Aspect class
-	static const Message & getSelectionChangedMessage();
-
-	// Contract needed by AspectClickable Aspect class
-	static const Message& getClickMessage();
-
-	// Contract needed by AspectDblClickable Aspect class
-	static const Message& getDblClickMessage();
-
 	/// Returns true if fired, else false
 	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 		
@@ -295,6 +288,14 @@ private:
 	void setSelectedImpl( HTREEITEM item );
 	size_t countSelectedImpl() const;
 
+	// Contract needed by AspectClickable Aspect class
+	static const Message & getSelectionChangedMessage();
+
+	// Contract needed by AspectClickable Aspect class
+	static const Message& getClickMessage();
+
+	// Contract needed by AspectDblClickable Aspect class
+	static const Message& getDblClickMessage();
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -100,6 +100,8 @@ class Table :
 	friend class AspectColor<Table>;
 	friend class AspectData<Table, int>;
 	friend class AspectSelection<Table, int>;
+	friend class AspectClickable<Table>;
+	friend class AspectDblClickable<Table>;
 
 public:
 	/// Class type
@@ -137,14 +139,6 @@ public:
 		SORT_FLOAT
 	};
 
-	// Aspect expectation implementation
-	static const Message & getSelectionChangedMessage();
-
-	// Contract needed by AspectClickable Aspect class
-	static const Message & getClickMessage();
-
-	// Contract needed by AspectDblClickable Aspect class
-	static const Message & getDblClickMessage();
 #ifdef PORT_ME
 	/// \ingroup EventHandlersTable
 	/// Validation event handler setter
@@ -535,6 +529,14 @@ private:
 	void setSelectedImpl( int idx );
 	size_t countSelectedImpl() const;
 
+	// Aspect expectation implementation
+	static const Message & getSelectionChangedMessage();
+
+	// Contract needed by AspectClickable Aspect class
+	static const Message & getClickMessage();
+
+	// Contract needed by AspectDblClickable Aspect class
+	static const Message & getDblClickMessage();
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

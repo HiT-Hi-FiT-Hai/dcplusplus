@@ -285,6 +285,8 @@ void PublicHubsFrame::updateDropDown() {
 }
 
 void PublicHubsFrame::updateList() {
+	dcdebug("PublicHubsFrame::updateList\n");
+
 	hubs->clear();
 	users = 0;
 	visibleHubs = 0;

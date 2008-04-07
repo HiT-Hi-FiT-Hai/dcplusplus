@@ -76,6 +76,7 @@ class ComboBox :
 	friend class AspectSelection<ComboBox, int>;
 	friend class AspectClickable<ComboBox>;
 	friend class AspectDblClickable<ComboBox>;
+
 public:
 	/// Class type
 	typedef ComboBox ThisType;
@@ -145,32 +146,34 @@ private:
 	void eraseImpl( int row );
 	void clearImpl();
 	size_t sizeImpl() const;
-	
-	// Aspect expectation implementation
-	static Message getSelectionChangedMessage();
 
 	// Aspect expectation implementation
-	static Message getClickMessage();
+	static const Message& getSelectionChangedMessage();
 
 	// Aspect expectation implementation
-	static Message getDblClickMessage();
+	static const Message& getClickMessage();
 
+	// Aspect expectation implementation
+	static const Message& getDblClickMessage();
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Message ComboBox::getSelectionChangedMessage() {
-	return Message( WM_COMMAND, MAKEWPARAM(0, CBN_SELENDOK) );
+inline const Message& ComboBox::getSelectionChangedMessage() {
+	static const Message retVal( WM_COMMAND, CBN_SELENDOK );
+	return retVal;
 }
 
-inline Message ComboBox::getClickMessage() {
-	return Message( WM_COMMAND, MAKEWPARAM(0, CBN_DROPDOWN) );
+inline const Message& ComboBox::getClickMessage() {
+	static const Message retVal( WM_COMMAND, CBN_DROPDOWN );
+	return retVal;
 }
 
-inline Message ComboBox::getDblClickMessage() {
-	return Message( WM_COMMAND, MAKEWPARAM(0, CBN_DBLCLK) );
+inline const Message& ComboBox::getDblClickMessage() {
+	static const Message retVal( WM_COMMAND, CBN_DBLCLK );
+	return retVal;
 }
 
 inline int ComboBox::getSelectedImpl() const {
