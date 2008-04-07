@@ -665,7 +665,7 @@ void HubFrame::removeUser(const UserPtr& aUser) {
 }
 
 bool HubFrame::historyActive() {
-	return isAltPressed() || !BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) || isControlPressed();
+	return isAltPressed() || (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) && isControlPressed());
 }
 
 bool HubFrame::handleUsersKeyDown(int c) {

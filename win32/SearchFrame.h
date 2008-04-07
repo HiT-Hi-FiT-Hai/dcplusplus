@@ -157,6 +157,7 @@ private:
 	LabelPtr searchLabel;
 	ComboBoxPtr searchBox;
 	ButtonPtr purge;
+	ButtonPtr doSearch;
 
 	LabelPtr sizeLabel;
 	ComboBoxPtr mode;
@@ -174,8 +175,6 @@ private:
 	typedef TypedTable<HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
-
-	ButtonPtr doSearch;
 
 	typedef TypedTable<SearchInfo> WidgetResults;
 	typedef WidgetResults* WidgetResultsPtr;

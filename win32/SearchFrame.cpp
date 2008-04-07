@@ -86,6 +86,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	searchLabel(0),
 	searchBox(0),
 	purge(0),
+	doSearch(0),
 	sizeLabel(0),
 	mode(0),
 	size(0),
@@ -97,7 +98,6 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)),
 	hubsLabel(0),
 	hubs(0),
-	doSearch(0),
 	results(0),
 	showUI(0),
 	bShowUI(true),
@@ -386,19 +386,6 @@ void SearchFrame::layout() {
 		hubs->setBounds(rect);
 	} else {
 		results->setBounds(r);
-
-		SmartWin::Rectangle rNULL(0, 0, 0, 0);
-		searchBox->setBounds(rNULL);
-		mode->setBounds(rNULL);
-		purge->setBounds(rNULL);
-		size->setBounds(rNULL);
-		sizeMode->setBounds(rNULL);
-		fileType->setBounds(rNULL);
-		
-		sizeLabel->setBounds(rNULL);
-		typeLabel->setBounds(rNULL);
-		optionLabel->setBounds(rNULL);
-		hubsLabel->setBounds(rNULL);
 	}
 }
 
@@ -599,6 +586,22 @@ void SearchFrame::handleSlotsClicked() {
 
 void SearchFrame::handleShowUIClicked() {
 	bShowUI = showUI->getChecked();
+
+	searchLabel->setVisible(bShowUI);
+	searchBox->setVisible(bShowUI);
+	purge->setVisible(bShowUI);
+	doSearch->setVisible(bShowUI);
+	sizeLabel->setVisible(bShowUI);
+	mode->setVisible(bShowUI);
+	size->setVisible(bShowUI);
+	sizeMode->setVisible(bShowUI);
+	typeLabel->setVisible(bShowUI);
+	fileType->setVisible(bShowUI);
+	optionLabel->setVisible(bShowUI);
+	slots->setVisible(bShowUI);
+	hubsLabel->setVisible(bShowUI);
+	hubs->setVisible(bShowUI);
+
 	layout();
 }
 
