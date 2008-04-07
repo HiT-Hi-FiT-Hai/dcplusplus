@@ -295,8 +295,8 @@ void FavoriteManager::onHttpFinished(bool fromHttp) throw() {
 					continue;
 
 				StringList::const_iterator k = tok.getTokens().begin();
-				const string& server = *k++;
 				const string& name = *k++;
+				const string& server = *k++;
 				const string& desc = *k++;
 				const string& usersOnline = *k++;
 				list.push_back(HubEntry(name, server, desc, usersOnline));

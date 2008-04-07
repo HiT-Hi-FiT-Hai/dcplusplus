@@ -16,6 +16,7 @@
 * [L#208344] Fix about dialog up/down stats
 * [L#209099] Fixed non-disappearing controls in search (poy)
 * [L#208684] Made the Alt key work again for line history in hub window (poy)
+* [L#209684] Fixed parsing of non-XML hub lists (poy)
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)
