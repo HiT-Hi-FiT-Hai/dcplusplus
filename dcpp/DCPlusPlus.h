@@ -103,8 +103,9 @@ typedef std::vector<uint8_t> ByteVector;
 
 template<typename T>
 boost::basic_format<T> dcpp_fmt(const T* t) {
-	boost::basic_format<T> fmt(t);
+	boost::basic_format<T> fmt;
 	fmt.exceptions(boost::io::no_error_bits);
+	fmt.parse(t);
 	return fmt;
 }
 
