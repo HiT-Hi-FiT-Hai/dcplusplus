@@ -12,6 +12,9 @@ typedef Button* ButtonPtr;
 class CheckBox;
 typedef CheckBox* CheckBoxPtr;
 
+class Container;
+typedef Container* ContainerPtr;
+
 class DateTime;
 typedef DateTime* DateTimePtr;
 
@@ -42,6 +45,8 @@ typedef Table* TablePtr;
 class Tree;
 typedef Tree* TreePtr;
 
+class Window;
+typedef Window* WindowPtr;
 
 }
 #endif /*FORWARD_H_*/

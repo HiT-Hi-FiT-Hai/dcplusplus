@@ -43,10 +43,13 @@ public:
 	
 	// TODO Maybe move this to a separate class?
 	// This brings these classes into the namespace of classes that inherit from Composite
+	// Note; only child windows should be here...
 	typedef SmartWin::Button Button;
 	typedef SmartWin::ButtonPtr ButtonPtr;
 	typedef SmartWin::CheckBox CheckBox;
 	typedef SmartWin::CheckBoxPtr CheckBoxPtr;
+	typedef SmartWin::Container Container;
+	typedef SmartWin::ContainerPtr ContainerPtr;
 	typedef SmartWin::DateTime DateTime;
 	typedef SmartWin::DateTimePtr DateTimePtr;
 	typedef SmartWin::Label Label;

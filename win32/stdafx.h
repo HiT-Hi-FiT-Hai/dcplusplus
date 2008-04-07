@@ -32,6 +32,7 @@
 #include <smartwin/resources/Pen.h>
 #include <smartwin/widgets/Button.h>
 #include <smartwin/widgets/ComboBox.h>
+#include <smartwin/widgets/Container.h>
 #include <smartwin/widgets/Label.h>
 #include <smartwin/widgets/ModalDialog.h>
 #include <smartwin/widgets/ModelessDialog.h>
@@ -40,6 +41,7 @@
 #include <smartwin/widgets/Table.h>
 #include <smartwin/widgets/TextBox.h>
 #include <smartwin/widgets/Tree.h>
+#include <smartwin/widgets/Window.h>
 
 enum {
 	WM_SPEAKER  = WM_APP + 500

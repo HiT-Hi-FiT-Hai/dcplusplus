@@ -35,7 +35,6 @@
 #include "widgets/MessageBox.h"
 #include "widgets/CheckBox.h"
 #include "widgets/ComboBox.h"
-#include "widgets/Container.h"
 #include "widgets/Table.h"
 #include "widgets/GroupBox.h"
 #include "widgets/LoadDialog.h"
@@ -48,7 +47,6 @@
 #include "widgets/TextBox.h"
 #include "widgets/Tree.h"
 #include "widgets/ToolTip.h"
-#include "widgets/Window.h"
 #include "WidgetFactoryPlatformImplementation.h"
 #include "WidgetCreator.h"
 
@@ -173,18 +171,6 @@ public:
 	/// CheckBox object type.
 	typedef typename CheckBox::ObjectType CheckBoxPtr;
 
-	/// WidgetChildWindow class type.
-	typedef SmartWin::Container Container;
-
-	/// WidgetChildWindow object type.
-	typedef typename Container::ObjectType ContainerPtr;
-
-	/// Window class type.
-	typedef SmartWin::Window Window;
-
-	/// Window object type.
-	typedef typename Window::ObjectType WindowPtr;
-
 	/// ProgressBar class type.
 	typedef SmartWin::ProgressBar ProgressBar;
 
@@ -253,11 +239,6 @@ public:
 	  * with this function.
 	  */
 	CheckBoxPtr attachCheckBox( unsigned id );
-
-	/// Creates a child window and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	ContainerPtr createContainer( const typename Container::Seed & cs = Container::Seed() );
 
 	/// Creates a Tree View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -443,13 +424,6 @@ typename WidgetFactory< ContainerWidgetType >::CheckBoxPtr
 WidgetFactory< ContainerWidgetType >::attachCheckBox( unsigned id )
 {
 	return WidgetCreator< CheckBox >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::ContainerPtr
-WidgetFactory< ContainerWidgetType >::createContainer( const typename Container::Seed & cs )
-{
-	return WidgetCreator< Container >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>

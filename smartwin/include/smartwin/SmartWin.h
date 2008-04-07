@@ -63,6 +63,7 @@
 #include "resources/Icon.h"
 #include "resources/ImageList.h"
 #include "resources/Pen.h"
+#include "widgets/Container.h"
 #include "widgets/DateTime.h"
 #include "widgets/MDIChild.h"
 #include "widgets/MDIFrame.h"
@@ -72,6 +73,7 @@
 #include "widgets/RadioButton.h"
 #include "widgets/Slider.h"
 #include "widgets/Spinner.h"
+#include "widgets/Window.h"
 
 namespace sw = SmartWin;
 
