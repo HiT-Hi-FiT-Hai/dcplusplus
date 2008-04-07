@@ -29,9 +29,9 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/RichTextBox.h"
+#include <dwt/widgets/RichTextBox.h>
 
-#include "../../include/smartwin/LibraryLoader.h"
+#include <dwt/LibraryLoader.h>
 
 namespace SmartWin {
 

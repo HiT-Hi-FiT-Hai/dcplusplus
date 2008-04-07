@@ -45,11 +45,11 @@
 #pragma warning( disable : 4311 )
 #endif
 
-#include "../include/smartwin/Widget.h"
+#include <dwt/Widget.h>
 
-#include "../include/smartwin/Threads.h"
-#include "../include/smartwin/Application.h"
-#include "../include/smartwin/xCeption.h"
+#include <dwt/Threads.h>
+#include <dwt/Application.h>
+#include <dwt/xCeption.h>
 
 namespace SmartWin
 {

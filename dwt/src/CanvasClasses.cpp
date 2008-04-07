@@ -29,9 +29,9 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/CanvasClasses.h"
-#include "../include/smartwin/xCeption.h"
-#include "../include/smartwin/resources/Brush.h"
+#include <dwt/CanvasClasses.h>
+#include <dwt/xCeption.h>
+#include <dwt/resources/Brush.h>
 
 namespace SmartWin
 {

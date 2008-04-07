@@ -29,7 +29,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/Spinner.h"
+#include <dwt/widgets/Spinner.h>
 
 namespace SmartWin {
 

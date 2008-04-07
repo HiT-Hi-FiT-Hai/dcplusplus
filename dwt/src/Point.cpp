@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/Point.h"
-#include "../include/smartwin/Widget.h"
+#include <dwt/Point.h>
+#include <dwt/Widget.h>
 
 namespace SmartWin
 {

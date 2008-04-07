@@ -29,7 +29,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/Label.h"
+#include <dwt/widgets/Label.h>
 
 namespace SmartWin {
 

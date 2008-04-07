@@ -33,9 +33,9 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/resources/ImageList.h"
-#include "../include/smartwin/Application.h"
-#include "../include/smartwin/xCeption.h"
+#include <dwt/resources/ImageList.h>
+#include <dwt/Application.h>
+#include <dwt/xCeption.h>
 
 namespace SmartWin
 {

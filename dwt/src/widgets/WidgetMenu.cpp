@@ -35,10 +35,10 @@
 
 #ifndef WINCE
 
-#include "../../include/smartwin/widgets/WidgetMenu.h"
+#include <dwt/widgets/WidgetMenu.h>
 
-#include "../../include/smartwin/resources/Brush.h"
-#include "../../include/smartwin/resources/Pen.h"
+#include <dwt/resources/Brush.h>
+#include <dwt/resources/Pen.h>
 
 namespace SmartWin {
 

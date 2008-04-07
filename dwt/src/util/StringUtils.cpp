@@ -29,9 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "StringUtils.h"
-
-#include "UtilSystemHeaders.h"
+#include <dwt/util/StringUtils.h>
+#include <dwt/WindowsHeaders.h>
 
 namespace SmartUtil {
 	tstring escapeMenu(tstring str) {

@@ -29,10 +29,10 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/WindowClass.h"
-#include "../include/smartwin/Application.h"
-#include "../include/smartwin/xCeption.h"
-#include "../include/smartwin/Widget.h"
+#include <dwt/WindowClass.h>
+#include <dwt/Application.h>
+#include <dwt/xCeption.h>
+#include <dwt/Widget.h>
 
 #include <typeinfo>
 #include <sstream>

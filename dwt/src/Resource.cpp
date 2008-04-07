@@ -33,7 +33,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/Resource.h"
+#include <dwt/Resource.h>
 
 namespace SmartWin
 {

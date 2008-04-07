@@ -29,7 +29,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/FolderDialog.h"
+#include <dwt/widgets/FolderDialog.h>
 
 namespace SmartWin {
 

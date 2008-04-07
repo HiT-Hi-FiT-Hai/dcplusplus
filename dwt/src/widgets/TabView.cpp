@@ -29,12 +29,13 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/TabView.h"
+#include <dwt/widgets/TabView.h>
 
-#include "../../include/smartwin/widgets/Container.h"
-#include "../../include/smartwin/widgets/ToolTip.h"
-#include "../../include/smartwin/widgets/TabSheet.h"
-#include "../../include/smartwin/WidgetCreator.h"
+#include <dwt/widgets/Container.h>
+#include <dwt/widgets/ToolTip.h>
+#include <dwt/widgets/TabSheet.h>
+#include <dwt/WidgetCreator.h>
+#include <dwt/util/StringUtils.h>
 
 namespace SmartWin {
 

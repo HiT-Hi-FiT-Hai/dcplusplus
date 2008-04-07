@@ -29,7 +29,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/Slider.h"
+#include <dwt/widgets/Slider.h>
 
 namespace SmartWin {
 

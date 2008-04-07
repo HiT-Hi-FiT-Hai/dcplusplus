@@ -37,7 +37,7 @@
 #define DateTime_H
 
 #include <string.h>
-#include "UtilSystemHeaders.h"
+#include "../WindowsHeaders.h"
 #include "TimeSpan.h"
 #include "tstring.h"
 #include <time.h>

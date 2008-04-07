@@ -33,7 +33,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/resources/Font.h"
+#include <dwt/resources/Font.h>
 
 namespace SmartWin
 {

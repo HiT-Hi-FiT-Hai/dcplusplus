@@ -36,8 +36,7 @@
 #ifndef RegKey_H
 #define RegKey_H
 
-#include "UtilSystemHeaders.h"
-#include <string.h>
+#include "../WindowsHeaders.h"
 #include "tstring.h"
 #include "xCeptionSmartUtilities.h"
 #include <shlwapi.h>

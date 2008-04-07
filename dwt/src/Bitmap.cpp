@@ -33,9 +33,9 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/resources/Bitmap.h"
-#include "../include/smartwin/Point.h"
-#include "../include/smartwin/Application.h"
+#include <dwt/resources/Bitmap.h>
+#include <dwt/Point.h>
+#include <dwt/Application.h>
 
 namespace SmartWin
 {

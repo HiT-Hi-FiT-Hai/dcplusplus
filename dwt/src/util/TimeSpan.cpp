@@ -33,7 +33,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "TimeSpan.h"
+#include <dwt/util/TimeSpan.h>
 
 namespace SmartUtil
 {

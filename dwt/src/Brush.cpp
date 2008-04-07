@@ -29,7 +29,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/resources/Brush.h"
+#include <dwt/resources/Brush.h>
 
 namespace SmartWin {
 

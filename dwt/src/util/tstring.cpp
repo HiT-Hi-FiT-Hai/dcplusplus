@@ -33,7 +33,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "tstring.h"
+#include <dwt/util/tstring.h>
 
 namespace SmartUtil
 {

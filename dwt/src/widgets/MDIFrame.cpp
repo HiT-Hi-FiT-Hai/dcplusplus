@@ -29,9 +29,9 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/MDIFrame.h"
-#include "../../include/smartwin/WidgetCreator.h"
-#include "../../include/smartwin/widgets/MDIParent.h"
+#include <dwt/widgets/MDIFrame.h>
+#include <dwt/WidgetCreator.h>
+#include <dwt/widgets/MDIParent.h>
 
 namespace SmartWin {
 

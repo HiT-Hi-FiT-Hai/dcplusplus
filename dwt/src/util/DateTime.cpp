@@ -33,8 +33,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "UtilSystemHeaders.h"
-#include "DateTime.h"
+#include <dwt/util/DateTime.h>
 
 namespace SmartUtil
 {

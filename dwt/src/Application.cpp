@@ -33,7 +33,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/Application.h"
+#include <dwt/Application.h>
 #include <dwt/util/tstring.h>
 
 using namespace SmartWin;

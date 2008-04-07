@@ -29,9 +29,9 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/MDIChild.h"
+#include <dwt/widgets/MDIChild.h>
 
-#include "../../include/smartwin/Application.h"
+#include <dwt/Application.h>
 
 namespace SmartWin {
 

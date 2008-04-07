@@ -29,7 +29,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/ProgressBar.h"
+#include <dwt/widgets/ProgressBar.h>
 
 namespace SmartWin {
 

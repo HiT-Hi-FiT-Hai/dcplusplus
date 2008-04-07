@@ -29,7 +29,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/resources/Pen.h"
+#include <dwt/resources/Pen.h>
 
 namespace SmartWin {
 

@@ -30,7 +30,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/smartwin/widgets/CheckBox.h"
+#include <dwt/widgets/CheckBox.h>
 
 namespace SmartWin {
 

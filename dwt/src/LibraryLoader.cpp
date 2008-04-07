@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../include/smartwin/WindowsHeaders.h"
-#include "../include/smartwin/LibraryLoader.h"
+#include <dwt/WindowsHeaders.h>
+#include <dwt/LibraryLoader.h>
 #include <utility>
 
 namespace SmartWin
