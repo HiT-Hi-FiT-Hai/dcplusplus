@@ -40,7 +40,6 @@
 #include "widgets/LoadDialog.h"
 #include "widgets/ProgressBar.h"
 #include "widgets/SaveDialog.h"
-#include "widgets/Label.h"
 #include "widgets/StatusBar.h"
 #include "widgets/WidgetTabView.h"
 #include "widgets/TabSheet.h"
@@ -158,12 +157,6 @@ public:
 
 	/// ComboBox object type.
 	typedef typename ComboBox::ObjectType ComboBoxPtr;
-
-	/// Label class type.
-	typedef SmartWin::Label Label;
-
-	/// Label object type.
-	typedef typename Label::ObjectType LabelPtr;
 
 	/// CheckBox class type.
 	typedef SmartWin::CheckBox CheckBox;
@@ -333,19 +326,6 @@ public:
 	  * with this function.
 	  */
 	ComboBoxPtr attachComboBox( unsigned id );
-
-	/// Creates a Label Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	LabelPtr createLabel( const typename Label::Seed & cs = Label::Seed() );
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a Label Control from the given resource id.
-	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
-	  * with this function.
-	  */
-	LabelPtr attachLabel( unsigned id );
 
 	ToolTipPtr createToolTip( const typename ToolTip::Seed & cs = ToolTip::Seed() );
 protected:
@@ -536,20 +516,6 @@ typename WidgetFactory< ContainerWidgetType >::ComboBoxPtr
 WidgetFactory< ContainerWidgetType >::attachComboBox( unsigned id )
 {
 	return WidgetCreator< ComboBox >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::LabelPtr
-WidgetFactory< ContainerWidgetType >::createLabel( const typename Label::Seed & cs )
-{
-	return WidgetCreator< Label >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::LabelPtr
-WidgetFactory< ContainerWidgetType >::attachLabel( unsigned id )
-{
-	return WidgetCreator< Label >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>

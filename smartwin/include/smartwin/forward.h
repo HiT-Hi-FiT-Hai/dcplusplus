@@ -15,6 +15,9 @@ typedef CheckBox* CheckBoxPtr;
 class Container;
 typedef Container* ContainerPtr;
 
+class CoolBar;
+typedef CoolBar* CoolBarPtr;
+
 class DateTime;
 typedef DateTime* DateTimePtr;
 
@@ -41,6 +44,9 @@ typedef Slider* SliderPtr;
 
 class Table;
 typedef Table* TablePtr;
+
+class ToolBar;
+typedef ToolBar* ToolBarPtr;
 
 class Tree;
 typedef Tree* TreePtr;

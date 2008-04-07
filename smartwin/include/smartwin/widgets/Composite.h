@@ -50,18 +50,22 @@ public:
 	typedef SmartWin::CheckBoxPtr CheckBoxPtr;
 	typedef SmartWin::Container Container;
 	typedef SmartWin::ContainerPtr ContainerPtr;
+	typedef SmartWin::CoolBar CoolBar;
+	typedef SmartWin::CoolBarPtr CoolBarPtr;
 	typedef SmartWin::DateTime DateTime;
 	typedef SmartWin::DateTimePtr DateTimePtr;
 	typedef SmartWin::Label Label;
 	typedef SmartWin::LabelPtr LabelPtr;
-	typedef SmartWin::Table Table;
-	typedef SmartWin::TablePtr TablePtr;
-	typedef SmartWin::Tree Tree;
-	typedef SmartWin::TreePtr TreePtr;
-	typedef SmartWin::Spinner Spinner;
-	typedef SmartWin::SpinnerPtr SpinnerPtr;
 	typedef SmartWin::RadioButton RadioButton;
 	typedef SmartWin::RadioButtonPtr RadioButtonPtr;
+	typedef SmartWin::Spinner Spinner;
+	typedef SmartWin::SpinnerPtr SpinnerPtr;
+	typedef SmartWin::Table Table;
+	typedef SmartWin::TablePtr TablePtr;
+	typedef SmartWin::ToolBar ToolBar;
+	typedef SmartWin::ToolBarPtr ToolBarPtr;
+	typedef SmartWin::Tree Tree;
+	typedef SmartWin::TreePtr TreePtr;
 	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

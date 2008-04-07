@@ -108,7 +108,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	CheckBoxPtr shareHidden = attachCheckBox(IDC_SHAREHIDDEN);
 	shareHidden->onClicked(std::tr1::bind(&UploadPage::handleShareHiddenClicked, this, shareHidden));
 
-	total = attachLabel(IDC_TOTAL);
+	attachChild(total, IDC_TOTAL);
 	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 
 	ButtonPtr button = attachChild<SmartWin::Button>(IDC_RENAME);

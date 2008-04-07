@@ -34,7 +34,7 @@ LineDlg::LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring&
 bool LineDlg::initDialog() {
 	attachButton(IDOK)->onClicked(std::tr1::bind(&LineDlg::okClicked, this));
 	attachButton(IDCANCEL)->onClicked(std::tr1::bind(&LineDlg::cancelClicked, this));
-	attachLabel(IDC_DESCRIPTION)->setText(desc);
+	attachChild<Label>(IDC_DESCRIPTION)->setText(desc);
 
 	line = attachTextBox(IDC_LINE);
 	line->setFocus();

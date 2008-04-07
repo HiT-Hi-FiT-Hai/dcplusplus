@@ -49,6 +49,8 @@
 #include <dcpp/ClientManager.h>
 #include <dcpp/Download.h>
 
+#include <smartwin/widgets/ToolBar.h>
+
 MainWindow::MainWindow() :
 	WidgetFactory<SmartWin::Window>(0), 
 	paned(0), 

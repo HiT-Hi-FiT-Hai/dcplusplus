@@ -78,7 +78,7 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), logFont);
 	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
 
-	example = attachLabel(IDC_COLOREXAMPLE);
+	attachChild(example, IDC_COLOREXAMPLE);
 	example->setColor(fg, bg);
 	example->setFont(font);
 

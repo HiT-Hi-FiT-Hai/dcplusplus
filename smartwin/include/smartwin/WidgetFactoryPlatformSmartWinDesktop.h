@@ -33,8 +33,6 @@
 #include "widgets/RichTextBox.h"
 #include "widgets/FontDialog.h"
 #include "widgets/WidgetMenu.h"
-#include "widgets/ToolBar.h"
-#include "widgets/CoolBar.h"
 #include "WidgetCreator.h"
 
 namespace SmartWin
@@ -64,18 +62,6 @@ public:
 
 	/// ChooseFont class and object type.
 	typedef SmartWin::FontDialog FontDialog;
-
-	/// Toolbar class type.
-	typedef SmartWin::ToolBar ToolBar;
-
-	/// Toolbar object type.
-	typedef typename ToolBar::ObjectType ToolBarPtr;
-
-	/// Coolbar class type.
-	typedef SmartWin::CoolBar CoolBar;
-
-	/// Coolbar object type.
-	typedef typename CoolBar::ObjectType CoolBarPtr;
 
 	/// Constructor taking a pointer to it's parent.
 	/** If you for instance create a WidgetChildWindow then use this Constructor
@@ -124,22 +110,6 @@ public:
 	WidgetMenuPtr attachMenu(HMENU hMenu, const typename WidgetMenu::Seed& cs = WidgetMenu::Seed())
 	{
 		return WidgetCreator< WidgetMenu >::attach( this, cs, hMenu );
-	}
-
-	/// Creates a Tool Bar and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	ToolBarPtr createToolbar( const typename ToolBar::Seed & cs = ToolBar::Seed() )
-	{
-		return WidgetCreator< ToolBar >::create( this, cs );
-	}
-
-	/// Creates a Cool Bar and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	CoolBarPtr createCoolbar( const typename CoolBar::Seed & cs = CoolBar::Seed() )
-	{
-		return WidgetCreator< CoolBar >::create( this, cs );
 	}
 };
 
