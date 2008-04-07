@@ -5,14 +5,14 @@ namespace SmartWin {
 
 WindowClass WidgetTabView::windowClass(_T("WidgetTabView"), &WidgetTabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
 
-WidgetTabView::Seed::Seed() :
-	Widget::Seed(windowClass.getClassName(), WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE),
-	toggleActive(false)
+WidgetTabView::Seed::Seed(bool toggleActive_) :
+	BaseType::Seed(windowClass.getClassName(), WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE),
+	toggleActive(toggleActive_)
 {
 }
 
 WidgetTabView::WidgetTabView(Widget* w) :
-	PolicyType(w),
+	BaseType(w),
 	tab(0),
 	tip(0),
 	toggleActive(false),

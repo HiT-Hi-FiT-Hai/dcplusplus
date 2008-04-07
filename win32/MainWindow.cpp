@@ -261,6 +261,8 @@ void MainWindow::initMenu() {
 }
 
 void MainWindow::initToolbar() {
+	dcdebug("initToolbar\n");
+
 	ToolBar::Seed cs;
 	cs.style |= TBSTYLE_FLAT;
 	toolbar = createToolbar(cs);
@@ -314,10 +316,8 @@ void MainWindow::initStatusBar() {
 }
 
 void MainWindow::initTabs() {
-	WidgetTabView::Seed cs;
-	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
-	cs.toggleActive = BOOLSETTING(TOGGLE_ACTIVE_WINDOW);
-	tabs = createTabView(cs);
+	dcdebug("initTabs\n");
+	tabs = addChild(WidgetTabView::Seed(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)));
 	tabs->onTitleChanged(std::tr1::bind(&MainWindow::handleTabsTitleChanged, this, _1));
 	tabs->onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
 	paned->setFirst(tabs);

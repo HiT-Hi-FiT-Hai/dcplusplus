@@ -29,14 +29,15 @@ public:
 	/// Object type
 	typedef ThisType * ObjectType;
 	
-	typedef MessageMap<Policies::Normal> PolicyType;
+	typedef MessageMap<Policies::Normal> BaseType;
 
-	class Seed : public Widget::Seed {
-	public:
-		/// Fills with default parameters
-		Seed();
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
 
 		bool toggleActive;
+
+		/// Fills with default parameters
+		Seed(bool toggleActive_ = false);
 	};
 
 	void add(Container* w, const IconPtr& icon);
