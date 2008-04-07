@@ -171,7 +171,9 @@ void MainWindow::initWindow() {
 	cs.icon = SmartWin::IconPtr(new SmartWin::Icon(IDR_MAINFRAME));
 	cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 	createWindow(cs);
-	
+
+	setHelpId(IDH_STARTPAGE);
+
 	paned = createHPaned();
 	paned->setRelativePos(0.7);
 }
@@ -318,6 +320,7 @@ void MainWindow::initTabs() {
 	cs.toggleActive = BOOLSETTING(TOGGLE_ACTIVE_WINDOW);
 	tabs = createTabView(cs);
 	tabs->onTitleChanged(std::tr1::bind(&MainWindow::handleTabsTitleChanged, this, _1));
+	tabs->onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
 	paned->setFirst(tabs);
 }
 

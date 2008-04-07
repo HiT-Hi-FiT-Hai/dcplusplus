@@ -37,6 +37,7 @@ void WidgetTabView::create(const Seed & cs) {
 	tab->onLeftMouseUp(std::tr1::bind(&WidgetTabView::handleLeftMouseUp, this, _1));
 	tab->onContextMenu(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1));
 	tab->onMiddleMouseDown(std::tr1::bind(&WidgetTabView::handleMiddleMouseDown, this, _1));
+	tab->onHelp(std::tr1::bind(&WidgetTabView::handleHelp, this, _1, _2));
 
 	tip = WidgetCreator<ToolTip>::attach(this, tab->getToolTips()); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
 	if(tip) {
@@ -104,7 +105,7 @@ SmartUtil::tstring WidgetTabView::getTabText(WidgetChildWindow* w) {
 	return SmartUtil::tstring();
 }
 
-void WidgetTabView::onTabContextMenu(WidgetChildWindow* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f) {
+void WidgetTabView::onTabContextMenu(WidgetChildWindow* w, const ContextMenuFunction& f) {
 	TabInfo* ti = getTabInfo(w);
 	if(ti) {
 		ti->handleContextMenu = f;
@@ -376,6 +377,18 @@ void WidgetTabView::handleMiddleMouseDown(const MouseEventResult& mouseEventResu
 	TabInfo* ti = getTabInfo(tab->hitTest(mouseEventResult.pos));
 	if(ti)
 		ti->w->close();
+}
+
+void WidgetTabView::handleHelp(HWND hWnd, unsigned id) {
+	if(helpFunction) {
+		// hWnd and id are those of the whole tab control; not those of the specific tab on which the user wants help for
+		TabInfo* ti = getTabInfo(tab->hitTest(ScreenCoordinate(Point::fromLParam(::GetMessagePos()))));
+		if(ti)
+			id = ti->w->getHelpId();
+
+		// even if no tab was found below the cursor, forward the message to the application so that it can display its default help
+		helpFunction(hWnd, id);
+	}
 }
 
 bool WidgetTabView::filter(const MSG& msg) {

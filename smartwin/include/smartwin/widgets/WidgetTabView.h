@@ -18,6 +18,10 @@ class WidgetTabView :
 	public AspectRaw<WidgetTabView>,
 	public AspectSizable<WidgetTabView>
 {
+	typedef std::tr1::function<void (const SmartUtil::tstring&)> TitleChangedFunction;
+	typedef std::tr1::function<void (HWND, unsigned)> HelpFunction;
+	typedef std::tr1::function<bool (const ScreenCoordinate&)> ContextMenuFunction;
+
 public:
 	/// Class type
 	typedef WidgetTabView ThisType;
@@ -48,11 +52,15 @@ public:
 
 	SmartUtil::tstring getTabText(WidgetChildWindow* w);
 
-	void onTitleChanged(const std::tr1::function<void (const SmartUtil::tstring&)>& f) {
+	void onTitleChanged(const TitleChangedFunction& f) {
 		titleChangedFunction = f;
 	}
 
-	void onTabContextMenu(WidgetChildWindow* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f);
+	void onHelp(const HelpFunction& f) {
+		helpFunction = f;
+	}
+
+	void onTabContextMenu(WidgetChildWindow* w, const ContextMenuFunction& f);
 
 	bool filter(const MSG& msg);
 	
@@ -75,7 +83,7 @@ private:
 	struct TabInfo {
 		TabInfo(WidgetChildWindow* w_) : w(w_) { }
 		WidgetChildWindow* w;
-		std::tr1::function<bool (const ScreenCoordinate& pt)> handleContextMenu;
+		ContextMenuFunction handleContextMenu;
 	};
 	
 	static WindowClass windowClass;
@@ -83,7 +91,8 @@ private:
 	TabSheet::ObjectType tab;
 	ToolTip::ObjectType tip;
 
-	std::tr1::function<void (const SmartUtil::tstring&)> titleChangedFunction;
+	TitleChangedFunction titleChangedFunction;
+	HelpFunction helpFunction;
 
 	bool toggleActive;
 
@@ -114,6 +123,7 @@ private:
 	void handleLeftMouseUp(const MouseEventResult& mouseEventResult);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	void handleMiddleMouseDown(const MouseEventResult& mouseEventResult);
+	void handleHelp(HWND hWnd, unsigned id);
 	
 	SmartUtil::tstring formatTitle(SmartUtil::tstring title);
 	void layout();
