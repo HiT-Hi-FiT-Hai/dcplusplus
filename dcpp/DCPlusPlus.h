@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPP_DCPLUSPLUS_H
-#define DCPP_DCPLUSPLUS_H
+#ifndef DCPLUSPLUS_DCPP_DCPLUSPLUS_H
+#define DCPLUSPLUS_DCPP_DCPLUSPLUS_H
 
 #ifdef _WIN32
 #ifndef snprintf
@@ -77,12 +77,12 @@ _CrtDbgBreak(); } } while(false)
 
 namespace dcpp {
 
-typedef vector<string> StringList;
+typedef std::vector<string> StringList;
 typedef StringList::iterator StringIter;
 typedef StringList::const_iterator StringIterC;
 
-typedef pair<string, string> StringPair;
-typedef vector<StringPair> StringPairList;
+typedef std::pair<string, string> StringPair;
+typedef std::vector<StringPair> StringPairList;
 typedef StringPairList::iterator StringPairIter;
 
 typedef std::tr1::unordered_map<string, string> StringMap;
@@ -91,15 +91,27 @@ typedef StringMap::iterator StringMapIter;
 typedef std::tr1::unordered_set<string> StringSet;
 typedef StringSet::iterator StringSetIter;
 
-typedef vector<wstring> WStringList;
+typedef std::vector<wstring> WStringList;
 typedef WStringList::iterator WStringIter;
 typedef WStringList::const_iterator WStringIterC;
 
-typedef pair<wstring, wstring> WStringPair;
-typedef vector<WStringPair> WStringPairList;
+typedef std::pair<wstring, wstring> WStringPair;
+typedef std::vector<WStringPair> WStringPairList;
 typedef WStringPairList::iterator WStringPairIter;
 
-typedef vector<uint8_t> ByteVector;
+typedef std::vector<uint8_t> ByteVector;
+
+template<typename T>
+boost::basic_format<T> dcpp_fmt(const T* t) {
+	boost::basic_format<T> fmt(t);
+	fmt.exceptions(boost::io::no_error_bits);
+	return fmt;
+}
+
+template<typename T>
+boost::basic_format<T> dcpp_fmt(const std::basic_string<T>& t) {
+	return dcpp_fmt(t.c_str());
+}
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #define _LL(x) x##ll
@@ -172,8 +184,8 @@ extern void shutdown();
 #define PACKAGE "libdcpp"
 #define LOCALEDIR Util::getLocalePath().c_str()
 #define _(String) dgettext(PACKAGE, String)
-#define F_(String) boost::format(dgettext(PACKAGE, String))
-#define FN_(String1,String2, N) boost::format(dngettext(PACKAGE, String1, String2, N))
+#define F_(String) dcpp_fmt(dgettext(PACKAGE, String))
+#define FN_(String1,String2, N) dcpp_fmt(dngettext(PACKAGE, String1, String2, N))
 
 #endif
 

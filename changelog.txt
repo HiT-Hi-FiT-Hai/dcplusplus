@@ -18,7 +18,8 @@
 * [L#208684] Made the Alt key work again for line history in hub window (poy)
 * [L#209684] Fixed parsing of non-XML hub lists (poy)
 * [L#205660] Readded hub column to transfers (thanks mikejj)
-* Fixed file list refresh happenning 1 minute later than expected (poy)
+* Fixed file list refresh happening 1 minute later than expected (poy)
+* [L#209277] Fixed crash on bad translation
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)
