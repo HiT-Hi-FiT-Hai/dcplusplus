@@ -22,12 +22,18 @@
 #include "TextBox.h"
 
 class ComboBox : public SmartWin::ComboBox {
-private:
 	typedef SmartWin::ComboBox BaseType;
+
 public:
 	typedef ComboBox ThisType;
 	
 	typedef ThisType* ObjectType;
+
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
+		Seed();
+	};
 
 	explicit ComboBox( SmartWin::Widget * parent );
 

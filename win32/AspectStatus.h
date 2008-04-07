@@ -36,12 +36,7 @@ protected:
 	}
 
 	void initStatus(bool sizeGrip = false) {
-		StatusBarSections::Seed cs;
-		cs.style = WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-		if(sizeGrip) {
-			cs.style |= SBARS_SIZEGRIP;
-		}
-		status = static_cast<WidgetType*>(this)->createStatusBarSections(cs);
+		status = static_cast<WidgetType*>(this)->addChild(StatusBarSections::Seed(sizeGrip));
 
 		statusTip = static_cast<WidgetType*>(this)->createToolTip();
 		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));

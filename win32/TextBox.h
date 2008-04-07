@@ -21,12 +21,18 @@
 
 /** Our own flavour of text boxes that handle double clicks and have fancy menus */
 class TextBox : public SmartWin::TextBox {
-private:
 	typedef SmartWin::TextBox BaseType;
+
 public:
 	typedef TextBox ThisType;
 	
 	typedef ThisType* ObjectType;
+
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
+		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
+	};
 
 	explicit TextBox( SmartWin::Widget * parent );
 

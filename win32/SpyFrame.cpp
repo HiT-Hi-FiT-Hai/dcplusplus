@@ -49,7 +49,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.style |= LVS_SINGLESEL;
-		searches = createTable(cs);
+		searches = addChild(cs);
 		addWidget(searches);
 
 		searches->createColumns(WinUtil::getStrings(columnNames));
@@ -62,7 +62,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 
 	{
 		CheckBox::Seed cs(T_("Ignore TTH searches"));
-		ignoreTTH = createCheckBox(cs);
+		ignoreTTH = addChild(cs);
 		ignoreTTH->setHelpId(IDH_SPY_IGNORE_TTH);
 		ignoreTTH->setChecked(bIgnoreTTH);
 		ignoreTTH->onClicked(std::tr1::bind(&SpyFrame::handleIgnoreTTHClicked, this));

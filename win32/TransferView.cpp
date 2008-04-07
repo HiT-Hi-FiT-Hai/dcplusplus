@@ -74,7 +74,7 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 		TabSheet::Seed tcs;
 		tcs.style = WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE |
 			 TCS_HOTTRACK | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER;
-		tabs = createTabSheet(tcs);
+		tabs = addChild(tcs);
 		tabs->onSelectionChanged(std::tr1::bind(&TransferView::handleTabSelected, this));
 	}
 	

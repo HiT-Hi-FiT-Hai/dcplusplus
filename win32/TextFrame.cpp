@@ -32,7 +32,7 @@ TextFrame::TextFrame(SmartWin::WidgetTabView* mdiParent, const string& fileName)
 	TextBox::Seed cs = WinUtil::Seeds::textBox;
 	cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 	cs.font = WinUtil::monoFont;
-	pad = createTextBox(cs);
+	pad = addChild(cs);
 	addWidget(pad);
 
 	pad->setTextLimit(0);

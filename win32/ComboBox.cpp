@@ -20,6 +20,11 @@
 
 #include "ComboBox.h"
 
+ComboBox::Seed::Seed() : 
+	BaseType::Seed()
+{
+}
+
 ComboBox::ComboBox( SmartWin::Widget * parent ) : BaseType(parent), textBox(0) {
 }
 

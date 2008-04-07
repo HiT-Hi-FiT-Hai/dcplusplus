@@ -23,6 +23,7 @@
 #include <dcpp/Util.h>
 #include <dcpp/forward.h>
 #include <dcpp/MerkleTree.h>
+#include "WidgetFactory.h"
 
 #ifdef PORT_ME
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
@@ -68,11 +69,11 @@ public:
 	
 	struct Seeds {
 		static const SmartWin::Button::Seed button;
-		static const SmartWin::ComboBox::Seed comboBoxStatic;
-		static const SmartWin::ComboBox::Seed comboBoxEdit;
+		static const ComboBox::Seed comboBoxStatic;
+		static const ComboBox::Seed comboBoxEdit;
 		static const SmartWin::Table::Seed Table;
 		static const SmartWin::WidgetMenu::Seed menu;
-		static const SmartWin::TextBox::Seed textBox;
+		static const TextBox::Seed textBox;
 		static const SmartWin::Tree::Seed treeView;
 	};
 

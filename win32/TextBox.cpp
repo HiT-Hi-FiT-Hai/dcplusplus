@@ -22,6 +22,11 @@
 
 #include "WinUtil.h"
 
+TextBox::Seed::Seed(const SmartUtil::tstring& caption) : 
+	BaseType::Seed(caption)
+{
+}
+
 TextBox::TextBox( SmartWin::Widget * parent ) : BaseType(parent), menuOpened(false) {
 	this->onLeftMouseDblClick(std::tr1::bind(&TextBox::handleLeftDblClick, this, _1));
 

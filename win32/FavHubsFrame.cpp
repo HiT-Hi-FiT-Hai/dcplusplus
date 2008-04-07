@@ -52,7 +52,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.style |= LVS_NOSORTHEADER;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		hubs = createTable(cs);
+		hubs = addChild(cs);
 		addWidget(hubs);
 
 		hubs->createColumns(WinUtil::getStrings(columnNames));
@@ -69,37 +69,37 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		Button::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = T_("&Connect");
-		connect = createButton(cs);
+		connect = addChild(cs);
 		connect->setHelpId(IDH_FAVORITE_HUBS_CONNECT);
 		connect->onClicked(std::tr1::bind(&FavHubsFrame::openSelected, this));
 		addWidget(connect);
 
 		cs.caption = T_("&New...");
-		add = createButton(cs);
+		add = addChild(cs);
 		add->setHelpId(IDH_FAVORITE_HUBS_NEW);
 		add->onClicked(std::tr1::bind(&FavHubsFrame::handleAdd, this));
 		addWidget(add);
 
 		cs.caption = T_("&Properties");
-		properties = createButton(cs);
+		properties = addChild(cs);
 		properties->setHelpId(IDH_FAVORITE_HUBS_PROPERTIES);
 		properties->onClicked(std::tr1::bind(&FavHubsFrame::handleProperties, this));
 		addWidget(properties);
 
 		cs.caption = T_("Move &Up");
-		up = createButton(cs);
+		up = addChild(cs);
 		up->setHelpId(IDH_FAVORITE_HUBS_MOVE_UP);
 		up->onClicked(std::tr1::bind(&FavHubsFrame::handleUp, this));
 		addWidget(up);
 
 		cs.caption = T_("Move &Down");
-		down = createButton(cs);
+		down = addChild(cs);
 		down->setHelpId(IDH_FAVORITE_HUBS_MOVE_DOWN);
 		down->onClicked(std::tr1::bind(&FavHubsFrame::handleDown, this));
 		addWidget(down);
 
 		cs.caption = T_("&Remove");
-		remove = createButton(cs);
+		remove = addChild(cs);
 		remove->setHelpId(IDH_FAVORITE_HUBS_REMOVE);
 		remove->onClicked(std::tr1::bind(&FavHubsFrame::handleRemove, this));
 		addWidget(remove);

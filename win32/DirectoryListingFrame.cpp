@@ -158,22 +158,22 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 		Button::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = T_("Subtract list");
-		listDiff = createButton(cs);
+		listDiff = addChild(cs);
 		listDiff->setHelpId(IDH_FILE_LIST_SUBSTRACT);
 		listDiff->onClicked(std::tr1::bind(&DirectoryListingFrame::handleListDiff, this));
 
 		cs.caption = T_("Match queue");
-		matchQueue = createButton(cs);
+		matchQueue = addChild(cs);
 		matchQueue->setHelpId(IDH_FILE_LIST_MATCH_QUEUE);
 		matchQueue->onClicked(std::tr1::bind(&DirectoryListingFrame::handleMatchQueue, this));
 
 		cs.caption = T_("Find");
-		find = createButton(cs);
+		find = addChild(cs);
 		find->setHelpId(IDH_FILE_LIST_FIND);
 		find->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFind, this));
 
 		cs.caption = T_("Next");
-		findNext = createButton(cs);
+		findNext = addChild(cs);
 		findNext->setHelpId(IDH_FILE_LIST_NEXT);
 		findNext->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFindNext, this));
 	}

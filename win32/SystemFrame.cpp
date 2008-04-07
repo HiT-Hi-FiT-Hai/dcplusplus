@@ -29,7 +29,7 @@ SystemFrame::SystemFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		log = createTextBox(cs);
+		log = addChild(cs);
 		addWidget(log);
 	}
 

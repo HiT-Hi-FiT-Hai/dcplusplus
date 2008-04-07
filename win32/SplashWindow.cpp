@@ -47,7 +47,7 @@ SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::Window>(0) {
 		TextBox::Seed cs;
 		cs.style = WS_CHILD | ES_CENTER | ES_READONLY;
 		cs.exStyle = WS_EX_STATICEDGE;
-		text = createTextBox(cs);
+		text = addChild(cs);
 	}
 
 	text->setFont(SmartWin::DefaultGuiFont);

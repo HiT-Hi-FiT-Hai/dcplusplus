@@ -56,7 +56,7 @@ public:
 		titleChangedFunction = f;
 	}
 
-	void onTabContextMenu(Container* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f);
+	void onTabContextMenu(Container* w, const ContextMenuFunction& f);
 
 	void onHelp(const HelpFunction& f) {
 		helpFunction = f;

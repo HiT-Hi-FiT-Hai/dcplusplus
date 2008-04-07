@@ -117,23 +117,23 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		searchLabel->setHelpId(IDH_SEARCH_SEARCH_FOR);
 
 		cs.caption = T_("Size");
-		sizeLabel = createLabel(cs);
+		sizeLabel = addChild(cs);
 		sizeLabel->setHelpId(IDH_SEARCH_SIZE);
 
 		cs.caption = T_("File type");
-		typeLabel = createLabel(cs);
+		typeLabel = addChild(cs);
 		typeLabel->setHelpId(IDH_SEARCH_TYPE);
 
 		cs.caption = T_("Search options");
-		optionLabel = createLabel(cs);
+		optionLabel = addChild(cs);
 
 		cs.caption = T_("Hubs");
-		hubsLabel = createLabel(cs);
+		hubsLabel = addChild(cs);
 		hubsLabel->setHelpId(IDH_SEARCH_HUBS);
 	}
 
 	{
-		searchBox = createComboBox(WinUtil::Seeds::comboBoxEdit);
+		searchBox = addChild(WinUtil::Seeds::comboBoxEdit);
 		searchBox->setHelpId(IDH_SEARCH_SEARCH_FOR);
 		addWidget(searchBox);
 		
@@ -146,19 +146,19 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	{
 		Button::Seed cs = WinUtil::Seeds::button;
 		cs.caption = T_("Purge");
-		purge = createButton(cs);
+		purge = addChild(cs);
 		purge->setHelpId(IDH_SEARCH_PURGE);
 		purge->onClicked(std::tr1::bind(&SearchFrame::handlePurgeClicked, this));
 
 		cs.style |= BS_DEFPUSHBUTTON;
 		cs.caption = T_("Search");
-		doSearch = createButton(cs);
+		doSearch = addChild(cs);
 		doSearch->setHelpId(IDH_SEARCH_SEARCH);
 		doSearch->onClicked(std::tr1::bind(&SearchFrame::runSearch, this));
 	}
 
 	{
-		mode = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		mode = addChild(WinUtil::Seeds::comboBoxStatic);
 		mode->setHelpId(IDH_SEARCH_SIZE);
 		addWidget(mode);
 
@@ -170,13 +170,13 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style |= ES_AUTOHSCROLL | ES_NUMBER;
-		size = createTextBox(cs);
+		size = addChild(cs);
 		size->setHelpId(IDH_SEARCH_SIZE);
 		addWidget(size);
 	}
 
 	{
-		sizeMode = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		sizeMode = addChild(WinUtil::Seeds::comboBoxStatic);
 		sizeMode->setHelpId(IDH_SEARCH_SIZE);
 		addWidget(sizeMode);
 
@@ -188,7 +188,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		fileType = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		fileType = addChild(WinUtil::Seeds::comboBoxStatic);
 		fileType->setHelpId(IDH_SEARCH_TYPE);
 		addWidget(fileType);
 
@@ -205,7 +205,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 	{
 		CheckBox::Seed cs(T_("Only users with free slots"));
-		slots = createCheckBox(cs);
+		slots = addChild(cs);
 		slots->setHelpId(IDH_SEARCH_SLOTS);
 		slots->setChecked(onlyFree);
 
@@ -247,7 +247,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 	{
 		CheckBox::Seed cs(_T("+/-"));
-		showUI = createCheckBox(cs);
+		showUI = addChild(cs);
 		showUI->setChecked(bShowUI);
 
 		showUI->onClicked(std::tr1::bind(&SearchFrame::handleShowUIClicked, this));

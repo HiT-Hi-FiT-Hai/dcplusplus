@@ -116,15 +116,17 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 
+	typedef CommonControl BaseType;
+
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.       
 	  */
-	class Seed
-		: public Widget::Seed
-	{
+	struct Seed : public BaseType::Seed {
 	public:
+		typedef ThisType WidgetType;
+
 		FontPtr font;
 
 		/// Fills with default parameters

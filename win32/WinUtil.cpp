@@ -59,11 +59,11 @@ WinUtil::ImageMap WinUtil::fileIndexes;
 DWORD WinUtil::helpCookie = 0;
 
 const SmartWin::Button::Seed WinUtil::Seeds::button;
-const SmartWin::ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
-const SmartWin::ComboBox::Seed WinUtil::Seeds::comboBoxEdit;
+const ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
+const ComboBox::Seed WinUtil::Seeds::comboBoxEdit;
 const SmartWin::Table::Seed WinUtil::Seeds::Table;
 const SmartWin::WidgetMenu::Seed WinUtil::Seeds::menu;
-const SmartWin::TextBox::Seed WinUtil::Seeds::textBox;
+const TextBox::Seed WinUtil::Seeds::textBox;
 const SmartWin::Tree::Seed WinUtil::Seeds::treeView;
 
 void WinUtil::init() {
@@ -121,11 +121,11 @@ void WinUtil::init() {
 	
 	// Const so that noone else will change them after they've been initialized
 	//SmartWin::Button::Seed& xbutton = const_cast<SmartWin::Button::Seed&>(Seeds::button);
-	SmartWin::ComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::ComboBox::Seed&>(Seeds::comboBoxEdit);
-	SmartWin::ComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::ComboBox::Seed&>(Seeds::comboBoxStatic);
+	ComboBox::Seed& xcomboBoxEdit = const_cast<ComboBox::Seed&>(Seeds::comboBoxEdit);
+	ComboBox::Seed& xcomboBoxStatic = const_cast<ComboBox::Seed&>(Seeds::comboBoxStatic);
 	SmartWin::Table::Seed& xTable = const_cast<SmartWin::Table::Seed&>(Seeds::Table);
 	SmartWin::WidgetMenu::Seed& xmenu = const_cast<SmartWin::WidgetMenu::Seed&>(Seeds::menu);
-	SmartWin::TextBox::Seed& xtextBox = const_cast<SmartWin::TextBox::Seed&>(Seeds::textBox);
+	TextBox::Seed& xtextBox = const_cast<TextBox::Seed&>(Seeds::textBox);
 	SmartWin::Tree::Seed& xtreeView =  const_cast<SmartWin::Tree::Seed&>(Seeds::treeView);
 
 	xcomboBoxStatic.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;

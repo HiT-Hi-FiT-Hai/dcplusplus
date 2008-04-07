@@ -98,7 +98,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		CheckBox::Seed cs;
 		cs.caption = _T("+/-");
-		showTree = createCheckBox(cs);
+		showTree = addChild(cs);
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
 		showTree->onClicked(std::tr1::bind(&QueueFrame::handleShowTreeClicked, this));
 	}

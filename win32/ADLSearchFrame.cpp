@@ -48,7 +48,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		items = createTable(cs);
+		items = addChild(cs);
 		addWidget(items);
 
 		items->createColumns(WinUtil::getStrings(columnNames));
@@ -65,37 +65,37 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 		Button::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = T_("&New...");
-		add = createButton(cs);
+		add = addChild(cs);
 		add->setHelpId(IDH_ADLS_NEW);
 		add->onClicked(std::tr1::bind(&ADLSearchFrame::handleAdd, this));
 		addWidget(add);
 
 		cs.caption = T_("&Properties");
-		properties = createButton(cs);
+		properties = addChild(cs);
 		properties->setHelpId(IDH_ADLS_PROPERTIES);
 		properties->onClicked(std::tr1::bind(&ADLSearchFrame::handleProperties, this));
 		addWidget(properties);
 
 		cs.caption = T_("Move &Up");
-		up = createButton(cs);
+		up = addChild(cs);
 		up->setHelpId(IDH_ADLS_MOVE_UP);
 		up->onClicked(std::tr1::bind(&ADLSearchFrame::handleUp, this));
 		addWidget(up);
 
 		cs.caption = T_("Move &Down");
-		down = createButton(cs);
+		down = addChild(cs);
 		down->setHelpId(IDH_ADLS_MOVE_DOWN);
 		down->onClicked(std::tr1::bind(&ADLSearchFrame::handleDown, this));
 		addWidget(down);
 
 		cs.caption = T_("&Remove");
-		remove = createButton(cs);
+		remove = addChild(cs);
 		remove->setHelpId(IDH_ADLS_REMOVE);
 		remove->onClicked(std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 		addWidget(remove);
 
 		cs.caption = T_("&Help");
-		help = createButton(cs);
+		help = addChild(cs);
 		help->setHelpId(IDH_DCPP_HELP);
 		help->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_ADL_SEARCH));
 		addWidget(help);

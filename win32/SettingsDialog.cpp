@@ -114,7 +114,7 @@ void SettingsDialog::handleHelp(HWND hWnd, unsigned id) {
 
 void SettingsDialog::addPage(const tstring& title, PropPage* page) {
 	pages.push_back(page);
-	createTree(title, TVI_ROOT, page);
+	addChild(title, TVI_ROOT, page);
 }
 
 void SettingsDialog::handleOKClicked() {
@@ -148,7 +148,7 @@ void SettingsDialog::showPage(PropPage* page) {
 	}
 }
 
-HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropPage* page) {
+HTREEITEM SettingsDialog::addChild(const tstring& str, HTREEITEM parent, PropPage* page) {
 	TVINSERTSTRUCT tvi;
 	tvi.hInsertAfter = TVI_LAST;
 	tvi.hParent = parent;
@@ -185,7 +185,7 @@ HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropP
 		}
 		TreeView_Expand(pageTree->handle(), parent, TVE_EXPAND);
 		// Recurse...
-		return createTree(str.substr(i+1), item, page);
+		return addChild(str.substr(i+1), item, page);
 	}
 }
 

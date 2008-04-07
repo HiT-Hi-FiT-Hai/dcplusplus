@@ -108,6 +108,8 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 
+	typedef CommonControl BaseType;
+
 	typedef std::tr1::function<int (LPARAM a, LPARAM b)> SortFunction;
 	
 	/// Seed class
@@ -115,10 +117,9 @@ public:
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
 		FontPtr font;
 		
 		/// List view extended styles (LVS_EX_*)

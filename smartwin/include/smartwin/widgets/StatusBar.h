@@ -122,19 +122,20 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 
+	typedef CommonControl BaseType;
+
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
 		FontPtr font;
 
 		/// Fills with default parameters
-		explicit Seed();
+		explicit Seed(bool sizeGrip = true);
 	};
 
 	/// Refreshes the status bar, must be called after main window has been resized
@@ -175,8 +176,10 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template< class TypeOfStatusBar >
-StatusBar< TypeOfStatusBar >::Seed::Seed() : Widget::Seed(STATUSCLASSNAME, WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP | WS_CLIPSIBLINGS) {
-	
+StatusBar< TypeOfStatusBar >::Seed::Seed(bool sizeGrip) : BaseType::Seed(STATUSCLASSNAME, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS) {
+	if(sizeGrip) {
+		style |= SBARS_SIZEGRIP;
+	}
 }
 
 inline void Section::setSections( const std::vector< unsigned > & width )
@@ -235,14 +238,14 @@ Message StatusBar< TypeOfStatusBar >::getDblClickMessage()
 
 template< class TypeOfStatusBar >
 StatusBar< TypeOfStatusBar >::StatusBar( SmartWin::Widget * parent )
-	: ControlType( parent )
+	: BaseType( parent )
 {
 }
 
 template< class TypeOfStatusBar >
 void StatusBar< TypeOfStatusBar >::create( const Seed & cs )
 {
-	ControlType::create(cs);
+	BaseType::create(cs);
 	if(cs.font)
 		setFont( cs.font );
 }

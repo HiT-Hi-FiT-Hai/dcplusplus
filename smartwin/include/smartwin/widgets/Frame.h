@@ -147,7 +147,7 @@ protected:
 
 template<typename Policy>
 Frame<Policy>::Seed::Seed(const SmartUtil::tstring& caption, DWORD style, DWORD exStyle) : 
-	BaseType::Seed(caption, WS_OVERLAPPEDWINDOW, exStyle)
+	BaseType::Seed(caption, style | WS_OVERLAPPEDWINDOW, exStyle)
 {
 	
 }

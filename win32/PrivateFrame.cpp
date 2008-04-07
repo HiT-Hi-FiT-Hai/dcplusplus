@@ -100,7 +100,7 @@ PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& re
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
-		message = createTextBox(cs);
+		message = addChild(cs);
 		message->setHelpId(IDH_PM_MESSAGE);
 		addWidget(message, true);
 		message->onKeyDown(std::tr1::bind(&PrivateFrame::handleKeyDown, this, _1));
@@ -110,7 +110,7 @@ PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& re
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		chat = createTextBox(cs);
+		chat = addChild(cs);
 		chat->setHelpId(IDH_PM_CHAT);
 		chat->setTextLimit(0);
 		addWidget(chat);
