@@ -65,6 +65,12 @@
 #include "resources/Pen.h"
 #include "widgets/ModalDialog.h"
 #include "widgets/ModelessDialog.h"
+#include "widgets/DateTime.h"
+#include "widgets/Slider.h"
+#include "widgets/Spinner.h"
+#include "widgets/MDIChild.h"
+#include "widgets/MDIFrame.h"
+#include "widgets/MDIParent.h"
 
 namespace sw = SmartWin;
 

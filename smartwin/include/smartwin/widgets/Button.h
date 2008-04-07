@@ -13,8 +13,6 @@
 namespace SmartWin {
 
 // Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
 
 /** Common stuff for all buttons */
 class Button :

@@ -39,10 +39,6 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
-
 /// DateTimePicker Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo

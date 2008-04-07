@@ -111,19 +111,20 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	total = attachLabel(IDC_TOTAL);
 	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 
-	ButtonPtr button = attachButton(IDC_RENAME);
+	ButtonPtr button = attachChild<SmartWin::Button>(IDC_RENAME);
 	button->onClicked(std::tr1::bind(&UploadPage::handleRenameClicked, this));
 
-	button = attachButton(IDC_REMOVE);
+	attachChild(button, IDC_REMOVE);
 	button->onClicked(std::tr1::bind(&UploadPage::handleRemoveClicked, this));
 
-	button = attachButton(IDC_ADD);
+	attachChild(button, IDC_ADD);
 	button->onClicked(std::tr1::bind(&UploadPage::handleAddClicked, this));
 
-	SpinnerPtr spinner = attachSpinner(IDC_SLOTSPIN);
+	SpinnerPtr spinner;
+	attachChild(spinner, IDC_SLOTSPIN);
 	spinner->setRange(1, UD_MAXVAL);
 
-	spinner = attachSpinner(IDC_MIN_UPLOAD_SPIN);
+	attachChild(spinner, IDC_MIN_UPLOAD_SPIN);
 	spinner->setRange(0, UD_MAXVAL);
 
 	attachTextBox(IDC_MIN_UPLOAD_SPEED);

@@ -1,6 +1,8 @@
 #ifndef COMPOSITE_H_
 #define COMPOSITE_H_
 
+#include "../forward.h"
+
 #include "../aspects/AspectActivate.h"
 #include "../aspects/AspectCommand.h"
 #include "../aspects/AspectDragDrop.h"
@@ -38,6 +40,16 @@ public:
 	typedef ThisType* ObjectType;
 	
 	typedef Control<Policy> BaseType;
+	
+	// TODO Maybe move this to a separate class?
+	
+	typedef SmartWin::ButtonPtr ButtonPtr;
+	typedef SmartWin::CheckBoxPtr CheckBoxPtr;
+	typedef SmartWin::DateTimePtr DateTimePtr;
+	typedef SmartWin::LabelPtr LabelPtr;
+	typedef SmartWin::TablePtr TablePtr;
+	typedef SmartWin::TreePtr TreePtr;
+	typedef SmartWin::SpinnerPtr SpinnerPtr;
 	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

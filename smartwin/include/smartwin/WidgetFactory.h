@@ -37,17 +37,11 @@
 #include "widgets/ComboBox.h"
 #include "widgets/Container.h"
 #include "widgets/Table.h"
-#include "widgets/DateTime.h"
 #include "widgets/GroupBox.h"
 #include "widgets/LoadDialog.h"
-#include "widgets/MDIChild.h"
-#include "widgets/MDIFrame.h"
-#include "widgets/MDIParent.h"
 #include "widgets/ProgressBar.h"
 #include "widgets/RadioButton.h"
 #include "widgets/SaveDialog.h"
-#include "widgets/Slider.h"
-#include "widgets/Spinner.h"
 #include "widgets/Label.h"
 #include "widgets/StatusBar.h"
 #include "widgets/WidgetTabView.h"
@@ -56,7 +50,6 @@
 #include "widgets/Tree.h"
 #include "widgets/ToolTip.h"
 #include "widgets/Window.h"
-#include "widgets/Frame.h"
 #include "WidgetFactoryPlatformImplementation.h"
 #include "WidgetCreator.h"
 
@@ -136,12 +129,6 @@ public:
 	/// StatusBarSections object type.
 	typedef typename StatusBarSections::ObjectType StatusBarSectionsPtr;
 
-	/// MDIWindow class type.
-	typedef SmartWin::MDIParent MDIParent;
-
-	/// MDIWindow object type.
-	typedef typename MDIParent::ObjectType MDIParentPtr;
-
 	/// TabView class type.
 	typedef SmartWin::WidgetTabView WidgetTabView;
 
@@ -153,18 +140,6 @@ public:
 
 	/// TabSheet object type.
 	typedef typename TabSheet::ObjectType TabSheetPtr;
-
-	/// Slider class type.
-	typedef SmartWin::Slider Slider;
-
-	/// Slider object type.
-	typedef typename Slider::ObjectType SliderPtr;
-
-	/// Spinner class type.
-	typedef SmartWin::Spinner Spinner;
-
-	/// Spinner object type.
-	typedef typename Spinner::ObjectType SpinnerPtr;
 
 	/// GroupBox class type.
 	typedef SmartWin::GroupBox GroupBox;
@@ -205,12 +180,6 @@ public:
 	/// CheckBox object type.
 	typedef typename CheckBox::ObjectType CheckBoxPtr;
 
-	/// DateTimePicker class type.
-	typedef SmartWin::DateTime DateTime;
-
-	/// DateTimePicker object type.
-	typedef typename DateTime::ObjectType DateTimePtr;
-
 	/// WidgetChildWindow class type.
 	typedef SmartWin::Container Container;
 
@@ -222,12 +191,6 @@ public:
 
 	/// Window object type.
 	typedef typename Window::ObjectType WindowPtr;
-
-	/// MDIFrame class type.
-	typedef SmartWin::MDIFrame MDIFrame;
-
-	/// Window object type.
-	typedef typename MDIFrame::ObjectType MDIFramePtr;
 
 	/// ProgressBar class type.
 	typedef SmartWin::ProgressBar ProgressBar;
@@ -345,11 +308,6 @@ public:
 	  */
 	ButtonPtr createButton( const typename Button::Seed & cs = Button::Seed() );
 
-	/// Creates a Button Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	MDIParentPtr createMDIParent( const typename MDIParent::Seed & cs = MDIParent::Seed() );
-
 	/// Creates a Tab View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
@@ -359,16 +317,6 @@ public:
 	/** DON'T delete the returned pointer!!!
 	  */
 	TabSheetPtr createTabSheet( const typename TabSheet::Seed & cs = TabSheet::Seed() );
-
-	/// Creates a Slider Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	SliderPtr createSlider( const typename Slider::Seed & cs = Slider::Seed() );
-
-	/// Creates a Spinner Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	SpinnerPtr createSpinner( const typename Spinner::Seed & cs = Spinner::Seed() );
 
 	/// Creates a Progress Bar Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -389,22 +337,6 @@ public:
 	  */
 	ProgressBarPtr attachProgressBar( unsigned id );
 
-	/// \ingroup SubclassDialog
-	/// Subclasses a Slider Control from the given resource id.
-	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
-	  * with this function.
-	  */
-	SliderPtr attachSlider( unsigned id );
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a Spinner Control from the given resource id.
-	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
-	  * with this function.
-	  */
-	SpinnerPtr attachSpinner( unsigned id );
-
 	/// Creates a Group Box Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
@@ -414,16 +346,6 @@ public:
 	/** DON'T delete the returned pointer!!!
 	  */
 	GroupBoxPtr attachGroupBox( unsigned id );
-
-	/// Creates a DateTime Picker Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	DateTimePtr createDateTimePicker( const typename DateTime::Seed & cs = DateTime::Seed() );
-
-	/// Suvclasses a DateTime Picker Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	DateTimePtr attachDateTimePicker( unsigned id );
 
 	/// Creates a Radio Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -597,13 +519,6 @@ typename WidgetFactory< ContainerWidgetType >::ButtonPtr
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::MDIParentPtr
-WidgetFactory< ContainerWidgetType >::createMDIParent( const typename MDIParent::Seed & cs )
-{
-	return WidgetCreator< MDIParent >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::WidgetTabViewPtr
 WidgetFactory< ContainerWidgetType >::createTabView( const typename WidgetTabView::Seed & cs )
 {
@@ -615,20 +530,6 @@ typename WidgetFactory< ContainerWidgetType >::TabSheetPtr
 WidgetFactory< ContainerWidgetType >::createTabSheet( const typename TabSheet::Seed & cs )
 {
 	return WidgetCreator< TabSheet >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::SliderPtr
-WidgetFactory< ContainerWidgetType >::createSlider( const typename Slider::Seed & cs )
-{
-	return WidgetCreator< Slider >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::SpinnerPtr
-WidgetFactory< ContainerWidgetType >::createSpinner( const typename Spinner::Seed & cs )
-{
-	return WidgetCreator< Spinner >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
@@ -653,20 +554,6 @@ WidgetFactory< ContainerWidgetType >::attachProgressBar( unsigned id )
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::SliderPtr
-WidgetFactory< ContainerWidgetType >::attachSlider( unsigned id )
-{
-	return WidgetCreator< Slider >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::SpinnerPtr
-WidgetFactory< ContainerWidgetType >::attachSpinner( unsigned id )
-{
-	return WidgetCreator< Spinner >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::GroupBoxPtr
 WidgetFactory< ContainerWidgetType >::createGroupBox( const typename GroupBox::Seed & cs )
 {
@@ -678,20 +565,6 @@ typename WidgetFactory< ContainerWidgetType >::GroupBoxPtr
 WidgetFactory< ContainerWidgetType >::attachGroupBox( unsigned id )
 {
 	return WidgetCreator< GroupBox >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::DateTimePtr
-WidgetFactory< ContainerWidgetType >::createDateTimePicker( const typename DateTime::Seed & cs )
-{
-	return WidgetCreator< DateTime >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::DateTimePtr
-WidgetFactory< ContainerWidgetType >::attachDateTimePicker( unsigned id )
-{
-	return WidgetCreator< DateTime >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>

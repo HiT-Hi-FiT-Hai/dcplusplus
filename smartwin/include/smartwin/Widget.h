@@ -28,6 +28,7 @@
 #ifndef Widget_h
 #define Widget_h
 
+#include "forward.h"
 #include "Atom.h"
 #include "Rectangle.h"
 #include "Message.h"

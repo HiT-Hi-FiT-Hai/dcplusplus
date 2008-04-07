@@ -22,11 +22,22 @@
 #include <dcpp/stdinc.h>
 #include <dcpp/DCPlusPlus.h>
 
-#include <SmartWin.h>
 #include <shlobj.h>
 #include <malloc.h>
 #include <htmlhelp.h>
 #include <libintl.h>
+
+#include <smartwin/WidgetFactory.h>
+#include <smartwin/resources/Accelerator.h>
+#include <smartwin/widgets/Button.h>
+#include <smartwin/widgets/ComboBox.h>
+#include <smartwin/widgets/Label.h>
+#include <smartwin/widgets/ModalDialog.h>
+#include <smartwin/widgets/ModelessDialog.h>
+#include <smartwin/widgets/Spinner.h>
+#include <smartwin/widgets/Table.h>
+#include <smartwin/widgets/TextBox.h>
+#include <smartwin/widgets/Tree.h>
 
 enum {
 	WM_SPEAKER  = WM_APP + 500
