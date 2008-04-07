@@ -57,7 +57,7 @@ void TabView::add(Container* w, const IconPtr& icon) {
 
 	viewOrder.push_front(w);
 
-	if(viewOrder.size() == 1 || w->getVisible()) {
+	if(viewOrder.size() == 1 || w->hasStyle(WS_VISIBLE)) {
 		if(viewOrder.size() > 1) {
 			swapWidgets(viewOrder.back(), w);
 		} else {
@@ -128,16 +128,15 @@ void TabView::swapWidgets(Container* oldW, Container* newW) {
 
 	if(oldW) {
 		oldW->sendMessage(WM_ACTIVATE, WA_INACTIVE, reinterpret_cast<LPARAM>(newW->handle()));
-		::ShowWindow(oldW->handle(), SW_HIDE);
+		oldW->setVisible(false);
 	}
 	
-	::ShowWindow(newW->handle(), SW_SHOW);
-	::MoveWindow(newW->handle(), clientSize.x(), clientSize.y(), clientSize.width(), clientSize.height(), FALSE);
-	
+	newW->setVisible(true);
+	newW->setBounds(clientSize, false);
 	newW->sendMessage(WM_ACTIVATE, WA_ACTIVE, oldW ? reinterpret_cast<LPARAM>(oldW->handle()) : 0);
+
 	sendMessage(WM_SETREDRAW, TRUE);
 	::RedrawWindow(handle(), NULL, NULL, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
-	
 }
 
 void TabView::handleTabSelected() {
@@ -216,7 +215,7 @@ void TabView::layout() {
 	if(!(tmp == clientSize)) {
 		int i = tab->getSelected();
 		if(i != -1) {
-			::MoveWindow(getTabInfo(i)->w->handle(), tmp.x(), tmp.y(), tmp.width(), tmp.height(), TRUE);
+			getTabInfo(i)->w->setBounds(tmp);
 		}
 		clientSize = tmp;
 	}

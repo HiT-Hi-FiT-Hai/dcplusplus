@@ -45,12 +45,8 @@ protected:
 		reallyClose(false)
 	{
 		typename ThisType::Seed cs;
-		cs.style |= WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-		if(activate) {
-			cs.style |= WS_VISIBLE;
-		} else {
+		if(!activate)
 			cs.style &= ~WS_VISIBLE;
-		}
 		cs.caption = title;
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.icon = icon;
