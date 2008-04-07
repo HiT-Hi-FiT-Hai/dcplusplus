@@ -48,12 +48,7 @@ void Tree::create( const Seed & cs )
 
 HTREEITEM Tree::insert( const SmartUtil::tstring & text, HTREEITEM parent, LPARAM param, int iconIndex, int selectedIconIndex )
 {
-	TVINSERTSTRUCT tv = { 0 };
-	tv.hParent = parent;
-	tv.hInsertAfter = TVI_LAST;
-
-	TVITEMEX t = { 0 };
-	t.mask = TVIF_TEXT;
+	TVITEMEX t = { TVIF_TEXT };
 	if ( param != 0 )
 	{
 		t.mask |= TVIF_PARAM;
@@ -66,17 +61,18 @@ HTREEITEM Tree::insert( const SmartUtil::tstring & text, HTREEITEM parent, LPARA
 		t.iSelectedImage = ( selectedIconIndex == - 1 ? t.iImage : selectedIconIndex );
 	}
 	t.pszText = const_cast < TCHAR * >( text.c_str() );
+
+	TVINSERTSTRUCT tv = { parent, TVI_LAST };
 #ifdef WINCE
 	tv.item = t;
 #else
 	tv.itemex = t;
 #endif
-	return reinterpret_cast< HTREEITEM >( this->sendMessage(TVM_INSERTITEM, 0, reinterpret_cast< LPARAM >( & tv ) ) );
+	return TreeView_InsertItem(this->handle(), &tv);
 }
 
 SmartUtil::tstring Tree::getSelectedText() {
-	HTREEITEM hSelItem = TreeView_GetSelection( this->handle() );
-	return getText( hSelItem );
+	return getText(TreeView_GetSelection(this->handle()));
 }
 
 SmartUtil::tstring Tree::getText( HTREEITEM node )
@@ -85,9 +81,7 @@ SmartUtil::tstring Tree::getText( HTREEITEM node )
 		return SmartUtil::tstring();
 	}
 	
-	TVITEMEX item;
-	item.mask = TVIF_HANDLE | TVIF_TEXT;
-	item.hItem = node;
+	TVITEMEX item = { TVIF_HANDLE | TVIF_TEXT, node };
 	TCHAR buffer[1024];
 	buffer[0] = '\0';
 	item.cchTextMax = 1022;
@@ -126,8 +120,7 @@ void Tree::setStateImageList( ImageListPtr imageList ) {
 }
 
 LPARAM Tree::getDataImpl(HTREEITEM item) {
-	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
-	tvitem.hItem = item;
+	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE, item };
 	if(!TreeView_GetItem(this->handle(), &tvitem)) {
 		return 0;
 	}
@@ -135,8 +128,7 @@ LPARAM Tree::getDataImpl(HTREEITEM item) {
 }
 
 void Tree::setDataImpl(HTREEITEM item, LPARAM lParam) {
-	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
-	tvitem.hItem = item;
+	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE, item };
 	tvitem.lParam = lParam;
 	TreeView_SetItem(this->handle(), &tvitem);
 }

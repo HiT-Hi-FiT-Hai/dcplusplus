@@ -4,7 +4,7 @@
 * Fixed out of focus window when restoring from icon (poy)
 * [L#203865] Fixed multiple instances (poy)
 * Context-sensitive help (poy)
-* Updated help files (poy)
+* Updated help files (poy, mikejj)
 * Fixed toolbar separators (poy)
 * Upgraded to bzip2 1.0.5 (thanks mikejj)
 * Fixed background color of drop-down controls
@@ -22,6 +22,8 @@
 * [L#209277] Fixed crash on bad translation (thanks poy)
 * More controls now use the font defined in settings (poy)
 * [L#211164] Fixed bug when a new tab row is created while DC++ is minimized (poy)
+* [L#211480] Fixed duplicated settings pages on bad translations (poy)
+* Added the title of the currently selected page in settings (poy)
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)

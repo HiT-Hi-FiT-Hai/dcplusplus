@@ -38,17 +38,14 @@ private:
 	
 	TreePtr pageTree;
 	
-	void addPage(const tstring& title, PropPage* page);
+	HTREEITEM addPage(const tstring& title, PropPage* page, HTREEITEM parent = TVI_ROOT);
+	void updateTitle();
 	void write();
 	
 	bool initDialog();
 	void handleHelp(HWND hWnd, unsigned id);
+	void handleSelectionChanged();
 	void handleOKClicked();
-	void selectionChanged();
-	void showPage(PropPage* page);
-	
-	HTREEITEM addChild(const tstring& str, HTREEITEM parent, PropPage* page);	
-	HTREEITEM find(const tstring& str, HTREEITEM start);
 };
 
 #endif 
