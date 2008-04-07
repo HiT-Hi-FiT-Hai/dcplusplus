@@ -29,6 +29,7 @@
 
 #include <smartwin/WidgetFactory.h>
 #include <smartwin/resources/Accelerator.h>
+#include <smartwin/resources/Pen.h>
 #include <smartwin/widgets/Button.h>
 #include <smartwin/widgets/ComboBox.h>
 #include <smartwin/widgets/Label.h>

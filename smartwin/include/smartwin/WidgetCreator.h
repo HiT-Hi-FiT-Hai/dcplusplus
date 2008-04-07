@@ -28,6 +28,8 @@
 #ifndef WidgetCreator_h
 #define WidgetCreator_h
 
+#include "Widget.h"
+
 namespace SmartWin
 {
 // begin namespace SmartWin

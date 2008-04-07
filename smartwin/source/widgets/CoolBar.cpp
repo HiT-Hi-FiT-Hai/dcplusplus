@@ -1,5 +1,3 @@
-#include "../../include/smartwin/Policies.h"
-#include "../../include/smartwin/aspects/AspectFocus.h"
 #include "../../include/smartwin/widgets/CoolBar.h"
 
 namespace SmartWin {

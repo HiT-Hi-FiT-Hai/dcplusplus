@@ -86,10 +86,10 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	attachButton(IDC_SETTINGS_LIST_CONFIG)->onClicked(std::tr1::bind(&DownloadPage::handleConfigHubLists, this));
 
-	SpinnerPtr spinner = attachSpinner(IDC_SLOTSSPIN);
+	SpinnerPtr spinner = attachChild<SmartWin::Spinner>(IDC_SLOTSSPIN);
 	spinner->setRange(0, 100);
 
-	spinner = attachSpinner(IDC_SPEEDSPIN);
+	attachChild(spinner, IDC_SPEEDSPIN);
 	spinner->setRange(0, 10000);
 
 	attachTextBox(IDC_DOWNLOADDIR);

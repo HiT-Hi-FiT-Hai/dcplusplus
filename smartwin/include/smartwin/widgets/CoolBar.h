@@ -30,9 +30,9 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
-#include "../Widget.h"
-#include "../Point.h"
+#include "../Policies.h"
 #include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSizable.h"

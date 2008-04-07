@@ -2,6 +2,7 @@
 #define ASPECTDIALOG_H_
 
 #include "../../SmartUtil.h"
+#include "../WidgetCreator.h"
 
 #include <type_traits>
 
