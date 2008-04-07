@@ -27,6 +27,9 @@ typedef MDIFrame* MDIFramePtr;
 class MDIParent;
 typedef MDIParent* MDIParentPtr;
 
+class RadioButton;
+typedef RadioButton* RadioButtonPtr;
+
 class Spinner;
 typedef Spinner* SpinnerPtr;
 

@@ -99,19 +99,19 @@ bool CommandDlg::handleInitDialog() {
 	setItemText(IDC_SETTINGS_TO, T_("To"));
 	setItemText(IDC_USER_CMD_PREVIEW, T_("Text sent to hub"));
 
-	separator = attachRadioButton(IDC_SETTINGS_SEPARATOR);
+	attachChild(separator, IDC_SETTINGS_SEPARATOR);
 	separator->setText(T_("Separator"));
 	separator->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	raw = attachRadioButton(IDC_SETTINGS_RAW);
+	attachChild(raw, IDC_SETTINGS_RAW);
 	raw->setText(T_("Raw"));
 	raw->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	chat = attachRadioButton(IDC_SETTINGS_CHAT);
+	attachChild(chat, IDC_SETTINGS_CHAT);
 	chat->setText(T_("Chat"));
 	chat->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	PM = attachRadioButton(IDC_SETTINGS_PM);
+	attachChild(PM, IDC_SETTINGS_PM);
 	PM->setText(T_("PM"));
 	PM->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 

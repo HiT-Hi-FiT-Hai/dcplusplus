@@ -121,7 +121,7 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	fixControls();
 
-#define RADIO_ATTACH(id) attachRadioButton(id)->onClicked((std::tr1::bind(&NetworkPage::fixControls, this)))
+#define RADIO_ATTACH(id) attachChild<RadioButton>(id)->onClicked((std::tr1::bind(&NetworkPage::fixControls, this)))
 	RADIO_ATTACH(IDC_DIRECT);
 	RADIO_ATTACH(IDC_FIREWALL_UPNP);
 	RADIO_ATTACH(IDC_FIREWALL_NAT);

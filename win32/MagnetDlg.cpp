@@ -53,12 +53,12 @@ bool MagnetDlg::handleInitDialog() {
 	//queue->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, queue));
 	::ShowWindow(getItem(IDC_MAGNET_1_QUEUE), false);
 
-	search = attachRadioButton(IDC_MAGNET_2_SEARCH);
+	attachChild(search, IDC_MAGNET_2_SEARCH);
 	search->setText(T_("Start a search for this file"));
 	search->setFocus();
 	//search->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, search));
 
-	doNothing = attachRadioButton(IDC_MAGNET_3_NOTHING);
+	attachChild(doNothing, IDC_MAGNET_3_NOTHING);
 	doNothing->setText(T_("Do nothing"));
 	//doNothing->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, doNothing));
 

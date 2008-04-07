@@ -42,14 +42,23 @@ public:
 	typedef Control<Policy> BaseType;
 	
 	// TODO Maybe move this to a separate class?
-	
+	// This brings these classes into the namespace of classes that inherit from Composite
+	typedef SmartWin::Button Button;
 	typedef SmartWin::ButtonPtr ButtonPtr;
+	typedef SmartWin::CheckBox CheckBox;
 	typedef SmartWin::CheckBoxPtr CheckBoxPtr;
+	typedef SmartWin::DateTime DateTime;
 	typedef SmartWin::DateTimePtr DateTimePtr;
+	typedef SmartWin::Label Label;
 	typedef SmartWin::LabelPtr LabelPtr;
+	typedef SmartWin::Table Table;
 	typedef SmartWin::TablePtr TablePtr;
+	typedef SmartWin::Tree Tree;
 	typedef SmartWin::TreePtr TreePtr;
+	typedef SmartWin::Spinner Spinner;
 	typedef SmartWin::SpinnerPtr SpinnerPtr;
+	typedef SmartWin::RadioButton RadioButton;
+	typedef SmartWin::RadioButtonPtr RadioButtonPtr;
 	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

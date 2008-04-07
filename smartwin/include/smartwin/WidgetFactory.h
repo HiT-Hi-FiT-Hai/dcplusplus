@@ -40,7 +40,6 @@
 #include "widgets/GroupBox.h"
 #include "widgets/LoadDialog.h"
 #include "widgets/ProgressBar.h"
-#include "widgets/RadioButton.h"
 #include "widgets/SaveDialog.h"
 #include "widgets/Label.h"
 #include "widgets/StatusBar.h"
@@ -146,12 +145,6 @@ public:
 
 	/// GroupBox object type.
 	typedef typename GroupBox::ObjectType GroupBoxPtr;
-
-	/// RadioButton class type.
-	typedef SmartWin::RadioButton RadioButton;
-
-	/// RadioButton object type.
-	typedef typename RadioButton::ObjectType RadioButtonPtr;
 
 	/// LoadFileDialog class type.
 	typedef SmartWin::LoadDialog LoadDialog;
@@ -346,16 +339,6 @@ public:
 	/** DON'T delete the returned pointer!!!
 	  */
 	GroupBoxPtr attachGroupBox( unsigned id );
-
-	/// Creates a Radio Button Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	RadioButtonPtr createRadioButton( GroupBoxPtr parent, const typename RadioButton::Seed & cs = RadioButton::Seed() );
-
-	/// Subclasses a Radio Button Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	RadioButtonPtr attachRadioButton( unsigned id );
 
 	/// Creates a Comb Box and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -565,25 +548,6 @@ typename WidgetFactory< ContainerWidgetType >::GroupBoxPtr
 WidgetFactory< ContainerWidgetType >::attachGroupBox( unsigned id )
 {
 	return WidgetCreator< GroupBox >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::RadioButtonPtr
-WidgetFactory< ContainerWidgetType >::createRadioButton( GroupBoxPtr parent, const typename RadioButton::Seed & cs )
-{
-#ifdef PORT_ME	
-	RadioButtonPtr retVal = WidgetCreator< RadioButton >::create( parent, internal_::getTypedParentOrThrow < EventHandlerClass * >( this ), cs );
-	parent->addChild( retVal );
-	return retVal;
-#endif
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::RadioButtonPtr
-WidgetFactory< ContainerWidgetType >::attachRadioButton( unsigned id )
-{
-	RadioButtonPtr retVal = WidgetCreator< RadioButton >::attach( this, id );
-	return retVal;
 }
 
 template<typename ContainerWidgetType>

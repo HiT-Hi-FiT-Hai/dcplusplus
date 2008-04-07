@@ -35,6 +35,7 @@
 #include <smartwin/widgets/Label.h>
 #include <smartwin/widgets/ModalDialog.h>
 #include <smartwin/widgets/ModelessDialog.h>
+#include <smartwin/widgets/RadioButton.h>
 #include <smartwin/widgets/Spinner.h>
 #include <smartwin/widgets/Table.h>
 #include <smartwin/widgets/TextBox.h>
