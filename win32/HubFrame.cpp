@@ -99,6 +99,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		addWidget(message, true, false);
 		message->onRaw(std::tr1::bind(&HubFrame::handleMessageGetDlgCode, this), SmartWin::Message(WM_GETDLGCODE));
 		message->onKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
+		message->onSysKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&HubFrame::handleMessageChar, this, _1));
 	}
 

@@ -154,6 +154,14 @@ public:
 		onKey(WM_KEYUP, f);
 	}
 
+	void onSysKeyDown(const typename Dispatcher::F& f) {
+		onKey(WM_SYSKEYDOWN, f);
+	}
+
+	void onSysKeyUp(const typename Dispatcher::F& f) {
+		onKey(WM_SYSKEYUP, f);
+	}
+
 protected:
 	virtual ~AspectKeyboard()
 	{}
