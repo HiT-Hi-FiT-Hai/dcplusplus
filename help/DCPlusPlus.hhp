@@ -54,6 +54,8 @@ window_search_spy.html
 window_notepad.html
 window_system_log.html
 window_network_stats.html
+window_connections.html
+window_downloads.html
 dialog_indexing_progress.html
 dialog_user_command.html
 dialog_favorite_hub.html
@@ -94,6 +96,8 @@ IDH_SEARCH_SPY=window_search_spy.html
 IDH_NOTEPAD=window_notepad.html
 IDH_SYSTEM_LOG=window_system_log.html
 IDH_NET_STATS=window_network_stats.html
+IDH_CONNECTIONS=window_connections.html
+IDH_DOWNLOADS=window_downloads.html
 IDH_HASH_PROGRESS=dialog_indexing_progress.html
 IDH_USER_COMMAND=dialog_user_command.html
 IDH_FAVORITE_HUB=dialog_favorite_hub.html

@@ -88,6 +88,14 @@
 			<param name="Name" value="Network statistics">
 			<param name="Local" value="window_network_stats.html">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Connections">
+			<param name="Local" value="window_connections.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Downloads">
+			<param name="Local" value="window_downloads.html">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Dialogs">
