@@ -28,6 +28,7 @@
 #ifndef AspectEraseBackground_h
 #define AspectEraseBackground_h
 
+#include "../Message.h"
 #include "../CanvasClasses.h"
 
 namespace SmartWin

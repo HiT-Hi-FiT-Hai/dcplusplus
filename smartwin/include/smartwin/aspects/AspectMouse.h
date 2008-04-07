@@ -28,52 +28,13 @@
 #ifndef AspectMouse_h
 #define AspectMouse_h
 
-#include "../Point.h"
-#include <functional>
+#include "../Events.h"
+#include "../Message.h"
+#include "../Dispatchers.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-/// Mouse Event structure
-/** Several event handlers supply an object of this type as one or more parameters to
-  * their Event Handler. <br>
-  * E.g. the "onLeftMouseUp" Event Handler takes an object of this type to give
-  * extensive information regarding the Event.
-  */
-struct MouseEventResult
-{
-	MouseEventResult(HWND hwnd, WPARAM wParam, LPARAM lParam);
-	
-	/// Types of buttons
-	enum Button
-	{
-		OTHER, LEFT, RIGHT, MIDDLE, X1, X2
-	};
-
-	/// Position of mouse
-	/** Position of mouse when event was raised
-	  */
-	ScreenCoordinate pos;
-
-	/// is the CTRL key pressed
-	/** true if CTRL key is pressed, otherwise false
-	  */
-	bool isControlPressed;
-
-	/// is the SHIFT key pressed
-	/** true if SHIFT key is pressed, otherwise false
-	  */
-	bool isShiftPressed;
-
-	/// is the ALT key pressed
-	/** true if ALT key is pressed, otherwise false
-	  */
-	bool isAltPressed;
-
-	/// Indicates which mouse button was actually pressed
-	Button ButtonPressed;
-};
 
 /// Aspect class used by Widgets that have the possibility of trapping "mouse
 /// clicked" events.
@@ -84,26 +45,15 @@ struct MouseEventResult
 template< class WidgetType >
 class AspectMouse
 {
-	struct Dispatcher
-	{
-		typedef std::tr1::function<void (const MouseEventResult &)> F;
-
-		Dispatcher(const F& f_) : f(f_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			f(MouseEventResult(msg.hwnd, msg.wParam, msg.lParam ));
-			return true;
-		}
-
-		F f;
-	};
-
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	
+	typedef Dispatchers::ConvertBase<MouseEvent> Dispatcher;
 public:
 	/// \ingroup EventHandlersAspectMouse
 	/// Left mouse button pressed and released event handler setter
 	/** If supplied, function will be called when user releases the Left Mouse button
 	  * after clicking onto the client area of the Widget. <br>
-	  * The parameter passed is const MouseEventResult & which contains the state of
+	  * The parameter passed is const MouseEvent & which contains the state of
 	  * the mouse.
 	  */
 	void onLeftMouseUp(const typename Dispatcher::F& f) {
@@ -114,7 +64,7 @@ public:
 	/// Right mouse button pressed and released event handler setter
 	/** If supplied, function will be called when user releases the Right Mouse
 	  * button after clicking onto the client area of the Widget. <br>
-	  * The parameter passed is const MouseEventResult & which contains the state of
+	  * The parameter passed is const MouseEvent & which contains the state of
 	  * the mouse.
 	  */
 	void onRightMouseUp(const typename Dispatcher::F& f) {
@@ -125,7 +75,7 @@ public:
 	/// Middle mouse button pressed and released event handler setter
 	/** If supplied, function will be called when user releases the middle Mouse
 	  * button after clicking onto the client area of the Widget. <br>
-	  * The parameter passed is const MouseEventResult & which contains the state of
+	  * The parameter passed is const MouseEvent & which contains the state of
 	  * the mouse.
 	  */
 	void onMiddleMouseUp(const typename Dispatcher::F& f) {
@@ -136,7 +86,7 @@ public:
 	/// Left mouse button pressed event handler setter
 	/** If supplied, function will be called when user press the Left Mouse button in
 	  * the client area of the widget. <br>
-	  * The parameter passed is const MouseEventResult & which contains the state of
+	  * The parameter passed is const MouseEvent & which contains the state of
 	  * the mouse.
 	  */
 	void onLeftMouseDown(const typename Dispatcher::F& f) {
@@ -147,7 +97,7 @@ public:
 	/// Right mouse button pressed event handler setter
 	/** If supplied, function will be called when user press the Right Mouse button
 	  * in the client area of the widget. <br>
-	  * The parameter passed is const MouseEventResult & which contains the state of
+	  * The parameter passed is const MouseEvent & which contains the state of
 	  * the mouse.
 	  */
 	void onRightMouseDown(const typename Dispatcher::F& f) {
@@ -157,7 +107,7 @@ public:
 	/// Middle mouse button pressed event handler setter
 	/** If supplied, function will be called when user press the Middle Mouse button
 	  * in the client area of the widget. <br>
-	  * The parameter passed is const MouseEventResult & which contains the state of
+	  * The parameter passed is const MouseEvent & which contains the state of
 	  * the mouse.
 	  */
 	void onMiddleMouseDown(const typename Dispatcher::F& f) {
@@ -167,7 +117,7 @@ public:
 	/// Left mouse button double-clicked event handler setter
 	/** If supplied, function will be called when user double clicks the Left mouse button
 	  * in the client area of the widget. <br>
-	  * The parameter passed is const MouseEventResult & which contains the state of
+	  * The parameter passed is const MouseEvent & which contains the state of
 	  * the mouse.
 	  */
 	void onLeftMouseDblClick(const typename Dispatcher::F& f) {
@@ -177,7 +127,7 @@ public:
 	/// Right mouse button double-clicked event handler setter
 	/** If supplied, function will be called when user  double clicks the Right mouse button
 	  * in the client area of the widget. <br>
-	  * The parameter passed is const MouseEventResult & which contains the state of
+	  * The parameter passed is const MouseEvent & which contains the state of
 	  * the mouse.
 	  */
 	void onRightMouseDblClick(const typename Dispatcher::F& f) {
@@ -187,7 +137,7 @@ public:
 	/// \ingroup EventHandlersAspectMouse
 	/// Mouse moved event handler setter
 	/** If supplied, function will be called when user moves the mouse. <br>
-	  * The parameter passed is const MouseEventResult & which contains the state of
+	  * The parameter passed is const MouseEvent & which contains the state of
 	  * the mouse.
 	  */
 	void onMouseMove(const typename Dispatcher::F& f) {
@@ -197,12 +147,10 @@ public:
 protected:
 	
 	void onMouse(UINT msg, const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( msg ), Dispatcher(f)
-		);
+		W().addCallback(Message( msg ), Dispatcher(f));
 	}
-	virtual ~AspectMouse()
-	{}
+	
+	virtual ~AspectMouse() { }
 };
 
 // end namespace SmartWin

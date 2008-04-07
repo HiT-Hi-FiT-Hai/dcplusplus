@@ -29,6 +29,7 @@
 #define AspectScrollable_h
 
 #include "../Dispatchers.h"
+#include "../Message.h"
 
 namespace SmartWin
 {

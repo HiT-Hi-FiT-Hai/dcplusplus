@@ -32,9 +32,7 @@
 #include "../../SmartUtil.h"
 #include <shlobj.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
 /// ChooseFolderDialog class
 /** \ingroup WidgetControls

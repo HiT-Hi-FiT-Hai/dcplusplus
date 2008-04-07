@@ -1,6 +1,7 @@
 #ifndef ASPECTCOMMAND_
 #define ASPECTCOMMAND_
 
+#include "../Message.h"
 #include "../Dispatchers.h"
 
 namespace SmartWin {

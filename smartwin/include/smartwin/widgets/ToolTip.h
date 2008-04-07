@@ -6,12 +6,8 @@
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectVisible.h"
-#include "../xCeption.h"
 
 namespace SmartWin {
-
-template< class WidgetType >
-class WidgetCreator;
 
 class ToolTip :
 	public MessageMap< Policies::Subclassed >,

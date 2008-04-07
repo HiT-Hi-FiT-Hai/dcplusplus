@@ -28,19 +28,12 @@
 #ifndef Spinner_h
 #define Spinner_h
 
-#include "../Widget.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectScrollable.h"
 #include "Control.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /** sideeffect=\par Side Effects:
   */

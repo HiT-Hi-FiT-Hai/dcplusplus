@@ -28,7 +28,6 @@
 #ifndef Tree_h
 #define Tree_h
 
-#include "../Widget.h"
 #include "../Rectangle.h"
 #include "../resources/ImageList.h"
 #include "../aspects/AspectClickable.h"
@@ -41,13 +40,7 @@
 #include "../aspects/AspectSelection.h"
 #include "Control.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /// TreeView class
  /** \ingroup WidgetControls

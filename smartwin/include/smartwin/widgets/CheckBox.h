@@ -28,16 +28,9 @@
 #ifndef CheckBox_h
 #define CheckBox_h
 
-#include "../Widget.h"
 #include "Button.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /// Check Box Control class
 /** \ingroup WidgetControls

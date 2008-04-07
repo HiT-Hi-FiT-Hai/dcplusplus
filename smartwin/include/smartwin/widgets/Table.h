@@ -28,7 +28,6 @@
 #ifndef ListView_h
 #define ListView_h
 
-#include "../Widget.h"
 #include "../Point.h"
 #include "../Rectangle.h"
 #include "../resources/ImageList.h"
@@ -46,13 +45,7 @@
 
 #include <vector>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /// List View Control class
 /** \ingroup WidgetControls
@@ -530,35 +523,29 @@ private:
 	size_t countSelectedImpl() const;
 
 	// Aspect expectation implementation
-	static const Message & getSelectionChangedMessage();
+	static Message getSelectionChangedMessage();
 
 	// Contract needed by AspectClickable Aspect class
-	static const Message & getClickMessage();
+	static Message getClickMessage();
 
 	// Contract needed by AspectDblClickable Aspect class
-	static const Message & getDblClickMessage();
+	static Message getDblClickMessage();
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline const Message & Table::getSelectionChangedMessage()
-{
-	static const Message retVal( WM_NOTIFY, LVN_ITEMCHANGED ); // TODO: Implement LVN_ITEMCHANGING Event Handlers (return bool to indicate allowance)
-	return retVal;
+inline Message Table::getSelectionChangedMessage() {
+	return Message( WM_NOTIFY, LVN_ITEMCHANGED );
 }
 
-inline const Message & Table::getClickMessage()
-{
-	static const Message retVal( WM_NOTIFY, NM_CLICK );
-	return retVal;
+inline Message Table::getClickMessage() {
+	return Message( WM_NOTIFY, NM_CLICK );
 }
 
-inline const Message & Table::getDblClickMessage()
-{
-	static const Message retVal( WM_NOTIFY, NM_DBLCLK );
-	return retVal;
+inline Message Table::getDblClickMessage() {
+	return Message( WM_NOTIFY, NM_DBLCLK );
 }
 
 #ifdef PORT_ME

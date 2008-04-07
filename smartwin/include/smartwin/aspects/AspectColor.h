@@ -28,8 +28,8 @@
 #ifndef AspectColor_h
 #define AspectColor_h
 
+#include "../Message.h"
 #include "../resources/Brush.h"
-#include "../CanvasClasses.h"
 
 namespace SmartWin
 {

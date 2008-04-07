@@ -37,7 +37,7 @@ public:
 	explicit TextBox( SmartWin::Widget * parent );
 
 private:
-	void handleLeftDblClick(const SmartWin::MouseEventResult& ev);
+	void handleLeftDblClick(const SmartWin::MouseEvent& ev);
 
 	LRESULT handleEnterIdle(WPARAM wParam, LPARAM lParam);
 	LRESULT handleMenuSelect(WPARAM wParam, LPARAM lParam);

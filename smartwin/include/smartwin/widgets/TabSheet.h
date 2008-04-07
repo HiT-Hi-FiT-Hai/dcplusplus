@@ -28,7 +28,6 @@
 #ifndef TabSheet_h
 #define TabSheet_h
 
-#include "../Widget.h"
 #include "../resources/ImageList.h"
 #include "../Rectangle.h"
 #include "../aspects/AspectCollection.h"
@@ -39,14 +38,7 @@
 #include "../aspects/AspectText.h"
 #include "Control.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /// Tab Sheet Control class
 /** \ingroup WidgetControls
@@ -74,6 +66,7 @@ class TabSheet :
 {
 	friend class AspectCollection<TabSheet, int>;
 	friend class AspectSelection<TabSheet, int>;
+	friend class WidgetCreator< TabSheet >;
 	
 	struct ChangingDispatcher
 	{
@@ -91,23 +84,6 @@ class TabSheet :
 		TabSheet* widget;
 	};
 
-	struct ChangedDispatcher
-	{
-		typedef std::tr1::function<void (unsigned)> F;
-
-		ChangedDispatcher(const F& f_, TabSheet* widget_) : f(f_), widget(widget_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			unsigned param = TabCtrl_GetCurSel( widget->handle() );
-			f(param);
-			return true;
-		}
-
-		F f;
-		TabSheet* widget;
-	};
-
-	friend class WidgetCreator< TabSheet >;
 
 public:
 	/// Class type
@@ -132,9 +108,6 @@ public:
 		explicit Seed();
 	};
 
-	// AspectSelection expectation implementation
-	static const Message & getSelectionChangedMessage();
-
 	SmartUtil::tstring getText(unsigned idx) const;
 	
 	void setText(unsigned idx, const SmartUtil::tstring& text);
@@ -149,12 +122,6 @@ public:
 	void onSelectionChanging(const ChangingDispatcher::F& f) {
 		addCallback(
 			Message( WM_NOTIFY, TCN_SELCHANGING ), ChangingDispatcher(f, this )
-		);
-	}
-
-	void onSelectionChanged(const ChangedDispatcher::F& f) {
-		addCallback(
-			Message( WM_NOTIFY, TCN_SELCHANGE ), ChangedDispatcher(f, this )
 		);
 	}
 
@@ -254,6 +221,9 @@ protected:
 	{}
 	
 private:
+	// AspectSelection expectation implementation
+	static Message getSelectionChangedMessage();
+
 	// Keep a copy so it won't get deallocated...
 	ImageListPtr imageList;
 
@@ -272,10 +242,8 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline const Message & TabSheet::getSelectionChangedMessage()
-{
-	static const Message retVal( WM_NOTIFY, TCN_SELCHANGE );
-	return retVal;
+inline Message  TabSheet::getSelectionChangedMessage() {
+	return Message( WM_NOTIFY, TCN_SELCHANGE );
 }
 
 inline int TabSheet::getSelectedImpl() const {

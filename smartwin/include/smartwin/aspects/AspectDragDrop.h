@@ -30,6 +30,8 @@
 
 #ifndef WINCE // Not supported on WINCE platform
 
+#include "../Message.h"
+#include "../Point.h"
 #include <vector>
 #include <shellapi.h>
 

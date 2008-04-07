@@ -28,11 +28,7 @@
 #ifndef AspectMinMax_h
 #define AspectMinMax_h
 
-#include "../Widget.h"
-#include "../Place.h"
-#include "../xCeption.h"
-#include "../Dispatchers.h"
-#include "../Events.h"
+#include "../WindowsHeaders.h"
 
 namespace SmartWin
 {

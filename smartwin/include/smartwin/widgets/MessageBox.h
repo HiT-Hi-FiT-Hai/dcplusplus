@@ -31,9 +31,7 @@
 #include "../../SmartUtil.h"
 #include "../Widget.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
 /// MessageBox class
 /** \ingroup WidgetControls

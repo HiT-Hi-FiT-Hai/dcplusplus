@@ -121,10 +121,10 @@ private:
 	void handleSized(const SizedEvent&);
 	void handleTabSelected();
 	LRESULT handleToolTip(LPARAM lParam);
-	void handleLeftMouseDown(const MouseEventResult& mouseEventResult);
-	void handleLeftMouseUp(const MouseEventResult& mouseEventResult);
+	void handleLeftMouseDown(const MouseEvent& mouseEventResult);
+	void handleLeftMouseUp(const MouseEvent& mouseEventResult);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
-	void handleMiddleMouseDown(const MouseEventResult& mouseEventResult);
+	void handleMiddleMouseDown(const MouseEvent& mouseEventResult);
 	void handleHelp(HWND hWnd, unsigned id);
 	
 	SmartUtil::tstring formatTitle(SmartUtil::tstring title);

@@ -2,7 +2,6 @@
 #define CONTROL_H_
 
 #include "../Policies.h"
-#include "../xCeption.h"
 
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectCloseable.h"

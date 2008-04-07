@@ -31,16 +31,10 @@
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
 #include "TextBox.h"
-#include "../LibraryLoader.h"
+
 #include <richedit.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /// RichEdit Control class
 /** \ingroup WidgetControls

@@ -12,8 +12,6 @@
 
 namespace SmartWin {
 
-// Forward declaring friends
-
 /** Common stuff for all buttons */
 class Button :
 	public CommonControl,

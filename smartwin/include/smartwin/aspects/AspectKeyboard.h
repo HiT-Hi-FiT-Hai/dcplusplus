@@ -28,6 +28,8 @@
 #ifndef AspectKeyboard_h
 #define AspectKeyboard_h
 
+#include "../Message.h"
+
 namespace SmartWin
 {
 // begin namespace SmartWin

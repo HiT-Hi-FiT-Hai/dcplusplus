@@ -39,12 +39,8 @@
 
 #include <boost/scoped_ptr.hpp>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
-/** sideeffect=\par Side Effects:
-  */
 /// MDI Child Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo

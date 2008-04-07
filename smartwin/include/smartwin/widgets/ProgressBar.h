@@ -28,20 +28,11 @@
 #ifndef ProgressBar_h
 #define ProgressBar_h
 
-#include "../Widget.h"
 #include "../aspects/AspectPainting.h"
 #include "Control.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
-
-/** sideeffect= \par Side Effects :
-*/
 /// ProgressBar Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo

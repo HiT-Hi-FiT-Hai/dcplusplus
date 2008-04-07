@@ -1,4 +1,5 @@
 #include "../../include/smartwin/widgets/ModalDialog.h"
+#include "../../include/smartwin/Application.h"
 
 namespace SmartWin {
 

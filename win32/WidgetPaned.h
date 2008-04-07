@@ -94,12 +94,12 @@ private:
 	SmartWin::Rectangle getSplitterRect();
 	void resizeChildren();
 	
-	void handleLButtonDown(const SmartWin::MouseEventResult&) {
+	void handleLButtonDown(const SmartWin::MouseEvent&) {
 		::SetCapture( this->handle() );
 		moving = true;
 	}
-	void handleMouseMove(const SmartWin::MouseEventResult& event) {
-		if ( event.ButtonPressed == SmartWin::MouseEventResult::LEFT && moving )
+	void handleMouseMove(const SmartWin::MouseEvent& event) {
+		if ( event.ButtonPressed == SmartWin::MouseEvent::LEFT && moving )
 		{
 			SmartWin::ClientCoordinate cc(event.pos, getParent());
 			int x = horizontal ? cc.y() : cc.x();
@@ -108,7 +108,7 @@ private:
 			resizeChildren();
 		}
 	}
-	void handleLButtonUp(const SmartWin::MouseEventResult&) {
+	void handleLButtonUp(const SmartWin::MouseEvent&) {
 		::ReleaseCapture();
 		moving = false;
 	}

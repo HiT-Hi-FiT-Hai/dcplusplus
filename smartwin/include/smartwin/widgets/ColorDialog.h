@@ -30,9 +30,7 @@
 
 #include "../Widget.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
 /// ChooseColorDialog class
 /** \ingroup WidgetControls

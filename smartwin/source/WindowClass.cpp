@@ -4,6 +4,7 @@
 #include "../include/smartwin/Widget.h"
 
 #include <typeinfo>
+#include <sstream>
 
 namespace SmartWin {
 

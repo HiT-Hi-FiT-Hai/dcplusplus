@@ -1,5 +1,7 @@
 #include "../../include/smartwin/widgets/MDIChild.h"
 
+#include "../../include/smartwin/Application.h"
+
 namespace SmartWin {
 
 MDIChild::Seed::Seed(const SmartUtil::tstring& caption) :

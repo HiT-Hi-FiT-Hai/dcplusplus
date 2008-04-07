@@ -78,6 +78,7 @@
 #include "widgets/ModelessDialog.h"
 #include "widgets/ProgressBar.h"
 #include "widgets/RadioButton.h"
+#include "widgets/RichTextBox.h"
 #include "widgets/Slider.h"
 #include "widgets/Spinner.h"
 #include "widgets/Table.h"

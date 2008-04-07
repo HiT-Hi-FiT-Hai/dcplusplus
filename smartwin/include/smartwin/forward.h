@@ -45,6 +45,9 @@ typedef ProgressBar* ProgressBarPtr;
 class RadioButton;
 typedef RadioButton* RadioButtonPtr;
 
+class RichTextBox;
+typedef RichTextBox* RichTextBoxPtr;
+
 class Spinner;
 typedef Spinner* SpinnerPtr;
 

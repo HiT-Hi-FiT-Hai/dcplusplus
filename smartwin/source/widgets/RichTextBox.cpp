@@ -1,5 +1,7 @@
 #include "../../include/smartwin/widgets/RichTextBox.h"
 
+#include "../../include/smartwin/LibraryLoader.h"
+
 namespace SmartWin {
 
 RichTextBox::Seed::Seed() :

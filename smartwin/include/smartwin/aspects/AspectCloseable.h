@@ -1,6 +1,8 @@
 #ifndef ASPECTCLOSE_H_
 #define ASPECTCLOSE_H_
 
+#include "../Message.h"
+
 namespace SmartWin {
 
 template< class WidgetType >

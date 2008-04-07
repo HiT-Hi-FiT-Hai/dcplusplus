@@ -31,9 +31,7 @@
 #include "../aspects/AspectDialog.h"
 #include "Frame.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
 /// Dialog class
 /** \ingroup WidgetControls

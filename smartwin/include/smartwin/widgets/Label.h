@@ -28,7 +28,6 @@
 #ifndef Label_h
 #define Label_h
 
-#include "../Widget.h"
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
@@ -40,11 +39,6 @@
 #include "Control.h"
 
 namespace SmartWin {
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
 
 /// Static Control class
 /** \ingroup WidgetControls

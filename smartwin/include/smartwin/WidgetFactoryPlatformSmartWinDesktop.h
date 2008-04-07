@@ -30,7 +30,6 @@
 #define WidgetFactoryPlatformSmartWinDesktop_h
 
 #include "WidgetFactoryPlatformCommon.h"
-#include "widgets/RichTextBox.h"
 #include "widgets/FontDialog.h"
 #include "widgets/WidgetMenu.h"
 #include "WidgetCreator.h"
@@ -48,12 +47,6 @@ class WidgetFactoryPlatformImplementation< ContainerWidgetType,  SmartWinDesktop
 	: public ContainerWidgetType
 {
 public:
-	/// RichEditBox class type.
-	typedef SmartWin::RichTextBox RichTextBox;
-
-	/// RichEditBox object type.
-	typedef typename RichTextBox::ObjectType RichTextBoxPtr;
-
 	/// Menu class type.
 	typedef SmartWin::WidgetMenu WidgetMenu;
 
@@ -76,25 +69,6 @@ public:
 	  */
 	FontDialog createFontDialog() {
 		return FontDialog( this );
-	}
-
-	/// Creates a Rich Edit Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	RichTextBoxPtr createRichTextBox( const typename RichTextBox::Seed & cs = RichTextBox::Seed() )
-	{
-		return WidgetCreator< RichTextBox >::create( this, cs );
-	}
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a Rich Edit Control from the given resource id.
-	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
-	  * with this function.
-	  */
-	RichTextBoxPtr attachRichTextBox( unsigned id )
-	{
-		return WidgetCreator< RichTextBox >::attach( this, id );
 	}
 
 	/// Creates a Menu

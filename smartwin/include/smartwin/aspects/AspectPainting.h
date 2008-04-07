@@ -28,7 +28,6 @@
 #ifndef AspectPainting_h
 #define AspectPainting_h
 
-#include "../Widget.h"
 #include "../CanvasClasses.h"
 
 namespace SmartWin

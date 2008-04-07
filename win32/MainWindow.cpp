@@ -50,6 +50,7 @@
 #include <dcpp/Download.h>
 
 #include <smartwin/widgets/ToolBar.h>
+#include <smartwin/LibraryLoader.h>
 
 MainWindow::MainWindow() :
 	WidgetFactory<SmartWin::Window>(0), 

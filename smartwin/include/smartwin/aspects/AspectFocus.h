@@ -28,6 +28,7 @@
 #ifndef AspectFocus_h
 #define AspectFocus_h
 
+#include "../Message.h"
 #include "../Dispatchers.h"
 
 namespace SmartWin

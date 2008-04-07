@@ -27,9 +27,6 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <iosfwd>
-#include <sstream>
-#include <algorithm>
 #include <string>
 
 #ifndef tstring_smartwin_H

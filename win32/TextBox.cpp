@@ -40,7 +40,7 @@ TextBox::TextBox( SmartWin::Widget * parent ) : BaseType(parent), menuOpened(fal
 	this->onRaw(std::tr1::bind(&TextBox::handleMenuSelect, this, _1, _2), SmartWin::Message(WM_MENUSELECT));
 }
 
-void TextBox::handleLeftDblClick(const SmartWin::MouseEventResult& ev) {
+void TextBox::handleLeftDblClick(const SmartWin::MouseEvent& ev) {
 	WinUtil::parseDBLClick(textUnderCursor(ev.pos));
 }
 

@@ -28,19 +28,10 @@
 #ifndef RadioButton_h
 #define RadioButton_h
 
-#include "../Widget.h"
 #include "Button.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
-
- /** sideeffect = \par Side Effects :
-   */
 /// Button Control class
  /** \ingroup WidgetControls
    * \WidgetUsageInfo

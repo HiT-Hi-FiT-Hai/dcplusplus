@@ -30,8 +30,6 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
-#include "../Widget.h"
-#include "../Rectangle.h"
 #include "../Dispatchers.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
@@ -40,13 +38,7 @@
 
 #include <vector>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 // TODO: Give support for multiple bitmaps...
 /// Toolbar Control class

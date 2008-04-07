@@ -1,5 +1,7 @@
 #include "../../include/smartwin/widgets/ModelessDialog.h"
 
+#include "../../include/smartwin/Application.h"
+
 namespace SmartWin {
 
 void ModelessDialog::createDialog( unsigned resourceId )

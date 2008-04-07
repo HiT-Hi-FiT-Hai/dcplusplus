@@ -366,20 +366,3 @@ void Application::removeFilter(const FilterIter& i) {
 
 #endif // not __WINE__
 
-MouseEventResult::MouseEventResult(HWND hwnd, WPARAM wP, LPARAM lP ) : pos(Point::fromLParam(lP)) {
-	isShiftPressed = ( ( wP & MK_SHIFT ) == MK_SHIFT );
-	::ClientToScreen(hwnd, &pos.getPoint());
-	
-	// These might be an issue when porting to Windows CE since CE does only support LEFT (or something...)
-	ButtonPressed = (
-		MK_LBUTTON & wP ? MouseEventResult::LEFT : (
-			MK_RBUTTON & wP ? MouseEventResult::RIGHT : (
-				MK_MBUTTON & wP ? MouseEventResult::MIDDLE : (
-					MK_XBUTTON1 & wP ? MouseEventResult::X1 : (
-						MK_XBUTTON2 & wP ? MouseEventResult::X2 : MouseEventResult::OTHER
-					)
-				)
-			)
-		)
-	);
-}

@@ -28,22 +28,13 @@
 #ifndef Slider_h
 #define Slider_h
 
-#include "../Widget.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectScrollable.h"
 #include "Control.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
-
-/** sideeffect=\par Side Effects:
-  */
 /// Slider Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo

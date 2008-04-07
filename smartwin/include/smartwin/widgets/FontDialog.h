@@ -31,9 +31,7 @@
 
 #include "../Widget.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
 /// ChooseFontDialog class
 /** \ingroup WidgetControls

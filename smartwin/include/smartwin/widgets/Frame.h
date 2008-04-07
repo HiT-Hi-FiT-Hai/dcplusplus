@@ -28,14 +28,11 @@
 #ifndef Frame_h
 #define Frame_h
 
-#include "../Application.h"
-#include "../Rectangle.h"
+#include "../resources/Icon.h"
 #include "../aspects/AspectMinMax.h"
 #include "Composite.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
 /// Main Window class
 /** \ingroup WidgetControls
@@ -110,22 +107,10 @@ public:
 	void setMaximizeBox( bool value = true );
 
 	/// Sets the small icon for the Widget (the small icon appears typically in the top left corner of the Widget)
-	void setIconSmall( int resourceId );
-
-	/// Sets the small icon for the Widget (the small icon appears typically in the top left corner of the Widget)
-	void setIconSmall( const SmartUtil::tstring & filePathName );
+	void setIconSmall( const IconPtr& icon );
 
 	/// Sets the large icon for the Widget (the large icon appears e.g. when you press ALT+Tab)
-	void setIconLarge( int resourceId );
-
-	/// Sets the large icon for the Widget (the large icon appears e.g. when you press ALT+Tab)
-	void setIconLarge( const SmartUtil::tstring & filePathName );
-
-	/// Sets the cursor for the Widget
-	void setCursor( int resourceId );
-
-	/// Sets the cursor for the Widget
-	void setCursor( const SmartUtil::tstring & filePathName );
+	void setIconLarge( const IconPtr& icon );
 
 protected:
 	struct Seed : public BaseType::Seed {
@@ -193,45 +178,15 @@ void Frame< Policy >::setMaximizeBox( bool value )
 }
 
 template< class Policy >
-void Frame< Policy >::setIconSmall( int resourceId )
+void Frame< Policy >::setIconSmall( const IconPtr& icon )
 {
-	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR );
-	::SendMessage( this->handle(), WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
+	::SendMessage( this->handle(), WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( icon->handle() ) );
 }
 
 template< class Policy >
-void Frame< Policy >::setIconLarge( int resourceId )
+void Frame< Policy >::setIconLarge( const IconPtr& icon )
 {
-	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE );
-	::SendMessage( this->handle(), WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
-}
-
-template< class Policy >
-void Frame< Policy >::setIconSmall( const SmartUtil::tstring & filePathName )
-{
-	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR | LR_LOADFROMFILE );
-	::SendMessage( this->handle(), WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
-}
-
-template< class Policy >
-void Frame< Policy >::setIconLarge( const SmartUtil::tstring & filePathName )
-{
-	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
-	::SendMessage( this->handle(), WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
-}
-
-template< class Policy >
-void Frame< Policy >::setCursor( int resourceId )
-{
-	HCURSOR hCur = ::LoadCursor( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) );
-	::SetClassLongPtr( this->handle(), GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
-}
-
-template< class Policy >
-void Frame< Policy >::setCursor( const SmartUtil::tstring & filePathName )
-{
-	HICON hCur = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
-	::SetClassLongPtr( this->handle(), GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
+	::SendMessage( this->handle(), WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( icon->handle() ) );
 }
 
 template< class Policy >

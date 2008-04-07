@@ -1,8 +1,6 @@
 #ifndef COMPOSITE_H_
 #define COMPOSITE_H_
 
-#include "../forward.h"
-
 #include "../aspects/AspectActivate.h"
 #include "../aspects/AspectCommand.h"
 #include "../aspects/AspectDragDrop.h"

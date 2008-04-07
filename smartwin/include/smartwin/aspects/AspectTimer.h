@@ -1,6 +1,8 @@
 #ifndef ASPECTTIMER_H_
 #define ASPECTTIMER_H_
 
+#include "../Message.h"
+
 namespace SmartWin {
 
 template< class WidgetType >

@@ -28,15 +28,7 @@
 #ifndef MDIParent_h
 #define MDIParent_h
 
-#include "../Widget.h"
-#include "../Rectangle.h"
-#include "../Policies.h"
-#include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
-#include "../xCeption.h"
+#include "Control.h"
 #include "MDIFrame.h"
 
 namespace SmartWin

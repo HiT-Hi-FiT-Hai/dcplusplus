@@ -29,18 +29,15 @@
 #ifndef WidgetMenu_h
 #define WidgetMenu_h
 
-#include "../Application.h"
-#include "../Rectangle.h"
-#include "../CanvasClasses.h"
+#include "../resources/Bitmap.h"
+#include "../resources/Font.h"
 #include "../Dispatchers.h"
+#include "../CanvasClasses.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+#include <vector>
+#include <map>
 
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /// Contains information about menu item
 struct MenuItemData

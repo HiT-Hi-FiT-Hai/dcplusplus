@@ -1,7 +1,6 @@
 #ifndef CONTAINER_H_
 #define CONTAINER_H_
 
-#include "../Policies.h"
 #include "Composite.h"
 
 namespace SmartWin {

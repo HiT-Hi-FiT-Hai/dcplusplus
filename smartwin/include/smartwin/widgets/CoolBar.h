@@ -39,13 +39,7 @@
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /// Coolbar Control class
 /** \ingroup WidgetControls

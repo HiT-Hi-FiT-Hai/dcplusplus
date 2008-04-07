@@ -28,16 +28,13 @@
 #ifndef DateTime_h
 #define DateTime_h
 
-#include "../Widget.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "Control.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
 /// DateTimePicker Control class
 /** \ingroup WidgetControls

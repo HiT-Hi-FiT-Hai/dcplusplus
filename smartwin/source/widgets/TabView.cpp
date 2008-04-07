@@ -297,7 +297,7 @@ LRESULT TabView::handleToolTip(LPARAM lParam) {
 	return 0;
 }
 
-void TabView::handleLeftMouseDown(const MouseEventResult& mouseEventResult) {
+void TabView::handleLeftMouseDown(const MouseEvent& mouseEventResult) {
 	TabInfo* ti = getTabInfo(tab->hitTest(mouseEventResult.pos));
 	if(ti) {
 		if(mouseEventResult.isShiftPressed)
@@ -309,7 +309,7 @@ void TabView::handleLeftMouseDown(const MouseEventResult& mouseEventResult) {
 	}
 }
 
-void TabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) {
+void TabView::handleLeftMouseUp(const MouseEvent& mouseEventResult) {
 	::ReleaseCapture();
 
 	if(dragging) {
@@ -376,7 +376,7 @@ bool TabView::handleContextMenu(ScreenCoordinate pt) {
 	return false;
 }
 
-void TabView::handleMiddleMouseDown(const MouseEventResult& mouseEventResult) {
+void TabView::handleMiddleMouseDown(const MouseEvent& mouseEventResult) {
 	TabInfo* ti = getTabInfo(tab->hitTest(mouseEventResult.pos));
 	if(ti)
 		ti->w->close();

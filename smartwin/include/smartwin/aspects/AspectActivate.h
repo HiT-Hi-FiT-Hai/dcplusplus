@@ -28,6 +28,7 @@
 #ifndef AspectActivate_h
 #define AspectActivate_h
 
+#include "../Message.h"
 #include "../Dispatchers.h"
 
 namespace SmartWin {

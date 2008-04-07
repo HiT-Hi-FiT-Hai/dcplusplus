@@ -54,7 +54,7 @@ public:
 	  * No parameters are passed.
 	  */
 	void onSelectionChanged(const typename Dispatcher::F& f) {
-		W().addCallback(W().getSelectionChangedMessage(), Dispatcher(f));
+		W().addCallback(WidgetType::getSelectionChangedMessage(), Dispatcher(f));
 	}
 
 	/// Sets the selected index of the Widget

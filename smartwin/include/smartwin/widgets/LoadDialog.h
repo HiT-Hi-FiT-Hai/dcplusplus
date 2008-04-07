@@ -33,9 +33,7 @@
 #include "../aspects/AspectFileFilter.h"
 #include <vector>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace SmartWin {
 
 /// LoadFileDialog class
 /** \ingroup WidgetControls

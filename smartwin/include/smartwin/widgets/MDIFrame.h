@@ -30,11 +30,7 @@
 
 #include "Frame.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-class MDIParent;
+namespace SmartWin {
 
 /// "MDI Frame" class
 /** \ingroup WidgetControls

@@ -30,12 +30,7 @@
 
 #include "Frame.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /// "Window" class
 /** \ingroup WidgetControls

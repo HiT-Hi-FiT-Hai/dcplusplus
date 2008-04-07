@@ -30,6 +30,7 @@
 
 #include "../../SmartUtil.h"
 #include "../Dispatchers.h"
+#include "../Message.h"
 
 namespace SmartWin
 {

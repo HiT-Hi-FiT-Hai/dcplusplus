@@ -28,7 +28,6 @@
 #ifndef StatusBar_h
 #define StatusBar_h
 
-#include "../Widget.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectFont.h"
@@ -36,13 +35,7 @@
 #include "../aspects/AspectText.h"
 #include "Control.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 /// Policy class for StatusBar with sections instead of one large area where
 /// you can add information

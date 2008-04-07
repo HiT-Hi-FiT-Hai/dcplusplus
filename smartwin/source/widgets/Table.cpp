@@ -1,7 +1,7 @@
 #include "../../include/smartwin/widgets/Table.h"
 
 #include "../../include/smartwin/resources/Pen.h"
-
+#include "../../include/smartwin/CanvasClasses.h"
 #include "../../include/smartwin/LibraryLoader.h"
 
 #include <boost/scoped_array.hpp>

@@ -28,7 +28,6 @@
 #ifndef ComboBox_h
 #define ComboBox_h
 
-#include "../Widget.h"
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
@@ -42,11 +41,6 @@
 
 namespace SmartWin
 {
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
 
 /// ComboBox Control class
 /** \ingroup WidgetControls

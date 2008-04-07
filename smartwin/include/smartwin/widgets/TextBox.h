@@ -28,7 +28,6 @@
 #ifndef TextBox_h
 #define TextBox_h
 
-#include "../Widget.h"
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
@@ -37,13 +36,7 @@
 #include "../aspects/AspectUpdate.h"
 #include "Control.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
-
-// Forward declaring friends
-template< class WidgetType >
-class WidgetCreator;
+namespace SmartWin {
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4101 )

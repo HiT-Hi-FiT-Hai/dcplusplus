@@ -1,6 +1,7 @@
 #ifndef ASPECTHELP_H_
 #define ASPECTHELP_H_
 
+#include "../Message.h"
 #include <functional>
 
 namespace SmartWin {
