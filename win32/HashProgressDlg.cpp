@@ -23,6 +23,7 @@
 #include "HashProgressDlg.h"
 
 #include <dcpp/HashManager.h>
+#include <smartwin/widgets/ProgressBar.h>
 
 HashProgressDlg::HashProgressDlg(SmartWin::Widget* parent, bool aAutoClose) :
 	SmartWin::WidgetFactory<SmartWin::ModalDialog>(parent),
@@ -43,7 +44,7 @@ bool HashProgressDlg::handleInitDialog() {
 	setItemText(IDC_HASH_INDEXING, T_("Please wait while DC++ indexes your files (they won't be shared until they've been indexed)..."));
 	setItemText(IDC_STATISTICS, T_("Statistics"));
 
-	progress = attachProgressBar(IDC_HASH_PROGRESS);
+	attachChild(progress, IDC_HASH_PROGRESS);
 	progress->setRange(0, 10000);
 
 	ButtonPtr ok = attachButton(IDOK);

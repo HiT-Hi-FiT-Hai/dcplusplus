@@ -78,7 +78,7 @@ LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	attachButton(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
 
-	dataGrid = attachTable(IDC_LOG_OPTIONS);
+	attachChild(dataGrid, IDC_LOG_OPTIONS);
 	dataGrid->onRaw(std::tr1::bind(&LogPage::handleItemChanged, this), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
 	logFormat = attachTextBox(IDC_LOG_FORMAT);

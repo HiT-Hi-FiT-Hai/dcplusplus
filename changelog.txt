@@ -19,7 +19,7 @@
 * [L#209684] Fixed parsing of non-XML hub lists (poy)
 * [L#205660] Readded hub column to transfers (thanks mikejj)
 * Fixed file list refresh happening 1 minute later than expected (poy)
-* [L#209277] Fixed crash on bad translation
+* [L#209277] Fixed crash on bad translation (thanks poy)
 * More controls now use the font defined in settings (poy)
 
 -- 0.705 2008-03-14 --

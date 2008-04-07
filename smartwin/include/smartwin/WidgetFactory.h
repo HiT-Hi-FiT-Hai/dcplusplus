@@ -34,17 +34,11 @@
 #include "widgets/FolderDialog.h"
 #include "widgets/MessageBox.h"
 #include "widgets/CheckBox.h"
-#include "widgets/ComboBox.h"
-#include "widgets/Table.h"
-#include "widgets/GroupBox.h"
 #include "widgets/LoadDialog.h"
-#include "widgets/ProgressBar.h"
 #include "widgets/SaveDialog.h"
 #include "widgets/StatusBar.h"
 #include "widgets/WidgetTabView.h"
-#include "widgets/TabSheet.h"
 #include "widgets/TextBox.h"
-#include "widgets/Tree.h"
 #include "widgets/ToolTip.h"
 #include "WidgetFactoryPlatformImplementation.h"
 #include "WidgetCreator.h"
@@ -87,25 +81,13 @@ public:
 	// Bring widgets into the namespace of the class that inherits from us
 	
 	typedef SmartWin::Button Button;
+	
 	typedef typename Button::ObjectType ButtonPtr;
 
 	typedef SmartWin::FolderDialog FolderDialog;
 
-	
 	/// MessageBox class and object type.
 	typedef SmartWin::MessageBox MessageBox;
-
-	/// Table class type.
-	typedef SmartWin::Table Table;
-
-	/// Table object type.
-	typedef typename Table::ObjectType TablePtr;
-
-	/// TreeView class type.
-	typedef SmartWin::Tree Tree;
-
-	/// TreeView object type.
-	typedef typename Tree::ObjectType TreePtr;
 
 	/// TextBox class type.
 	typedef SmartWin::TextBox TextBox;
@@ -131,18 +113,6 @@ public:
 	/// TabView object type.
 	typedef typename WidgetTabView::ObjectType WidgetTabViewPtr;
 
-	/// TabSheet class type.
-	typedef SmartWin::TabSheet TabSheet;
-
-	/// TabSheet object type.
-	typedef typename TabSheet::ObjectType TabSheetPtr;
-
-	/// GroupBox class type.
-	typedef SmartWin::GroupBox GroupBox;
-
-	/// GroupBox object type.
-	typedef typename GroupBox::ObjectType GroupBoxPtr;
-
 	/// LoadFileDialog class type.
 	typedef SmartWin::LoadDialog LoadDialog;
 
@@ -152,23 +122,11 @@ public:
 	/// ColorDialog class and object type.
 	typedef SmartWin::ColorDialog ColorDialog;
 
-	/// ComboBox class type.
-	typedef SmartWin::ComboBox ComboBox;
-
-	/// ComboBox object type.
-	typedef typename ComboBox::ObjectType ComboBoxPtr;
-
 	/// CheckBox class type.
 	typedef SmartWin::CheckBox CheckBox;
 
 	/// CheckBox object type.
 	typedef typename CheckBox::ObjectType CheckBoxPtr;
-
-	/// ProgressBar class type.
-	typedef SmartWin::ProgressBar ProgressBar;
-
-	/// ProgressBar object type.
-	typedef typename ProgressBar::ObjectType ProgressBarPtr;
 
 	typedef SmartWin::ToolTip ToolTip;
 	
@@ -207,19 +165,6 @@ public:
 	  */
 	MessageBox createMessageBox();
 
-	/// Creates a List View and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	TablePtr createTable( const typename Table::Seed & cs = Table::Seed() );
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a Check Box from the given resource id.
-	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
-	  * with this function.
-	  */
-	TablePtr attachTable( unsigned id );
-
 	/// Creates a Check Box and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
@@ -232,19 +177,6 @@ public:
 	  * with this function.
 	  */
 	CheckBoxPtr attachCheckBox( unsigned id );
-
-	/// Creates a Tree View and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	TreePtr createTreeView( const typename Tree::Seed & cs = Tree::Seed() );
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a Tree View Control from the given resource id.
-	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
-	  * with this function.
-	  */
-	TreePtr attachTreeView( unsigned id );
 
 	/// Creates a Edit Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -280,52 +212,12 @@ public:
 	  */
 	WidgetTabViewPtr createTabView( const typename WidgetTabView::Seed& cs = WidgetTabView::Seed() );
 	
-	/// Creates a Tab Sheet and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	TabSheetPtr createTabSheet( const typename TabSheet::Seed & cs = TabSheet::Seed() );
-
-	/// Creates a Progress Bar Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	ProgressBarPtr createProgressBar( const typename ProgressBar::Seed & cs = ProgressBar::Seed() );
-
 	/// \ingroup SubclassDialog
 	/// Subclasses a Button Control from the given resource id.
 	/** DON'T delete the returned pointer!!!< br >
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls with this function.
 	  */
 	ButtonPtr attachButton( unsigned id );
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a Progress Bar Control from the given resource id.
-	/** DON'T delete the returned pointer!!!< br >
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls with this function.
-	  */
-	ProgressBarPtr attachProgressBar( unsigned id );
-
-	/// Creates a Group Box Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	GroupBoxPtr createGroupBox( const typename GroupBox::Seed & cs = GroupBox::Seed() );
-
-	/// Subclasses a Group Box Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	GroupBoxPtr attachGroupBox( unsigned id );
-
-	/// Creates a Comb Box and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	ComboBoxPtr createComboBox( const typename ComboBox::Seed & cs = ComboBox::Seed() );
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a ComboBox Control from the given resource id.
-	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
-	  * with this function.
-	  */
-	ComboBoxPtr attachComboBox( unsigned id );
 
 	ToolTipPtr createToolTip( const typename ToolTip::Seed & cs = ToolTip::Seed() );
 protected:
@@ -379,20 +271,6 @@ WidgetFactory< ContainerWidgetType >::createMessageBox()
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::TablePtr
-WidgetFactory< ContainerWidgetType >::createTable( const typename Table::Seed & cs )
-{
-	return WidgetCreator< Table >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::TablePtr
-WidgetFactory< ContainerWidgetType >::attachTable( unsigned id )
-{
-	return WidgetCreator< Table >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::CheckBoxPtr
 	WidgetFactory< ContainerWidgetType >::createCheckBox( const typename CheckBox::Seed & cs )
 {
@@ -404,20 +282,6 @@ typename WidgetFactory< ContainerWidgetType >::CheckBoxPtr
 WidgetFactory< ContainerWidgetType >::attachCheckBox( unsigned id )
 {
 	return WidgetCreator< CheckBox >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::TreePtr
-WidgetFactory< ContainerWidgetType >::createTreeView( const typename Tree::Seed & cs )
-{
-	return WidgetCreator< Tree >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::TreePtr
-WidgetFactory< ContainerWidgetType >::attachTreeView( unsigned id )
-{
-	return WidgetCreator< Tree >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>
@@ -463,59 +327,10 @@ WidgetFactory< ContainerWidgetType >::createTabView( const typename WidgetTabVie
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::TabSheetPtr
-WidgetFactory< ContainerWidgetType >::createTabSheet( const typename TabSheet::Seed & cs )
-{
-	return WidgetCreator< TabSheet >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::ProgressBarPtr
-WidgetFactory< ContainerWidgetType >::createProgressBar( const typename ProgressBar::Seed & cs )
-{
-	return WidgetCreator< ProgressBar >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::ButtonPtr
 WidgetFactory< ContainerWidgetType >::attachButton( unsigned id )
 {
 	return WidgetCreator< Button >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::ProgressBarPtr
-WidgetFactory< ContainerWidgetType >::attachProgressBar( unsigned id )
-{
-	return WidgetCreator< ProgressBar >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::GroupBoxPtr
-WidgetFactory< ContainerWidgetType >::createGroupBox( const typename GroupBox::Seed & cs )
-{
-	return WidgetCreator< GroupBox >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::GroupBoxPtr
-WidgetFactory< ContainerWidgetType >::attachGroupBox( unsigned id )
-{
-	return WidgetCreator< GroupBox >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::ComboBoxPtr
-WidgetFactory< ContainerWidgetType >::createComboBox( const typename ComboBox::Seed & cs )
-{
-	return WidgetCreator< ComboBox >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::ComboBoxPtr
-WidgetFactory< ContainerWidgetType >::attachComboBox( unsigned id )
-{
-	return WidgetCreator< ComboBox >::attach( this, id );
 }
 
 template<typename ContainerWidgetType>

@@ -70,7 +70,7 @@ bool SettingsDialog::initDialog() {
 
 	setText(T_("Settings"));
 
-	pageTree = attachTreeView(IDC_SETTINGS_PAGES);
+	attachChild(pageTree, IDC_SETTINGS_PAGES);
 	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
 
 	{

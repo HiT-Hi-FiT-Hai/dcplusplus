@@ -36,7 +36,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
 
 	// Create tree control
 	{
-		queued = createTreeView(WinUtil::Seeds::treeView);
+		queued = addChild(WinUtil::Seeds::treeView);
 		addWidget(queued);
 		queued->onContextMenu(std::tr1::bind(&WaitingUsersFrame::handleContextMenu, this, _1));
 		queued->onChar(std::tr1::bind(&WaitingUsersFrame::handleChar, this, _1));

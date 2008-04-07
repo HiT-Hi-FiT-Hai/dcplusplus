@@ -78,7 +78,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	directories = attachTable(IDC_DIRECTORIES);
+	attachChild(directories, IDC_DIRECTORIES);
 	directories->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
