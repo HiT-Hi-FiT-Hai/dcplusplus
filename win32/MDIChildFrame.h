@@ -29,13 +29,13 @@
 
 template<typename T>
 class MDIChildFrame : 
-	public WidgetFactory< SmartWin::WidgetChildWindow >,
+	public WidgetFactory< SmartWin::Container >,
 	public AspectSpeaker<T>, 
 	public AspectStatus<T>
 {
 public:
 	typedef MDIChildFrame<T> ThisType;
-	typedef WidgetFactory< SmartWin::WidgetChildWindow > BaseType;
+	typedef WidgetFactory< SmartWin::Container > BaseType;
 protected:
 
 	MDIChildFrame(SmartWin::WidgetTabView* tabView, const tstring& title, unsigned helpId = 0, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) :
@@ -55,7 +55,7 @@ protected:
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.icon = icon;
 		cs.location = tabView->getClientSize();
-		this->createWindow(cs);
+		this->create(cs);
 
 		if(helpId)
 			setHelpId(helpId);

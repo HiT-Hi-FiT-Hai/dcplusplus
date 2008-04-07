@@ -28,11 +28,7 @@
 #ifndef MDIFrame_h
 #define MDIFrame_h
 
-#include "../WindowsHeaders.h"
-#include "../Rectangle.h"
-#include "../WindowClass.h"
 #include "Frame.h"
-#include <boost/scoped_ptr.hpp>
 
 namespace SmartWin
 {
@@ -53,10 +49,8 @@ class MDIParent;
   * features of MDIFrameBase.   
   */
 class MDIFrame
-	: public Frame< Policies::MDIFrame<MDIFrame > >
+	: public Frame< Policies::MDIFrame<MDIFrame> >
 {
-	typedef Frame< Policies::MDIFrame<MDIFrame > > BaseType;
-
 public:
 	/// Class type
 	typedef MDIFrame ThisType;
@@ -64,57 +58,29 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 
+	typedef Frame< Policies::MDIFrame<MDIFrame> > BaseType;
+	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
 	class Seed
-		: public Widget::Seed
+		: public BaseType::Seed
 	{
 	public:
-		IconPtr icon;
-		IconPtr iconSmall;
-		HBRUSH background;
-		LPCTSTR menuName;
-		HCURSOR cursor;
-
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
 		Seed();
-
 	};
 
 	/// Actually creates the window
 	/** This one creates the window. <br>
 	  * All MDIFrames, and classes derived from them must create the Window
 	  * before using it with functions such as setBounds() or setVisible( false ). <br>
-      * The simple version "createWindow()" uses a default Seed for the window attributes.
+      * The simple version "create()" uses a default Seed for the window attributes.
 	  * The seed is not taken a constant because the class name will be generated at registration.
 	  */
-	void createWindow( Seed = Seed() );
-
-	/// Creates an invisible window, for quiet initialization.
-	/** Same as createWindow, except that the window lacks WS_VISIBLE.
-	  * Since you must create the window before you add other Widgets,
-	  * and doing so causes a bit of screen flash before the final window
-	  * is ready, createInvisibleWindow() lets you add Widgets while
-	  * the main Widget is not visible.  Of course you could do code like <br>
-	  *
-	  *   Seed defInvisible = Seed(); <br>
-	  *   defInvisible.style= defInvisible.style & ( ~ WS_VISIBLE ); <br>
-	  *   createWindow( defInvisible ); <br>
-	  *
-	  * but this is cleaner: <br>
-	  *
-	  *   createInvisibleWindow(); <br>
-	  *   do init <br>
-	  *   setVisible( true ); <br>
-	  *
-	  * The other styles are either defaulted with createInvisibleWindow()
-	  * or specified with createInvisibleWindow( Seed ).
-	  */
-	void createInvisibleWindow( Seed seed = Seed() );
+	void create( const Seed& cs = Seed() );
 
 	MDIParent* getMDIParent() { return mdi; }
 protected:
@@ -123,7 +89,6 @@ protected:
 
 	virtual ~MDIFrame();
 private:
-	boost::scoped_ptr<WindowClass> windowClass;
 	MDIParent* mdi;
 };
 

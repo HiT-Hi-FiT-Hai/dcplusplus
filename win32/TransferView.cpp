@@ -32,14 +32,15 @@
 #include <dcpp/Download.h>
 #include <dcpp/Upload.h>
 
-int TransferView::connectionIndexes[] = { CONNECTION_COLUMN_USER, CONNECTION_COLUMN_STATUS, CONNECTION_COLUMN_SPEED, CONNECTION_COLUMN_CHUNK, CONNECTION_COLUMN_TRANSFERED, CONNECTION_COLUMN_QUEUED, CONNECTION_COLUMN_CIPHER, CONNECTION_COLUMN_IP };
-int TransferView::connectionSizes[] = { 125, 375, 100, 125, 125, 75, 100, 100 };
+int TransferView::connectionIndexes[] = { CONNECTION_COLUMN_USER, CONNECTION_COLUMN_HUB, CONNECTION_COLUMN_STATUS, CONNECTION_COLUMN_SPEED, CONNECTION_COLUMN_CHUNK, CONNECTION_COLUMN_TRANSFERED, CONNECTION_COLUMN_QUEUED, CONNECTION_COLUMN_CIPHER, CONNECTION_COLUMN_IP };
+int TransferView::connectionSizes[] = { 125, 100, 375, 100, 125, 125, 75, 100, 100 };
 
 int TransferView::downloadIndexes[] = { DOWNLOAD_COLUMN_FILE, DOWNLOAD_COLUMN_PATH, DOWNLOAD_COLUMN_STATUS, DOWNLOAD_COLUMN_TIMELEFT, DOWNLOAD_COLUMN_SPEED, DOWNLOAD_COLUMN_DONE, DOWNLOAD_COLUMN_SIZE };
 int TransferView::downloadSizes[] = { 200, 300, 150, 200, 125, 100, 100 };
 
 static const char* connectionNames[] = {
 	N_("User"),
+	N_("Hub"),
 	N_("Status"),
 	N_("Speed"),
 	N_("Chunk"),
@@ -60,14 +61,14 @@ static const char* downloadNames[] = {
 };
 
 TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi_) : 
-	WidgetFactory<SmartWin::WidgetChildWindow>(parent),
+	WidgetFactory<SmartWin::Container>(parent),
 	connections(0),
 	connectionsWindow(0),
 	downloads(0),
 	downloadsWindow(0),
 	mdi(mdi_)
 {
-	createWindow();
+	create();
 	
 	{
 		TabSheet::Seed tcs;
@@ -78,19 +79,19 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 	}
 	
 	{
-		WidgetChildWindow::Seed cs;
+		Container::Seed cs;
 		cs.style |= WS_CLIPCHILDREN | WS_VISIBLE;
 		cs.caption = T_("Connections");
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.location = tabs->getUsableArea(true);
 		
-		connectionsWindow = SmartWin::WidgetCreator<WidgetChildWindow>::createWindow(tabs, cs);
+		connectionsWindow = SmartWin::WidgetCreator<Container>::create(tabs, cs);
 		
 		tabs->addPage(T_("Connections"), 0);
 		
 		cs.style &= ~WS_VISIBLE;
 		cs.caption = T_("Downloads");
-		downloadsWindow = SmartWin::WidgetCreator<WidgetChildWindow>::createWindow(tabs, cs);
+		downloadsWindow = SmartWin::WidgetCreator<Container>::create(tabs, cs);
 		tabs->addPage(T_("Downloads"), 1);
 	}
 	
@@ -533,6 +534,7 @@ TransferView::ConnectionInfo::ConnectionInfo(const UserPtr& u, bool aDownload) :
 	speed(0)	
 {
 	columns[CONNECTION_COLUMN_USER] = WinUtil::getNicks(u);
+	columns[CONNECTION_COLUMN_HUB] = WinUtil::getHubNames(u).first;
 	columns[CONNECTION_COLUMN_STATUS] = T_("Idle");
 	columns[CONNECTION_COLUMN_TRANSFERED] = Text::toT(Util::toString(0));
 	if(aDownload) {

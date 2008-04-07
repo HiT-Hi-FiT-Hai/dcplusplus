@@ -5,24 +5,13 @@
 namespace SmartWin {
 
 MDIFrame::Seed::Seed() :
-	Widget::Seed(NULL, WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN),
-	background(( HBRUSH )( COLOR_APPWORKSPACE + 1 )),
-	menuName(NULL),
-	cursor(NULL)
+	BaseType::Seed(0)
 {
 }
 
-void MDIFrame::createInvisibleWindow( Seed cs )
+void MDIFrame::create( const Seed& cs )
 {
-	cs.style=  cs.style & ( ~ WS_VISIBLE );
-	MDIFrame::createWindow( cs );
-}
-
-void MDIFrame::createWindow( Seed cs )
-{
-	windowClass.reset(new WindowClass(WindowClass::getNewClassName(this), &ThisType::wndProc, cs.menuName, cs.background, cs.icon, cs.iconSmall, cs.cursor));
-	cs.className = windowClass->getClassName();
-	Widget::create( cs );
+	BaseType::create(cs);
 	
 	mdi = WidgetCreator<MDIParent>::create(this);
 }

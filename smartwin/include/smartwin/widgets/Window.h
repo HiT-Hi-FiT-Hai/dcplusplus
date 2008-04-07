@@ -28,11 +28,7 @@
 #ifndef Window_h
 #define Window_h
 
-#include "../Rectangle.h"
-#include "../WindowClass.h"
 #include "Frame.h"
-
-#include <boost/scoped_ptr.hpp>
 
 namespace SmartWin
 {
@@ -56,7 +52,6 @@ class WidgetCreator;
 class Window
 	: public Frame< Policies::Normal >
 {
-	typedef Frame< Policies::Normal > BaseType;
 	struct CreateDispatcher
 	{
 		typedef std::tr1::function<void (const CREATESTRUCT&)> F;
@@ -81,23 +76,17 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
+	
+	typedef Frame<Policies::Normal> BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public Widget::Seed
-	{
+	struct Seed : public BaseType::Seed {
 	public:
 		typedef Window::ThisType WidgetType;
-
-		IconPtr icon;
-		IconPtr smallIcon;
-		HBRUSH background;
-		LPCTSTR menuName;
-		HCURSOR cursor;
 
 		/// Fills with default parameters
 		Seed();
@@ -107,32 +96,10 @@ public:
 	/** This one creates the window. <br>
 	  * All Windows, and classes derived from them must create the Window
 	  * before using it with functions such as setBounds() or setVisible( false ). <br>
-      * The simple version "createWindow()" uses a default Seed for the window attributes.
+      * The simple version "create()" uses a default Seed for the window attributes.
 	  * The seed is not taken a constant because the class name will be generated at registration.
 	  */
-	void createWindow( Seed cs = Seed() );
-
-	/// Creates an invisible window, for quiet initialization.
-	/** Same as createWindow, except that the window lacks WS_VISIBLE.
-	  * Since you must create the window before you add other Widgets,
-	  * and doing so causes a bit of screen flash before the final window
-	  * is ready, createInvisibleWindow() lets you add Widgets while
-	  * the main Widget is not visible.  Of course you could do code like <br>
-	  *
-	  *   Seed defInvisible = Seed(); <br>
-	  *   defInvisible.style= defInvisible.style & ( ~ WS_VISIBLE ); <br>
-	  *   createWindow( defInvisible ); <br>
-	  *
-	  * but this is cleaner: <br>
-	  *
-	  *   createInvisibleWindow(); <br>
-	  *   do init <br>
-	  *   setVisible( true ); <br>
-	  *
-	  * The other styles are either defaulted with createInvisibleWindow()
-	  * or specified with createInvisibleWindow( Seed ).
-	  */
-	void createInvisibleWindow( Seed cs = Seed() );
+	virtual void create( const Seed& cs = Seed() );
 
 	// TODO: Check up if the CREATESTRUCT * actualy IS modyfiable...!!
 	/// Setting the event handler for the "create" event
@@ -163,48 +130,6 @@ protected:
 	explicit Window( Widget * parent = 0 );
 
 	virtual ~Window();
-private:
-	boost::scoped_ptr<WindowClass> windowClass;
-};
-
-class WidgetChildWindow
-	: public Window
-{
-public:
-	typedef WidgetChildWindow ThisType;
-	typedef ThisType* ObjectType;
-	
-	/// Seed class
-	/** This class contains all of the values needed to create the widget. It also
-	  * knows the type of the class whose seed values it contains. Every widget
-	  * should define one of these.
-	  */
-	class Seed
-		: public Window::Seed
-	{
-	public:
-		/// Fills with default parameters
-		Seed();
-	};
-
-	//TODO: This could be specialized to take WNDPROC from MessageMap
-	/// Actually creates the window
-	/** This one creates the window. It is implemented in case somebody wants to use
-	  * createWindow() without parameters. If it wasn't declared, the compiler would
-	  * call Window::create with Window::Seed, which wouldn't
-	  * create a child window.
-	  */
-	void createWindow( const Seed& cs = Seed() )
-	{
-		Window::createWindow( cs );
-	}
-
-protected:
-	friend class WidgetCreator<WidgetChildWindow>;
-	
-	// Unlike Window, WidgetChildWindow must have a parent!!!
-	explicit WidgetChildWindow( Widget * parent ) : Window( parent ) 
-	{};
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,12 +142,6 @@ inline Window::Window( Widget * parent )
 
 inline Window::~Window()
 {
-}
-
-inline void Window::createInvisibleWindow( Seed cs )
-{
-	cs.style=  cs.style & ( ~ WS_VISIBLE );
-	Window::createWindow( cs );
 }
 
 inline void Window::activatePreviousInstance()
@@ -245,11 +164,6 @@ inline void Window::activatePreviousInstance()
 		}
 	}
 #endif
-}
-
-inline WidgetChildWindow::Seed::Seed()
-{
-	this->style = WS_VISIBLE | WS_CHILD;
 }
 
 // end namespace SmartWin

@@ -55,8 +55,7 @@ public:
 		STATUS_LAST
 	};
 
-	/// @deprecated
-	WidgetTabView* getMDIParent() { return tabs; }
+	WidgetTabView* getTabView() { return tabs; }
 
 	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 

@@ -3,7 +3,7 @@
 
 #include "TabSheet.h"
 #include "ToolTip.h"
-#include "Window.h"
+#include "Container.h"
 #include "../WindowClass.h"
 #include <list>
 #include <vector>
@@ -39,28 +39,28 @@ public:
 		bool toggleActive;
 	};
 
-	void add(WidgetChildWindow* w, const IconPtr& icon);
+	void add(Container* w, const IconPtr& icon);
 
-	void mark(WidgetChildWindow* w);
+	void mark(Container* w);
 	
-	void remove(WidgetChildWindow* w);
+	void remove(Container* w);
 	
 	void next(bool reverse = false);
 	
-	WidgetChildWindow* getActive();
-	void setActive(WidgetChildWindow* w) { setActive(findTab(w)); }
+	Container* getActive();
+	void setActive(Container* w) { setActive(findTab(w)); }
 
-	SmartUtil::tstring getTabText(WidgetChildWindow* w);
+	SmartUtil::tstring getTabText(Container* w);
 
 	void onTitleChanged(const TitleChangedFunction& f) {
 		titleChangedFunction = f;
 	}
 
+	void onTabContextMenu(Container* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f);
+
 	void onHelp(const HelpFunction& f) {
 		helpFunction = f;
 	}
-
-	void onTabContextMenu(WidgetChildWindow* w, const ContextMenuFunction& f);
 
 	bool filter(const MSG& msg);
 	
@@ -81,8 +81,8 @@ private:
 	enum { MAX_TITLE_LENGTH = 20 };
 
 	struct TabInfo {
-		TabInfo(WidgetChildWindow* w_) : w(w_) { }
-		WidgetChildWindow* w;
+		TabInfo(Container* w_) : w(w_) { }
+		Container* w;
 		ContextMenuFunction handleContextMenu;
 	};
 	
@@ -98,24 +98,24 @@ private:
 
 	bool inTab;
 	
-	typedef std::list<WidgetChildWindow*> WindowList;
+	typedef std::list<Container*> WindowList;
 	typedef WindowList::iterator WindowIter;
 	WindowList viewOrder;
 	Rectangle clientSize;
 	std::vector<IconPtr> icons;
 	int active;
-	WidgetChildWindow* dragging;
+	Container* dragging;
 	SmartUtil::tstring tipText;
 	
-	int findTab(WidgetChildWindow* w);
+	int findTab(Container* w);
 	
 	void setActive(int i);
-	TabInfo* getTabInfo(WidgetChildWindow* w);
+	TabInfo* getTabInfo(Container* w);
 	TabInfo* getTabInfo(int i);
 	
-	void setTop(WidgetChildWindow* w);
+	void setTop(Container* w);
 
-	bool handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText);
+	bool handleTextChanging(Container* w, const SmartUtil::tstring& newText);
 	void handleSized(const SizedEvent&);
 	void handleTabSelected();
 	LRESULT handleToolTip(LPARAM lParam);
@@ -129,7 +129,7 @@ private:
 	void layout();
 	
 	int addIcon(const IconPtr& icon);
-	void swapWidgets(WidgetChildWindow* oldW, WidgetChildWindow* newW);
+	void swapWidgets(Container* oldW, Container* newW);
 };
 
 inline TabSheet::ObjectType WidgetTabView::getTab()

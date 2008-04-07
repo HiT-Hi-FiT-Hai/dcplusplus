@@ -59,7 +59,7 @@ class WidgetCreator;
   * the code area where the user can switch between the different opened files. Use
   * the onSelectionChanged event to make visible/invisible the different controls you
   * wish to use in the different tab pages! <br>
-  * Normally you would add up one WidgetChildWindow for each Tab Page the Tab Control
+  * Normally you would add up one Container for each Tab Page the Tab Control
   * has.
   */
 class TabSheet :

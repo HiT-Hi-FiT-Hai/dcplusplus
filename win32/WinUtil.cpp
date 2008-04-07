@@ -261,7 +261,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
 		if(!param.empty()) {
-			SearchFrame::openWindow(mainWindow->getMDIParent(), param);
+			SearchFrame::openWindow(mainWindow->getTabView(), param);
 		} else {
 			status = T_("Specify a search string");
 		}
@@ -388,7 +388,7 @@ void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
 }
 
 void WinUtil::searchHash(const TTHValue& aHash) {
-	SearchFrame::openWindow(mainWindow->getMDIParent(), Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
+	SearchFrame::openWindow(mainWindow->getTabView(), Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 }
 
 void WinUtil::addLastDir(const tstring& dir) {
@@ -932,7 +932,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	uint16_t port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
-		HubFrame::openWindow(mainWindow->getMDIParent(), server + ":" + Util::toString(port));
+		HubFrame::openWindow(mainWindow->getTabView(), server + ":" + Util::toString(port));
 	}
 	if(!file.empty()) {
 		if(file[0] == '/') // Remove any '/' in from of the file
@@ -953,7 +953,7 @@ void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	uint16_t port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
-		HubFrame::openWindow(mainWindow->getMDIParent(), "adc://" + server + ":" + Util::toString(port));
+		HubFrame::openWindow(mainWindow->getTabView(), "adc://" + server + ":" + Util::toString(port));
 	}
 }
 

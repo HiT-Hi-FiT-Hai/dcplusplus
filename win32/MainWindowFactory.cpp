@@ -37,43 +37,43 @@
 void MainWindow::handleOpenWindow(unsigned id) {
 	switch (id) {
 	case IDC_PUBLIC_HUBS:
-		PublicHubsFrame::openWindow(getMDIParent());
+		PublicHubsFrame::openWindow(getTabView());
 		break;
 	case IDC_FAVORITE_HUBS:
-		FavHubsFrame::openWindow(getMDIParent());
+		FavHubsFrame::openWindow(getTabView());
 		break;
 	case IDC_FAVUSERS:
-		UsersFrame::openWindow(getMDIParent());
+		UsersFrame::openWindow(getTabView());
 		break;
 	case IDC_QUEUE:
-		QueueFrame::openWindow(getMDIParent());
+		QueueFrame::openWindow(getTabView());
 		break;
 	case IDC_FINISHED_DL:
-		FinishedDLFrame::openWindow(getMDIParent());
+		FinishedDLFrame::openWindow(getTabView());
 		break;
 	case IDC_WAITING_USERS:
-		WaitingUsersFrame::openWindow(getMDIParent());
+		WaitingUsersFrame::openWindow(getTabView());
 		break;
 	case IDC_FINISHED_UL:
-		FinishedULFrame::openWindow(getMDIParent());
+		FinishedULFrame::openWindow(getTabView());
 		break;
 	case IDC_SEARCH:
-		SearchFrame::openWindow(getMDIParent());
+		SearchFrame::openWindow(getTabView());
 		break;
 	case IDC_ADL_SEARCH:
-		ADLSearchFrame::openWindow(getMDIParent());
+		ADLSearchFrame::openWindow(getTabView());
 		break;
 	case IDC_SEARCH_SPY:
-		SpyFrame::openWindow(getMDIParent());
+		SpyFrame::openWindow(getTabView());
 		break;
 	case IDC_NOTEPAD:
-		NotepadFrame::openWindow(getMDIParent());
+		NotepadFrame::openWindow(getTabView());
 		break;
 	case IDC_SYSTEM_LOG:
-		SystemFrame::openWindow(getMDIParent());
+		SystemFrame::openWindow(getTabView());
 		break;
 	case IDC_NET_STATS:
-		StatsFrame::openWindow(getMDIParent());
+		StatsFrame::openWindow(getTabView());
 		break;
 	default:
 		dcassert(0);

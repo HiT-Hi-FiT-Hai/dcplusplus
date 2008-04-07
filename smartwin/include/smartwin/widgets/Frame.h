@@ -30,16 +30,8 @@
 
 #include "../Application.h"
 #include "../Rectangle.h"
-#include "../aspects/AspectActivate.h"
-#include "../aspects/AspectCommand.h"
-#include "../aspects/AspectDragDrop.h"
-#include "../aspects/AspectEraseBackground.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectFont.h"
 #include "../aspects/AspectMinMax.h"
-#include "../aspects/AspectPainting.h"
-#include "../aspects/AspectText.h"
-#include "Control.h"
+#include "Composite.h"
 
 namespace SmartWin
 {
@@ -73,101 +65,21 @@ namespace SmartWin
   */
 template< class Policy >
 class Frame :
-	public Control< Policy >,
-
-	// Aspects
-	public AspectActivate< Frame< Policy > >,
-	public AspectCommand< Frame< Policy > >,
-	public AspectDragDrop< Frame< Policy > >,
-	public AspectEraseBackground< Frame< Policy > >,
-	public AspectFocus< Frame< Policy > >,
-	public AspectFont< Frame< Policy > >,
-	public AspectMinMax<Frame<Policy> >,
-	public AspectPainting< Frame< Policy > >,
-	public AspectText< Frame< Policy > >
+	public Composite< Policy >,
+	public AspectMinMax<Frame<Policy> >
 {
-	struct CloseDispatcher
-	{
-		typedef std::tr1::function<bool ()> F;
-		
-		CloseDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			bool destroy = f();
-
-			if ( destroy ) {
-				return false;
-			}
-
-			return true;
-		}
-
-		F f;
-		Widget* widget;
-	};
-
-	struct TimerDispatcher
-	{
-		typedef std::tr1::function<bool ()> F;
-		
-		TimerDispatcher(const F& f_) : f(f_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			bool keep = f();
-			
-			if(!keep) {
-				::KillTimer(msg.hwnd, msg.wParam);
-				// TODO remove from message map as well...
-			}
-			return FALSE;
-		}
-
-		F f;
-	};
-
 public:
 	/// Class type
 	typedef Frame< Policy > ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
-
-	// TODO: Outfactor into WidgetClosable
-	/// Event Handler setter for the Closing Event
-	/** If supplied event handler is called before the window is closed. <br>
-	  * Signature of event handler must be "bool foo()" <br>
-	  * If you return true from your event handler the window is closed, otherwise 
-	  * the window is NOT allowed to actually close!!       
-	  */
-	void onClosing(const typename CloseDispatcher::F& f) {
-		this->addCallback(
-			Message( WM_CLOSE ), CloseDispatcher(f, this)
-		);
-	}
-            
-	// TODO: Outfactor into "time Aspect" class
-	/// Creates a timer object.
-	/** The supplied function must have the signature bool foo() <br>
-	  * The event function will be called when at least milliSeconds seconds have elapsed.
-	  * If your event handler returns true, it will keep getting called periodically, otherwise 
-	  * it will be removed.
-	  */
-	void createTimer(const typename TimerDispatcher::F& f, unsigned int milliSeconds, unsigned int id = 0);
-
-	/// Closes the window
-	/** Call this function to raise the "Closing" event. <br>
-	  * This will normally try to close the window. <br>
-	  * Note! <br>
-	  * If this event is trapped and we in that event handler state that we DON'T 
-	  * want to close the window (by returning false) the window will not be close. 
-	  * <br>
-	  * Note! <br>
-	  * If the asyncron argument is true the message will be posted to the message 
-	  * que meaning that the close event will be done asyncronously and therefore the 
-	  * function will return immediately and the close event will be handled when the 
-	  * close event pops up in the event handler que.       
-	  */
-	void close( bool asyncron = false );
+	
+	typedef Composite< Policy > BaseType;
+	
+	struct Seed : public BaseType::Seed {
+		Seed(DWORD style);
+	};
 
 	// TODO: Outfactor to system implementation type, see e.g. WidgetFactory
 #ifndef WINCE
@@ -228,32 +140,15 @@ protected:
 	// directly
 	virtual ~Frame()
 	{}
-
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class Policy >
-void Frame< Policy >::createTimer( const typename TimerDispatcher::F& f,
-	unsigned int milliSecond, unsigned int id)
-{
-
-	::SetTimer( this->handle(), id, static_cast< UINT >( milliSecond ), NULL);
-	addCallback(
-		Message( WM_TIMER, id ), TimerDispatcher(f)
-	);
-}
-
-template< class Policy >
-void Frame< Policy >::close( bool asyncron )
-{
-	if ( asyncron )
-		this->postMessage(WM_CLOSE); // Return now
-	else
-		this->sendMessage(WM_CLOSE); // Return after close is done.
+template<typename Policy>
+Frame<Policy>::Seed::Seed(DWORD style) : Frame<Policy>::BaseType::Seed(WS_OVERLAPPEDWINDOW) {
+	
 }
 
 #ifndef WINCE
@@ -340,7 +235,7 @@ void Frame< Policy >::setCursor( const SmartUtil::tstring & filePathName )
 
 template< class Policy >
 Frame< Policy >::Frame( Widget * parent )
-	: Control<Policy>( parent )
+	: Composite<Policy>( parent )
 {
 }
 

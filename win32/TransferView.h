@@ -36,7 +36,7 @@
 #include "UserInfoBase.h"
 
 class TransferView : 
-	public WidgetFactory<SmartWin::WidgetChildWindow>, 
+	public WidgetFactory<SmartWin::Container>, 
 	private DownloadManagerListener, 
 	private UploadManagerListener, 
 	private ConnectionManagerListener,
@@ -80,6 +80,7 @@ private:
 	enum {
 		CONNECTION_COLUMN_FIRST,
 		CONNECTION_COLUMN_USER = CONNECTION_COLUMN_FIRST,
+		CONNECTION_COLUMN_HUB,
 		CONNECTION_COLUMN_STATUS,
 		CONNECTION_COLUMN_SPEED,
 		CONNECTION_COLUMN_CHUNK,
@@ -233,12 +234,12 @@ private:
 	typedef TypedTable<ConnectionInfo> WidgetConnections;
 	typedef WidgetConnections* WidgetConnectionsPtr;
 	WidgetConnectionsPtr connections;
-	WidgetChildWindowPtr connectionsWindow;
+	ContainerPtr connectionsWindow;
 	
 	typedef TypedTable<DownloadInfo> WidgetDownloads;
 	typedef WidgetDownloads* WidgetDownloadsPtr;
 	WidgetDownloadsPtr downloads;
-	WidgetChildWindowPtr downloadsWindow;
+	ContainerPtr downloadsWindow;
 
 	TabSheetPtr tabs;
 	

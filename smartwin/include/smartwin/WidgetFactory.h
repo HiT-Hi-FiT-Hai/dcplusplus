@@ -35,6 +35,7 @@
 #include "widgets/MessageBox.h"
 #include "widgets/CheckBox.h"
 #include "widgets/ComboBox.h"
+#include "widgets/Container.h"
 #include "widgets/Table.h"
 #include "widgets/DateTime.h"
 #include "widgets/GroupBox.h"
@@ -211,10 +212,10 @@ public:
 	typedef typename DateTime::ObjectType DateTimePtr;
 
 	/// WidgetChildWindow class type.
-	typedef SmartWin::WidgetChildWindow WidgetChildWindow;
+	typedef SmartWin::Container Container;
 
 	/// WidgetChildWindow object type.
-	typedef typename WidgetChildWindow::ObjectType WidgetChildWindowPtr;
+	typedef typename Container::ObjectType ContainerPtr;
 
 	/// Window class type.
 	typedef SmartWin::Window Window;
@@ -300,7 +301,7 @@ public:
 	/// Creates a child window and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetChildWindowPtr createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs = WidgetChildWindow::Seed() );
+	ContainerPtr createContainer( const typename Container::Seed & cs = Container::Seed() );
 
 	/// Creates a Tree View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -540,10 +541,10 @@ WidgetFactory< ContainerWidgetType >::attachCheckBox( unsigned id )
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetChildWindowPtr
-WidgetFactory< ContainerWidgetType >::createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs )
+typename WidgetFactory< ContainerWidgetType >::ContainerPtr
+WidgetFactory< ContainerWidgetType >::createContainer( const typename Container::Seed & cs )
 {
-	return WidgetCreator< WidgetChildWindow >::createWindow( this, cs );
+	return WidgetCreator< Container >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>

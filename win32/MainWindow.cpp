@@ -170,8 +170,8 @@ void MainWindow::initWindow() {
 	cs.caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
 	cs.icon = SmartWin::IconPtr(new SmartWin::Icon(IDR_MAINFRAME));
 	cs.background = (HBRUSH)(COLOR_3DFACE + 1);
-	createWindow(cs);
-
+	create(cs);
+	
 	setHelpId(IDH_STARTPAGE);
 
 	paned = createHPaned();
@@ -326,7 +326,7 @@ void MainWindow::initTabs() {
 
 void MainWindow::initTransfers() {
 	dcdebug("initTransfers\n");
-	transfers = new TransferView(this, getMDIParent());
+	transfers = new TransferView(this, getTabView());
 	paned->setSecond(transfers);
 }
 
@@ -339,7 +339,7 @@ bool MainWindow::filter(MSG& msg) {
 		return true;
 	}
 
-	SmartWin::WidgetChildWindow* active = getMDIParent()->getActive();
+	SmartWin::Container* active = getTabView()->getActive();
 	if(active) {
 		if(::IsDialogMessage( active->handle(), & msg )) {
 			return true;
@@ -358,7 +358,7 @@ void MainWindow::handleExit() {
 }
 
 void MainWindow::handleForward(WPARAM wParam) {
-	SmartWin::WidgetChildWindow* active = getMDIParent()->getActive();
+	SmartWin::Container* active = getTabView()->getActive();
 	if(active) {
 		active->sendMessage(WM_COMMAND, wParam, 0);
 	}
@@ -380,7 +380,7 @@ void MainWindow::handleQuickConnect() {
 		while ((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
 
-		HubFrame::openWindow(getMDIParent(), Text::fromT(tmp));
+		HubFrame::openWindow(getTabView(), Text::fromT(tmp));
 	}
 }
 
@@ -411,12 +411,12 @@ LRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	switch (s) {
 	case DOWNLOAD_LISTING: {
 		boost::scoped_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lParam));
-		DirectoryListingFrame::openWindow(getMDIParent(), i->file, i->dir, i->user, i->speed);
+		DirectoryListingFrame::openWindow(getTabView(), i->file, i->dir, i->user, i->speed);
 	}
 		break;
 	case BROWSE_LISTING: {
 		boost::scoped_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lParam));
-		DirectoryListingFrame::openWindow(getMDIParent(), i->user, i->text, 0);
+		DirectoryListingFrame::openWindow(getTabView(), i->user, i->text, 0);
 	}
 		break;
 	case AUTO_CONNECT: {
@@ -429,7 +429,7 @@ LRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		break;
 	case VIEW_FILE_AND_DELETE: {
 		boost::scoped_ptr<std::string> file(reinterpret_cast<std::string*>(lParam));
-		new TextFrame(this->getMDIParent(), *file);
+		new TextFrame(this->getTabView(), *file);
 		File::deleteFile(*file);
 	}
 		break;
@@ -460,7 +460,7 @@ void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {
 		FavoriteHubEntry* entry = *i;
 		if (entry->getConnect()) {
 			if (!entry->getNick().empty() || !SETTING(NICK).empty()) {
-				HubFrame::openWindow(getMDIParent(), entry->getServer());
+				HubFrame::openWindow(getTabView(), entry->getServer());
 			}
 		}
 	}
@@ -711,7 +711,7 @@ void MainWindow::handleOpenFileList() {
 	if(WinUtil::browseFileList(createLoadDialog(), file)) {
 		UserPtr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
 		if (u) {
-			DirectoryListingFrame::openWindow(getMDIParent(), file, Text::toT(Util::emptyString), u, 0);
+			DirectoryListingFrame::openWindow(getTabView(), file, Text::toT(Util::emptyString), u, 0);
 		} else {
 			createMessageBox().show(T_("Invalid file list name"), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 		}
@@ -720,7 +720,7 @@ void MainWindow::handleOpenFileList() {
 
 void MainWindow::handleOpenOwnList() {
 	if (!ShareManager::getInstance()->getOwnListFile().empty()) {
-		DirectoryListingFrame::openWindow(getMDIParent(), Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
+		DirectoryListingFrame::openWindow(getTabView(), Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
 	}
 }
 
@@ -754,7 +754,7 @@ DWORD WINAPI MainWindow::stopper(void* p) {
 	MainWindow* mf = reinterpret_cast<MainWindow*>(p);
 	HWND wnd, wnd2 = NULL;
 
-	while( (wnd=::GetWindow(mf->getMDIParent()->getTab()->handle(), GW_CHILD)) != NULL) {
+	while( (wnd=::GetWindow(mf->getTabView()->getTab()->handle(), GW_CHILD)) != NULL) {
 		if(wnd == wnd2) {
 			::Sleep(100);
 		} else {
@@ -806,7 +806,7 @@ void MainWindow::handleMatchAll() {
 
 void MainWindow::handleActivate(bool active) {
 	// Forward to active tab window
-	WidgetChildWindow* w = tabs->getActive();
+	Container* w = tabs->getActive();
 	if(w) {
 		w->sendMessage(WM_ACTIVATE, active ? WA_ACTIVE : WA_INACTIVE);
 	}
