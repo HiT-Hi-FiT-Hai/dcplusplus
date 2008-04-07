@@ -12,3 +12,4 @@ natupnp.h
 ./help/compile.log
 ./help/cshelp.txt
 ./.pydevproject
+./doc

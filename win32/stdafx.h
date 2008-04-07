@@ -31,13 +31,13 @@
 #include <smartwin/resources/Accelerator.h>
 #include <smartwin/resources/Pen.h>
 #include <smartwin/widgets/Button.h>
+#include <smartwin/widgets/CheckBox.h>
 #include <smartwin/widgets/ComboBox.h>
 #include <smartwin/widgets/Container.h>
 #include <smartwin/widgets/Label.h>
 #include <smartwin/widgets/ModalDialog.h>
 #include <smartwin/widgets/ModelessDialog.h>
 #include <smartwin/widgets/RadioButton.h>
-#include <smartwin/widgets/Spinner.h>
 #include <smartwin/widgets/Table.h>
 #include <smartwin/widgets/TabSheet.h>
 #include <smartwin/widgets/TabView.h>

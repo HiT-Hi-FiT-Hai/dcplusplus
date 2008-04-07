@@ -70,6 +70,8 @@ public:
 	typedef SmartWin::TablePtr TablePtr;
 	typedef SmartWin::TabSheet TabSheet;
 	typedef SmartWin::TabSheetPtr TabSheetPtr;
+	typedef SmartWin::TextBox TextBox;
+	typedef SmartWin::TextBoxPtr TextBoxPtr;
 	typedef SmartWin::ToolBar ToolBar;
 	typedef SmartWin::ToolBarPtr ToolBarPtr;
 	typedef SmartWin::ToolTip ToolTip;

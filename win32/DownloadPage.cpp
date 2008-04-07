@@ -26,6 +26,8 @@
 #include "WinUtil.h"
 #include "HubListsDlg.h"
 
+#include <smartwin/widgets/Spinner.h>
+
 static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_DOWNLOAD_DIRECTORY, IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR },
 	{ IDC_DOWNLOADDIR, IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR },
@@ -80,11 +82,11 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	attachButton(IDC_BROWSEDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseDir, this));
+	attachChild<Button>(IDC_BROWSEDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseDir, this));
 
-	attachButton(IDC_BROWSETEMPDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseTempDir, this));
+	attachChild<Button>(IDC_BROWSETEMPDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseTempDir, this));
 
-	attachButton(IDC_SETTINGS_LIST_CONFIG)->onClicked(std::tr1::bind(&DownloadPage::handleConfigHubLists, this));
+	attachChild<Button>(IDC_SETTINGS_LIST_CONFIG)->onClicked(std::tr1::bind(&DownloadPage::handleConfigHubLists, this));
 
 	SpinnerPtr spinner = attachChild<Spinner>(IDC_SLOTSSPIN);
 	spinner->setRange(0, 100);

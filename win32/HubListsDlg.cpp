@@ -77,29 +77,29 @@ bool HubListsDlg::handleInitDialog() {
 	hubLists->onDblClicked(std::tr1::bind(&HubListsDlg::handleDoubleClick, this));
 	hubLists->onKeyDown(std::tr1::bind(&HubListsDlg::handleKeyDown, this, _1));
 
-	ButtonPtr button = attachButton(IDC_LIST_ADD);
+	ButtonPtr button = attachChild<Button>(IDC_LIST_ADD);
 	button->setText(T_("&Add"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleAddClicked, this));
 
-	button = attachButton(IDC_LIST_UP);
+	button = attachChild<Button>(IDC_LIST_UP);
 	button->setText(T_("Move &Up"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleMoveUpClicked, this));
 
-	button = attachButton(IDC_LIST_DOWN);
+	button = attachChild<Button>(IDC_LIST_DOWN);
 	button->setText(T_("Move &Down"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleMoveDownClicked, this));
 
-	button = attachButton(IDC_LIST_EDIT);
+	button = attachChild<Button>(IDC_LIST_EDIT);
 	button->setText(T_("&Edit"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleEditClicked, this));
 
-	button = attachButton(IDC_LIST_REMOVE);
+	button = attachChild<Button>(IDC_LIST_REMOVE);
 	button->setText(T_("&Remove"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleRemoveClicked, this));
 
-	attachButton(IDOK)->onClicked(std::tr1::bind(&HubListsDlg::handleOKClicked, this));
+	attachChild<Button>(IDOK)->onClicked(std::tr1::bind(&HubListsDlg::handleOKClicked, this));
 
-	attachButton(IDCANCEL)->onClicked(std::tr1::bind(&HubListsDlg::endDialog, this, IDCANCEL));
+	attachChild<Button>(IDCANCEL)->onClicked(std::tr1::bind(&HubListsDlg::endDialog, this, IDCANCEL));
 
 	centerWindow();
 	

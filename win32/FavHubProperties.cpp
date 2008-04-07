@@ -102,10 +102,10 @@ bool FavHubProperties::handleInitDialog() {
 	userDescription->setTextLimit(35);
 	userDescription->setText(Text::toT(entry->getUserDescription()));
 
-	ButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachChild<Button>(IDOK);
 	button->onClicked(std::tr1::bind(&FavHubProperties::handleOKClicked, this));
 
-	button = attachButton(IDCANCEL);
+	button = attachChild<Button>(IDCANCEL);
 	button->onClicked(std::tr1::bind(&FavHubProperties::endDialog, this, IDCANCEL));
 
 	centerWindow();

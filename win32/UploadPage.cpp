@@ -29,6 +29,8 @@
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 
+#include <smartwin/widgets/Spinner.h>
+
 static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, IDH_SETTINGS_UPLOAD_DIRECTORIES },
 	{ IDC_DIRECTORIES, IDH_SETTINGS_UPLOAD_DIRECTORIES },
@@ -105,7 +107,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	onDragDrop(std::tr1::bind(&UploadPage::handleDragDrop, this, _1));
 
-	CheckBoxPtr shareHidden = attachCheckBox(IDC_SHAREHIDDEN);
+	CheckBoxPtr shareHidden = attachChild<CheckBox>(IDC_SHAREHIDDEN);
 	shareHidden->onClicked(std::tr1::bind(&UploadPage::handleShareHiddenClicked, this, shareHidden));
 
 	attachChild(total, IDC_TOTAL);

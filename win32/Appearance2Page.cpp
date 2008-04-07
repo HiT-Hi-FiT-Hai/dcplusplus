@@ -82,19 +82,19 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	example->setColor(fg, bg);
 	example->setFont(font);
 
-	ButtonPtr button = attachButton(IDC_SELWINCOLOR);
+	ButtonPtr button = attachChild<Button>(IDC_SELWINCOLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
 
-	button = attachButton(IDC_SELTEXT);
+	button = attachChild<Button>(IDC_SELTEXT);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleTextClicked, this));
 
-	button = attachButton(IDC_SETTINGS_UPLOAD_BAR_COLOR);
+	button = attachChild<Button>(IDC_SETTINGS_UPLOAD_BAR_COLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleULClicked, this));
 
-	button = attachButton(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
+	button = attachChild<Button>(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleDLClicked, this));
 
-	button = attachButton(IDC_BROWSE);
+	button = attachChild<Button>(IDC_BROWSE);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBrowseClicked, this));
 
 	attachTextBox(IDC_BEEPFILE);

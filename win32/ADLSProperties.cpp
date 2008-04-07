@@ -105,18 +105,18 @@ bool ADLSProperties::handleInitDialog() {
 	destDir = attachTextBox(IDC_DEST_DIR);
 	destDir->setText(Text::toT(search->destDir));
 
-	active = attachCheckBox(IDC_IS_ACTIVE);
+	active = attachChild<CheckBox>(IDC_IS_ACTIVE);
 	active->setText(T_("Enabled"));
 	active->setChecked(search->isActive);
 
-	autoQueue = attachCheckBox(IDC_AUTOQUEUE);
+	autoQueue = attachChild<CheckBox>(IDC_AUTOQUEUE);
 	autoQueue->setText(T_("Download Matches"));
 	autoQueue->setChecked(search->isAutoQueue);
 
-	ButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachChild<Button>(IDOK);
 	button->onClicked(std::tr1::bind(&ADLSProperties::handleOKClicked, this));
 
-	button = attachButton(IDCANCEL);
+	button = attachChild<Button>(IDCANCEL);
 	button->onClicked(std::tr1::bind(&ADLSProperties::endDialog, this, IDCANCEL));
 
 	centerWindow();

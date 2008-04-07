@@ -60,6 +60,9 @@ typedef TabSheet* TabSheetPtr;
 class TabView;
 typedef TabView* TabViewPtr;
 
+class TextBox;
+typedef TextBox* TextBoxPtr;
+
 class ToolBar;
 typedef ToolBar* ToolBarPtr;
 

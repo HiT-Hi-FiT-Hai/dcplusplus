@@ -70,7 +70,7 @@ bool AboutDlg::handleInitDialog() {
 	}
 	setItemText(IDC_LATEST, T_("Downloading..."));
 
-	attachButton(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
+	attachChild<Button>(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
 
 	centerWindow();
 

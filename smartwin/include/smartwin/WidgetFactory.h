@@ -28,16 +28,12 @@
 #ifndef WidgetFactory_h
 #define WidgetFactory_h
 
-#include "../SmartUtil.h"
-#include "widgets/Button.h"
 #include "widgets/ColorDialog.h"
 #include "widgets/FolderDialog.h"
 #include "widgets/MessageBox.h"
-#include "widgets/CheckBox.h"
 #include "widgets/LoadDialog.h"
 #include "widgets/SaveDialog.h"
 #include "widgets/StatusBar.h"
-#include "widgets/TextBox.h"
 #include "WidgetFactoryPlatformImplementation.h"
 #include "WidgetCreator.h"
 
@@ -78,20 +74,10 @@ class WidgetFactory
 public:
 	// Bring widgets into the namespace of the class that inherits from us
 	
-	typedef SmartWin::Button Button;
-	
-	typedef typename Button::ObjectType ButtonPtr;
-
 	typedef SmartWin::FolderDialog FolderDialog;
 
 	/// MessageBox class and object type.
 	typedef SmartWin::MessageBox MessageBox;
-
-	/// TextBox class type.
-	typedef SmartWin::TextBox TextBox;
-
-	/// TextBox object type.
-	typedef typename TextBox::ObjectType TextBoxPtr;
 
 	/// StatusBar class type.
 	typedef SmartWin::StatusBar< > StatusBar;
@@ -113,12 +99,6 @@ public:
 
 	/// ColorDialog class and object type.
 	typedef SmartWin::ColorDialog ColorDialog;
-
-	/// CheckBox class type.
-	typedef SmartWin::CheckBox CheckBox;
-
-	/// CheckBox object type.
-	typedef typename CheckBox::ObjectType CheckBoxPtr;
 
 	/// Default Constructor creating a factory Widget
 	/** Default Constructor creating a factory Widget without a parent, if you need
@@ -147,37 +127,10 @@ public:
 	  */
 	ColorDialog createColorDialog();
 
-	// TODO: Update, this isn't an automated collected Widget anymore...
-	/// Creates a Message Box and returns a pointer to it.
+	/// Creates a Message Box returns it.
 	/** Use this one to construct a ( stack object ) to show a message box
 	  */
 	MessageBox createMessageBox();
-
-	/// Creates a Check Box and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	CheckBoxPtr createCheckBox( const typename CheckBox::Seed & cs = CheckBox::Seed() );
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a Check Box from the given resource id.
-	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
-	  * with this function.
-	  */
-	CheckBoxPtr attachCheckBox( unsigned id );
-
-	/// Creates a Edit Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	TextBoxPtr createTextBox( const typename TextBox::Seed & cs = TextBox::Seed() );
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a Text Box Control from the given resource id.
-	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
-	  * with this function.
-	  */
-	TextBoxPtr attachTextBox( unsigned id );
 
 	// TODO: Is there any point in attaching a status bar ? ! ?
 	/// Creates a Status Bar and returns a pointer to it.
@@ -190,17 +143,6 @@ public:
 	  */
 	StatusBarSectionsPtr createStatusBarSections( const typename StatusBarSections::Seed & cs = StatusBarSections::Seed() );
 
-	/// Creates a Button Control and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	ButtonPtr createButton( const typename Button::Seed & cs = Button::Seed() );
-
-	/// \ingroup SubclassDialog
-	/// Subclasses a Button Control from the given resource id.
-	/** DON'T delete the returned pointer!!!< br >
-	  * Use e.g. the Dialog Designer to design a dialog and attach the controls with this function.
-	  */
-	ButtonPtr attachButton( unsigned id );
 protected:
 	// Protected to try to avoid stack creation...
 	virtual ~WidgetFactory()
@@ -252,34 +194,6 @@ WidgetFactory< ContainerWidgetType >::createMessageBox()
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::CheckBoxPtr
-	WidgetFactory< ContainerWidgetType >::createCheckBox( const typename CheckBox::Seed & cs )
-{
-	return WidgetCreator< CheckBox >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::CheckBoxPtr
-WidgetFactory< ContainerWidgetType >::attachCheckBox( unsigned id )
-{
-	return WidgetCreator< CheckBox >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::TextBoxPtr
-WidgetFactory< ContainerWidgetType >::createTextBox( const typename TextBox::Seed & cs )
-{
-	return WidgetCreator< TextBox >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::TextBoxPtr
-WidgetFactory< ContainerWidgetType >::attachTextBox( unsigned id )
-{
-	return WidgetCreator< TextBox >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::StatusBarPtr
 WidgetFactory< ContainerWidgetType >::createStatusBar( const typename StatusBar::Seed & cs )
 {
@@ -291,20 +205,6 @@ typename WidgetFactory< ContainerWidgetType >::StatusBarSectionsPtr
 WidgetFactory< ContainerWidgetType >::createStatusBarSections( const typename StatusBarSections::Seed & cs )
 {
 	return WidgetCreator< StatusBarSections >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::ButtonPtr
-	WidgetFactory< ContainerWidgetType >::createButton( const Button::Seed & cs )
-{
-	return WidgetCreator< Button >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::ButtonPtr
-WidgetFactory< ContainerWidgetType >::attachButton( unsigned id )
-{
-	return WidgetCreator< Button >::attach( this, id );
 }
 
 // end namespace SmartWin

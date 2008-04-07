@@ -74,15 +74,15 @@ bool SettingsDialog::initDialog() {
 	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
 
 	{
-		ButtonPtr button = attachButton(IDOK);
+		ButtonPtr button = attachChild<Button>(IDOK);
 		button->setText(T_("OK"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
 
-		button = attachButton(IDCANCEL);
+		button = attachChild<Button>(IDCANCEL);
 		button->setText(T_("Cancel"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::endDialog, this, IDCANCEL));
 
-		button = attachButton(IDHELP);
+		button = attachChild<Button>(IDHELP);
 		button->setText(T_("Help"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this, handle(), IDH_STARTPAGE));
 	}

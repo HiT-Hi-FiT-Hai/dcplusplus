@@ -62,16 +62,16 @@ bool MagnetDlg::handleInitDialog() {
 	doNothing->setText(T_("Do nothing"));
 	//doNothing->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, doNothing));
 
-	//remember = attachCheckBox(IDC_MAGNET_REMEMBER);
+	//remember = attachChild<CheckBox>(IDC_MAGNET_REMEMBER);
 	//remember->setText(T_("Do the same action next time without asking"));
 	::ShowWindow(getItem(IDC_MAGNET_REMEMBER), false);
 
 	::CheckRadioButton(handle(), IDC_MAGNET_1_QUEUE, IDC_MAGNET_3_NOTHING, IDC_MAGNET_2_SEARCH);
 
-	ButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachChild<Button>(IDOK);
 	button->onClicked(std::tr1::bind(&MagnetDlg::handleOKClicked, this));
 
-	button = attachButton(IDCANCEL);
+	button = attachChild<Button>(IDCANCEL);
 	button->onClicked(std::tr1::bind(&MagnetDlg::endDialog, this, IDCANCEL));
 
 	centerWindow();
