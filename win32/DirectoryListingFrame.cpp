@@ -123,8 +123,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	updating(false),
 	searching(false)
 {
-	paned = createVPaned();
-	paned->setRelativePos(0.3);
+	paned = addChild(WidgetVPaned::Seed(0.3));
 
 	{
 		dirs = addChild(WidgetDirs::Seed());

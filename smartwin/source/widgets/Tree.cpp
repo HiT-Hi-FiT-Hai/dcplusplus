@@ -3,15 +3,14 @@
 namespace SmartWin {
 
 Tree::Seed::Seed() :
-	Widget::Seed(WC_TREEVIEW, WS_CHILD | WS_VISIBLE | WS_TABSTOP),
+	BaseType::Seed(WC_TREEVIEW, WS_CHILD | WS_TABSTOP),
 	font(new Font(DefaultGuiFont))
 {
 }
 
 void Tree::create( const Seed & cs )
 {
-	ControlType::create(cs);
-
+	BaseType::create(cs);
 	if(cs.font)
 		setFont( cs.font );
 }

@@ -20,6 +20,7 @@
 * [L#205660] Readded hub column to transfers (thanks mikejj)
 * Fixed file list refresh happening 1 minute later than expected (poy)
 * [L#209277] Fixed crash on bad translation
+* More controls now use the font defined in settings (poy)
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)

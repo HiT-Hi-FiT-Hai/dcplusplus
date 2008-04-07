@@ -11,7 +11,7 @@ namespace SmartWin {
 bool Table::ComCtl6 = false;
 
 Table::Seed::Seed() : 
-	BaseType::Seed(WC_LISTVIEW, WS_CHILD | WS_TABSTOP | LVS_REPORT | LVS_EDITLABELS),
+	BaseType::Seed(WC_LISTVIEW, WS_CHILD | WS_TABSTOP | LVS_REPORT),
 	font(new Font(DefaultGuiFont)),
 	lvStyle(0)
 {

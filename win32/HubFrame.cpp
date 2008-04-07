@@ -88,12 +88,11 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	inTabMenu(false),
 	inTabComplete(false)
 {
-	paned = createVPaned();
-	paned->setRelativePos(0.7);
+	paned = addChild(WidgetVPaned::Seed(0.7));
 
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
+		cs.style |= WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		message = addChild(cs);
 		message->setHelpId(IDH_HUB_MESSAGE);
 		addWidget(message, true, false);
@@ -105,7 +104,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
+		cs.style |= ES_AUTOHSCROLL;
 		filter = addChild(cs);
 		filter->setHelpId(IDH_HUB_FILTER);
 		addWidget(filter);
@@ -127,7 +126,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+		cs.style |= WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		chat = addChild(cs);
 		chat->setHelpId(IDH_HUB_CHAT);
 		chat->setTextLimit(0);

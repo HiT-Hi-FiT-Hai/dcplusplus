@@ -65,8 +65,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	queueItems(0),
 	fileLists(0)
 {		
-	paned = addChild(WidgetVPaned::Seed());
-	paned->setRelativePos(0.3);
+	paned = addChild(WidgetVPaned::Seed(0.3));
 
 	{
 		dirs = addChild(WidgetDirs::Seed());
@@ -97,8 +96,8 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 	
 	{
-		CheckBox::Seed cs;
-		cs.caption = _T("+/-");
+		CheckBox::Seed cs(_T("+/-"));
+		cs.style &= ~WS_TABSTOP;
 		showTree = addChild(cs);
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
 		showTree->onClicked(std::tr1::bind(&QueueFrame::handleShowTreeClicked, this));

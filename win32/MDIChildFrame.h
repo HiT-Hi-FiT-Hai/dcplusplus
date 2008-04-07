@@ -151,6 +151,11 @@ private:
 			text->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 
+	// don't handle WM_CTLCOLOR* for Buttons or Button-derived controls
+	void addColor(SmartWin::Button* widget) {
+		// empty on purpose
+	}
+
 	template<typename A>
 	void addColor(SmartWin::AspectColor<A>* widget) {
 		widget->setColor(WinUtil::textColor, WinUtil::bgColor);

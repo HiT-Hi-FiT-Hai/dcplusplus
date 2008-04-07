@@ -3,7 +3,7 @@
 namespace SmartWin {
 
 ComboBox::Seed::Seed() : 
-	BaseType::Seed(WC_COMBOBOX, WS_CHILD | WS_VSCROLL | CBS_DROPDOWNLIST | CBS_AUTOHSCROLL),
+	BaseType::Seed(WC_COMBOBOX, WS_CHILD | WS_TABSTOP | WS_VSCROLL),
 	font(new Font(DefaultGuiFont)),
 	extended(true)
 {

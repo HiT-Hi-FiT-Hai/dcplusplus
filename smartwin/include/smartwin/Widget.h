@@ -177,7 +177,6 @@ protected:
 			const Rectangle& location_ = letTheSystemDecide, HMENU menuHandle_ = NULL)
 			: className(className_), caption(caption_), style( style_ ), exStyle( exStyle_ ), location( location_ ), menuHandle( menuHandle_ )
 		{}
-
 	};
 	
 

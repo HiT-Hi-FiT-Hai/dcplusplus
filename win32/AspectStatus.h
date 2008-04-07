@@ -19,6 +19,8 @@
 #ifndef DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 #define DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 
+#include "WinUtil.h"
+
 template<class WidgetType>
 class AspectStatus {
 	typedef AspectStatus<WidgetType> ThisType;
@@ -36,7 +38,9 @@ protected:
 	}
 
 	void initStatus(bool sizeGrip = false) {
-		status = static_cast<WidgetType*>(this)->addChild(StatusBarSections::Seed(sizeGrip));
+		StatusBarSections::Seed cs(sizeGrip);
+		cs.font = WinUtil::font;
+		status = static_cast<WidgetType*>(this)->addChild(cs);
 
 		statusTip = static_cast<WidgetType*>(this)->addChild(SmartWin::ToolTip::Seed());
 		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));

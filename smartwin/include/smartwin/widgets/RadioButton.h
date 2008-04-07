@@ -73,8 +73,6 @@ public:
 	  */
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;
-		
-		FontPtr font;
 
 		/// Fills with default parameters
 		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
@@ -114,7 +112,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 inline RadioButton::RadioButton( Widget * parent )
-	: ButtonType( parent )
+	: BaseType( parent )
 {
 }
 

@@ -76,8 +76,11 @@ class TextBoxBase :
 {
 	friend class WidgetCreator< TextBoxBase >;
 	friend class AspectUpdate<TextBoxBase>;
-	
+
 	typedef Dispatchers::VoidVoid<> Dispatcher;
+
+protected:
+	typedef CommonControl BaseType;
 
 public:
 	/// Sets the current selection of the Edit Control
@@ -367,7 +370,7 @@ inline bool TextBoxBase::getModify( ) {
 }
 
 inline TextBoxBase::TextBoxBase( Widget * parent )
-	: ControlType( parent )
+	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );

@@ -170,8 +170,7 @@ void MainWindow::initWindow() {
 	
 	setHelpId(IDH_STARTPAGE);
 
-	paned = addChild(WidgetHPaned::Seed());
-	paned->setRelativePos(0.7);
+	paned = addChild(WidgetHPaned::Seed(0.7));
 }
 
 void MainWindow::initMenu() {

@@ -247,6 +247,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 	{
 		CheckBox::Seed cs(_T("+/-"));
+		cs.style &= ~WS_TABSTOP;
 		showUI = addChild(cs);
 		showUI->setChecked(bShowUI);
 

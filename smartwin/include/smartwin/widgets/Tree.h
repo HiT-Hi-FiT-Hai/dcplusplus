@@ -106,15 +106,16 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 
+	typedef CommonControl BaseType;
+
 	/// Seed class
 	 /** This class contains all of the values needed to create the widget. It also
 	   * knows the type of the class whose seed values it contains. Every widget
 	   * should define one of these.
 	   */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
 		FontPtr font;
 
 		/// Fills with default parameters
@@ -413,7 +414,7 @@ inline size_t Tree::countSelectedImpl() const {
 }
 
 inline Tree::Tree( Widget * parent )
-	: ControlType( parent )
+	: BaseType( parent )
 {
 }
 

@@ -120,7 +120,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
+		cs.style |= ES_AUTOHSCROLL;
 		filter = addChild(cs);
 		filter->setHelpId(IDH_PUBLIC_HUBS_FILTER);
 		addWidget(filter);
@@ -152,14 +152,12 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		cs.caption = T_("&Configure");
 		configure = addChild(cs);
 		configure->setHelpId(IDH_PUBLIC_HUBS_LISTS);
-		configure->setFont(WinUtil::font);
 		addWidget(configure);
 		configure->onClicked(std::tr1::bind(&PublicHubsFrame::handleConfigure, this));
 		
 		cs.caption = T_("&Refresh");
 		refresh = addChild(cs);
 		refresh->setHelpId(IDH_PUBLIC_HUBS_REFRESH);
-		refresh->setFont(WinUtil::font);
 		addWidget(refresh);
 		refresh->onClicked(std::tr1::bind(&PublicHubsFrame::handleRefresh, this));
 
@@ -169,12 +167,10 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		cs.caption = T_("F&ilter");
 		filterDesc = addChild(cs);
 		filterDesc->setHelpId(IDH_PUBLIC_HUBS_FILTER);
-		filterDesc->setFont(WinUtil::font);
 
 		cs.caption = T_("Configured Public Hub Lists");
 		lists = addChild(cs);
 		lists->setHelpId(IDH_PUBLIC_HUBS_LISTS);
-		lists->setFont(WinUtil::font);
 	}
 
 	initStatus();

@@ -40,7 +40,9 @@ public:
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;
 
-		explicit Seed();
+		double pos;
+
+		explicit Seed(double pos_ = 0.5);
 	};
 
 	void setRelativePos(double pos_) {
@@ -120,7 +122,9 @@ SmartWin::WindowClass WidgetPaned<horizontal>::windowClass(horizontal ? _T("Widg
 	SmartWin::IconPtr(), SmartWin::IconPtr(), LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE ));
 
 template< bool horizontal >
-WidgetPaned< horizontal >::Seed::Seed() : BaseType::Seed(windowClass.getClassName(), WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS)
+WidgetPaned< horizontal >::Seed::Seed(double pos_) :
+	BaseType::Seed(windowClass.getClassName(), WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS),
+	pos(pos_)
 {
 }
 
@@ -136,6 +140,7 @@ WidgetPaned< horizontal >::WidgetPaned( SmartWin::Widget * parent )
 template< bool horizontal >
 void WidgetPaned< horizontal >::create( const Seed & cs )
 {
+	pos = cs.pos;
 	BaseType::create(cs);
 	
 	onLeftMouseDown(std::tr1::bind(&ThisType::handleLButtonDown, this, _1));

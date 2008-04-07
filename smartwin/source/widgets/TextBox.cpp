@@ -9,7 +9,7 @@ TextBox::Seed::Seed(const SmartUtil::tstring& caption) :
 }
 
 void TextBox::create( const Seed & cs ) {
-	ControlType::create(cs);
+	BaseType::create(cs);
 	if(cs.font)
 		setFont( cs.font );
 }
