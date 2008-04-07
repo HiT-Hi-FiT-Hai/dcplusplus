@@ -38,7 +38,7 @@ protected:
 	void initStatus(bool sizeGrip = false) {
 		status = static_cast<WidgetType*>(this)->addChild(StatusBarSections::Seed(sizeGrip));
 
-		statusTip = static_cast<WidgetType*>(this)->createToolTip();
+		statusTip = static_cast<WidgetType*>(this)->addChild(SmartWin::ToolTip::Seed());
 		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));
 	}
 	

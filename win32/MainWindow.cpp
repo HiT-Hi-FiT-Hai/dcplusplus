@@ -145,16 +145,15 @@ MainWindow::MainWindow() :
 }
 
 void MainWindow::initWindow() {
-	
 	// Create main window
 	dcdebug("initWindow\n");
-	Seed cs;
 
-	int pos_x= SETTING(MAIN_WINDOW_POS_X);
-	int pos_y= SETTING(MAIN_WINDOW_POS_Y);
-	int size_x= SETTING(MAIN_WINDOW_SIZE_X);
-	int size_y= SETTING(MAIN_WINDOW_SIZE_Y);
+	Seed cs(_T(APPNAME) _T(" ") _T(VERSIONSTRING));
 
+	int pos_x = SETTING(MAIN_WINDOW_POS_X);
+	int pos_y = SETTING(MAIN_WINDOW_POS_Y);
+	int size_x = SETTING(MAIN_WINDOW_SIZE_X);
+	int size_y = SETTING(MAIN_WINDOW_SIZE_Y);
 	if ( (pos_x != static_cast<int>(CW_USEDEFAULT)) &&(pos_y != static_cast<int>(CW_USEDEFAULT))&&(size_x
 	    != static_cast<int>(CW_USEDEFAULT))&&(size_y != static_cast<int>(CW_USEDEFAULT))&&(pos_x > 0&& pos_y > 0)
 	    &&(size_x > 10&& size_y > 10)) {
@@ -165,15 +164,13 @@ void MainWindow::initWindow() {
 	if (ResourceManager::getInstance()->isRTL())
 		cs.exStyle |= WS_EX_RTLREADING;
 
-	// Set window name
-	cs.caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
 	cs.icon = SmartWin::IconPtr(new SmartWin::Icon(IDR_MAINFRAME));
 	cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 	create(cs);
 	
 	setHelpId(IDH_STARTPAGE);
 
-	paned = createHPaned();
+	paned = addChild(WidgetHPaned::Seed());
 	paned->setRelativePos(0.7);
 }
 
@@ -265,7 +262,7 @@ void MainWindow::initToolbar() {
 
 	ToolBar::Seed cs;
 	cs.style |= TBSTYLE_FLAT;
-	toolbar = createToolbar(cs);
+	toolbar = addChild(cs);
 	{
 		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
 		SmartWin::Bitmap bmp(IDB_TOOLBAR20);

@@ -3,7 +3,7 @@
 namespace SmartWin {
 
 ToolTip::Seed::Seed() : 
-	Widget::Seed(TOOLTIPS_CLASS, WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX, WS_EX_TRANSPARENT)
+	BaseType::Seed(TOOLTIPS_CLASS, WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX, WS_EX_TRANSPARENT)
 {
 }
 
@@ -11,7 +11,7 @@ void ToolTip::create( const Seed & cs )
 {
 	xAssert((cs.style & WS_POPUP) == WS_POPUP, _T("Widget must have WS_POPUP style"));
 
-	PolicyType::create(cs);
+	BaseType::create(cs);
 }
 
 void ToolTip::relayEvent(const MSG& msg) {

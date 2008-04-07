@@ -3,13 +3,13 @@
 namespace SmartWin {
 
 ToolBar::Seed::Seed() :
-	Widget::Seed(TOOLBARCLASSNAME, WS_CHILD | WS_VISIBLE | TBSTYLE_LIST | TBSTYLE_TOOLTIPS)
+	BaseType::Seed(TOOLBARCLASSNAME, WS_CHILD | TBSTYLE_LIST | TBSTYLE_TOOLTIPS)
 {
 }
 
 void ToolBar::create( const Seed & cs )
 {
-	ControlType::create(cs);
+	BaseType::create(cs);
 
 	this->sendMessage(TB_SETEXTENDEDSTYLE, 0, TBSTYLE_EX_MIXEDBUTTONS);
 

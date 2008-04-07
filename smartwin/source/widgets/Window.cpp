@@ -2,9 +2,7 @@
 
 namespace SmartWin {
 
-// TODO add caption
-Window::Seed::Seed() : BaseType::Seed(SmartUtil::tstring(), 0, 0) {
-	
+Window::Seed::Seed(const SmartUtil::tstring& caption) : BaseType::Seed(caption, 0, 0) {
 }
 
 void Window::create(const Seed& cs) {

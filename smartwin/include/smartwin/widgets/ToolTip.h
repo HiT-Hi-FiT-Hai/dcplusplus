@@ -46,10 +46,11 @@ public:
 	/// Object type
 	typedef ThisType * ObjectType;
 
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	typedef MessageMap< Policies::Subclassed > BaseType;
+
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
 		/// Fills with default parameters
 		Seed();
 	};
@@ -78,7 +79,7 @@ protected:
 };
 
 inline ToolTip::ToolTip( Widget * parent )
-	: PolicyType( parent )
+	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a ToolTip without a parent..." ) );

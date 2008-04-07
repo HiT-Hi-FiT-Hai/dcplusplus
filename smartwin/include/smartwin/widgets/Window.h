@@ -85,11 +85,10 @@ public:
 	  * should define one of these.
 	  */
 	struct Seed : public BaseType::Seed {
-	public:
-		typedef Window::ThisType WidgetType;
+		typedef ThisType WidgetType;
 
 		/// Fills with default parameters
-		Seed();
+		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
 	};
 
 	/// Actually creates the window
@@ -99,7 +98,7 @@ public:
       * The simple version "create()" uses a default Seed for the window attributes.
 	  * The seed is not taken a constant because the class name will be generated at registration.
 	  */
-	virtual void create( const Seed& cs = Seed() );
+	void create( const Seed& cs = Seed() );
 
 	// TODO: Check up if the CREATESTRUCT * actualy IS modyfiable...!!
 	/// Setting the event handler for the "create" event

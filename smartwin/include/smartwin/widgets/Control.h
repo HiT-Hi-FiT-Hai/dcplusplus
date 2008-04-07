@@ -57,7 +57,7 @@ Control<Policy>::Control(Widget* parent) : MessageMap<Policy>(parent) {
 
 template<typename Policy>
 Control<Policy>::Seed::Seed(LPCTSTR className, DWORD style, DWORD exStyle, const SmartUtil::tstring& caption) : 
-	BaseType::Seed(NULL, style | WS_VISIBLE, exStyle, caption)
+	BaseType::Seed(className, style | WS_VISIBLE, exStyle, caption)
 {
 	
 }

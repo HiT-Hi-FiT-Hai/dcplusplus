@@ -59,15 +59,13 @@ class WidgetCreator;
   * to view the log of URL's you have been to etc...   
   */
 class ToolBar :
-public CommonControl,
+	public CommonControl,
 	// Aspects
 	public AspectFocus< ToolBar >,
 	public AspectFont< ToolBar >
 {
 	typedef Dispatchers::VoidVoid<> Dispatcher;
-	typedef SmartWin::AspectSizable< ToolBar > AspectSizable;
 	friend class WidgetCreator< ToolBar >;
-	friend class SmartWin::AspectSizable<ToolBar>;
 public:
 	/// Class type
 	typedef ToolBar ThisType;
@@ -75,15 +73,16 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 
+	typedef CommonControl BaseType;
+
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.       
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
 		/// Fills with default parameters
 		Seed();
 	};
@@ -293,7 +292,7 @@ inline bool ToolBar::getButtonChecked( unsigned int id )
 }
 
 inline ToolBar::ToolBar( SmartWin::Widget * parent )
-	: ControlType( parent )
+	: BaseType( parent )
 {
 }
 

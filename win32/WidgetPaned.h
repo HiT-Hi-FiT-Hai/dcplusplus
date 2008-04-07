@@ -34,15 +34,14 @@ public:
 	/// Class type
 	typedef WidgetPaned< horizontal > ThisType;
 
-	typedef SmartWin::MessageMap< SmartWin::Policies::Normal > PolicyType;
-	
 	/// Object type
 	typedef ThisType * ObjectType;
 
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	typedef SmartWin::MessageMap< SmartWin::Policies::Normal > BaseType;
+
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
 		explicit Seed();
 	};
 
@@ -123,13 +122,13 @@ SmartWin::WindowClass WidgetPaned<horizontal>::windowClass(horizontal ? _T("Widg
 	SmartWin::IconPtr(), SmartWin::IconPtr(), LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE ));
 
 template< bool horizontal >
-WidgetPaned< horizontal >::Seed::Seed() : SmartWin::Widget::Seed(windowClass.getClassName(), WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS)
+WidgetPaned< horizontal >::Seed::Seed() : BaseType::Seed(windowClass.getClassName(), WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS)
 {
 }
 
 template< bool horizontal >
 WidgetPaned< horizontal >::WidgetPaned( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: BaseType( parent )
 	, pos(0.5)
 	, moving(false)
 {
@@ -139,7 +138,7 @@ WidgetPaned< horizontal >::WidgetPaned( SmartWin::Widget * parent )
 template< bool horizontal >
 void WidgetPaned< horizontal >::create( const Seed & cs )
 {
-	PolicyType::create(cs);
+	BaseType::create(cs);
 	
 	onLeftMouseDown(std::tr1::bind(&ThisType::handleLButtonDown, this, _1));
 	onMouseMove(std::tr1::bind(&ThisType::handleMouseMove, this, _1));
