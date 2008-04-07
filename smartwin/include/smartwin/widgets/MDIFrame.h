@@ -65,12 +65,10 @@ public:
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public BaseType::Seed
+	struct Seed : public BaseType::Seed
 	{
-	public:
 		/// Fills with default parameters
-		Seed();
+		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
 	};
 
 	/// Actually creates the window

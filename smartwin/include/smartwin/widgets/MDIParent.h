@@ -64,14 +64,8 @@ class WidgetCreator;
   * MDIChild 
   */
 class MDIParent :
-	public MessageMap< Policies::Subclassed >,
+	public Control< Policies::Subclassed >
 
-	// Aspects
-	public AspectSizable< MDIParent >,
-	public AspectVisible< MDIParent >,
-	public AspectEnabled< MDIParent >,
-	public AspectFocus< MDIParent >,
-	public AspectRaw< MDIParent >
 {
 	friend class WidgetCreator< MDIParent >;
 public:
@@ -80,16 +74,15 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+	
+	typedef Control<Policies::Subclassed> BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.       
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
 		/** 
 		 * First child id for mdi menu, must be different from any other main menu id. 
 		 * Also, the menuHandle parameter of cs should point to the menu that will receive 
@@ -143,7 +136,7 @@ public:
 	MDIFrame* getParent() { return static_cast<MDIFrame*>(PolicyType::getParent()); }
 protected:
 	/// Constructor Taking pointer to parent
-	explicit MDIParent( SmartWin::Widget * parent );
+	explicit MDIParent( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use WidgetFactory class which is friend
 	virtual ~MDIParent()
@@ -155,10 +148,10 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 inline MDIParent::MDIParent( Widget * parent )
-	: PolicyType( parent )
+	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
+	xAssert( parent, _T( "Can't have a MDIParent without a parent..." ) );
 }
 
 // end namespace SmartWin

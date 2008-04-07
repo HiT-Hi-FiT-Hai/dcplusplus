@@ -52,13 +52,12 @@ public:
 		HCURSOR cursor;
 
 		/// Fills with default parameters
-		Seed(DWORD style);
+		Seed(const SmartUtil::tstring& caption, DWORD style, DWORD exStyle);
 	};
 
-
-	template<typename ChildSeed>
-	typename ChildSeed::ObjectType add(const ChildSeed& seed) {
-		return WidgetCreator<typename ChildSeed::WidgetType>::create(this, seed);
+	template<typename SeedType>
+	typename SeedType::WidgetType::ObjectType addChild(const SeedType& seed) {
+		return WidgetCreator<typename SeedType::WidgetType>::create(this, seed);
 	}
 
 	virtual void create(const Seed& cs);
@@ -73,8 +72,8 @@ private:
 };
 
 template<typename Policy>
-Composite<Policy>::Seed::Seed(DWORD style) : 
-	BaseType::Seed(NULL, style | WS_CLIPCHILDREN),
+Composite<Policy>::Seed::Seed(const SmartUtil::tstring& caption, DWORD style, DWORD exStyle) : 
+	BaseType::Seed(NULL, style | WS_CLIPCHILDREN, 0, caption),
 	background(( HBRUSH )( COLOR_APPWORKSPACE + 1 )),
 	menuName(NULL),
 	cursor(NULL)

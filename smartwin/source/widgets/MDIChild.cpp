@@ -3,15 +3,13 @@
 namespace SmartWin {
 
 MDIChild::Seed::Seed(const SmartUtil::tstring& caption) :
-	Widget::Seed(NULL, WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_MDICHILD, caption),
-	background((HBRUSH)(COLOR_WINDOW + 1)),
+	BaseType::Seed(caption, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS, WS_EX_MDICHILD),
 	activate(true)
 {
 }
 
-void MDIChild::createMDIChild( Seed cs )
-{
-	windowClass.reset(new WindowClass(WindowClass::getNewClassName(this), &ThisType::wndProc, NULL, cs.background, cs.icon, cs.smallIcon));
+void MDIChild::createMDIChild( const Seed& cs ) {
+	windowClass.reset(new WindowClass(WindowClass::getNewClassName(this), &ThisType::wndProc, NULL, cs.background, cs.icon, cs.smallIcon, cs.cursor));
 	
 	getParent()->sendMessage(WM_SETREDRAW, FALSE);
 	HWND active = (HWND)(cs.activate ? NULL : getParent()->sendMessage(WM_MDIGETACTIVE));

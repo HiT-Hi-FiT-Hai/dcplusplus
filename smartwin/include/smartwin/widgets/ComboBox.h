@@ -82,16 +82,17 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
+	
+	typedef CommonControl BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+		
 		FontPtr font;
 
 		/// Use extended ui
@@ -100,11 +101,6 @@ public:
 		/// Fills with default parameters
 		Seed();
 	};
-
-	/// Return the selected value of the ComboBox
-	/** If no item is actually selected the return value is "".
-	  */
-	SmartUtil::tstring getSelectedValue();
 
 	/// Appends a value to the ComboBox.
 	/** The return value is the index of the new item appended.
@@ -185,14 +181,6 @@ inline void ComboBox::setSelectedImpl( int idx ) {
 	ComboBox_SetCurSel( handle(), idx );
 }
 
-inline SmartUtil::tstring ComboBox::getSelectedValue()
-{
-	int txtLength = ::GetWindowTextLength( handle() );
-	SmartUtil::tstring retVal(txtLength, '\0');
-	::GetWindowText( handle(), &retVal[0], txtLength );
-	return retVal;
-}
-
 inline void ComboBox::clearImpl()
 {
 	ComboBox_ResetContent( handle() );
@@ -229,17 +217,8 @@ inline size_t ComboBox::sizeImpl() const {
 	return static_cast<size_t>(ComboBox_GetCount( handle() )); // Number of items present.
 }
 
-inline SmartUtil::tstring ComboBox::getValue( int index )
-{
-	// Uses CB_GETLBTEXTLEN and CB_GETLBTEXT
-	int txtLength = ComboBox_GetLBTextLen( handle(), index );
-	SmartUtil::tstring retVal(txtLength, '\0');
-	ComboBox_GetLBText( handle(), index, &retVal[0] );
-	return retVal;
-}
-
 inline ComboBox::ComboBox( Widget * parent )
-	: ControlType( parent )
+	: BaseType( parent )
 {
 }
 

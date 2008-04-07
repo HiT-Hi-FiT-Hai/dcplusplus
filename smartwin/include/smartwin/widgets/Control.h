@@ -38,26 +38,26 @@ class Control:
 public:
 	typedef MessageMap<Policy> BaseType;
 
+protected:
 	struct Seed : public BaseType::Seed {
-		Seed(LPCTSTR className, DWORD style);
+		Seed(LPCTSTR className, DWORD style, DWORD exStyle = 0, const SmartUtil::tstring& caption = SmartUtil::tstring());
 	};
 
-protected:
 	typedef Control<Policy> ControlType;
 
 	Control(Widget* parent);
 };
+
+typedef Control<Policies::Subclassed> CommonControl;
 
 template<typename Policy>
 Control<Policy>::Control(Widget* parent) : MessageMap<Policy>(parent) {
 	
 }
 
-typedef Control<Policies::Subclassed> CommonControl;
-
 template<typename Policy>
-Control<Policy>::Seed::Seed(LPCTSTR className, DWORD style) : 
-	BaseType::Seed(NULL, style | WS_VISIBLE)
+Control<Policy>::Seed::Seed(LPCTSTR className, DWORD style, DWORD exStyle, const SmartUtil::tstring& caption) : 
+	BaseType::Seed(NULL, style | WS_VISIBLE, exStyle, caption)
 {
 	
 }

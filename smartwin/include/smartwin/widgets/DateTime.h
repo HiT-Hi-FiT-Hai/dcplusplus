@@ -39,7 +39,6 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-
 // Forward declaring friends
 template< class WidgetType >
 class WidgetCreator;
@@ -84,16 +83,17 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
+	
+	typedef CommonControl BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.       
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+		
 		FontPtr font;
 
 		SmartUtil::tstring format;
@@ -117,9 +117,7 @@ public:
 	  * when the DateTime date value is changed. 
 	  */
 	void onDateTimeChanged(const Dispatcher::F& f) {
-		addCallback(
-			Message( WM_NOTIFY, DTN_DATETIMECHANGE ), Dispatcher(f)
-		);
+		addCallback(Message( WM_NOTIFY, DTN_DATETIMECHANGE ), Dispatcher(f));
 	}
 
 	/// Retrieves the time value of the DateTimePicker control
@@ -221,7 +219,7 @@ inline Message DateTime::getClickMessage() {
 	return Message( WM_NOTIFY, DTN_DROPDOWN );
 }
 
-inline SYSTEMTIME DateTime::getDateTime()
+inline SYSTEMTIME DateTime::getDateTime() 
 {
 	SYSTEMTIME st;
 	DateTime_GetSystemtime( this->handle(), & st );
@@ -238,8 +236,8 @@ inline void DateTime::setFormat( const SmartUtil::tstring & format )
 	DateTime_SetFormat( this->handle(), format.c_str() );
 }
 
-inline DateTime::DateTime( SmartWin::Widget * parent )
-	: ControlType( parent )
+inline DateTime::DateTime( Widget* parent )
+	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a TextBox without a parent..." ) );

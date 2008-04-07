@@ -98,12 +98,6 @@ public:
 	  */
 	void addText( const SmartUtil::tstring & txt );
 
-	/// Appends the text in the text box so that endl causes a new line.
-	/** Just the same as addText except that CR are expanded to LF CR
-	  * Replaces \n with \r\n so that Windows textbox understands "endl"
-	  */
-	void addTextLines( const SmartUtil::tstring & txt );
-
 	/// Replaces the currently selected text in the text box with the given text parameter
 	/** If canUndo is true this operation is stacked into the undo que ( can be
 	  * undone ), else this operation cannot be undone. <br>
@@ -206,14 +200,13 @@ public:
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+		
 		FontPtr font;
 
 		/// Fills with default parameters
-		Seed();
+		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
 	};
 	
 	/// Adds (or removes) the numbers property
@@ -302,12 +295,6 @@ inline void TextBoxBase::addText( const SmartUtil::tstring & addtxt )
 {
 	setSelection( ( long ) this->getText().size() );
 	replaceSelection( addtxt ); 
-}
-
-inline void TextBoxBase::addTextLines( const SmartUtil::tstring & addtxt )
-{
-	setSelection( ( long ) this->getText().size() );
-	replaceSelection( this->replaceEndlWithLfCr( addtxt ) ); 
 }
 
 inline long TextBoxBase::findText( const SmartUtil::tstring & txt, unsigned offset ) const

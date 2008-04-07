@@ -38,16 +38,6 @@
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
-#include "Button.h"
-#include "CheckBox.h"
-#include "ComboBox.h"
-#include "DateTime.h"
-#include "GroupBox.h"
-#include "WidgetMenu.h"
-#include "Spinner.h"
-#include "TextBox.h"
-#include "Tree.h"
-#include "RadioButton.h"
 
 namespace SmartWin
 {
@@ -66,7 +56,9 @@ class WidgetCreator;
   * of buttons, one for going "home", one to stop rendering of the  current page, one 
   * to view the log of URL's you have been to etc... In addition to serving like a 
   * dockable toolbar ( see ToolBar ) a Coolbar  Widget can also contain more 
-  * complex Widgets lke for instance a ComboBox, a TextBox and so on...          
+  * complex Widgets lke for instance a ComboBox, a TextBox and so on...   
+  * 
+  * @todo This class needs some love...       
   */
 class CoolBar :
 	public MessageMap< Policies::Subclassed >,
@@ -99,49 +91,20 @@ public:
 	typedef CoolBar ThisType;
 
 	/// Object type
-	typedef ThisType * ObjectType;
+	typedef ThisType* ObjectType;
+	
+	typedef MessageMap<Policies::Subclassed> BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+		
 		Seed();
 	};
-
-	/// ComboBox object type.
-	typedef ComboBox::ObjectType ComboBoxPtr;
-
-	/// TextBox object type.
-	typedef TextBox::ObjectType TextBoxPtr;
-
-	/// Button object type.
-	typedef Button::ObjectType ButtonPtr;
-
-	/// Button object type.
-	typedef Tree::ObjectType TreePtr;
-
-	/// CheckBox object type.
-	typedef CheckBox::ObjectType CheckBoxPtr;
-
-	/// Spinner object type.
-	typedef Spinner::ObjectType SpinnerPtr;
-
-	/// GroupBox object type.
-	typedef GroupBox::ObjectType GroupBoxPtr;
-
-	/// RadioButton object type.
-	typedef RadioButton::ObjectType RadioButtonPtr;
-
-	/// DateTimePicker object type.
-	typedef DateTime::ObjectType DateTimePtr;
-
-	/// Menu object type.
-	typedef WidgetMenu::ObjectType WidgetMenuPtr;
 
 	/// Actually creates the Coolbar
 	/** You should call WidgetFactory::createCoolbar if you instantiate class
@@ -149,55 +112,6 @@ public:
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
 	void create( const Seed & cs = Seed() );
-
-	RadioButtonPtr sow( GroupBoxPtr & parent, const RadioButton::Seed & cs )
-	{
-#ifdef PORT_ME
-		RadioButtonPtr retVal ( WidgetCreator< RadioButton >::create( parent, internal_::getTypedParentOrThrow < EventHandlerClass * >( this ), cs ) );
-		retVal->setBounds( 0, 0, cs.location.width(), cs.location.size.y );
-		parent->addChild( retVal );
-		return retVal;
-#endif
-		return NULL;
-	}
-
-	/// Creates a Widget using its CreationalInfo
-	/** Adds up the created widget into a new band in the Coolbar control
-	  */
-	template< class A_Seed >
-	typename A_Seed::WidgetType::ObjectType sow( const /*typename*/ A_Seed & cs, const SmartUtil::tstring & label = _T("") )
-	{
-		typename A_Seed::WidgetType::ObjectType retVal ( WidgetCreator< typename A_Seed::WidgetType >::create( this, cs ) );
-		retVal->setBounds( 0, 0, cs.location.width(), cs.location.size.y );
-		this->addChild( retVal, cs.location.width(), cs.location.size.y, label );
-		return retVal;
-	}
-
-	//TODO: update this help
-	/// Creates a ComboBox Widget inside the Coolbar
-	/** The returned ComboBox is roughly the same object type as a "normal"
-	  * ComboBox, though size and position doesn't count since the Coolbar will
-	  * control these properties itself. Apart from that the combobox has the same
-	  * properties as a normal ComboBox. The width and the openedHeight
-	  * properties is the width of the combobox and the height of the dropped down
-	  * viewable area of the ComboBox. The bandHeight is the height of the actual
-	  * band Note that the rect part of the CreationalStruct passed is more or less
-	  * ignored...
-	  */
-
-	//template< >
-	//typename CoolBar< EventHandlerClass >::ComboBoxPtr // Bug in VC++7.1 Koenig Lookup forces us to give full type of return value...
-	//sow< typename CoolBar< EventHandlerClass >::ComboBox::Seed >
-	// ( const typename CoolBar< EventHandlerClass >::Seed & cs, const SmartUtil::tstring & label = _T("") )
-	//{
-	// typename CoolBar< EventHandlerClass >::ObjectType retVal (WidgetCreator< typename CoolBar< EventHandlerClass > >::create( this, cs ));
-	// retVal->setBounds( 0, 0, cs.rect.width(), cs.rect.size.y );
-	// //TODO: use something like cs.itsOpenedHeight
-	// this->addChild( retVal, cs.rect.width(), cs.rect.size.y, label );
-	// return retVal;
-	//}
-
-	//TODO: Menu specialization
 
 	/// Refreshes the Coolbar
 	/** Call this one after the container widget has been resized to make sure the
@@ -223,8 +137,8 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline CoolBar::CoolBar( SmartWin::Widget * parent )
-	: PolicyType( parent )
+inline CoolBar::CoolBar( Widget * parent )
+	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );

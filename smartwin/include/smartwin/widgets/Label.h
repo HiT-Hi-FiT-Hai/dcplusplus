@@ -39,8 +39,7 @@
 #include "../resources/Bitmap.h"
 #include "Control.h"
 
-namespace SmartWin
-{
+namespace SmartWin {
 // begin namespace SmartWin
 
 // Forward declaring friends
@@ -81,15 +80,16 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 	
+	typedef CommonControl BaseType;
+	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+		
 		FontPtr font;
 
 		/// Fills with default parameters
@@ -121,8 +121,6 @@ protected:
 private:
 	BitmapPtr itsBitmap;
 
-	void setBitmap( HBITMAP bitmap );
-
 	// Contract needed by AspectClickable Aspect class
 	static Message getClickMessage();
 
@@ -139,20 +137,14 @@ inline Message Label::getDblClickMessage() {
 }
 
 inline Label::Label( Widget * parent )
-	: ControlType( parent )
+	: BaseType( parent )
 {
 }
 
-inline void Label::setBitmap( HBITMAP bitmap )
-{
-	this->addRemoveStyle( SS_BITMAP, true );
-	this->sendMessage(STM_SETIMAGE, ( WPARAM ) IMAGE_BITMAP, ( LPARAM ) bitmap );
-}
-
-inline void Label::setBitmap( const BitmapPtr& bitmap )
-{
-	this->setBitmap( bitmap->handle() );
+inline void Label::setBitmap( const BitmapPtr& bitmap ) {
 	itsBitmap = bitmap;
+	addRemoveStyle( SS_BITMAP, true );
+	sendMessage(STM_SETIMAGE, ( WPARAM ) IMAGE_BITMAP, reinterpret_cast<LPARAM>(bitmap->handle()));
 }
 
 // end namespace SmartWin

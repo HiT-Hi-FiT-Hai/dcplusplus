@@ -1,3 +1,5 @@
+#include "../../include/smartwin/Policies.h"
+#include "../../include/smartwin/aspects/AspectFocus.h"
 #include "../../include/smartwin/widgets/CoolBar.h"
 
 namespace SmartWin {
@@ -7,11 +9,8 @@ CoolBar::Seed::Seed() :
 {
 }
 
-void CoolBar::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
-	//TODO: use CreationalInfo parameters
+void CoolBar::create( const Seed & cs ) {
+	BaseType::create(cs);
 }
 
 void CoolBar::addChild( Widget * child,
@@ -31,7 +30,7 @@ void CoolBar::addChild( Widget * child,
 	rbBand.cyMinChild = height;
 	rbBand.cx = width;
 	rbBand.fStyle = 0; //RBBS_GRIPPERALWAYS;
-	if ( SendMessage( this->handle(), RB_INSERTBAND, ( WPARAM ) - 1, ( LPARAM ) & rbBand ) == 0 )
+	if ( sendMessage( RB_INSERTBAND, ( WPARAM ) - 1, ( LPARAM ) & rbBand ) == 0 )
 	{
 		throw xCeption( _T( "There was a problem when trying to insert a band into your Coolbar object!" ) );
 	}

@@ -31,13 +31,12 @@
 #ifndef WINCE
 
 #include "../../SmartUtil.h"
-#include "../Rectangle.h"
 #include "../resources/Icon.h"
 #include "../Policies.h"
 #include "../WindowClass.h"
 #include "MDIParent.h"
 #include "Frame.h"
-#include <sstream>
+
 #include <boost/scoped_ptr.hpp>
 
 namespace SmartWin
@@ -59,11 +58,14 @@ namespace SmartWin
   * Related classes: <br>
   * MDIParent 
   */
-class MDIChild
-	: public Frame< Policies::MDIChild >
+class MDIChild :
+	public Composite< Policies::MDIChild >,
+	
+	public AspectMinMax<MDIChild>
+
 {
 public:
-	typedef Frame<Policies::MDIChild> BaseType;
+	typedef Composite<Policies::MDIChild> BaseType;
 	
 	/// Class type
 	typedef MDIChild ThisType;
@@ -76,15 +78,9 @@ public:
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.       
 	  */
-	class Seed
-		: public Widget::Seed
-	{
-	public:
-		typedef MDIChild::ThisType WidgetType;
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
 
-		IconPtr smallIcon;
-		IconPtr icon;
-		HBRUSH background;
 		bool activate;
 		
 		/// Fills with default parameters
@@ -96,14 +92,14 @@ public:
 	/** This version creates a MessageMapMDIChildWidget to plug into MDIParent
 	  * container window.
 	  */
-	void createMDIChild( Seed cs = Seed() );
-	
-	virtual bool tryFire(const MSG& msg, LRESULT& retVal);
+	void createMDIChild( const Seed& cs = Seed() );
 	
 	void activate();
 
 	MDIParent* getParent() { return static_cast<MDIParent*>(PolicyType::getParent()); }
 protected:
+	virtual bool tryFire(const MSG& msg, LRESULT& retVal);
+	
 	// Protected since this Widget we HAVE to inherit from
 	explicit MDIChild( Widget * parent );
 

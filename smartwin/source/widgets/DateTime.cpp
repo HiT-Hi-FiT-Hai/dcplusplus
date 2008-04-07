@@ -3,7 +3,7 @@
 namespace SmartWin {
 
 DateTime::Seed::Seed() :
-	Widget::Seed(DATETIMEPICK_CLASS, WS_CHILD | WS_VISIBLE | WS_TABSTOP | DTS_SHORTDATEFORMAT),
+	BaseType::Seed(DATETIMEPICK_CLASS, WS_CHILD | DTS_SHORTDATEFORMAT),
 	font(new Font(DefaultGuiFont)),
 	format(_T( "yyyy.MM.dd" )),
 	backgroundColor(0x000080),

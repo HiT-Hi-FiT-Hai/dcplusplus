@@ -49,13 +49,13 @@ class ModelessDialog :
 	public AspectDialog<ModelessDialog >
 {
 public:
-	typedef Frame< Policies::ModelessDialog > BaseType;
 	/// Class type
 	typedef ModelessDialog ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
 
+	typedef Frame< Policies::ModelessDialog > BaseType;
 	/// Creates a Dialog Window
 	/** This version creates a window from the given Dialog Resource Id.
 	  */

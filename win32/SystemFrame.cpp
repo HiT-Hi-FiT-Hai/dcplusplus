@@ -61,7 +61,7 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 		log->setSelection(0, log->lineIndex(log->lineFromChar(limit / 10)));
 		log->replaceSelection(_T(""));
 	}
-	log->addTextLines(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
+	log->addText(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
 
 	if(scroll)
 		log->sendMessage(WM_VSCROLL, SB_BOTTOM);

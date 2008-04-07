@@ -2,14 +2,13 @@
 
 namespace SmartWin {
 
-TextBox::Seed::Seed() : 
-	Widget::Seed(WC_EDIT, WS_CHILD | WS_VISIBLE | WS_TABSTOP, WS_EX_CLIENTEDGE),
+TextBox::Seed::Seed(const SmartUtil::tstring& caption) : 
+	BaseType::Seed(WC_EDIT, WS_CHILD | WS_TABSTOP, WS_EX_CLIENTEDGE, caption),
 	font(new Font(DefaultGuiFont))
 {
 }
 
-void TextBox::create( const Seed & cs )
-{
+void TextBox::create( const Seed & cs ) {
 	ControlType::create(cs);
 	if(cs.font)
 		setFont( cs.font );

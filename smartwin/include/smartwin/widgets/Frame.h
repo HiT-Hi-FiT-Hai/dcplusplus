@@ -77,11 +77,6 @@ public:
 	
 	typedef Composite< Policy > BaseType;
 	
-	struct Seed : public BaseType::Seed {
-		Seed(DWORD style);
-	};
-
-	// TODO: Outfactor to system implementation type, see e.g. WidgetFactory
 #ifndef WINCE
 	/// Animates a window
 	/** Slides the window into view from either right or left depending on the
@@ -133,6 +128,10 @@ public:
 	void setCursor( const SmartUtil::tstring & filePathName );
 
 protected:
+	struct Seed : public BaseType::Seed {
+		Seed(const SmartUtil::tstring& caption, DWORD style, DWORD exStyle);
+	};
+
 	// Protected since this Widget we HAVE to inherit from
 	explicit Frame( Widget * parent = 0 );
 
@@ -147,7 +146,9 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename Policy>
-Frame<Policy>::Seed::Seed(DWORD style) : Frame<Policy>::BaseType::Seed(WS_OVERLAPPEDWINDOW) {
+Frame<Policy>::Seed::Seed(const SmartUtil::tstring& caption, DWORD style, DWORD exStyle) : 
+	BaseType::Seed(caption, WS_OVERLAPPEDWINDOW, exStyle)
+{
 	
 }
 

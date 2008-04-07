@@ -2,8 +2,8 @@
 
 namespace SmartWin {
 
-Button::Seed::Seed(const SmartUtil::tstring& caption) : 
-	Widget::Seed(WC_BUTTON, WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, 0, caption),
+Button::Seed::Seed(const SmartUtil::tstring& caption, DWORD style) : 
+	BaseType::Seed(WC_BUTTON, style | WS_CHILD, 0, caption),
 	font(new Font(DefaultGuiFont))
 {
 }

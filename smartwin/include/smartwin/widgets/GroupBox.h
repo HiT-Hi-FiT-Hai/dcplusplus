@@ -59,16 +59,17 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
+	
+	typedef Button BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed : public Widget::Seed {
-	public:
-		FontPtr font;
-
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+		
 		/// Fills with default parameters
 		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
@@ -89,7 +90,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 inline GroupBox::GroupBox( Widget * parent )
-	: ButtonType( parent )
+	: BaseType( parent )
 {
 }
 // end namespace SmartWin

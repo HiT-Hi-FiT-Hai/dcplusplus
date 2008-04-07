@@ -113,7 +113,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		cs.exStyle = WS_EX_TRANSPARENT;
 
 		cs.caption = T_("Search for");
-		searchLabel = createLabel(cs);
+		searchLabel = addChild(cs);
 		searchLabel->setHelpId(IDH_SEARCH_SEARCH_FOR);
 
 		cs.caption = T_("Size");

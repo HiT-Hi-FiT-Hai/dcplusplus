@@ -64,45 +64,6 @@ class Widget
 	: public boost::noncopyable
 {
 public:
-	/** Most Widgets can override the creational parameters which sets the style and the
-	  * initial position of the Widget, those Widgets will take an object of this type to
-	  * their creational function(s).
-	  */
-	struct Seed {
-		LPCTSTR className;
-
-		/// Initial caption
-		/** Windows with a title bar will use this string in the title bar. Controls with
-		  * caption (e.g. static control, edit control) will use it in the control. <br>
-		  * It is feed directly to CreateWindowEx, this means that it follows its
-		  * conventions. In particular, the string "#num" has a special meaning.
-		  */
-		SmartUtil::tstring caption;
-
-		/// The style of the object (starts with WS_ or BS_ etc...)
-		/** WARNING: The creation of most of the controls require WS_CHILD to be set.
-		  * This is done, by default, in the appropriate controls. If you override the
-		  * default style, then be sure that WS_CHILD is set (if needed).
-		  */
-		DWORD style;
-
-		/// The Extended Style of the object (starts often with WS_EX_ etc)
-		DWORD exStyle;
-
-		/// The initial position / size of the Widget
-		Rectangle location;
-
-		HMENU menuHandle;
-
-		/// Constructor initializing all member variables to default values
-		Seed(LPCTSTR className_, DWORD style_ = WS_VISIBLE, DWORD exStyle_ = 0, 
-			const SmartUtil::tstring& caption_ = SmartUtil::tstring(), 
-			const Rectangle& location_ = letTheSystemDecide, HMENU menuHandle_ = NULL)
-			: className(className_), caption(caption_), style( style_ ), exStyle( exStyle_ ), location( location_ ), menuHandle( menuHandle_ )
-		{}
-
-	};
-	
 	/// Returns the HWND to the Widget
 	/** Returns the HWND to the inner window of the Widget. <br>
 	  * If you need to do directly manipulation of the window use this function to
@@ -178,16 +139,57 @@ public:
 	  */
 	void attach( unsigned id );
 
-	virtual void attach(HWND wnd);
-
 protected:
+	/** Most Widgets can override the creational parameters which sets the style and the
+	  * initial position of the Widget, those Widgets will take an object of this type to
+	  * their creational function(s).
+	  */
+	struct Seed {
+		LPCTSTR className;
+
+		/// Initial caption
+		/** Windows with a title bar will use this string in the title bar. Controls with
+		  * caption (e.g. static control, edit control) will use it in the control. <br>
+		  * It is feed directly to CreateWindowEx, this means that it follows its
+		  * conventions. In particular, the string "#num" has a special meaning.
+		  */
+		SmartUtil::tstring caption;
+
+		/// The style of the object (starts with WS_ or BS_ etc...)
+		/** WARNING: The creation of most of the controls require WS_CHILD to be set.
+		  * This is done, by default, in the appropriate controls. If you override the
+		  * default style, then be sure that WS_CHILD is set (if needed).
+		  */
+		DWORD style;
+
+		/// The Extended Style of the object (starts often with WS_EX_ etc)
+		DWORD exStyle;
+
+		/// The initial position / size of the Widget
+		Rectangle location;
+
+		HMENU menuHandle;
+
+		/// Constructor initializing all member variables to default values
+		Seed(LPCTSTR className_, DWORD style_ = WS_VISIBLE, DWORD exStyle_ = 0, 
+			const SmartUtil::tstring& caption_ = SmartUtil::tstring(), 
+			const Rectangle& location_ = letTheSystemDecide, HMENU menuHandle_ = NULL)
+			: className(className_), caption(caption_), style( style_ ), exStyle( exStyle_ ), location( location_ ), menuHandle( menuHandle_ )
+		{}
+
+	};
+	
+
+	
 	Widget(Widget * parent);
 
 	virtual ~Widget();
 
-	// Creates the Widget, should NOT be called directly but overridden in the
-	// derived class (with no parameters)
-	virtual HWND create( const Seed & cs );
+	// Creates the Widget, should not be called directly but overridden in the
+	// derived class - otherwise the wrong seed will be used
+	HWND create(const Seed & cs);
+
+	virtual void attach(HWND wnd);
 
 private:
 	friend class Application;

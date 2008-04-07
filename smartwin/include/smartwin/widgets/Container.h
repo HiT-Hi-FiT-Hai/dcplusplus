@@ -18,17 +18,19 @@ public:
 	typedef Composite<Policies::Normal> BaseType;
 
 	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+		
 		Seed();
 	};
 
 	// Use our seed type
-	virtual void create( const Seed& cs = Seed() );
+	void create( const Seed& cs = Seed() );
 
 protected:
 	Container(Widget* parent) : BaseType(parent) { }
 };
 
-inline Container::Seed::Seed() : BaseType::Seed(WS_CHILD | WS_CLIPSIBLINGS) {
+inline Container::Seed::Seed() : BaseType::Seed(NULL, WS_CHILD | WS_CLIPSIBLINGS, 0) {
 	
 }
 

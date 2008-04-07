@@ -43,17 +43,17 @@ public:
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed : public Widget::Seed {
-	public:
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+		
 		FontPtr font;
 
 		/// Fills with default parameters
-		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
+		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring(), DWORD style = 0);
 	};
 
 	template<typename SeedType>
-	void create(const SeedType& cs);
-	
+	void create(const SeedType& cs = SeedType());
 protected:
 	typedef Button ButtonType;
 	
