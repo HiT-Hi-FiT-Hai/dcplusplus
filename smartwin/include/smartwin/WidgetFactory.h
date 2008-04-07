@@ -105,10 +105,10 @@ public:
 	/// MessageBox class and object type.
 	typedef SmartWin::MessageBox MessageBox;
 
-	/// DataGrid class type.
+	/// Table class type.
 	typedef SmartWin::Table Table;
 
-	/// DataGrid object type.
+	/// Table object type.
 	typedef typename Table::ObjectType TablePtr;
 
 	/// TreeView class type.
@@ -192,10 +192,10 @@ public:
 	/// ComboBox object type.
 	typedef typename ComboBox::ObjectType ComboBoxPtr;
 
-	/// Static class type.
+	/// Label class type.
 	typedef SmartWin::Label Label;
 
-	/// Static object type.
+	/// Label object type.
 	typedef typename Label::ObjectType LabelPtr;
 
 	/// CheckBox class type.
@@ -282,7 +282,7 @@ public:
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	TablePtr attachList( unsigned id );
+	TablePtr attachTable( unsigned id );
 
 	/// Creates a Check Box and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -447,18 +447,18 @@ public:
 	  */
 	ComboBoxPtr attachComboBox( unsigned id );
 
-	/// Creates a Static Control and returns a pointer to it.
+	/// Creates a Label Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	LabelPtr createStatic( const typename Label::Seed & cs = Label::Seed() );
+	LabelPtr createLabel( const typename Label::Seed & cs = Label::Seed() );
 
 	/// \ingroup SubclassDialog
-	/// Subclasses a Static Control from the given resource id.
+	/// Subclasses a Label Control from the given resource id.
 	/** DON'T delete the returned pointer!!! <br>
 	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	LabelPtr attachStatic( unsigned id );
+	LabelPtr attachLabel( unsigned id );
 
 	ToolTipPtr createToolTip( const typename ToolTip::Seed & cs = ToolTip::Seed() );
 protected:
@@ -520,7 +520,7 @@ WidgetFactory< ContainerWidgetType >::createTable( const typename Table::Seed & 
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::TablePtr
-WidgetFactory< ContainerWidgetType >::attachList( unsigned id )
+WidgetFactory< ContainerWidgetType >::attachTable( unsigned id )
 {
 	return WidgetCreator< Table >::attach( this, id );
 }
@@ -728,14 +728,14 @@ WidgetFactory< ContainerWidgetType >::attachComboBox( unsigned id )
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::LabelPtr
-WidgetFactory< ContainerWidgetType >::createStatic( const typename Label::Seed & cs )
+WidgetFactory< ContainerWidgetType >::createLabel( const typename Label::Seed & cs )
 {
 	return WidgetCreator< Label >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::LabelPtr
-WidgetFactory< ContainerWidgetType >::attachStatic( unsigned id )
+WidgetFactory< ContainerWidgetType >::attachLabel( unsigned id )
 {
 	return WidgetCreator< Label >::attach( this, id );
 }

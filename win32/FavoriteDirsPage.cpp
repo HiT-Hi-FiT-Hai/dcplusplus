@@ -52,7 +52,7 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 
-	directories = attachList(IDC_FAVORITE_DIRECTORIES);
+	directories = attachTable(IDC_FAVORITE_DIRECTORIES);
 	directories->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;

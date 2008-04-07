@@ -62,7 +62,7 @@ bool HubListsDlg::handleInitDialog() {
 
 	editBox = attachTextBox(IDC_LIST_EDIT_BOX);
 
-	hubLists = attachList(IDC_LIST_LIST);
+	hubLists = attachTable(IDC_LIST_LIST);
 	hubLists->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;

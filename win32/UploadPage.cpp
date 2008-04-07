@@ -78,7 +78,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	directories = attachList(IDC_DIRECTORIES);
+	directories = attachTable(IDC_DIRECTORIES);
 	directories->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
@@ -108,7 +108,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	CheckBoxPtr shareHidden = attachCheckBox(IDC_SHAREHIDDEN);
 	shareHidden->onClicked(std::tr1::bind(&UploadPage::handleShareHiddenClicked, this, shareHidden));
 
-	total = attachStatic(IDC_TOTAL);
+	total = attachLabel(IDC_TOTAL);
 	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 
 	ButtonPtr button = attachButton(IDC_RENAME);

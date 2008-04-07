@@ -93,7 +93,7 @@ public:
 	  * you wish to use, and set the event handlers for all controls and events you 
 	  * wish to handle. <br>
 	  * Example : <br>
-	  * LabelPtr prompt = attachStatic( IDC_PROMPT ); <br>
+	  * LabelPtr prompt = attachLabel( IDC_PROMPT ); <br>
 	  * prompt->onClicked( &X::myClickMethod ); <br>
 	  * ...etc... 
 	  */
@@ -107,7 +107,7 @@ public:
 	  * constructor of your dialog, <br>
 	  * and in your initDialog you create the dialog's Widgets yourself. <br>
 	  * Example : <br>
-	  * LabelPtr prompt = createStatic(); <br>
+	  * LabelPtr prompt = createLabel(); <br>
 	  * prompt->setBounds( 10, 100, 100, 50 ); <br>
 	  * prompt->setText( _T("testing") ); 
 	  */

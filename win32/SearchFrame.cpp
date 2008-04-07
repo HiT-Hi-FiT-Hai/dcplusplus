@@ -113,22 +113,22 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		cs.exStyle = WS_EX_TRANSPARENT;
 
 		cs.caption = T_("Search for");
-		searchLabel = createStatic(cs);
+		searchLabel = createLabel(cs);
 		searchLabel->setHelpId(IDH_SEARCH_SEARCH_FOR);
 
 		cs.caption = T_("Size");
-		sizeLabel = createStatic(cs);
+		sizeLabel = createLabel(cs);
 		sizeLabel->setHelpId(IDH_SEARCH_SIZE);
 
 		cs.caption = T_("File type");
-		typeLabel = createStatic(cs);
+		typeLabel = createLabel(cs);
 		typeLabel->setHelpId(IDH_SEARCH_TYPE);
 
 		cs.caption = T_("Search options");
-		optionLabel = createStatic(cs);
+		optionLabel = createLabel(cs);
 
 		cs.caption = T_("Hubs");
-		hubsLabel = createStatic(cs);
+		hubsLabel = createLabel(cs);
 		hubsLabel->setHelpId(IDH_SEARCH_HUBS);
 	}
 
