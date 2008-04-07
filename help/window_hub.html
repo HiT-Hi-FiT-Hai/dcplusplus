@@ -25,5 +25,24 @@ Write a message here to chat with other users connected to the hub. You can pres
 Here, you can filter the users list so you will only see specific users. Eg, selecting 'Nick' in the drop down, and writing "foo" in the filter, will only display users that have "foo" in their nick.<br>
 Note; users will only be visually filtered, not disconnected. You can revert to showing all users at any time by cleaning the text you have written in the filter.
 </span>
+<h2>Columns</h2>
+<dl style="margin-left: 40px;">
+  <dt>Nick</dt>
+  <dd>The nicknames of the people currently connected to the hub.</dd>
+  <dt>Shared</dt>
+  <dd>How much each person is sharing.</dd>
+  <dt>Description</dt>
+  <dd>How the people have described themselves.</dd>
+  <dt>Tag</dt>
+  <dd>This shows information about what client they are using, how it's setup and how many hubs they are in. For example a tag like this &lt;++ V:705,M:A,H:1/2/3,S:4,O:5&gt; indicates that they are using DC++, version 0.705.  They are in active mode (as opposed to M:P for passive and M:5 for Socks5 connection).  They are unregistered in 1 hub, registered in 2 hubs and operators in 3 hubs.  They have 4 slots open.  More slots will open if they are all used and are uploading slower than 5kb/s.</dd>
+  <dt>Connection</dt>
+  <dd>The upload speed the user has.</dd>
+  <dt>Ip</dt>
+  <dd>Their Ip. Possibly also shows their country code.</dd>
+  <dt>Email</dt>
+  <dd>Their Email address.  Normally blank or false.</dd>
+  <dt>CID</dt>
+  <dd>The users CID.  This is a unique identifier of that person.</dd>
+</dl>
 </body>
 </html>
