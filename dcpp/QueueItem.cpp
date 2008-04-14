@@ -104,7 +104,7 @@ Segment QueueItem::getNextSegment(int64_t blockSize, double lastSpeed, int64_t l
 		} else if(msecs > SEGMENT_TIME * 4) {
 			targetSize = std::max(blockSize, targetSize / 2);
 		} else if(msecs > SEGMENT_TIME * 1.25) {
-			targetSize = std::max(blocksSize, targetSize - blockSize);
+			targetSize = std::max(blockSize, targetSize - blockSize);
 		}
 	}
 	
