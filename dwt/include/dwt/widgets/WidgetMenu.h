@@ -88,6 +88,9 @@ struct MenuColorInfo
 	/// Highlighted menu item color
 	COLORREF colorHighlight;
 
+	/// Text of highlighted menu item color
+	COLORREF colorHighlightText;	
+
 	/// Title text color
 	COLORREF colorTitleText;
 
@@ -102,11 +105,13 @@ struct MenuColorInfo
 	MenuColorInfo( COLORREF menuColor = ColorUtilities::darkenColor( ::GetSysColor( COLOR_WINDOW ), 0.02 ),
 		COLORREF stripColor = ColorUtilities::darkenColor( ::GetSysColor( COLOR_3DFACE ), 0.02 ),
 		COLORREF highlightColor = ::GetSysColor( COLOR_HIGHLIGHT ),
+		COLORREF highlightTextColor = ::GetSysColor( COLOR_HIGHLIGHTTEXT ),
 		COLORREF titleTextColor = ::GetSysColor( COLOR_MENUTEXT ),
 		COLORREF imageBackground = RGB( 0, 0, 0 ) ) // black
 		: colorMenu( menuColor ),
 		colorStrip( stripColor ),
 		colorHighlight( highlightColor ),
+		colorHighlightText( highlightTextColor ),
 		colorTitleText( titleTextColor ),
 		colorImageBackground( imageBackground )
 	{}

@@ -593,7 +593,12 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		bool oldMode = canvas.setBkMode( true );
 
 		// select item text color
-		canvas.setTextColor( isGrayed ? ::GetSysColor( COLOR_GRAYTEXT ) : wrapper->isMenuTitleItem ? colorInfo.colorTitleText : data->TextColor );
+		canvas.setTextColor(
+			isGrayed ? ::GetSysColor(COLOR_GRAYTEXT) :
+			wrapper->isMenuTitleItem ? colorInfo.colorTitleText :
+			highlight ? colorInfo.colorHighlightText :
+			data->TextColor
+			);
 
 		// Select item font
 		FontPtr font =
