@@ -273,6 +273,7 @@ void UploadManager::on(UserConnectionListener::Send, UserConnection* aSource) th
 	dcassert(u != NULL);
 
 	u->setStart(GET_TICK());
+	u->tick();
 	aSource->setState(UserConnection::STATE_RUNNING);
 	aSource->transmitFile(u->getStream());
 	fire(UploadManagerListener::Starting(), u);
@@ -307,6 +308,7 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 		aSource->send(cmd);
 
 		u->setStart(GET_TICK());
+		u->tick();
 		aSource->setState(UserConnection::STATE_RUNNING);
 		aSource->transmitFile(u->getStream());
 		fire(UploadManagerListener::Starting(), u);
@@ -318,6 +320,7 @@ void UploadManager::on(UserConnectionListener::BytesSent, UserConnection* aSourc
 	Upload* u = aSource->getUpload();
 	dcassert(u != NULL);
 	u->addPos(aBytes, aActual);
+	u->tick();
 }
 
 void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {

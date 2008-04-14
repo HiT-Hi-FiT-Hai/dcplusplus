@@ -253,6 +253,7 @@ void DownloadManager::startData(UserConnection* aSource, int64_t start, int64_t 
 	}
 
 	d->setStart(GET_TICK());
+	d->tick();
 	aSource->setState(UserConnection::STATE_RUNNING);
 
 	fire(DownloadManagerListener::Starting(), d);
@@ -275,7 +276,8 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 
 	try {
 		d->addPos(d->getFile()->write(aData, aLen), aLen);
-
+		d->tick();
+		
 		if(d->getPos() > d->getSize()) {
 			failDownload(aSource, _("More data was sent than was expected"));
 		} else if(d->getPos() == d->getSize()) {
@@ -323,7 +325,12 @@ void DownloadManager::endData(UserConnection* aSource) {
 			failDownload(aSource, e.getError());
 			return;
 		}
-
+		
+		aSource->setSpeed(d->getAverageSpeed());
+		if(aSource->getChunkSize() < d->getSize()) {
+			aSource->setChunkSize(d->getSize());
+		}
+		
 		dcdebug("Download finished: %s, size " I64_FMT ", downloaded " I64_FMT "\n", d->getPath().c_str(), d->getSize(), d->getPos());
 
 #if PORT_ME

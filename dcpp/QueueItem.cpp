@@ -84,14 +84,31 @@ const string& QueueItem::getTempTarget() {
 	return tempTarget;
 }
 
-Segment QueueItem::getNextSegment(int64_t  blockSize) const {
+// # ms we should aim for per segment
+static const int64_t SEGMENT_TIME = 10*1000;
+
+Segment QueueItem::getNextSegment(int64_t blockSize, double lastSpeed, int64_t lastSize) const {
 	if(getSize() == -1 || blockSize == 0) {
 		return Segment(0, -1);
 	}
+	
+	int64_t remaining = getSize() - getDownloadedBytes();
+	
+	int64_t targetSize = std::max(blockSize, lastSize);
+	if(lastSpeed > 0) {
+		double msecs = 1000 * targetSize / lastSpeed;
+		if(msecs < SEGMENT_TIME / 2) {
+			targetSize *= 2;
+		} else if(msecs > SEGMENT_TIME * 2) {
+			targetSize = std::max(blockSize, targetSize / 2);
+		}
+	}
+	
+	// Round off to nearest block size
+	targetSize = ((targetSize + blockSize / 2) / blockSize) * blockSize;
+	
 	int64_t start = 0;
-	int64_t maxSize = std::max(blockSize, static_cast<int64_t>(SETTING(MIN_SEGMENT_SIZE) * 1024));
-	maxSize = ((maxSize + blockSize - 1) / blockSize) * blockSize; // Make sure we're on an even block boundary
-	int64_t curSize = maxSize;
+	int64_t curSize = targetSize;
 	
 	while(start < getSize()) {
 		int64_t end = std::min(getSize(), start + curSize);
@@ -122,7 +139,7 @@ Segment QueueItem::getNextSegment(int64_t  blockSize) const {
 			curSize -= blockSize;
 		} else {
 			start = end;
-			curSize = maxSize;
+			curSize = targetSize;
 		}
 	}
 	

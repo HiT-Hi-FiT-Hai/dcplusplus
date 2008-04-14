@@ -52,7 +52,7 @@ public:
 
 	void addPos(int64_t aBytes, int64_t aActual) { pos += aBytes; actual+= aActual; }
 
-	enum { SAMPLES = 15 };
+	enum { MIN_SAMPLES = 15, MIN_SECS = 15 };
 	
 	/** Record a sample for average calculation */
 	void tick();

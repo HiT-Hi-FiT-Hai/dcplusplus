@@ -33,7 +33,8 @@
 namespace dcpp {
 
 class UserConnection : public Speaker<UserConnectionListener>,
-	private BufferedSocketListener, public Flags, private CommandHandler<UserConnection>
+	private BufferedSocketListener, public Flags, private CommandHandler<UserConnection>,
+	private boost::noncopyable
 {
 public:
 	friend class ConnectionManager;
@@ -166,6 +167,8 @@ public:
 	GETSET(string, encoding, Encoding);
 	GETSET(States, state, State);
 	GETSET(uint64_t, lastActivity, LastActivity);
+	GETSET(double, speed, Speed);
+	GETSET(int64_t, chunkSize, ChunkSize);
 private:
 	BufferedSocket* socket;
 	bool secure;
@@ -180,16 +183,14 @@ private:
 
 	// We only want ConnectionManager to create this...
 	UserConnection(bool secure_) throw() : encoding(Text::systemCharset), state(STATE_UNCONNECTED),
-		lastActivity(0), socket(0), secure(secure_), download(NULL) {
+		lastActivity(0), speed(0), chunkSize(0), socket(0), secure(secure_), download(NULL) {
 	}
 
 	virtual ~UserConnection() throw() {
 		BufferedSocket::putSocket(socket);
 	}
+	
 	friend struct DeleteFunction;
-
-	UserConnection(const UserConnection&);
-	UserConnection& operator=(const UserConnection&);
 
 	void setUser(const UserPtr& aUser) {
 		user = aUser;

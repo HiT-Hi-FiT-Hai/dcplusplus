@@ -38,9 +38,16 @@ Transfer::Transfer(UserConnection& conn, const string& path_, const TTHValue& tt
 
 void Transfer::tick() {
 	Lock l(cs);
-	while(samples.size() >= SAMPLES) {
-		samples.pop_front();
+	
+	if(samples.size() >= 1) {
+		int64_t tdiff = samples.back().first - samples.front().first;
+		if((tdiff / 1000) > MIN_SECS) {
+			while(samples.size() >= MIN_SAMPLES) {
+				samples.pop_front();
+			}
+		}
 	}
+	
 	samples.push_back(std::make_pair(GET_TICK(), pos));
 }
 

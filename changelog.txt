@@ -28,6 +28,8 @@
 * [L#211313] Fixed bad virtual name being loaded (thanks kulmegil)
 * [L#202801] Allow virtual folders to have the same name
 * Allow more characters in virtual names
+* Fixed downloading multiple file lists with the enter key (poy)
+* Improved transfer speed averaging 
 * [L#212411] Fixed downloading multiple file lists (poy)
 
 -- 0.705 2008-03-14 --
