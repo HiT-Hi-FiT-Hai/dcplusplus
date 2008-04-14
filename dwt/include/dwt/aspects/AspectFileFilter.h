@@ -113,6 +113,7 @@ public:
 
 		OPENFILENAME ofn = { 0 };
 		getOFN(ofn);
+		file.resize(PATH_BUFFER_SIZE);
 		ofn.lpstrFile = const_cast<LPTSTR>(file.c_str());
 		ofn.Flags = flags;
 
