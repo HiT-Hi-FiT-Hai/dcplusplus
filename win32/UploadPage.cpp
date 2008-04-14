@@ -256,17 +256,27 @@ void UploadPage::addDirectory(const tstring& aPath) {
 	if( path[ path.length() -1 ] != _T('\\') )
 		path += _T('\\');
 
+	ShareManager* sm = ShareManager::getInstance();
 	try {
-		LineDlg dlg(this, T_("Virtual name"), T_("Name under which the others see the directory"), Text::toT(ShareManager::getInstance()->validateVirtual(Util::getLastDir(Text::fromT(path)))));
-		if(dlg.run() == IDOK) {
-			tstring line = dlg.getLine();
-			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(line));
-			TStringList row;
-			row.push_back(line);
-			row.push_back(path);
-			row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))));
-			directories->insert(row);
-			total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
+		while(true) {
+			LineDlg dlg(this, T_("Virtual name"), T_("Name under which the others see the directory"), Text::toT(sm->validateVirtual(Util::getLastDir(Text::fromT(path)))));
+			if(dlg.run() == IDOK) {
+				tstring line = dlg.getLine();
+				if(sm->hasVirtual(sm->validateVirtual(Text::fromT(line)))) {
+					if(createMessageBox().show(str(TF_("A virtual directory named %1% already exists, do you wish to merge the contents?") % line),
+						_T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_YESNO, MessageBox::BOX_ICONQUESTION) == IDNO) {
+						continue;
+					}
+				}
+				ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(line));
+				TStringList row;
+				row.push_back(line);
+				row.push_back(path);
+				row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))));
+				directories->insert(row);
+				total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
+			}
+			break;
 		}
 	} catch(const ShareException& e) {
 		createMessageBox().show(Text::toT(e.getError()), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONSTOP);
