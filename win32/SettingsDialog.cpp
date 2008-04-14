@@ -47,9 +47,6 @@ static const WinUtil::HelpItem helpItems[] = {
 	{ 0, 0 }
 };
 
-static const TCHAR SEPARATOR = _T('\\');
-static const size_t MAX_NAME_LENGTH = 256;
-
 SettingsDialog::SettingsDialog(dwt::Widget* parent) : WidgetFactory<dwt::ModalDialog>(parent), currentPage(0) {
 	onInitDialog(std::tr1::bind(&SettingsDialog::initDialog, this));
 	onHelp(std::tr1::bind(&SettingsDialog::handleHelp, this, _1, _2));
