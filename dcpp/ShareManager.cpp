@@ -115,8 +115,9 @@ string ShareManager::Directory::getRealPath(const std::string& path) const throw
 
 string ShareManager::findRealRoot(const string& virtualRoot, const string& virtualPath) const throw(ShareException) {
 	for(StringMap::const_iterator i = shares.begin(); i != shares.end(); ++i) {
-		if(Util::stricmp(i->second, virtualRoot)) {
+		if(Util::stricmp(i->second, virtualRoot) == 0) {
 			std::string name = i->first + PATH_SEPARATOR_STR + virtualPath;
+			dcdebug("Matching %s\n", name.c_str());
 			if(File::getSize(name) != -1) {
 				return name;
 			}
@@ -532,14 +533,15 @@ ShareManager::DirList::const_iterator ShareManager::getByVirtual(const string& v
 
 int64_t ShareManager::getShareSize(const string& realPath) const throw() {
 	Lock l(cs);
-#ifdef PORT_ME
  	dcassert(realPath.size()>0);
-	Directory::Map::const_iterator i = directories.find(realPath);
+	StringMap::const_iterator i = shares.find(realPath);
 
-	if(i != directories.end()) {
-		return i->second->getSize();
+	if(i != shares.end()) {
+		DirList::const_iterator j = getByVirtual(i->second);
+		if(j != directories.end()) {
+			return (*j)->getSize();
+		}
 	}
-#endif
 	return -1;
 }
 
