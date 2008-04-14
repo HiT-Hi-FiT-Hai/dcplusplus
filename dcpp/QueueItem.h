@@ -56,8 +56,6 @@ public:
 	enum FileFlags {
 		/** Normal download, no flags set */
 		FLAG_NORMAL = 0x00,
-		/** This download should be resumed if possible */
-		FLAG_RESUME = 0x01,
 		/** This is a user file listing download */
 		FLAG_USER_LIST = 0x02,
 		/** The file list is downloaded to use for directory download (used with USER_LIST) */

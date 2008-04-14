@@ -110,7 +110,6 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ SettingsManager::SKIP_ZERO_BYTE, N_("Skip zero-byte files") },
 	{ SettingsManager::DONT_DL_ALREADY_SHARED, N_("Don't download files already in share") },
 	{ SettingsManager::DONT_DL_ALREADY_QUEUED, N_("Don't download files already in the queue") },
-	{ SettingsManager::ANTI_FRAG, N_("Use antifragmentation method for downloads") },
 	{ 0, 0 }
 };
 

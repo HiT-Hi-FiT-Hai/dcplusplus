@@ -18,7 +18,6 @@ public:
 	static const string ANTI_FRAG_EXT;
 
 	enum {
-		FLAG_RESUME =  1 << 0,
 		FLAG_ZDOWNLOAD = 1 << 1,
 		FLAG_CALC_CRC32 = 1 << 2,
 		FLAG_CRC32_OK = 1 << 3,

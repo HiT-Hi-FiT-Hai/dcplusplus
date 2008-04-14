@@ -434,7 +434,7 @@ void QueueManager::addPfs(const UserPtr& aUser, const string& aDir) throw(QueueE
 }
 
 void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& root, const UserPtr& aUser, 
-	int aFlags /* = QueueItem::FLAG_RESUME */, bool addBad /* = true */) throw(QueueException, FileException)
+	int aFlags /* = 0 */, bool addBad /* = true */) throw(QueueException, FileException)
 {
 	bool wantConnection = true;
 
@@ -803,6 +803,11 @@ void QueueManager::setFile(Download* d) {
 		string target = d->getDownloadTarget();
 		File::ensureDirectory(target);
 		File* f = new File(target, File::WRITE, File::OPEN | File::CREATE | File::SHARED);
+		
+		if(d->isSet(Download::FLAG_ANTI_FRAG) && f->getSize() < qi->getSize()) {
+			f->setSize(qi->getSize());
+		}
+		
 		f->setPos(d->getSegment().getStart());
 		d->setFile(f);
 	} else if(d->getType() == Transfer::TYPE_FULL_LIST) {
@@ -1311,7 +1316,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 		inDownloads = true;
 	} else if(inDownloads) {
 		if(cur == NULL && name == sDownload) {
-			int flags = QueueItem::FLAG_RESUME;
+			int flags = 0;
 			int64_t size = Util::toInt64(getAttrib(attribs, sSize, 1));
 			if(size == 0)
 				return;
