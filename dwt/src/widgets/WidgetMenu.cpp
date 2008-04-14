@@ -202,7 +202,7 @@ WidgetMenu::ObjectType WidgetMenu::getSystemMenu()
 
 void WidgetMenu::addCommands() {
 	for(CallbackMap::iterator i = callbacks.begin(); i != callbacks.end(); ++i) {
-		itsParent->addCallback(Message(WM_COMMAND, i->first), i->second);
+		itsParent->setCallback(Message(WM_COMMAND, i->first), i->second);
 	}
 	for(std::vector< ObjectType >::iterator i = itsChildren.begin(); i != itsChildren.end(); ++i) {
 		(*i)->addCommands();
