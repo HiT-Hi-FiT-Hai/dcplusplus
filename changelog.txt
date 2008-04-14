@@ -18,7 +18,6 @@
 * [L#208684] Made the Alt key work again for line history in hub window (poy)
 * [L#209684] Fixed parsing of non-XML hub lists (poy)
 * [L#205660] Readded hub column to transfers (thanks mikejj)
-* Fixed file list refresh happening 1 minute later than expected (poy)
 * [L#209277] Fixed crash on bad translation (thanks poy)
 * More controls now use the font defined in settings (poy)
 * [L#211164] Fixed bug when a new tab row is created while DC++ is minimized (poy)
@@ -28,7 +27,6 @@
 * [L#211313] Fixed bad virtual name being loaded (thanks kulmegil)
 * [L#202801] Allow virtual folders to have the same name
 * Allow more characters in virtual names
-* Fixed downloading multiple file lists with the enter key (poy)
 * Improved transfer speed averaging 
 * [L#212411] Fixed downloading multiple file lists (poy)
 * Added filter already shared from search results (thanks smir)
