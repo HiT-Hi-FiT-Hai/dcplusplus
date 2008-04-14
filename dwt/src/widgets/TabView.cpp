@@ -40,8 +40,6 @@ namespace dwt {
 
 WindowClass TabView::windowClass(_T("TabView"), &TabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
 
-static UINT RESIZE_MESSAGE = 0;
-
 TabView::Seed::Seed(bool toggleActive_) :
 	BaseType::Seed(WC_TABCONTROL, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE |
 		 TCS_HOTTRACK | TCS_MULTILINE | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER),
@@ -100,8 +98,6 @@ TabView::Seed::Seed(bool toggleActive_) :
 		
 		::RegisterClassEx(&cls);
 		first = false;
-		
-		RESIZE_MESSAGE = ::RegisterWindowMessage(_T("TabView_Refresh"));
 	}
 }
 
@@ -132,13 +128,8 @@ void TabView::create(const Seed & cs) {
 	onMiddleMouseDown(std::tr1::bind(&TabView::handleMiddleMouseDown, this, _1));
 	onHelp(std::tr1::bind(&TabView::handleHelp, this, _1, _2));
 
-	onSized(std::tr1::bind(&TabView::handleSized, this, _1));
-
-	onRaw(std::tr1::bind(&TabView::layout, this), Message(RESIZE_MESSAGE));
-	
 	tip = WidgetCreator<ToolTip>::attach(this, TabCtrl_GetToolTips(handle())); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
 	tip->addRemoveStyle(TTS_NOPREFIX, true);
-	tip->onRaw(std::tr1::bind(&TabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
 }
 
 void TabView::add(Container* w, const IconPtr& icon) {
@@ -321,14 +312,10 @@ tstring TabView::formatTitle(tstring title) {
 }
 
 void TabView::handleSized(const SizedEvent& sz) {
-	// We defer the layout because the tab control itself must process WM_SIZE first in order to calculate the
-	// number of rows (otherwise getUsableArea returns the usable area before the resize...)
-	// This is less than ideal since it means the children will not be synchronously resized which apps may expect
-	// TODO Fix this...
-	postMessage(RESIZE_MESSAGE);
+	layout();
 }
 
-LRESULT TabView::layout() {
+void TabView::layout() {
 	Rectangle tmp = getUsableArea(true);
 	if(!(tmp == clientSize)) {
 		int i = getSelected();
@@ -337,8 +324,6 @@ LRESULT TabView::layout() {
 		}
 		clientSize = tmp;
 	}
-	// Dummy return value to satisfy onRaw - this should be fixed sometime...
-	return 0;
 }
 
 void TabView::next(bool reverse) {
@@ -581,6 +566,21 @@ int TabView::hitTest(const ScreenCoordinate& pt) {
 	TCHITTESTINFO tci = { ClientCoordinate(pt, this).getPoint() };
 		
 	return TabCtrl_HitTest(handle(), &tci);
+}
+
+bool TabView::tryFire( const MSG & msg, LRESULT & retVal ) {
+	bool handled = BaseType::tryFire(msg, retVal);
+	
+	if(msg.message == WM_SIZE) {
+		// We need to let the tab control window proc handle this first, otherwise getUsableArea will not return
+		// correct values on mulitrow tabs (since the number of rows might change with the size)
+		retVal = returnUnhandled(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+		
+		handleSized(SizedEvent(msg));
+		
+		return true;
+	}
+	return handled;
 }
 
 }

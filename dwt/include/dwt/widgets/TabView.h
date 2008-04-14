@@ -115,6 +115,8 @@ public:
 	
 	void create( const Seed & cs = Seed() );
 
+	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
+
 protected:
 	explicit TabView(Widget* parent);
 	
@@ -169,7 +171,7 @@ private:
 	void handleHelp(HWND hWnd, unsigned id);
 	
 	tstring formatTitle(tstring title);
-	LRESULT layout();
+	void layout();
 	
 	int addIcon(const IconPtr& icon);
 	void swapWidgets(ContainerPtr oldW, ContainerPtr newW);
