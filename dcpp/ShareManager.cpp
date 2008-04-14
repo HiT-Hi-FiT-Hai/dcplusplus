@@ -251,15 +251,15 @@ ShareManager::Directory::File::Set::const_iterator ShareManager::findFile(const 
 	Directory* d = *dmi;
 
 	string::size_type j = i + 1;
-	while( (i = virtualName.find('/', j)) != string::npos) {
-		Directory::MapIter mi = d->directories.find(virtualName.substr(j, i-j));
+	while( (i = virtualFile.find('/', j)) != string::npos) {
+		Directory::MapIter mi = d->directories.find(virtualFile.substr(j, i-j));
 		j = i + 1;
 		if(mi == d->directories.end())
 			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 		d = mi->second;
 	}
 
-	Directory::File::Set::const_iterator it = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(virtualName.substr(j)));
+	Directory::File::Set::const_iterator it = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(virtualFile.substr(j)));
 	if(it == d->files.end())
 		throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 	return it;
