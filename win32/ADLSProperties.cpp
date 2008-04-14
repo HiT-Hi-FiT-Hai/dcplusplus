@@ -79,30 +79,30 @@ bool ADLSProperties::handleInitDialog() {
 	setItemText(IDC_ADLSP_UNITS, T_("Size Type"));
 	setItemText(IDC_ADLSP_DESTINATION, T_("Destination Directory"));
 
-	searchString = attachTextBox(IDC_SEARCH_STRING);
+	searchString = attachChild<TextBox>(IDC_SEARCH_STRING);
 	searchString->setText(Text::toT(search->searchString));
 	searchString->setFocus();
 
-	searchType = attachComboBox(IDC_SOURCE_TYPE);
+	searchType = attachChild<ComboBox>(IDC_SOURCE_TYPE);
 	searchType->addValue(T_("Filename"));
 	searchType->addValue(T_("Directory"));
 	searchType->addValue(T_("Full Path"));
 	searchType->setSelected(search->sourceType);
 
-	minSize = attachTextBox(IDC_MIN_FILE_SIZE);
+	minSize = attachChild<TextBox>(IDC_MIN_FILE_SIZE);
 	minSize->setText((search->minFileSize > 0) ? Text::toT(Util::toString(search->minFileSize)) : Util::emptyStringT);
 
-	maxSize = attachTextBox(IDC_MAX_FILE_SIZE);
+	maxSize = attachChild<TextBox>(IDC_MAX_FILE_SIZE);
 	maxSize->setText((search->maxFileSize > 0) ? Text::toT(Util::toString(search->maxFileSize)) : Util::emptyStringT);
 
-	sizeType = attachComboBox(IDC_SIZE_TYPE);
+	sizeType = attachChild<ComboBox>(IDC_SIZE_TYPE);
 	sizeType->addValue(T_("B"));
 	sizeType->addValue(T_("KiB"));
 	sizeType->addValue(T_("MiB"));
 	sizeType->addValue(T_("GiB"));
 	sizeType->setSelected(search->typeFileSize);
 
-	destDir = attachTextBox(IDC_DEST_DIR);
+	destDir = attachChild<TextBox>(IDC_DEST_DIR);
 	destDir->setText(Text::toT(search->destDir));
 
 	active = attachChild<CheckBox>(IDC_IS_ACTIVE);

@@ -64,17 +64,7 @@ void Widget::attach( unsigned id ) {
 	HWND hWnd = ::GetDlgItem( itsParent->handle(), id );
 	if ( !hWnd )
 		throw xCeption( _T( "GetDlgItem failed." ) );
-	attach(hWnd);
-}
-
-void Widget::updateWidget()
-{
-	::InvalidateRect( itsHandle, 0, TRUE );
-	::UpdateWindow( itsHandle );
-}
-
-void Widget::invalidateWidget() {
-	::InvalidateRect( itsHandle, 0, TRUE );
+	setHandle(hWnd);
 }
 
 void Widget::kill() {
@@ -99,7 +89,7 @@ HWND Widget::create( const Seed & cs ) {
 	return hWnd;
 }
 
-void Widget::attach(HWND hwnd) {
+void Widget::setHandle(HWND hwnd) {
 	if(itsHandle) {
 		throw xCeption(_T("You may not attach to a widget that's already attached"));
 	}

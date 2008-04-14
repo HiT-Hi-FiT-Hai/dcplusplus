@@ -69,13 +69,13 @@ CertificatesPage::CertificatesPage(dwt::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
 
-	privateKeyFile = attachTextBox(IDC_TLS_PRIVATE_KEY_FILE);
+	privateKeyFile = attachChild<TextBox>(IDC_TLS_PRIVATE_KEY_FILE);
 	attachChild<Button>(IDC_BROWSE_PRIVATE_KEY)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowsePrivateKeyClicked, this));
 
-	certificateFile = attachTextBox(IDC_TLS_CERTIFICATE_FILE);
+	certificateFile = attachChild<TextBox>(IDC_TLS_CERTIFICATE_FILE);
 	attachChild<Button>(IDC_BROWSE_CERTIFICATE)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseCertificateClicked, this));
 
-	trustedCertificatesPath = attachTextBox(IDC_TLS_TRUSTED_CERTIFICATES_PATH);
+	trustedCertificatesPath = attachChild<TextBox>(IDC_TLS_TRUSTED_CERTIFICATES_PATH);
 	attachChild<Button>(IDC_BROWSE_TRUSTED_PATH)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseTrustedPathClicked, this));
 
 	attachChild<Button>(IDC_GENERATE_CERTS)->onClicked(std::tr1::bind(&CertificatesPage::handleGenerateCertsClicked, this));

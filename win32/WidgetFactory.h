@@ -37,27 +37,11 @@ public:
 	/// TextBox object type.
 	typedef typename TextBox::ObjectType TextBoxPtr;
 
-	TextBoxPtr createTextBox( const TextBox::Seed & cs = TextBox::Seed() ) {
-		return dwt::WidgetCreator< TextBox >::create( this, cs );
-	}
-
-	TextBoxPtr attachTextBox( unsigned id ) {
-		return dwt::WidgetCreator< TextBox >::attach( this, id );
-	}
-
 	/// ComboBox class type.
 	typedef ::ComboBox ComboBox;
 
 	/// ComboBox object type.
 	typedef typename ComboBox::ObjectType ComboBoxPtr;
-
-	ComboBoxPtr createComboBox( const ComboBox::Seed & cs = ComboBox::Seed() ) {
-		return dwt::WidgetCreator< ComboBox >::create( this, cs );
-	}
-
-	ComboBoxPtr attachComboBox( unsigned id ) {
-		return dwt::WidgetCreator< ComboBox >::attach( this, id );
-	}
 
 	/// VPaned class type.
 	typedef WidgetPaned< false > WidgetVPaned;

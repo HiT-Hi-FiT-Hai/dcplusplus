@@ -65,7 +65,7 @@ GeneralPage::GeneralPage(dwt::Widget* parent) : PropPage(parent), nick(0) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	ComboBoxPtr connections = attachComboBox(IDC_CONNECTION);
+	ComboBoxPtr connections = attachChild<ComboBox>(IDC_CONNECTION);
 
 	int selected = 0, j = 0;
 	for(StringIter i = SettingsManager::connectionSpeeds.begin(); i != SettingsManager::connectionSpeeds.end(); ++i, ++j) {
@@ -77,13 +77,13 @@ GeneralPage::GeneralPage(dwt::Widget* parent) : PropPage(parent), nick(0) {
 
 	connections->setSelected(selected);
 
-	nick = attachTextBox(IDC_NICK);
+	nick = attachChild<TextBox>(IDC_NICK);
 	nick->setTextLimit(35);
 	nick->onTextChanged(std::tr1::bind(&GeneralPage::handleNickTextChanged, this));
 
-	attachTextBox(IDC_EMAIL);
+	attachChild<TextBox>(IDC_EMAIL);
 
-	attachTextBox(IDC_DESCRIPTION)->setTextLimit(35);
+	attachChild<TextBox>(IDC_DESCRIPTION)->setTextLimit(35);
 }
 
 GeneralPage::~GeneralPage() {

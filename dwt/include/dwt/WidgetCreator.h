@@ -91,7 +91,7 @@ public:
 	static typename WidgetType::ObjectType attach( Widget * parent, HWND hwnd )
 	{
 		typename WidgetType::ObjectType retVal(new WidgetType( parent ));
-		retVal->attach( hwnd );
+		retVal->setHandle( hwnd );
 		return retVal;
 	}
 

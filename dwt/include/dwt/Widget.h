@@ -94,16 +94,6 @@ public:
 	  */
 	Widget* getParent() const;
 
-	/// Repaints the whole window
-	/** Invalidate the window and repaints it.
-	  */
-	void updateWidget();
-
-	/// Add this widget to the update area.
-	/** Same as updateWidget except that this does not force an immediate redraw.
-	  */
-	void invalidateWidget();
-
 	/// Use this function to add or remove windows styles.
 	/** The first parameter is the type of style you wish to add/remove. <br>
 	  * The second argument is a boolean indicating if you wish to add or remove the
@@ -185,8 +175,6 @@ protected:
 		{}
 	};
 	
-
-	
 	Widget(Widget * parent);
 
 	virtual ~Widget();
@@ -195,7 +183,7 @@ protected:
 	// derived class - otherwise the wrong seed will be used
 	HWND create(const Seed & cs);
 
-	virtual void attach(HWND wnd);
+	virtual void setHandle(HWND wnd);
 
 private:
 	friend class Application;

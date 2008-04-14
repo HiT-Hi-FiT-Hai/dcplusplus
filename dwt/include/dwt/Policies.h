@@ -40,9 +40,13 @@
 
 namespace dwt {
 
+namespace Policies {
+class Subclassed;
+}
+
 template<typename Policy>
 class MessageMap : public Policy {
-public:
+protected:
 	typedef MessageMap<Policy> PolicyType;
 	
 	MessageMap(Widget* parent) : Policy(parent) { }
@@ -75,12 +79,12 @@ public:
 				return Policy::returnHandled(res, hwnd, uMsg, wParam, lParam);
 			}
 		}
-		Policy* p;
+		PolicyType* p;
 		
 		if(handler != hwnd) {
-			p = hwnd_cast<Policy*>(hwnd);
+			p = hwnd_cast<PolicyType*>(hwnd);
 		} else {
-			p = dynamic_cast<Policy*>(w);
+			p = dynamic_cast<PolicyType*>(w);
 		}
 		
 		if(!p) {
@@ -90,7 +94,8 @@ public:
 		return p->returnUnhandled(hwnd, uMsg, wParam, lParam);
 	}
 private:
-
+	friend class Policies::Subclassed;
+	
 	static HWND getHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		HWND handler;
 		// Check who should handle the message - parent or child
@@ -129,7 +134,7 @@ namespace Policies {
 class ModelessDialog
 	: public Widget
 {
-public:
+protected:
 	ModelessDialog(Widget* parent) : Widget(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
@@ -166,7 +171,7 @@ public:
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			ModelessDialog* This = reinterpret_cast<ModelessDialog*>(lParam);
-			This->attach( hwnd );
+			This->setHandle( hwnd );
 		}
 	}
 };
@@ -175,7 +180,7 @@ public:
 class ModalDialog
 	: public ModelessDialog
 {
-public:
+protected:
 	ModalDialog(Widget* parent) : ModelessDialog(parent) { }
 	
 	virtual void kill() {
@@ -191,7 +196,7 @@ public:
 class Normal
 	: public Widget
 {
-public:
+protected:
 	Normal(Widget* parent) : Widget(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
@@ -217,13 +222,13 @@ public:
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
 			Normal* This = reinterpret_cast<Normal*>( cs->lpCreateParams );
-			This->attach( hWnd );
+			This->setHandle( hWnd );
 		}
 	}
 };
 
 class Subclassed : public Normal {
-public:
+protected:
 	Subclassed(Widget* parent) : Normal(parent), oldProc(0) { }
 	
 	LRESULT returnUnhandled(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
@@ -233,14 +238,14 @@ public:
 		return Normal::returnUnhandled(hWnd, msg, wPar, lPar);
 	}
 	
-	virtual HWND create(const Widget::Seed& seed) {
-		HWND hWnd = Widget::create(seed);
-		attach(hWnd);
+	HWND create(const Normal::Seed& seed) {
+		HWND hWnd = Normal::create(seed);
+		setHandle(hWnd);
 		return hWnd;
 	}
 	
-	virtual void attach(HWND hWnd) {
-		Normal::attach(hWnd);
+	virtual void setHandle(HWND hWnd) {
+		Normal::setHandle(hWnd);
 		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( hWnd, GWL_WNDPROC, ( LONG_PTR ) &MessageMap<Subclassed>::wndProc ) );
 	}
 	using Widget::attach;
@@ -256,7 +261,7 @@ private:
 class MDIChild
 	: public Widget
 {
-public:
+protected:
 	MDIChild(Widget* parent) : Widget(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
@@ -296,14 +301,14 @@ public:
 			MDICREATESTRUCT * mcs = reinterpret_cast< MDICREATESTRUCT*>(cs->lpCreateParams);
 			
 			MDIChild* This = reinterpret_cast<MDIChild*>(mcs->lParam);
-			This->attach(hWnd);
+			This->setHandle(hWnd);
 		}
 	}
 };
 
 template<typename WidgetType>
 class MDIFrame : public Normal {
-public:
+protected:
 	MDIFrame(Widget* parent) : Normal(parent) { }
 	
 	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )

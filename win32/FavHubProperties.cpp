@@ -77,28 +77,28 @@ bool FavHubProperties::handleInitDialog() {
 	setItemText(IDC_FH_PASSWORD, T_("Password"));
 	setItemText(IDC_FH_USER_DESC, T_("Description"));
 
-	name = attachTextBox(IDC_HUBNAME);
+	name = attachChild<TextBox>(IDC_HUBNAME);
 	name->setText(Text::toT(entry->getName()));
 	name->setFocus();
 	name->setSelection();
 	
-	address = attachTextBox(IDC_HUBADDR);
+	address = attachChild<TextBox>(IDC_HUBADDR);
 	address->setText(Text::toT(entry->getServer()));
 
-	description = attachTextBox(IDC_HUBDESCR);
+	description = attachChild<TextBox>(IDC_HUBDESCR);
 	description->setText(Text::toT(entry->getDescription()));
 
-	nick = attachTextBox(IDC_HUBNICK);
+	nick = attachChild<TextBox>(IDC_HUBNICK);
 	nick->setTextLimit(35);
 	nick->setText(Text::toT(entry->getNick(false)));
 	nick->onTextChanged(std::tr1::bind(&FavHubProperties::handleTextChanged, this, nick));
 
-	password = attachTextBox(IDC_HUBPASS);
+	password = attachChild<TextBox>(IDC_HUBPASS);
 	password->setPassword();
 	password->setText(Text::toT(entry->getPassword()));
 	password->onTextChanged(std::tr1::bind(&FavHubProperties::handleTextChanged, this, password));
 
-	userDescription = attachTextBox(IDC_HUBUSERDESCR);
+	userDescription = attachChild<TextBox>(IDC_HUBUSERDESCR);
 	userDescription->setTextLimit(35);
 	userDescription->setText(Text::toT(entry->getUserDescription()));
 

@@ -97,7 +97,7 @@ Appearance2Page::Appearance2Page(dwt::Widget* parent) : PropPage(parent) {
 	button = attachChild<Button>(IDC_BROWSE);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBrowseClicked, this));
 
-	attachTextBox(IDC_BEEPFILE);
+	attachChild<TextBox>(IDC_BEEPFILE);
 }
 
 Appearance2Page::~Appearance2Page() {
@@ -120,7 +120,7 @@ void Appearance2Page::handleBackgroundClicked() {
 	if(createColorDialog().open(colorParams)) {
 		bg = colorParams.getColor();
 		example->setColor(fg, bg);
-		example->invalidateWidget();
+		example->redraw();
 	}
 }
 
@@ -133,7 +133,7 @@ void Appearance2Page::handleTextClicked() {
 		font = dwt::FontPtr(new dwt::Font(::CreateFontIndirect(&logFont), true));
 		example->setColor(fg, bg);
 		example->setFont(font);
-		example->invalidateWidget();
+		example->redraw();
 	}
 }
 

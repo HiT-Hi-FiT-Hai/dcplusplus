@@ -37,6 +37,7 @@
 #define DWT_AspectVisible_h
 
 #include "../Dispatchers.h"
+#include "../Rectangle.h"
 
 namespace dwt {
 
@@ -68,7 +69,7 @@ public:
 	/** Changes the visibility property of the Widget. <br>
 	  * Use this function to change the visibility property of the Widget
 	  */
-	void setVisible( bool visible );
+	void setVisible(bool visible);
 
 	/// Retrieves the visible property of the Widget
 	/** Use this function to check if the Widget is visible or not. <br>
@@ -88,6 +89,13 @@ public:
 		W().addCallback(Message( WM_SHOWWINDOW ), Dispatcher(f));
 	}
 
+	/// Repaints the whole window
+	/** Invalidate the window and repaints it.
+	  */
+	void redraw(bool now = false);
+
+	void redraw(const Rectangle& r, bool now = false);
+	
 protected:
 	virtual ~AspectVisible()
 	{}
@@ -106,6 +114,17 @@ template< class WidgetType >
 bool AspectVisible< WidgetType >::getVisible() const
 {
 	return ::IsWindowVisible( H() ) != 0;
+}
+
+template<class WidgetType>
+void AspectVisible<WidgetType>::redraw(bool now) {
+	::RedrawWindow(H(), NULL, NULL, RDW_ERASE | RDW_INVALIDATE | (now ? RDW_UPDATENOW : 0));
+}
+
+template<class WidgetType>
+void AspectVisible<WidgetType>::redraw(const Rectangle& r, bool now) {
+	RECT rc = r;
+	::RedrawWindow(H(), &rc, NULL, RDW_ERASE | RDW_INVALIDATE | (now ? RDW_UPDATENOW : 0));
 }
 
 }

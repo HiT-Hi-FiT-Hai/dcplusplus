@@ -122,20 +122,20 @@ Advanced3Page::Advanced3Page(dwt::Widget* parent) : PropPage(parent) {
 	SpinnerPtr spinner = attachChild<Spinner>(IDC_SEARCH_HISTORY_SPIN);
 	spinner->setRange(0, 100);
 
-	attachTextBox(IDC_ROLLBACK);
-	attachTextBox(IDC_MAX_HASH_SPEED);
-	attachTextBox(IDC_SHOW_LAST_LINES_LOG);
-	attachTextBox(IDC_SET_MINISLOT_SIZE);
-	attachTextBox(IDC_MAX_FILELIST_SIZE);
-	attachTextBox(IDC_PRIVATE_ID);
-	attachTextBox(IDC_AUTO_REFRESH_TIME);
-	attachTextBox(IDC_BUFFERSIZE);
-	attachTextBox(IDC_AUTO_SEARCH_LIMIT);
-	attachTextBox(IDC_SEARCH_HISTORY);
-	attachTextBox(IDC_BIND_ADDRESS);
-	attachTextBox(IDC_SOCKET_IN_BUFFER);
-	attachTextBox(IDC_SOCKET_OUT_BUFFER);
-	attachTextBox(IDC_MIN_SEGMENT_SIZE);
+	attachChild<TextBox>(IDC_ROLLBACK);
+	attachChild<TextBox>(IDC_MAX_HASH_SPEED);
+	attachChild<TextBox>(IDC_SHOW_LAST_LINES_LOG);
+	attachChild<TextBox>(IDC_SET_MINISLOT_SIZE);
+	attachChild<TextBox>(IDC_MAX_FILELIST_SIZE);
+	attachChild<TextBox>(IDC_PRIVATE_ID);
+	attachChild<TextBox>(IDC_AUTO_REFRESH_TIME);
+	attachChild<TextBox>(IDC_BUFFERSIZE);
+	attachChild<TextBox>(IDC_AUTO_SEARCH_LIMIT);
+	attachChild<TextBox>(IDC_SEARCH_HISTORY);
+	attachChild<TextBox>(IDC_BIND_ADDRESS);
+	attachChild<TextBox>(IDC_SOCKET_IN_BUFFER);
+	attachChild<TextBox>(IDC_SOCKET_OUT_BUFFER);
+	attachChild<TextBox>(IDC_MIN_SEGMENT_SIZE);
 }
 
 Advanced3Page::~Advanced3Page() {

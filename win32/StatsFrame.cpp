@@ -125,7 +125,7 @@ void StatsFrame::layout() {
 	width = r.width();
 	height = r.size.y - 1;
 
-	invalidateWidget();
+	redraw();
 }
 
 bool StatsFrame::eachSecond() {
@@ -166,7 +166,7 @@ bool StatsFrame::eachSecond() {
 	}
 	if(mspeed > max || ((max * 3 / 4) > mspeed) ) {
 		max = mspeed;
-		invalidateWidget();
+		redraw();
 	}
 
 	lastTick = tick;

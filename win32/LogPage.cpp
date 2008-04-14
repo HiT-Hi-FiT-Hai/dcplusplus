@@ -74,17 +74,17 @@ LogPage::LogPage(dwt::Widget* parent) : PropPage(parent) {
 		options.push_back(pair);
 	}
 
-	attachTextBox(IDC_LOG_DIRECTORY);
+	attachChild<TextBox>(IDC_LOG_DIRECTORY);
 
 	attachChild<Button>(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
 
 	attachChild(dataGrid, IDC_LOG_OPTIONS);
 	dataGrid->onRaw(std::tr1::bind(&LogPage::handleItemChanged, this), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
-	logFormat = attachTextBox(IDC_LOG_FORMAT);
+	logFormat = attachChild<TextBox>(IDC_LOG_FORMAT);
 	logFormat->setEnabled(false);
 
-	logFile = attachTextBox(IDC_LOG_FILE);
+	logFile = attachChild<TextBox>(IDC_LOG_FILE);
 	logFile->setEnabled(false);
 
 	oldSelection = -1;

@@ -36,7 +36,7 @@ bool LineDlg::initDialog() {
 	attachChild<Button>(IDCANCEL)->onClicked(std::tr1::bind(&LineDlg::cancelClicked, this));
 	attachChild<Label>(IDC_DESCRIPTION)->setText(desc);
 
-	line = attachTextBox(IDC_LINE);
+	line = attachChild<TextBox>(IDC_LINE);
 	line->setFocus();
 	line->setText(initial);
 	line->setSelection();

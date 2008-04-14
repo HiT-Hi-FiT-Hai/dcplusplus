@@ -44,9 +44,9 @@ bool MagnetDlg::handleInitDialog() {
 	setText(T_("MAGNET Link detected"));
 	setItemText(IDC_MAGNET_TEXT, T_("DC++ has detected a MAGNET link with a file hash that can be searched for on the Direct Connect network.  What would you like to do?"));
 	setItemText(IDC_MAGNET_HASH, T_("File Hash:"));
-	attachTextBox(IDC_MAGNET_DISP_HASH)->setText(mHash.c_str());
+	attachChild<TextBox>(IDC_MAGNET_DISP_HASH)->setText(mHash.c_str());
 	setItemText(IDC_MAGNET_NAME, T_("Filename:"));
-	attachTextBox(IDC_MAGNET_DISP_NAME)->setText(mFileName);
+	attachChild<TextBox>(IDC_MAGNET_DISP_NAME)->setText(mFileName);
 
 	//queue = attachRadioButton(IDC_MAGNET_1_QUEUE);
 	//queue->setText(T_("Add this file to your download queue"));

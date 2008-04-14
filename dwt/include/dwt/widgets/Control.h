@@ -65,8 +65,8 @@ class Control:
 	public AspectTimer<Control<Policy> >,
 	public AspectVisible<Control<Policy> >
 {
-public:
 	typedef MessageMap<Policy> BaseType;
+public:
 
 protected:
 	struct Seed : public BaseType::Seed {

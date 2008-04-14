@@ -127,20 +127,20 @@ bool CommandDlg::handleInitDialog() {
 	fileListMenu = attachChild<CheckBox>(IDC_SETTINGS_FILELIST_MENU);
 	fileListMenu->setText(T_( "Filelist Menu"));
 
-	nameBox = attachTextBox(IDC_NAME);
+	nameBox = attachChild<TextBox>(IDC_NAME);
 
-	commandBox = attachTextBox(IDC_COMMAND);
+	commandBox = attachChild<TextBox>(IDC_COMMAND);
 	commandBox->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
 
-	hubBox = attachTextBox(IDC_HUB);
+	hubBox = attachChild<TextBox>(IDC_HUB);
 
-	nick = attachTextBox(IDC_NICK);
+	nick = attachChild<TextBox>(IDC_NICK);
 	nick->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
 
 	once = attachChild<CheckBox>(IDC_SETTINGS_ONCE);
 	once->setText(T_("Send once per nick"));
 
-	result = attachTextBox(IDC_RESULT);
+	result = attachChild<TextBox>(IDC_RESULT);
 
 	openHelp = attachChild<CheckBox>(IDC_USER_CMD_OPEN_HELP);
 	openHelp->setText(T_("Always open help file with this dialog"));

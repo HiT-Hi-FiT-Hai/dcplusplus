@@ -94,11 +94,11 @@ DownloadPage::DownloadPage(dwt::Widget* parent) : PropPage(parent) {
 	attachChild(spinner, IDC_SPEEDSPIN);
 	spinner->setRange(0, 10000);
 
-	attachTextBox(IDC_DOWNLOADDIR);
-	attachTextBox(IDC_TEMP_DOWNLOAD_DIRECTORY);
-	attachTextBox(IDC_DOWNLOADS);
-	attachTextBox(IDC_MAXSPEED);
-	attachTextBox(IDC_PROXY);
+	attachChild<TextBox>(IDC_DOWNLOADDIR);
+	attachChild<TextBox>(IDC_TEMP_DOWNLOAD_DIRECTORY);
+	attachChild<TextBox>(IDC_DOWNLOADS);
+	attachChild<TextBox>(IDC_MAXSPEED);
+	attachChild<TextBox>(IDC_PROXY);
 }
 
 DownloadPage::~DownloadPage() {

@@ -22,7 +22,7 @@
 /** Our own flavour of text boxes that handle double clicks and have fancy menus */
 class TextBox : public dwt::TextBox {
 	typedef dwt::TextBox BaseType;
-
+	friend class dwt::WidgetCreator<TextBox>;
 public:
 	typedef TextBox ThisType;
 	

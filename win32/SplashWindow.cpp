@@ -66,7 +66,7 @@ SplashWindow::SplashWindow() : dwt::WidgetFactory<dwt::Window>(0) {
 	::HideCaret(text->handle());
 	text->setVisible(true);
 	text->bringToFront();
-	text->updateWidget();
+	text->redraw(true);
 }
 
 SplashWindow::~SplashWindow() {
@@ -75,5 +75,5 @@ SplashWindow::~SplashWindow() {
 
 void SplashWindow::operator()(const string& status) {
 	text->setText(str(TF_("Loading DC++, please wait... (%1%)") % Text::toT(status) ));
-	text->updateWidget();
+	text->redraw(true);
 }

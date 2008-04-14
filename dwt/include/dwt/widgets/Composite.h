@@ -63,12 +63,12 @@ class Composite :
 	public AspectPainting< Composite< Policy > >,
 	public AspectText< Composite< Policy > >
 {
+	typedef Control<Policy> BaseType;
+	
 public:
 	typedef Composite<Policy> ThisType;
 	
 	typedef ThisType* ObjectType;
-	
-	typedef Control<Policy> BaseType;
 	
 	// TODO Maybe move this to a separate class?
 	// This brings these classes into the namespace of classes that inherit from Composite
@@ -129,7 +129,7 @@ public:
 		return WidgetCreator<typename SeedType::WidgetType>::create(this, seed);
 	}
 
-	virtual void create(const Seed& cs);
+	void create(const Seed& cs);
 protected:
 	friend class WidgetCreator<Composite<Policy> >;
 	

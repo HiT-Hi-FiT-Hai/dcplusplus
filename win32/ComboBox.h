@@ -23,7 +23,7 @@
 
 class ComboBox : public dwt::ComboBox {
 	typedef dwt::ComboBox BaseType;
-
+	friend class dwt::WidgetCreator<ComboBox>;
 public:
 	typedef ComboBox ThisType;
 	

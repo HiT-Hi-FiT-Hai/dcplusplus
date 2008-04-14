@@ -76,7 +76,7 @@ AppearancePage::AppearancePage(dwt::Widget* parent) : PropPage(parent), language
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
 
-	languages = attachComboBox(IDC_LANGUAGE);
+	languages = attachChild<ComboBox>(IDC_LANGUAGE);
 
 	StringList dirs = File::findFiles(Util::getLocalePath(), "*");
 
@@ -110,8 +110,8 @@ AppearancePage::AppearancePage(dwt::Widget* parent) : PropPage(parent), language
 	
 	languages->setSelected(selected);
 
-	attachTextBox(IDC_DEFAULT_AWAY_MESSAGE);
-	attachTextBox(IDC_TIME_STAMPS_FORMAT);
+	attachChild<TextBox>(IDC_DEFAULT_AWAY_MESSAGE);
+	attachChild<TextBox>(IDC_TIME_STAMPS_FORMAT);
 }
 
 AppearancePage::~AppearancePage() {

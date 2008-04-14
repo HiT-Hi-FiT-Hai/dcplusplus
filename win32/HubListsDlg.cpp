@@ -60,7 +60,7 @@ bool HubListsDlg::handleInitDialog() {
 
 	setText(T_("Configured Public Hub Lists"));
 
-	editBox = attachTextBox(IDC_LIST_EDIT_BOX);
+	editBox = attachChild<TextBox>(IDC_LIST_EDIT_BOX);
 
 	attachChild(hubLists, IDC_LIST_LIST);
 	hubLists->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);

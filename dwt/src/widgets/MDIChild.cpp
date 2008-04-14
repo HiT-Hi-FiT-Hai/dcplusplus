@@ -59,7 +59,7 @@ void MDIChild::createMDIChild( const Seed& cs ) {
 	}
 	
 	getParent()->sendMessage(WM_SETREDRAW, TRUE);
-	invalidateWidget();
+	redraw();
 	if ( !wnd )
 	{
 		xCeption x( _T( "CreateWindowEx in MDIChild::createMDIChild fizzled..." ) );

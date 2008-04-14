@@ -129,8 +129,8 @@ UploadPage::UploadPage(dwt::Widget* parent) : PropPage(parent) {
 	attachChild(spinner, IDC_MIN_UPLOAD_SPIN);
 	spinner->setRange(0, UD_MAXVAL);
 
-	attachTextBox(IDC_MIN_UPLOAD_SPEED);
-	attachTextBox(IDC_SLOTS);
+	attachChild<TextBox>(IDC_MIN_UPLOAD_SPEED);
+	attachChild<TextBox>(IDC_SLOTS);
 }
 
 UploadPage::~UploadPage() {
