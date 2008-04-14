@@ -102,7 +102,7 @@ private:
 	} links;
 
 	WidgetHPanedPtr paned;
-	WidgetMenuPtr mainMenu;
+	MenuPtr mainMenu;
 	TransferView* transfers;
 	ToolBarPtr toolbar;
 	dwt::TabViewPtr tabs;

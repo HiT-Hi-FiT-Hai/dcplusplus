@@ -34,14 +34,15 @@
 */
 
 #ifndef WINCE
-#ifndef DWT_WidgetMenu_h
-#define DWT_WidgetMenu_h
+#ifndef DWT_Menu_h
+#define DWT_Menu_h
 
 #include "../resources/Bitmap.h"
 #include "../resources/Font.h"
 #include "../Dispatchers.h"
 #include "../CanvasClasses.h"
 
+#include <memory>
 #include <vector>
 #include <map>
 
@@ -66,15 +67,15 @@ struct MenuItemData
 };
 
 /// \ingroup GlobalStuff
-// MenuItemDataPtr type, contains rendering data for e.g. WidgetMenu
-/** Helps easily create color values and so on for a WidgetMenu item! <br>
+// MenuItemDataPtr type, contains rendering data for e.g. Menu
+/** Helps easily create color values and so on for a Menu item! <br>
 * Each Menu Item can have different colors and so on, use this smart pointer to set
 * those values!
 */
 typedef std::tr1::shared_ptr< MenuItemData > MenuItemDataPtr;
 
-/// Struct for coloring different areas of WidgetMenu
-/** Contains the different color settings of the WidgetMenu <br>
+/// Struct for coloring different areas of Menu
+/** Contains the different color settings of the Menu <br>
 * Default values to constructor makes menu look roughly like MSVC++7.1 menus
 */
 struct MenuColorInfo
@@ -125,17 +126,17 @@ struct MenuColorInfo
 * Window. <br>
 * Note for Desktop version only! <br>
 */
-class WidgetMenu : public boost::noncopyable
+class Menu : public boost::noncopyable
 {
 	// friends
-	friend class WidgetCreator< WidgetMenu >;
+	friend class WidgetCreator< Menu >;
 
 public:
 	/// Type of object
-	typedef WidgetMenu ThisType;
+	typedef Menu ThisType;
 
 	/// Object type
-	typedef std::tr1::shared_ptr<WidgetMenu> ObjectType;
+	typedef std::tr1::shared_ptr<Menu> ObjectType;
 
 	struct Seed {
 		Seed(bool ownerDrawn_ = true, const MenuColorInfo& colorInfo_ = MenuColorInfo(), FontPtr font_ = 0);
@@ -227,7 +228,7 @@ public:
 	* it's being added as a reference to the children list of the "this" object.
 	* <br>
 	* A popup is basically another branch in the menu hierarchy <br>
-	* See the WidgetMenu project for a demonstration.
+	* See the Menu project for a demonstration.
 	*/
 	ObjectType appendPopup( const tstring & text, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData()) );
 
@@ -241,7 +242,7 @@ public:
 	* you don't have to keep a reference to the return value of this function since
 	* it's being added as a reference to the children list <br>
 	* of the "this" object. <br>
-	* See the WidgetMenu sample project for a demonstration.
+	* See the Menu sample project for a demonstration.
 	*/
 	ObjectType getSystemMenu();
 
@@ -277,8 +278,8 @@ public:
 	* Event handler's signature must be "void foo( ObjectType, unsigned
 	* int )" and it must be contained as a member <br>
 	* of the class that is defined as the Widget, normally either the
-	* Window derived class or the class derived from WidgetMenu. <br>
-	* See e.g. WidgetMenu for an example. <br>
+	* Window derived class or the class derived from Menu. <br>
+	* See e.g. Menu for an example. <br>
 	* The reason to why we have this "id" is because the same event handler can be
 	* defined for several menu items even in fact across menu objects, therefore
 	* this number should be unique across the application.
@@ -358,7 +359,7 @@ public:
 	unsigned trackPopupMenu( const ScreenCoordinate& sc, unsigned flags = 0 );
 
 	/// Sets menu title
-	/** A WidgetMenu can have a title, this function sets that title
+	/** A Menu can have a title, this function sets that title
 	*/
 	void setTitle( const tstring & title, bool drawSidebar = false );
 
@@ -424,11 +425,11 @@ public:
 
 	ObjectType getChild(UINT position);
 
-	virtual ~WidgetMenu();
+	virtual ~Menu();
 
 private:
 	/// Constructor Taking pointer to parent
-	explicit WidgetMenu( dwt::Widget * parent );
+	explicit Menu( dwt::Widget * parent );
 
 	// ////////////////////////////////////////////////////////////////////////
 	// Menu item data wrapper, used internally
@@ -440,7 +441,7 @@ private:
 		// For some messages (e.g. WM_MEASUREITEM),
 		// Windows doesn't specify it, so
 		// we need to keep this
-		const WidgetMenu* menu;
+		const Menu* menu;
 
 		// Item index in the menu
 		// This is needed, because ID's for items
@@ -456,7 +457,7 @@ private:
 		MenuItemDataPtr data;
 
 		// Wrapper  Constructor
-		ItemDataWrapper( const WidgetMenu* menu_, int itemIndex, MenuItemDataPtr itemData, bool isTitleItem = false )
+		ItemDataWrapper( const Menu* menu_, int itemIndex, MenuItemDataPtr itemData, bool isTitleItem = false )
 			: menu( menu_ )
 			, index( itemIndex )
 			, isMenuTitleItem( isTitleItem )

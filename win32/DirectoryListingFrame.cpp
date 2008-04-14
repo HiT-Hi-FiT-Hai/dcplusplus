@@ -308,8 +308,8 @@ void DirectoryListingFrame::setWindowTitle() {
 		setText(error);
 }
 
-DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+DirectoryListingFrame::MenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu, ii);
@@ -333,8 +333,8 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemI
 	return menu;
 }
 
-DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+DirectoryListingFrame::MenuPtr DirectoryListingFrame::makeMultiMenu() {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
@@ -345,20 +345,20 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
 	return menu;
 }
 
-DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeDirMenu() {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+DirectoryListingFrame::MenuPtr DirectoryListingFrame::makeDirMenu() {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
 	return menu;
 }
 
-void DirectoryListingFrame::addUserCommands(const WidgetMenuPtr& parent) {
+void DirectoryListingFrame::addUserCommands(const MenuPtr& parent) {
 	prepareMenu(parent, UserCommand::CONTEXT_FILELIST, ClientManager::getInstance()->getHubs(dl->getUser()->getCID()));
 }
 
-void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii) {
-	WidgetMenuPtr menu = parent->appendPopup(T_("Download &to..."));
+void DirectoryListingFrame::addTargets(const MenuPtr& parent, ItemInfo* ii) {
+	MenuPtr menu = parent->appendPopup(T_("Download &to..."));
 	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
 	size_t i = 0;
 	for(; i < spl.size(); ++i) {
@@ -393,7 +393,7 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 }
 
 bool DirectoryListingFrame::handleFilesContextMenu(dwt::ScreenCoordinate pt) {
-	WidgetMenuPtr contextMenu;
+	MenuPtr contextMenu;
 	if(files->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = files->getContextMenuPos();
@@ -409,9 +409,9 @@ bool DirectoryListingFrame::handleFilesContextMenu(dwt::ScreenCoordinate pt) {
 					// Ignore
 				}
 				if(!path.empty() && (File::getSize(path) != -1)) {
-					WidgetMenu::Seed cs = WinUtil::Seeds::menu;
+					Menu::Seed cs = WinUtil::Seeds::menu;
 					cs.ownerDrawn = false;
-					WidgetMenuPtr menu = createMenu(cs);
+					MenuPtr menu = createMenu(cs);
 					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 					shellMenu.ShowContextMenu(menu, pt);
@@ -438,7 +438,7 @@ bool DirectoryListingFrame::handleDirsContextMenu(dwt::ScreenCoordinate pt) {
 	}
 	
 	if(dirs->getSelected()) {
-		WidgetMenuPtr contextMenu = makeDirMenu();
+		MenuPtr contextMenu = makeDirMenu();
 		usingDirMenu = true;
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 

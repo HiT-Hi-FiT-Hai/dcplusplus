@@ -264,7 +264,7 @@ private:
 	void handleDblClicked();
 	void handleTabSelected();
 	
-	WidgetMenuPtr makeContextMenu(ConnectionInfo* ii);
+	MenuPtr makeContextMenu(ConnectionInfo* ii);
 
 	WidgetConnectionsPtr getUserList() { return connections; }
 	

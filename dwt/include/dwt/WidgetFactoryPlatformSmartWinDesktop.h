@@ -39,7 +39,7 @@
 
 #include "WidgetFactoryPlatformCommon.h"
 #include "widgets/FontDialog.h"
-#include "widgets/WidgetMenu.h"
+#include "widgets/Menu.h"
 #include "WidgetCreator.h"
 
 namespace dwt {
@@ -54,10 +54,10 @@ class WidgetFactoryPlatformImplementation< ContainerWidgetType,  dwtDesktop >
 {
 public:
 	/// Menu class type.
-	typedef dwt::WidgetMenu WidgetMenu;
+	typedef dwt::Menu Menu;
 
 	/// Menu object type.
-	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
+	typedef typename Menu::ObjectType MenuPtr;
 
 	/// ChooseFont class and object type.
 	typedef dwt::FontDialog FontDialog;
@@ -78,18 +78,18 @@ public:
 	}
 
 	/// Creates a Menu
-	/** The returned object is of type std::tr1::shared_ptr< WidgetMenu >, but
-	  * you should use the typedef WidgetMenuPtr and not <br>
+	/** The returned object is of type std::tr1::shared_ptr< Menu >, but
+	  * you should use the typedef MenuPtr and not <br>
 	  * the shared_ptr itself since this may change in future releases.
 	  */
-	WidgetMenuPtr createMenu(const typename WidgetMenu::Seed& cs = WidgetMenu::Seed())
+	MenuPtr createMenu(const typename Menu::Seed& cs = Menu::Seed())
 	{
-		return WidgetCreator< WidgetMenu >::create( this, cs );
+		return WidgetCreator< Menu >::create( this, cs );
 	}
 
-	WidgetMenuPtr attachMenu(HMENU hMenu, const typename WidgetMenu::Seed& cs = WidgetMenu::Seed())
+	MenuPtr attachMenu(HMENU hMenu, const typename Menu::Seed& cs = Menu::Seed())
 	{
-		return WidgetCreator< WidgetMenu >::attach( this, cs, hMenu );
+		return WidgetCreator< Menu >::attach( this, cs, hMenu );
 	}
 };
 

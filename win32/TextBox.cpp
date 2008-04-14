@@ -65,7 +65,7 @@ LRESULT TextBox::handleEnterIdle(WPARAM wParam, LPARAM lParam) {
 					return 0;
 			}
 
-			menu = dwt::WidgetCreator<dwt::WidgetMenu>::attach(this, hMenu, WinUtil::Seeds::menu);
+			menu = dwt::WidgetCreator<dwt::Menu>::attach(this, hMenu, WinUtil::Seeds::menu);
 		}
 	}
 	return 0;

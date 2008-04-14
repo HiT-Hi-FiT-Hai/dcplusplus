@@ -35,7 +35,7 @@ public:
 
 	void SetPath(const wstring& strPath);
 
-	UINT ShowContextMenu(dwt::WidgetMenu::ObjectType& menu, const dwt::ScreenCoordinate& pt);
+	UINT ShowContextMenu(dwt::Menu::ObjectType& menu, const dwt::ScreenCoordinate& pt);
 
 private:
 	bool bDelete;

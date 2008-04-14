@@ -218,9 +218,9 @@ private:
 					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
-					typename T::WidgetMenu::Seed cs = WinUtil::Seeds::menu;
+					typename T::Menu::Seed cs = WinUtil::Seeds::menu;
 					cs.ownerDrawn = false;
-					typename T::WidgetMenuPtr pShellMenu = this->createMenu(cs);
+					typename T::MenuPtr pShellMenu = this->createMenu(cs);
 					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
 					pShellMenu->appendItem(IDC_OPEN_FILE, T_("&Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
 					pShellMenu->appendItem(IDC_OPEN_FOLDER, T_("Open &folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));
@@ -236,7 +236,7 @@ private:
 				}
 			}
 
-			typename T::WidgetMenuPtr contextMenu = this->createMenu(WinUtil::Seeds::menu);
+			typename T::MenuPtr contextMenu = this->createMenu(WinUtil::Seeds::menu);
 			contextMenu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
 			contextMenu->appendItem(IDC_OPEN_FILE, T_("&Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
 			contextMenu->appendItem(IDC_OPEN_FOLDER, T_("Open &folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));

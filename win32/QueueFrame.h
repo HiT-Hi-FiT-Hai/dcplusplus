@@ -262,17 +262,17 @@ private:
 	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
 	void changePriority(bool inc);
 
-	WidgetMenuPtr makeSingleMenu(QueueItemInfo* qii);
-	WidgetMenuPtr makeMultiMenu();
-	WidgetMenuPtr makeDirMenu();
+	MenuPtr makeSingleMenu(QueueItemInfo* qii);
+	MenuPtr makeMultiMenu();
+	MenuPtr makeDirMenu();
 	
-	void addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addPriorityMenu(const WidgetMenuPtr& parent);
-	void addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	bool addUsers(const WidgetMenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), const QueueItem::SourceList& sources, bool offline);
+	void addBrowseMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveAllMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	void addPMMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	void addPriorityMenu(const MenuPtr& parent);
+	void addReaddMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	bool addUsers(const MenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), const QueueItem::SourceList& sources, bool offline);
 
 	void layout();
 

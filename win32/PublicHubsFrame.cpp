@@ -449,7 +449,7 @@ bool PublicHubsFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 			pt = hubs->getContextMenuPos();
 		}
 
-		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&PublicHubsFrame::handleConnect, this));
 		menu->appendItem(IDC_ADD, T_("Add To &Favorites"), std::tr1::bind(&PublicHubsFrame::handleAdd, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_HUBS)));
 		menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));

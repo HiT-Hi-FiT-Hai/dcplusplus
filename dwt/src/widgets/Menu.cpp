@@ -35,22 +35,22 @@
 
 #ifndef WINCE
 
-#include <dwt/widgets/WidgetMenu.h>
+#include <dwt/widgets/Menu.h>
 
 #include <dwt/resources/Brush.h>
 #include <dwt/resources/Pen.h>
 
 namespace dwt {
 
-const int WidgetMenu::borderGap = 3;
-const int WidgetMenu::pointerGap = 5;
-const int WidgetMenu::textIconGap = 8;
-const int WidgetMenu::textBorderGap = 4;
-const int WidgetMenu::separatorHeight = 8;
-const int WidgetMenu::minSysMenuItemWidth = 130;
-Point WidgetMenu::defaultImageSize = Point( 16, 16 );
+const int Menu::borderGap = 3;
+const int Menu::pointerGap = 5;
+const int Menu::textIconGap = 8;
+const int Menu::textBorderGap = 4;
+const int Menu::separatorHeight = 8;
+const int Menu::minSysMenuItemWidth = 130;
+Point Menu::defaultImageSize = Point( 16, 16 );
 
-WidgetMenu::Seed::Seed(bool ownerDrawn_, const MenuColorInfo& colorInfo_, FontPtr font_) :
+Menu::Seed::Seed(bool ownerDrawn_, const MenuColorInfo& colorInfo_, FontPtr font_) :
 popup(true),
 ownerDrawn(ownerDrawn_),
 colorInfo(colorInfo_),
@@ -58,15 +58,15 @@ font(font_)
 {
 }
 
-WidgetMenu::WidgetMenu( dwt::Widget* parent ) :
+Menu::Menu( dwt::Widget* parent ) :
 isSysMenu(false),
 itsParent(parent),
 drawSidebar(false)
 {
-	xAssert(itsParent != NULL, _T("A WidgetMenu must have a parent"));
+	xAssert(itsParent != NULL, _T("A Menu must have a parent"));
 }
 
-void WidgetMenu::createHelper(const Seed& cs) {
+void Menu::createHelper(const Seed& cs) {
 	// save settings provided through the Seed
 	ownerDrawn = cs.ownerDrawn;
 	itsColorInfo = cs.colorInfo;
@@ -85,12 +85,12 @@ void WidgetMenu::createHelper(const Seed& cs) {
 		}
 
 		// set default drawing
-		itsParent->setCallback(Message(WM_DRAWITEM), DrawItemDispatcher(std::tr1::bind(&WidgetMenu::handleDrawItem, this, _1, _2)));
-		itsParent->setCallback(Message(WM_MEASUREITEM), MeasureItemDispatcher(std::tr1::bind(&WidgetMenu::handleMeasureItem, this, _1)));
+		itsParent->setCallback(Message(WM_DRAWITEM), DrawItemDispatcher(std::tr1::bind(&Menu::handleDrawItem, this, _1, _2)));
+		itsParent->setCallback(Message(WM_MEASUREITEM), MeasureItemDispatcher(std::tr1::bind(&Menu::handleMeasureItem, this, _1)));
 	}
 }
 
-void WidgetMenu::create(const Seed& cs) {
+void Menu::create(const Seed& cs) {
 	createHelper(cs);
 
 	if(cs.popup)
@@ -99,12 +99,12 @@ void WidgetMenu::create(const Seed& cs) {
 		itsHandle = ::CreateMenu();
 	if ( !itsHandle )
 	{
-		xCeption x( _T( "CreateMenu in WidgetMenu::create fizzled..." ) );
+		xCeption x( _T( "CreateMenu in Menu::create fizzled..." ) );
 		throw x;
 	}
 }
 
-void WidgetMenu::attach(HMENU hMenu, const Seed& cs) {
+void Menu::attach(HMENU hMenu, const Seed& cs) {
 	createHelper(cs);
 
 	itsHandle = hMenu;
@@ -133,23 +133,23 @@ void WidgetMenu::attach(HMENU hMenu, const Seed& cs) {
 				if(::SetMenuItemInfo(itsHandle, i, TRUE, &info))
 					itsItemData.push_back( wrapper );
 				else
-					throw xCeption( _T( "SetMenuItemInfo in WidgetMenu::attach fizzled..." ) );
+					throw xCeption( _T( "SetMenuItemInfo in Menu::attach fizzled..." ) );
 			} else
-				throw xCeption( _T( "GetMenuItemInfo in WidgetMenu::attach fizzled..." ) );
+				throw xCeption( _T( "GetMenuItemInfo in Menu::attach fizzled..." ) );
 		}
 	}
 }
 
-void WidgetMenu::setMenu() {
+void Menu::setMenu() {
 	addCommands();
 	if ( ::SetMenu( itsParent->handle(), itsHandle ) == FALSE )
-		throw xCeption( _T( "SetMenu in WidgetMenu::setMenu fizzled..." ) );
+		throw xCeption( _T( "SetMenu in Menu::setMenu fizzled..." ) );
 }
 
-WidgetMenu::ObjectType WidgetMenu::appendPopup( const tstring & text, MenuItemDataPtr itemData )
+Menu::ObjectType Menu::appendPopup( const tstring & text, MenuItemDataPtr itemData )
 {
 	// create popup menu pointer
-	ObjectType retVal ( new WidgetMenu(itsParent) );
+	ObjectType retVal ( new Menu(itsParent) );
 	retVal->create( Seed(ownerDrawn, itsColorInfo, font) );
 
 	// init structure for new item
@@ -191,13 +191,13 @@ WidgetMenu::ObjectType WidgetMenu::appendPopup( const tstring & text, MenuItemDa
 }
 
 #ifdef PORT_ME
-WidgetMenu::ObjectType WidgetMenu::getSystemMenu()
+Menu::ObjectType Menu::getSystemMenu()
 {
 	// get system menu for the utmost parent
 	HMENU handle = ::GetSystemMenu( itsParent->handle(), FALSE );
 
 	// create pointer to system menu
-	ObjectType sysMenu( new WidgetMenu( itsParent->handle() ) );
+	ObjectType sysMenu( new Menu( itsParent->handle() ) );
 
 	// create(take) system menu
 	sysMenu->isSysMenu = true;
@@ -211,7 +211,7 @@ WidgetMenu::ObjectType WidgetMenu::getSystemMenu()
 }
 #endif
 
-void WidgetMenu::addCommands() {
+void Menu::addCommands() {
 	for(CallbackMap::iterator i = callbacks.begin(); i != callbacks.end(); ++i) {
 		itsParent->setCallback(Message(WM_COMMAND, i->first), i->second);
 	}
@@ -220,7 +220,7 @@ void WidgetMenu::addCommands() {
 	}
 }
 
-int WidgetMenu::getItemIndex( unsigned int id )
+int Menu::getItemIndex( unsigned int id )
 {
 	int index = 0;
 	const int itemCount = getCount();
@@ -232,7 +232,7 @@ int WidgetMenu::getItemIndex( unsigned int id )
 	return - 1;
 }
 
-MenuItemDataPtr WidgetMenu::getData( int itemIndex )
+MenuItemDataPtr Menu::getData( int itemIndex )
 {
 	for(size_t i = 0; i < itsItemData.size(); ++i)
 		if(itsItemData[i]->index == itemIndex)
@@ -241,14 +241,14 @@ MenuItemDataPtr WidgetMenu::getData( int itemIndex )
 	return MenuItemDataPtr();
 }
 
-WidgetMenu::~WidgetMenu()
+Menu::~Menu()
 {
 	// Destroy this menu
 	::DestroyMenu( handle() );
 	std::for_each( itsItemData.begin(), itsItemData.end(), destroyItemDataWrapper );
 }
 
-void WidgetMenu::destroyItemDataWrapper( ItemDataWrapper * wrapper )
+void Menu::destroyItemDataWrapper( ItemDataWrapper * wrapper )
 {
 	if ( 0 != wrapper )
 		delete wrapper;
@@ -256,13 +256,13 @@ void WidgetMenu::destroyItemDataWrapper( ItemDataWrapper * wrapper )
 	wrapper = 0;
 }
 
-void WidgetMenu::setTitleFont( FontPtr font )
+void Menu::setTitleFont( FontPtr font )
 {
 	itsTitleFont = font;
 	setTitle( itsTitle, drawSidebar ); // Easy for now, should be refactored...
 }
 
-void WidgetMenu::clearTitle( bool clearSidebar /* = false */)
+void Menu::clearTitle( bool clearSidebar /* = false */)
 {
 	if(!ownerDrawn)
 		return;
@@ -274,12 +274,12 @@ void WidgetMenu::clearTitle( bool clearSidebar /* = false */)
 	itsTitle.clear();
 }
 
-void WidgetMenu::checkItem( unsigned id, bool value )
+void Menu::checkItem( unsigned id, bool value )
 {
 	::CheckMenuItem( handle(), id, value ? MF_CHECKED : MF_UNCHECKED );
 }
 
-void WidgetMenu::setItemEnabled( unsigned id, bool byPosition, bool value )
+void Menu::setItemEnabled( unsigned id, bool byPosition, bool value )
 {
 	if ( ::EnableMenuItem( handle(), id, (byPosition ? MF_BYPOSITION : MF_BYCOMMAND) | (value ? MF_ENABLED : MF_GRAYED) ) == - 1 )
 	{
@@ -288,37 +288,37 @@ void WidgetMenu::setItemEnabled( unsigned id, bool byPosition, bool value )
 	}
 }
 
-UINT WidgetMenu::getMenuState( UINT id, bool byPosition )
+UINT Menu::getMenuState( UINT id, bool byPosition )
 {
 	return ::GetMenuState(handle(), id, byPosition ? MF_BYPOSITION : MF_BYCOMMAND); 
 }
 
-bool WidgetMenu::isSeparator( UINT id, bool byPosition )
+bool Menu::isSeparator( UINT id, bool byPosition )
 {
 	return (getMenuState(id, byPosition) & MF_SEPARATOR) == MF_SEPARATOR; 
 }
 
-bool WidgetMenu::isChecked( UINT id, bool byPosition )
+bool Menu::isChecked( UINT id, bool byPosition )
 {
 	return (getMenuState(id, byPosition) & MF_CHECKED) == MF_CHECKED; 
 }
 
-bool WidgetMenu::isPopup( UINT id, bool byPosition )
+bool Menu::isPopup( UINT id, bool byPosition )
 {
 	return (getMenuState(id, byPosition) & MF_POPUP) == MF_POPUP; 
 }
 
-bool WidgetMenu::isEnabled( UINT id, bool byPosition )
+bool Menu::isEnabled( UINT id, bool byPosition )
 {
 	return !(getMenuState(id, byPosition) & (MF_DISABLED | MF_GRAYED)); 
 }
 
-void WidgetMenu::setDefaultItem( UINT id, bool byPosition )
+void Menu::setDefaultItem( UINT id, bool byPosition )
 {
 	::SetMenuDefaultItem(handle(), id, byPosition);
 }
 
-tstring WidgetMenu::getText( unsigned id, bool byPosition )
+tstring Menu::getText( unsigned id, bool byPosition )
 {
 	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
 
@@ -326,16 +326,16 @@ tstring WidgetMenu::getText( unsigned id, bool byPosition )
 	mi.fMask = MIIM_STRING;
 
 	if ( ::GetMenuItemInfo( itsHandle, id, byPosition, & mi ) == FALSE )
-		throw xCeption( _T( "Couldn't get item info in WidgetMenu::getText" ) );
+		throw xCeption( _T( "Couldn't get item info in Menu::getText" ) );
 
 	boost::scoped_array< TCHAR > buffer( new TCHAR[++mi.cch] );
 	mi.dwTypeData = buffer.get();
 	if ( ::GetMenuItemInfo( itsHandle, id, byPosition, & mi ) == FALSE )
-		throw xCeption( _T( "Couldn't get item info in WidgetMenu::getText" ) );
+		throw xCeption( _T( "Couldn't get item info in Menu::getText" ) );
 	return mi.dwTypeData;
 }
 
-void WidgetMenu::setText( unsigned id, const tstring& text )
+void Menu::setText( unsigned id, const tstring& text )
 {
 	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
 
@@ -344,10 +344,10 @@ void WidgetMenu::setText( unsigned id, const tstring& text )
 	mi.dwTypeData = (TCHAR*) text.c_str();
 
 	if ( ::SetMenuItemInfo( itsHandle, id, FALSE, & mi ) == FALSE )
-		throw xCeption( _T( "Couldn't set item info in WidgetMenu::setText" ) );
+		throw xCeption( _T( "Couldn't set item info in Menu::setText" ) );
 }
 
-void WidgetMenu::setTitle( const tstring & title, bool drawSidebar /* = false */)
+void Menu::setTitle( const tstring & title, bool drawSidebar /* = false */)
 {
 	if(!ownerDrawn)
 		return;
@@ -393,7 +393,7 @@ void WidgetMenu::setTitle( const tstring & title, bool drawSidebar /* = false */
 	}
 }
 
-bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
+bool Menu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	if ( ( id != 0 ) || ( drawInfo->CtlType != ODT_MENU ) ) // if not intended for us
 		return false;
 
@@ -721,7 +721,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	return true;
 }
 
-bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
+bool Menu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	if ( measureInfo->CtlType != ODT_MENU ) // if not intended for us
 		return false;
 
@@ -849,7 +849,7 @@ bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	return true;
 }
 
-void WidgetMenu::appendSeparatorItem()
+void Menu::appendSeparatorItem()
 {
 	// init structure for new item
 	MENUITEMINFO itemInfo;
@@ -877,7 +877,7 @@ void WidgetMenu::appendSeparatorItem()
 		itsItemData.push_back( wrapper );
 }
 
-void WidgetMenu::removeItem( unsigned itemIndex )
+void Menu::removeItem( unsigned itemIndex )
 {
 	// has sub menus ?
 	HMENU popup = ::GetSubMenu( itsHandle, itemIndex );
@@ -917,7 +917,7 @@ void WidgetMenu::removeItem( unsigned itemIndex )
 		throw xCeption( _T( "Couldn't remove item in removeItem()" ) );
 }
 
-void WidgetMenu::removeAllItems()
+void Menu::removeAllItems()
 {
 	//must be backwards, since bigger indexes change on remove
 	for( int i = getCount() - 1; i >= 0; i-- )
@@ -926,7 +926,7 @@ void WidgetMenu::removeAllItems()
 	}
 }
 
-int WidgetMenu::getCount() const
+int Menu::getCount() const
 {
 	int count = ::GetMenuItemCount( itsHandle );
 	if( count == -1 )
@@ -934,7 +934,7 @@ int WidgetMenu::getCount() const
 	return count;
 }
 
-void WidgetMenu::appendItem(unsigned int id, const tstring & text, MenuItemDataPtr itemData)
+void Menu::appendItem(unsigned int id, const tstring & text, MenuItemDataPtr itemData)
 {
 	// init structure for new item
 	MENUITEMINFO info;
@@ -975,10 +975,10 @@ void WidgetMenu::appendItem(unsigned int id, const tstring & text, MenuItemDataP
 			itsItemData.push_back( wrapper );
 	}
 	else
-		throw xCeption( _T( "Couldn't insert/update item in WidgetMenu::appendItem" ) );
+		throw xCeption( _T( "Couldn't insert/update item in Menu::appendItem" ) );
 }
 
-void WidgetMenu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
+void Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
 {
 	MenuItemDataPtr itemData(new MenuItemData());
 	if(ownerDrawn)
@@ -986,7 +986,7 @@ void WidgetMenu::appendItem(unsigned int id, const tstring & text, BitmapPtr ima
 	appendItem(id, text, itemData);
 }
 
-unsigned WidgetMenu::trackPopupMenu( const ScreenCoordinate& sc, unsigned flags )
+unsigned Menu::trackPopupMenu( const ScreenCoordinate& sc, unsigned flags )
 {
 	addCommands();
 
@@ -1003,7 +1003,7 @@ unsigned WidgetMenu::trackPopupMenu( const ScreenCoordinate& sc, unsigned flags 
 	return retVal;
 }
 
-WidgetMenu::ObjectType WidgetMenu::getChild( unsigned position ) {
+Menu::ObjectType Menu::getChild( unsigned position ) {
 	HMENU h = ::GetSubMenu(handle(), position);
 	for(size_t i = 0; i < itsChildren.size(); ++i) {
 		ObjectType& menu = itsChildren[i];

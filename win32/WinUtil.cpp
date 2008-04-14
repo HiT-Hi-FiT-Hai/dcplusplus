@@ -61,7 +61,7 @@ DWORD WinUtil::helpCookie = 0;
 const dwt::Button::Seed WinUtil::Seeds::button;
 const ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
 const ComboBox::Seed WinUtil::Seeds::comboBoxEdit;
-const dwt::WidgetMenu::Seed WinUtil::Seeds::menu;
+const dwt::Menu::Seed WinUtil::Seeds::menu;
 const dwt::Table::Seed WinUtil::Seeds::Table;
 const TextBox::Seed WinUtil::Seeds::textBox;
 const dwt::Tree::Seed WinUtil::Seeds::treeView;
@@ -123,7 +123,7 @@ void WinUtil::init() {
 	dwt::Button::Seed& xbutton = const_cast<dwt::Button::Seed&>(Seeds::button);
 	ComboBox::Seed& xcomboBoxEdit = const_cast<ComboBox::Seed&>(Seeds::comboBoxEdit);
 	ComboBox::Seed& xcomboBoxStatic = const_cast<ComboBox::Seed&>(Seeds::comboBoxStatic);
-	dwt::WidgetMenu::Seed& xmenu = const_cast<dwt::WidgetMenu::Seed&>(Seeds::menu);
+	dwt::Menu::Seed& xmenu = const_cast<dwt::Menu::Seed&>(Seeds::menu);
 	dwt::Table::Seed& xTable = const_cast<dwt::Table::Seed&>(Seeds::Table);
 	TextBox::Seed& xtextBox = const_cast<TextBox::Seed&>(Seeds::textBox);
 	dwt::Tree::Seed& xtreeView =  const_cast<dwt::Tree::Seed&>(Seeds::treeView);
@@ -372,7 +372,7 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 		return 2;
 	}
 }
-void WinUtil::addHashItems(const dwt::WidgetMenu::ObjectType& menu, const TTHValue& tth, const tstring& filename) {
+void WinUtil::addHashItems(const dwt::Menu::ObjectType& menu, const TTHValue& tth, const tstring& filename) {
 	menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&WinUtil::searchHash, tth));
 	menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(WinUtil::bitziLink, tth));
 	menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&WinUtil::copyMagnet, tth, filename));

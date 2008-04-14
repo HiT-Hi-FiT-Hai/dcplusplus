@@ -657,7 +657,7 @@ bool SearchFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 			pt = results->getContextMenuPos();
 		}
 
-		WidgetMenuPtr contextMenu = makeMenu();
+		MenuPtr contextMenu = makeMenu();
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
 	}
@@ -756,8 +756,8 @@ void SearchFrame::handleRemove() {
 	}
 }
 
-SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+SearchFrame::MenuPtr SearchFrame::makeMenu() {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	StringPairList favoriteDirs = FavoriteManager::getInstance()->getFavoriteDirs();
 	SearchInfo::CheckTTH checkTTH = results->forEachSelectedT(SearchInfo::CheckTTH());
@@ -783,8 +783,8 @@ SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
 	return menu;
 }
 
-void SearchFrame::addTargetMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH) {
-	WidgetMenuPtr menu = parent->appendPopup(T_("Download to..."));
+void SearchFrame::addTargetMenu(const MenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH) {
+	MenuPtr menu = parent->appendPopup(T_("Download to..."));
 
 	int n = 0;
 	if(favoriteDirs.size() > 0) {
@@ -813,8 +813,8 @@ void SearchFrame::addTargetMenu(const WidgetMenuPtr& parent, const StringPairLis
 	}
 }
 
-void SearchFrame::addTargetDirMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs) {
-	WidgetMenuPtr menu = parent->appendPopup(T_("Download whole directory to..."));
+void SearchFrame::addTargetDirMenu(const MenuPtr& parent, const StringPairList& favoriteDirs) {
+	MenuPtr menu = parent->appendPopup(T_("Download whole directory to..."));
 
 	int n = 0;
 	if(favoriteDirs.size() > 0) {

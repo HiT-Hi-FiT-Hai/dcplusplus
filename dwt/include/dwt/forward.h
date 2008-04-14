@@ -32,6 +32,10 @@
 #ifndef DWT_FORWARD_H_
 #define DWT_FORWARD_H_
 
+namespace std { namespace tr1 {
+template<class T> class shared_ptr;
+} }
+
 namespace dwt {
 
 template< class WidgetType >
@@ -60,6 +64,9 @@ typedef GroupBox* GroupBoxPtr;
 
 class Label;
 typedef Label* LabelPtr;
+
+class Menu;
+typedef std::tr1::shared_ptr<Menu> MenuPtr;
 
 class MDIChild;
 typedef MDIChild* MDIChildPtr;

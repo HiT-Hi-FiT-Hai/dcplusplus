@@ -242,9 +242,9 @@ private:
 
 	void runSearch();
 
-	WidgetMenuPtr makeMenu();
-	void addTargetMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH);
-	void addTargetDirMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs);
+	MenuPtr makeMenu();
+	void addTargetMenu(const MenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH);
+	void addTargetDirMenu(const MenuPtr& parent, const StringPairList& favoriteDirs);
 
 	WidgetResultsPtr getUserList() { return results; }
 	

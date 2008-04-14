@@ -42,7 +42,7 @@ private:
 	LRESULT handleEnterIdle(WPARAM wParam, LPARAM lParam);
 	LRESULT handleMenuSelect(WPARAM wParam, LPARAM lParam);
 
-	dwt::WidgetMenu::ObjectType menu;
+	dwt::Menu::ObjectType menu;
 	bool menuOpened;
 };
 

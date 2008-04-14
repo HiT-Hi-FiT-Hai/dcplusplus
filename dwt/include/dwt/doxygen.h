@@ -100,7 +100,7 @@
   * \EventHandlerGenericInfo
   */
 
-/** \defgroup EventHandlersWidgetMenu Event Handlers for WidgetMenu
+/** \defgroup EventHandlersMenu Event Handlers for Menu
   * \EventHandlerGenericInfo
   */
 

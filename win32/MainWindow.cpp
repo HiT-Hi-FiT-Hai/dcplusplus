@@ -180,13 +180,13 @@ void MainWindow::initMenu() {
 	dcdebug("initMenu\n");
 
 	{
-		WidgetMenu::Seed cs = WinUtil::Seeds::menu;
+		Menu::Seed cs = WinUtil::Seeds::menu;
 		cs.popup = false;
 		mainMenu = createMenu(cs);
 	}
 
 	{
-		WidgetMenuPtr file = mainMenu->appendPopup(T_("&File"));
+		MenuPtr file = mainMenu->appendPopup(T_("&File"));
 
 		file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_HUB)));
 		file->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&MainWindow::handleForward, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_RECONNECT)));
@@ -206,7 +206,7 @@ void MainWindow::initMenu() {
 	}
 
 	{
-		WidgetMenuPtr view = mainMenu->appendPopup(T_("&View"));
+		MenuPtr view = mainMenu->appendPopup(T_("&View"));
 
 		view->appendItem(IDC_PUBLIC_HUBS, T_("&Public Hubs\tCtrl+P"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_PUBLIC_HUBS)));
 		view->appendItem(IDC_FAVORITE_HUBS, T_("&Favorite Hubs\tCtrl+F"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_HUBS)));
@@ -228,7 +228,7 @@ void MainWindow::initMenu() {
 	}
 
 	{
-		WidgetMenuPtr window = mainMenu->appendPopup(T_("&Window"));
+		MenuPtr window = mainMenu->appendPopup(T_("&Window"));
 
 		window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, T_("Close disconnected"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
 		window->appendItem(IDC_CLOSE_ALL_PM, T_("Close all PM windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
@@ -238,7 +238,7 @@ void MainWindow::initMenu() {
 	}
 
 	{
-		WidgetMenuPtr help = mainMenu->appendPopup(T_("&Help"));
+		MenuPtr help = mainMenu->appendPopup(T_("&Help"));
 
 		help->appendItem(IDH_STARTPAGE, T_("Help &Contents\tF1"), std::tr1::bind(&WinUtil::help, handle(), _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_HELP)));
 		help->appendSeparatorItem();
@@ -1001,7 +1001,7 @@ LRESULT MainWindow::handleTrayIcon(LPARAM lParam)
 		handleRestore();
 	} else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU) {
 		dwt::ScreenCoordinate pt;
-		WidgetMenuPtr trayMenu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr trayMenu = createMenu(WinUtil::Seeds::menu);
 		trayMenu->appendItem(IDC_TRAY_SHOW, T_("Show"), std::tr1::bind(&MainWindow::handleRestore, this));
 		trayMenu->appendItem(IDC_TRAY_QUIT, T_("Exit"), std::tr1::bind(&MainWindow::close, this, true));
 		trayMenu->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"));

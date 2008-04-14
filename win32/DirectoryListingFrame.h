@@ -174,14 +174,14 @@ private:
 	DirectoryListingFrame(dwt::TabView* mdiParent, const UserPtr& aUser, int64_t aSpeed);
 	virtual ~DirectoryListingFrame();
 
-	WidgetMenuPtr makeSingleMenu(ItemInfo* ii);
-	WidgetMenuPtr makeMultiMenu();
-	WidgetMenuPtr makeDirMenu();
+	MenuPtr makeSingleMenu(ItemInfo* ii);
+	MenuPtr makeMultiMenu();
+	MenuPtr makeDirMenu();
 	
 	void runUserCommand(const UserCommand& uc);
 		
-	void addTargets(const WidgetMenuPtr& menu, ItemInfo* ii = 0);
-	void addUserCommands(const WidgetMenuPtr& menu);
+	void addTargets(const MenuPtr& menu, ItemInfo* ii = 0);
+	void addUserCommands(const MenuPtr& menu);
 	
 	void handleFind();
 	void handleFindNext();

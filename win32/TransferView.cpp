@@ -185,8 +185,8 @@ HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-TransferView::WidgetMenuPtr TransferView::makeContextMenu(ConnectionInfo* ii) {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+TransferView::MenuPtr TransferView::makeContextMenu(ConnectionInfo* ii) {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	appendUserItems(mdi, menu);
 	menu->appendSeparatorItem();
@@ -207,7 +207,7 @@ bool TransferView::handleConnectionsMenu(dwt::ScreenCoordinate pt) {
 
 		/// @todo Fix multiple selection menu...
 		ConnectionInfo* ii = connections->getSelectedData();
-		WidgetMenuPtr contextMenu = makeContextMenu(ii);
+		MenuPtr contextMenu = makeContextMenu(ii);
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return true;
@@ -221,7 +221,7 @@ bool TransferView::handleDownloadsMenu(dwt::ScreenCoordinate pt) {
 			pt = downloads->getContextMenuPos();
 		}
 
-		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		DownloadInfo* di = downloads->getSelectedData();
 		WinUtil::addHashItems(menu, di->tth, di->columns[DOWNLOAD_COLUMN_FILE]);
 		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);

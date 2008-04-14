@@ -71,7 +71,7 @@ public:
 		static const dwt::Button::Seed button;
 		static const ComboBox::Seed comboBoxStatic;
 		static const ComboBox::Seed comboBoxEdit;
-		static const dwt::WidgetMenu::Seed menu;
+		static const dwt::Menu::Seed menu;
 		static const dwt::Table::Seed Table;
 		static const TextBox::Seed textBox;
 		static const dwt::Tree::Seed treeView;
@@ -147,7 +147,7 @@ public:
 	static pair<tstring, bool> getHubNames(const UserPtr& u);
 
 	// Hash related
-	static void addHashItems(const dwt::WidgetMenu::ObjectType& menu, const TTHValue& tth, const tstring& filename);
+	static void addHashItems(const dwt::Menu::ObjectType& menu, const TTHValue& tth, const tstring& filename);
 	static void bitziLink(const TTHValue& /*aHash*/);
 	static void copyMagnet(const TTHValue& /*aHash*/, const tstring& /*aFile*/);
 	static void searchHash(const TTHValue& /*aHash*/);
