@@ -26,6 +26,7 @@
 * Added the title of the currently selected page in settings (poy)
 * [L#206785] Fixed a crash when a menu is owner-drawn while the desktop isn't visible (poy)
 * [L#211313] Fixed bad virtual name being loaded (thanks kulmegil)
+* Fixed downloading multiple file lists with the enter key (poy)
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)

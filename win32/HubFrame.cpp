@@ -669,11 +669,8 @@ bool HubFrame::historyActive() {
 }
 
 bool HubFrame::handleUsersKeyDown(int c) {
-	if(c == VK_RETURN) {
-		int item = users->getNext(-1, LVNI_FOCUSED);
-		if(item != -1) {
-			users->getData(item)->getList();
-		}
+	if(c == VK_RETURN && users->hasSelected()) {
+		handleGetList();
 		return true;
 	}
 	return false;
