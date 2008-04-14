@@ -39,36 +39,48 @@ namespace dwt {
 
 template<typename WidgetType>
 class AspectHelp {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	HWND H() { return W().handle(); }
+
 	struct Dispatcher {
 		typedef std::tr1::function<void (HWND, unsigned)> F;
 
-		Dispatcher(const F& f_) : f(f_) { }
+		Dispatcher(const F& f_, WidgetType* widget_) : f(f_), widget(widget_) { }
 
 		bool operator()(const MSG& msg, LRESULT& ret) {
 			LPHELPINFO lphi = reinterpret_cast<LPHELPINFO>(msg.lParam);
 			if(lphi->iContextType != HELPINFO_WINDOW)
 				return false;
-			f(reinterpret_cast<HWND>(lphi->hItemHandle), lphi->dwContextId);
+
+			unsigned id = lphi->dwContextId;
+			widget->helpImpl(id);
+			f(reinterpret_cast<HWND>(lphi->hItemHandle), id);
+
 			ret = TRUE;
 			return true;
 		}
 
 		F f;
+		WidgetType* widget;
 	};
 
 public:
 	unsigned getHelpId() {
-		return ::GetWindowContextHelpId(static_cast<WidgetType*>(this)->handle());
+		return ::GetWindowContextHelpId(H());
 	}
 
 	void setHelpId(unsigned id) {
-		::SetWindowContextHelpId(static_cast<WidgetType*>(this)->handle(), id);
+		::SetWindowContextHelpId(H(), id);
 	}
 
 	void onHelp(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_HELP ), Dispatcher(f)
-		);
+		W().addCallback(Message(WM_HELP), Dispatcher(f, &W()));
+	}
+
+private:
+	virtual void helpImpl(unsigned& id) {
+		// empty on purpose.
+		// implement this in your widget if you wish to change the help id before it is dispatched
 	}
 };
 

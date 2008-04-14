@@ -65,7 +65,6 @@ class TabView :
 	friend class AspectSelection<TabView, int>;
 	friend class WidgetCreator< TabView >;
 	typedef std::tr1::function<void (const tstring&)> TitleChangedFunction;
-	typedef std::tr1::function<void (HWND, unsigned)> HelpFunction;
 	typedef std::tr1::function<bool (const ScreenCoordinate&)> ContextMenuFunction;
 
 public:
@@ -105,10 +104,6 @@ public:
 
 	void onTabContextMenu(ContainerPtr w, const ContextMenuFunction& f);
 
-	void onHelp(const HelpFunction& f) {
-		helpFunction = f;
-	}
-
 	bool filter(const MSG& msg);
 	
 	const Rectangle& getClientSize() const { return clientSize; }
@@ -136,7 +131,6 @@ private:
 	ToolTipPtr tip;
 
 	TitleChangedFunction titleChangedFunction;
-	HelpFunction helpFunction;
 
 	bool toggleActive;
 
@@ -168,7 +162,6 @@ private:
 	void handleLeftMouseUp(const MouseEvent& mouseEventResult);
 	bool handleContextMenu(dwt::ScreenCoordinate pt);
 	void handleMiddleMouseDown(const MouseEvent& mouseEventResult);
-	void handleHelp(HWND hWnd, unsigned id);
 	
 	tstring formatTitle(tstring title);
 	void layout();
@@ -184,7 +177,10 @@ private:
 	void eraseImpl( int row );
 	void clearImpl();
 	size_t sizeImpl() const;
-	
+
+	// AspectHelp
+	void helpImpl(unsigned& id);
+
 	// AspectSelection
 	int getSelectedImpl() const;
 	void setSelectedImpl( int idx );
