@@ -39,18 +39,15 @@
 // This file is supposed to contain (most at least) of the platform specific
 // defines and so on
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 // Enum containing the different platforms we're supposed to support,
 // SmartWinDesktop means BOTH Wine, MingW and VC++. SmartWinCE means Pocket PC or
 // Smart Phone 2003 and onwards!
  enum Platform
-{ SmartWinDesktop = 0, SmartWinCE = 1
+{ dwtDesktop = 0, dwtCE = 1
 };
 
-// end namespace SmartWin
 }
 
 // Including special GCC Stuff

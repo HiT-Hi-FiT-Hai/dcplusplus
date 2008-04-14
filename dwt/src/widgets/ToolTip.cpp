@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/ToolTip.h>
 
-namespace SmartWin {
+namespace dwt {
 
 ToolTip::Seed::Seed() : 
 	BaseType::Seed(TOOLTIPS_CLASS, WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX, WS_EX_TRANSPARENT)

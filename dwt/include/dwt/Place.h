@@ -39,9 +39,7 @@
 #include "Point.h"
 #include "Rectangle.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// A class to position objects in a rectangular area.
 /** \ingroup WidgetLayout
@@ -78,7 +76,7 @@ public:
 	  */
 	Place()
 	{
-		SmartWin::Point lowright; lowright.x = lowright.y = 100000;
+		dwt::Point lowright; lowright.x = lowright.y = 100000;
 		setBoundsBorders( lowright, 0, 0 );
 	}
 
@@ -102,10 +100,10 @@ public:
 	  * widgets inside WidgetChildWindow requires positioning at 0,0 since the
 	  * coordinates are now relative to the WindowChildWindow.
 	  */
-	void setBoundsBorders( const SmartWin::Point & sizefromZenith,
+	void setBoundsBorders( const dwt::Point & sizefromZenith,
 		const int borderX = 0, const int borderY = 0 )
 	{
-		SmartWin::Point upleft;
+		dwt::Point upleft;
 		upleft.x = upleft.y = 0;
 		setBoundsBorders( upleft, sizefromZenith, borderX, borderY );
 	}
@@ -115,8 +113,8 @@ public:
 	  * does not have to be 0,0, but it usually is. Set the inter-object gap for x
 	  * and y
 	  */
-	void setBoundsBorders( const SmartWin::Point & upleft,
-		const SmartWin::Point & lowright, const int borderX = 0,
+	void setBoundsBorders( const dwt::Point & upleft,
+		const dwt::Point & lowright, const int borderX = 0,
 		const int borderY = 0 )
 	{
 		// Record the bounding parameters
@@ -274,7 +272,6 @@ private:
 	Point itsLowRight;
 };
 
-// end namespace SmartWin
 }
 
 #endif

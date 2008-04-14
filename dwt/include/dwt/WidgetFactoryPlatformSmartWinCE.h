@@ -39,16 +39,14 @@
 
 #include "WidgetFactoryPlatformCommon.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Class for WidgetFactoryCode which only exists in WinCE version of Windows API
 /** Windows CE dependant functions which does not exist in Desktop version of Windows
   * API will be here
   */
 template< template< class > class ContainerWidgetType, class EventHandlerClass >
-class WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, SmartWinCE >
+class WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, dwtCE >
 	: public ContainerWidgetType< EventHandlerClass >
 {
 public:
@@ -56,12 +54,11 @@ public:
 		: ContainerWidgetType< EventHandlerClass >( 0 )
 	{}
 
-	WidgetFactoryPlatformImplementation( SmartWin::Widget * parent )
+	WidgetFactoryPlatformImplementation( Widget * parent )
 		: ContainerWidgetType< EventHandlerClass >( parent )
 	{}
 };
 
-// end namespace SmartWin
 }
 
 #endif //! WidgetFactoryPlatformSmartWinDesktop_h

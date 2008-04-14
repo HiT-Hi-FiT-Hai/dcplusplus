@@ -46,7 +46,7 @@
 #include "../aspects/AspectText.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Tab Sheet Control class
 /** \ingroup WidgetControls
@@ -306,7 +306,7 @@ inline void TabSheet::setData( unsigned index, LPARAM lParam )
 	TabCtrl_SetItem(this->handle(), index, &item);
 }
 
-inline TabSheet::TabSheet( SmartWin::Widget * parent )
+inline TabSheet::TabSheet( dwt::Widget * parent )
 	: BaseType( parent )
 {
 }
@@ -384,7 +384,6 @@ inline size_t TabSheet::sizeImpl() const {
 	return static_cast<size_t>(TabCtrl_GetItemCount(this->handle()));
 }
 
-// end namespace SmartWin
 }
 
 #endif

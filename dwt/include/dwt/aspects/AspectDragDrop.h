@@ -43,9 +43,8 @@
 #include <vector>
 #include <shellapi.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
+
 /// Aspect class used by dialog Widgets that have the possibility of trapping "drop files events".
 /** \ingroup AspectClasses
   * E.g. the ModalDialog can trap "drop files events" therefore they realize the AspectDragDrop through inheritance.
@@ -121,7 +120,6 @@ void AspectDragDrop< WidgetType >::setDragAcceptFiles(bool accept)
 	DragAcceptFiles(static_cast< WidgetType * >( this )->handle(),accept); 
 }
 
-// end namespace SmartWin
 }
 
 #else

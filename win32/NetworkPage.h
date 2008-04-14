@@ -25,7 +25,7 @@
 class NetworkPage : public PropPage
 {
 public:
-	NetworkPage(SmartWin::Widget* parent);
+	NetworkPage(dwt::Widget* parent);
 	virtual ~NetworkPage();
 
 	virtual void write();

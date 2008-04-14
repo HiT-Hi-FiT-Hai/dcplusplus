@@ -37,20 +37,17 @@
 #ifndef ApplicationPlatformDesktop_h
 #define ApplicationPlatformDesktop_h
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Platform specific code for the application class for Desktop version of Windows
 /// API
 /** Contains Desktop Windows API specific functions for the application class.
 */
 template< >
-class ApplicationPlatform< SmartWinDesktop >
+class ApplicationPlatform< dwtDesktop >
 {
 };
 
-// end namespace SmartWin
 }
 
 #endif //! ApplicationPlatformDesktop_h

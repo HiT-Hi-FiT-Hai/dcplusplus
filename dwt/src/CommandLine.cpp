@@ -36,9 +36,7 @@
 #include <dwt/CommandLine.h>
 #include <dwt/WindowsHeaders.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 const std::vector< SmartUtil::tstring > & CommandLine::getParams() const
 {
@@ -82,5 +80,4 @@ const SmartUtil::tstring& CommandLine::getParamsRaw() const {
 	return itsRawCmdLine;
 }
 
-// end namespace SmartWin
 }

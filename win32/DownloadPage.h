@@ -24,7 +24,7 @@
 class DownloadPage : public PropPage
 {
 public:
-	DownloadPage(SmartWin::Widget* parent);
+	DownloadPage(dwt::Widget* parent);
 	virtual ~DownloadPage();
 
 	virtual void write();

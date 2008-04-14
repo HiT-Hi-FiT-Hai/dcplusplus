@@ -33,9 +33,7 @@
 #include <dwt/xCeption.h>
 #include <dwt/resources/Brush.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 void Canvas::selectFont( FontPtr font )
 {
@@ -88,10 +86,10 @@ void Canvas::line( const Point & start, const Point & end )
 }
 
 // Draw the outline of a rectangle.
-void Canvas::line( const SmartWin::Rectangle & rect )
+void Canvas::line( const dwt::Rectangle & rect )
 {
 	moveTo( rect.pos );
-	SmartWin::Point lr( rect.lowRight() );
+	dwt::Point lr( rect.lowRight() );
 	lineTo( lr.x, rect.pos.y );
 	lineTo( lr.x, lr.y );
 	lineTo( rect.x(), lr.y );
@@ -134,7 +132,7 @@ void Canvas::rectangle( int left, int top, int right, int bottom )
 	}
 }
 
-void Canvas::rectangle( const SmartWin::Rectangle & rect )
+void Canvas::rectangle( const dwt::Rectangle & rect )
 {
 	rectangle( rect.left(),
 			   rect.top(),
@@ -142,7 +140,7 @@ void Canvas::rectangle( const SmartWin::Rectangle & rect )
 			   rect.bottom() );
 }
 
-void Canvas::ellipse( const SmartWin::Rectangle & rect )
+void Canvas::ellipse( const dwt::Rectangle & rect )
 {
 	if ( ! ::Ellipse( itsHdc, rect.left(), rect.top(), rect.right(), rect.bottom() ) )
 					{
@@ -162,7 +160,7 @@ void Canvas::fillRectangle( int left, int top, int right, int bottom, Brush & br
 	::FillRect( itsHdc, & rc, brush.handle() );
 }
 
-void Canvas::fillRectangle( const SmartWin::Rectangle & rect, Brush & brush )
+void Canvas::fillRectangle( const dwt::Rectangle & rect, Brush & brush )
 {
 	RECT rc = rect;
 	::FillRect( itsHdc, & rc, brush.handle() );
@@ -191,7 +189,7 @@ bool Canvas::extFloodFill( int x, int y, COLORREF color, bool fillTilColorFound 
 }
 #endif //!WINCE
 
-int Canvas::drawText( const SmartUtil::tstring & text, const SmartWin::Rectangle & rect, unsigned format )
+int Canvas::drawText( const SmartUtil::tstring & text, const dwt::Rectangle & rect, unsigned format )
 {
 	RECT rc = rect;
 	int retVal = ::DrawText( itsHdc, text.c_str(), ( int ) text.length(), & rc, format );
@@ -336,5 +334,4 @@ TextPen::~TextPen()
 	::SetTextColor( itsCanvas.handle(), itsColorOld );
 }
 
-// end namespace SmartWin
 }

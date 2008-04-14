@@ -22,16 +22,16 @@
 #include "WinUtil.h"
 
 template<class ContentType, bool managed = true>
-class TypedTable : public SmartWin::Table
+class TypedTable : public dwt::Table
 {
 private:
-	typedef typename SmartWin::Table BaseType;
+	typedef typename dwt::Table BaseType;
 	typedef TypedTable<ContentType, managed> ThisType;
 	
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedTable( SmartWin::Widget * parent ) : BaseType(parent) { 
+	explicit TypedTable( dwt::Widget * parent ) : BaseType(parent) { 
 		
 	}
 
@@ -56,7 +56,7 @@ public:
 		BaseType::create(cs);
 		
 		this->addCallback(
-			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &ThisType::TypedTableDispatcher
+			dwt::Message( WM_NOTIFY, LVN_GETDISPINFO ), &ThisType::TypedTableDispatcher
 		);
 		this->onColumnClick(std::tr1::bind(&ThisType::handleColumnClick, this, _1));
 		this->onSortItems(std::tr1::bind(&ThisType::handleSort, this, _1, _2));

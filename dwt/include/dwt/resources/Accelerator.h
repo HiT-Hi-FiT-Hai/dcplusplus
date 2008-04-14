@@ -36,7 +36,7 @@
 #include "Handle.h"
 #include <boost/intrusive_ptr.hpp>
 
-namespace SmartWin {
+namespace dwt {
 
 class Accelerator : public Handle<NullPolicy<HACCEL> > {
 public:

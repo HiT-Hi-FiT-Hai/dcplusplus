@@ -227,7 +227,7 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
-	QueueFrame(SmartWin::TabView* mdiParent);
+	QueueFrame(dwt::TabView* mdiParent);
 	virtual ~QueueFrame();
 	
 	void updateStatus();
@@ -291,8 +291,8 @@ private:
 	void handleReadd(const UserPtr& user);
 	bool handleKeyDownFiles(int c);
 	bool handleKeyDownDirs(int c);
-	bool handleFilesContextMenu(SmartWin::ScreenCoordinate pt);
-	bool handleDirsContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleFilesContextMenu(dwt::ScreenCoordinate pt);
+	bool handleDirsContextMenu(dwt::ScreenCoordinate pt);
 	
 	using MDIChildFrame<QueueFrame>::speak;
 	void speak(Tasks s, Task* t) { tasks.add(s, t); speak(); }

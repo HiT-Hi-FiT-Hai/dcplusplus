@@ -24,7 +24,7 @@
 class FavoriteDirsPage : public PropPage
 {
 public:
-	FavoriteDirsPage(SmartWin::Widget* parent);
+	FavoriteDirsPage(dwt::Widget* parent);
 	virtual ~FavoriteDirsPage();
 
 	virtual void write();

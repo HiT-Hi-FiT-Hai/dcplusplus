@@ -36,9 +36,7 @@
 #ifndef AspectBorder_h
 #define AspectBorder_h
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that have borders which can have multiple styles.
 /** \ingroup AspectClasses
@@ -90,7 +88,6 @@ void AspectBorder< WidgetType >::setRaisedBorder( bool value )
 	W().addRemoveStyle( WS_THICKFRAME, value );
 }
 
-// end namespace SmartWin
 }
 
 #endif

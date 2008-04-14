@@ -31,7 +31,7 @@
 
 #include <dwt/resources/Pen.h>
 
-namespace SmartWin {
+namespace dwt {
 
 Pen::Pen(HPEN h, bool own) : ResourceType(h, own) { }
 

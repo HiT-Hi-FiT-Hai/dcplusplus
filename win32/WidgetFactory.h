@@ -27,9 +27,9 @@
  * This is where stuff that eventually should be moved to smartwin goes
  */
 template<typename ContainerWidgetType>
-class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType> {
+class WidgetFactory : public dwt::WidgetFactory<ContainerWidgetType> {
 public:
-	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType>(parent) { }
+	explicit WidgetFactory(dwt::Widget* parent) : dwt::WidgetFactory<ContainerWidgetType>(parent) { }
 
 	/// TextBox class type.
 	typedef ::TextBox TextBox;
@@ -38,11 +38,11 @@ public:
 	typedef typename TextBox::ObjectType TextBoxPtr;
 
 	TextBoxPtr createTextBox( const TextBox::Seed & cs = TextBox::Seed() ) {
-		return SmartWin::WidgetCreator< TextBox >::create( this, cs );
+		return dwt::WidgetCreator< TextBox >::create( this, cs );
 	}
 
 	TextBoxPtr attachTextBox( unsigned id ) {
-		return SmartWin::WidgetCreator< TextBox >::attach( this, id );
+		return dwt::WidgetCreator< TextBox >::attach( this, id );
 	}
 
 	/// ComboBox class type.
@@ -52,11 +52,11 @@ public:
 	typedef typename ComboBox::ObjectType ComboBoxPtr;
 
 	ComboBoxPtr createComboBox( const ComboBox::Seed & cs = ComboBox::Seed() ) {
-		return SmartWin::WidgetCreator< ComboBox >::create( this, cs );
+		return dwt::WidgetCreator< ComboBox >::create( this, cs );
 	}
 
 	ComboBoxPtr attachComboBox( unsigned id ) {
-		return SmartWin::WidgetCreator< ComboBox >::attach( this, id );
+		return dwt::WidgetCreator< ComboBox >::attach( this, id );
 	}
 
 	/// VPaned class type.
@@ -66,7 +66,7 @@ public:
 	typedef typename WidgetVPaned::ObjectType WidgetVPanedPtr;
 
 	WidgetVPanedPtr createVPaned( const typename WidgetVPaned::Seed & cs = WidgetVPaned::Seed() ) {
-		return SmartWin::WidgetCreator< WidgetVPaned >::create( this, cs );
+		return dwt::WidgetCreator< WidgetVPaned >::create( this, cs );
 	}
 
 	/// HPaned class type.
@@ -76,7 +76,7 @@ public:
 	typedef typename WidgetHPaned::ObjectType WidgetHPanedPtr;
 
 	WidgetHPanedPtr createHPaned( const typename WidgetHPaned::Seed & cs = WidgetHPaned::Seed() ) {
-		return SmartWin::WidgetCreator< WidgetHPaned >::create( this, cs );
+		return dwt::WidgetCreator< WidgetHPaned >::create( this, cs );
 	}
 
 };

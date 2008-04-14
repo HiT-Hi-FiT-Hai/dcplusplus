@@ -22,10 +22,10 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class SettingsDialog : public WidgetFactory<SmartWin::ModalDialog>
+class SettingsDialog : public WidgetFactory<dwt::ModalDialog>
 {
 public:
-	SettingsDialog(SmartWin::Widget* parent);
+	SettingsDialog(dwt::Widget* parent);
 	
 	int run();
 	

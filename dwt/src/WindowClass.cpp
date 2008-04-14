@@ -37,7 +37,7 @@
 #include <typeinfo>
 #include <sstream>
 
-namespace SmartWin {
+namespace dwt {
 
 int WindowClass::itsInstanceNo;
 

@@ -21,8 +21,8 @@
 
 #include "TextBox.h"
 
-class ComboBox : public SmartWin::ComboBox {
-	typedef SmartWin::ComboBox BaseType;
+class ComboBox : public dwt::ComboBox {
+	typedef dwt::ComboBox BaseType;
 
 public:
 	typedef ComboBox ThisType;
@@ -35,7 +35,7 @@ public:
 		Seed();
 	};
 
-	explicit ComboBox( SmartWin::Widget * parent );
+	explicit ComboBox( dwt::Widget * parent );
 
 	typedef TextBox::ObjectType TextBoxPtr;
 	TextBoxPtr getTextBox();

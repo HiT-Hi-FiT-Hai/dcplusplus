@@ -33,7 +33,7 @@
 
 #include <dwt/Application.h>
 
-namespace SmartWin {
+namespace dwt {
 
 void ModelessDialog::createDialog( unsigned resourceId )
 {

@@ -35,8 +35,7 @@
 
 #include <dwt/Resource.h>
 
-namespace SmartWin
-{
+namespace dwt {
 
 Resource::Resource(const SmartUtil::tstring & file)
 {

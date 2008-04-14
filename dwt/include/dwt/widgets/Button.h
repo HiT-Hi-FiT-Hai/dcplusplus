@@ -45,7 +45,7 @@
 #include "../aspects/AspectText.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /** Common stuff for all buttons */
 class Button :

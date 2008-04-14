@@ -45,7 +45,7 @@
 #include <vector>
 #include <map>
 
-namespace SmartWin {
+namespace dwt {
 
 /// Contains information about menu item
 struct MenuItemData
@@ -61,7 +61,7 @@ struct MenuItemData
 
 	/// Creates new menu item with specified data
 	MenuItemData(
-		FontPtr font = FontPtr( new SmartWin::Font( ( HFONT )::GetStockObject( DEFAULT_GUI_FONT ), false ) ),
+		FontPtr font = FontPtr( new dwt::Font( ( HFONT )::GetStockObject( DEFAULT_GUI_FONT ), false ) ),
 		BitmapPtr image = BitmapPtr( new Bitmap( ( HBITMAP ) NULL ) ), // defaults to empty bitmap
 		COLORREF textColor = ::GetSysColor( COLOR_MENUTEXT ) )
 		: TextColor( textColor ),
@@ -427,7 +427,7 @@ public:
 
 private:
 	/// Constructor Taking pointer to parent
-	explicit WidgetMenu( SmartWin::Widget * parent );
+	explicit WidgetMenu( dwt::Widget * parent );
 
 	// ////////////////////////////////////////////////////////////////////////
 	// Menu item data wrapper, used internally
@@ -512,7 +512,6 @@ private:
 	int getItemIndex( unsigned int id );
 };
 
-// end namespace SmartWin
 }
 
 #endif

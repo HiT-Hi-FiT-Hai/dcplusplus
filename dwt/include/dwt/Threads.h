@@ -39,9 +39,7 @@
 #include "WindowsHeaders.h"
 #include <vector>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 namespace Utilities
 {
@@ -240,7 +238,6 @@ public:
 // end namespace Utilities
 }
 
-// end namespace SmartWin
 }
 
 #endif

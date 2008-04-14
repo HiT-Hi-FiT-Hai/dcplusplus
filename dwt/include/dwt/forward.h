@@ -32,7 +32,7 @@
 #ifndef FORWARD_H_
 #define FORWARD_H_
 
-namespace SmartWin {
+namespace dwt {
 
 template< class WidgetType >
 class WidgetCreator;

@@ -39,9 +39,9 @@
 #include "WindowsHeaders.h"
 #include "util/tstring.h"
 
-namespace SmartWin
-{
-	/// Class for encapsulating a Resource dll
+namespace dwt {
+
+/// Class for encapsulating a Resource dll
 	/** Use this class for extracting resources from other DLLs
 	  */
 	class Resource

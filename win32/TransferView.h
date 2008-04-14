@@ -36,7 +36,7 @@
 #include "UserInfoBase.h"
 
 class TransferView : 
-	public WidgetFactory<SmartWin::Container>, 
+	public WidgetFactory<dwt::Container>, 
 	private DownloadManagerListener, 
 	private UploadManagerListener, 
 	private ConnectionManagerListener,
@@ -46,7 +46,7 @@ class TransferView :
 	public AspectUserCommand<TransferView>
 {
 public:
-	TransferView(SmartWin::Widget* parent, SmartWin::TabView* mdi);
+	TransferView(dwt::Widget* parent, dwt::TabView* mdi);
 
 	void prepareClose();
 
@@ -243,17 +243,17 @@ private:
 
 	TabSheetPtr tabs;
 	
-	SmartWin::TabView* mdi;
-	SmartWin::ImageListPtr arrows;
+	dwt::TabView* mdi;
+	dwt::ImageListPtr arrows;
 
 	bool startup;
 
 	TaskQueue tasks;
 	StringMap ucLineParams;
 
-	void handleSized(const SmartWin::SizedEvent& sz);
-	bool handleConnectionsMenu(SmartWin::ScreenCoordinate pt);
-	bool handleDownloadsMenu(SmartWin::ScreenCoordinate pt);
+	void handleSized(const dwt::SizedEvent& sz);
+	bool handleConnectionsMenu(dwt::ScreenCoordinate pt);
+	bool handleDownloadsMenu(dwt::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	HRESULT handleDestroy(WPARAM wParam, LPARAM lParam);
 	void handleForce();

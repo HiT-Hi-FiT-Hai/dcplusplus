@@ -38,7 +38,7 @@
 
 #include "Composite.h"
 
-namespace SmartWin {
+namespace dwt {
 
 class Container :
 	public Composite<Policies::Normal>

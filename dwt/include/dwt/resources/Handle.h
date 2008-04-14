@@ -35,7 +35,7 @@
 #include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
 
-namespace SmartWin {
+namespace dwt {
 
 /** Policy for all handles that have null as NULL_HANDLE */
 template<typename H>

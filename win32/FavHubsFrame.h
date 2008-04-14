@@ -39,7 +39,7 @@ protected:
 	friend class StaticFrame<FavHubsFrame>;
 	friend class MDIChildFrame<FavHubsFrame>;
 	
-	FavHubsFrame(SmartWin::TabView* mdiParent);
+	FavHubsFrame(dwt::TabView* mdiParent);
 	virtual ~FavHubsFrame();
 
 	void layout();
@@ -80,7 +80,7 @@ private:
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 
 	void addEntry(const FavoriteHubEntryPtr entry, int index = -1);
 	void openSelected();

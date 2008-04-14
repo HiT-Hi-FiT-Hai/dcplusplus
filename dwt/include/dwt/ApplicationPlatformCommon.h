@@ -36,16 +36,13 @@
 #ifndef ApplicationPlatformCommon_h
 #define ApplicationPlatformCommon_h
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 template< Platform >
 class ApplicationPlatform
 {
 };
 
-// end namespace SmartWin
 }
 
 #endif

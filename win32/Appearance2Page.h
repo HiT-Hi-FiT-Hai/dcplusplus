@@ -24,7 +24,7 @@
 class Appearance2Page : public PropPage
 {
 public:
-	Appearance2Page(SmartWin::Widget* parent);
+	Appearance2Page(dwt::Widget* parent);
 	virtual ~Appearance2Page();
 
 	virtual void write();
@@ -36,7 +36,7 @@ private:
 	LabelPtr example;
 
 	COLORREF fg, bg, upBar, downBar;
-	SmartWin::FontPtr font;
+	dwt::FontPtr font;
 	LOGFONT logFont;
 
 	void handleBackgroundClicked();

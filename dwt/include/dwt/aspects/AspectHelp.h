@@ -35,7 +35,7 @@
 #include "../Message.h"
 #include <functional>
 
-namespace SmartWin {
+namespace dwt {
 
 template<typename WidgetType>
 class AspectHelp {

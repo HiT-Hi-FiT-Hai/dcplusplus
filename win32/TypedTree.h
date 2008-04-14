@@ -22,16 +22,16 @@
 #include "WinUtil.h"
 
 template<class ContentType>
-class TypedTree : public SmartWin::Tree
+class TypedTree : public dwt::Tree
 {
 private:
-	typedef typename SmartWin::Tree BaseType;
+	typedef typename dwt::Tree BaseType;
 	typedef TypedTree<ContentType> ThisType;
 	
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedTree( SmartWin::Widget* parent ) : BaseType(parent) { }
+	explicit TypedTree( dwt::Widget* parent ) : BaseType(parent) { }
 
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;
@@ -47,7 +47,7 @@ public:
 	void create( const typename BaseType::Seed & cs = BaseType::Seed() ) {
 		BaseType::create(cs);
 		this->addCallback(
-			SmartWin::Message( WM_NOTIFY, TVN_GETDISPINFO ), &TypedTreeDispatcher
+			dwt::Message( WM_NOTIFY, TVN_GETDISPINFO ), &TypedTreeDispatcher
 		);
 	}
 

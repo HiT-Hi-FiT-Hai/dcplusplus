@@ -50,7 +50,7 @@
 	#define WINVER 0x501
 #endif
 
-	static const SmartWin::Platform CurrentPlatform = SmartWin::SmartWinDesktop;
+	static const dwt::Platform CurrentPlatform = dwt::dwtDesktop;
 
 	#define SMARTWIN_WNDCLASSEX WNDCLASSEX
 	#define SmartWinRegisterClass RegisterClassEx

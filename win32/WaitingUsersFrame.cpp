@@ -29,7 +29,7 @@
 #include <dcpp/UploadManager.h>
 
 // Constructor
-WaitingUsersFrame::WaitingUsersFrame(SmartWin::TabView* mdiParent) :
+WaitingUsersFrame::WaitingUsersFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Waiting Users"), IDH_WAITING_USERS, IDR_WAITING_USERS)
 {
 	UploadManager::getInstance()->addListener(this);
@@ -53,7 +53,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::TabView* mdiParent) :
 
 // Recalculate frame control layout
 void WaitingUsersFrame::layout() {
-	SmartWin::Rectangle r(this->getClientAreaSize());
+	dwt::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);
 
@@ -71,7 +71,7 @@ void WaitingUsersFrame::postClosing() {
 	}
 }
 
-bool WaitingUsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool WaitingUsersFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 || pt.y() == -1) {
 		pt = queued->getContextMenuPos();
 	}

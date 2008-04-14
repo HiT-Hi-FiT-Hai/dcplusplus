@@ -42,9 +42,7 @@
 #include "../Dispatchers.h"
 #include "../Events.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// \ingroup AspectClasses
 /// \ingroup WidgetLayout
@@ -462,7 +460,6 @@ bool AspectSizable< WidgetType >::isZoomed()
 	return ::IsZoomed(H()) > 0;
 }
 
-// end namespace SmartWin
 }
 
 #endif

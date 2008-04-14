@@ -37,7 +37,7 @@ static const char* columnNames[] = {
 	N_("User Description")
 };
 
-FavHubsFrame::FavHubsFrame(SmartWin::TabView* mdiParent) :
+FavHubsFrame::FavHubsFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Favorite Hubs"), IDH_FAVORITE_HUBS, IDR_FAVORITES),
 	hubs(0),
 	connect(0),
@@ -61,7 +61,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::TabView* mdiParent) :
 
 		hubs->onDblClicked(std::tr1::bind(&FavHubsFrame::handleDoubleClick, this));
 		hubs->onKeyDown(std::tr1::bind(&FavHubsFrame::handleKeyDown, this, _1));
-		hubs->onRaw(std::tr1::bind(&FavHubsFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		hubs->onRaw(std::tr1::bind(&FavHubsFrame::handleItemChanged, this, _1, _2), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 		hubs->onContextMenu(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1));
 	}
 
@@ -121,7 +121,7 @@ FavHubsFrame::~FavHubsFrame() {
 }
 
 void FavHubsFrame::layout() {
-	SmartWin::Rectangle r(getClientAreaSize());
+	dwt::Rectangle r(getClientAreaSize());
 
 	layoutStatus(r);
 
@@ -130,7 +130,7 @@ void FavHubsFrame::layout() {
 	const int xbutton = 90;
 	const int xborder = 10;
 
-	SmartWin::Rectangle rb(r.getBottom(ybutton));
+	dwt::Rectangle rb(r.getBottom(ybutton));
 	r.size.y -= ybutton;
 	hubs->setBounds(r);
 
@@ -274,7 +274,7 @@ LRESULT FavHubsFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 	return 0;
 }
 
-bool FavHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool FavHubsFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 && pt.y() == -1) {
 		pt = hubs->getContextMenuPos();
 	}

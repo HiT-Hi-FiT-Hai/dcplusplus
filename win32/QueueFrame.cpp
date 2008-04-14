@@ -55,7 +55,7 @@ void QueueFrame::QueueItemInfo::remove() {
 	QueueManager::getInstance()->remove(getTarget()); 
 }
 
-QueueFrame::QueueFrame(SmartWin::TabView* mdiParent) :
+QueueFrame::QueueFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Download Queue"), IDH_QUEUE, IDR_QUEUE),
 	dirs(0),
 	files(0),
@@ -196,7 +196,7 @@ LRESULT QueueFrame::handleSpeaker() {
 }
 
 void QueueFrame::layout() {
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 
 	layoutStatus(r);
 
@@ -1040,7 +1040,7 @@ bool QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startId, void 
 	return id > startId;
 }
 
-bool QueueFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
+bool QueueFrame::handleFilesContextMenu(dwt::ScreenCoordinate pt) {
 	if(files->countSelected() > 0) {
 		if(pt.x() == -1 || pt.y() == -1) {
 			pt = files->getContextMenuPos();
@@ -1062,7 +1062,7 @@ bool QueueFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
 	return false;
 }
 
-bool QueueFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
+bool QueueFrame::handleDirsContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 && pt.y() == -1) {
 		pt = dirs->getContextMenuPos();
 	} else {

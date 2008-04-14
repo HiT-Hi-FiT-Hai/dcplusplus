@@ -35,7 +35,7 @@
 #include "../Message.h"
 #include "../Dispatchers.h"
 
-namespace SmartWin {
+namespace dwt {
 
 template<typename WidgetType>
 class AspectCommand {

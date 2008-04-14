@@ -114,7 +114,7 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ 0, 0 }
 };
 
-QueuePage::QueuePage(SmartWin::Widget* parent) : PropPage(parent) {
+QueuePage::QueuePage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_QUEUEPAGE);
 	setHelpId(IDH_QUEUEPAGE);
 

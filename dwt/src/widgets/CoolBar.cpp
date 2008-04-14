@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/CoolBar.h>
 
-namespace SmartWin {
+namespace dwt {
 
 CoolBar::Seed::Seed() : 
 	BaseType::Seed(REBARCLASSNAME, WS_CHILD | WS_VISIBLE | RBS_VARHEIGHT | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CCS_NODIVIDER)

@@ -37,9 +37,7 @@
 #include <dwt/Point.h>
 #include <dwt/Application.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 Bitmap::Bitmap( HBITMAP bitmap, bool own )
 	: ResourceType(bitmap, own)
@@ -99,5 +97,4 @@ BitmapPtr Bitmap::resize( const Point & newSize ) const
 	return BitmapPtr( new Bitmap( hBitmapNew ) );
 }
 
-// end namespace SmartWin
 }

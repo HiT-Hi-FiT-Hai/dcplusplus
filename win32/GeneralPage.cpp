@@ -57,7 +57,7 @@ PropPage::Item GeneralPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent), nick(0) {
+GeneralPage::GeneralPage(dwt::Widget* parent) : PropPage(parent), nick(0) {
 	createDialog(IDD_GENERALPAGE);
 	setHelpId(IDH_GENERALPAGE);
 

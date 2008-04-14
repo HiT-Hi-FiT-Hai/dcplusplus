@@ -41,9 +41,7 @@
 #include "util/StringConversion.h"
 #include <stdexcept>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Exception class used in SmartWin
 /** All exceptions thrown by SmartWin will be either of this class or derived from
@@ -145,7 +143,6 @@ private:
 /// we're in debug mode but anyway throw an exception
 #define xAssert( x, y ) do{ if( !(x) ) { assert(false&&(y)); throw xCeption((y)); } } while(false);
 
-// end namespace SmartWin
 }
 
 #endif

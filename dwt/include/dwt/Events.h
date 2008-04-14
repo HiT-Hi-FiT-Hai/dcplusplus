@@ -35,7 +35,7 @@
 #include "WindowsHeaders.h"
 #include "Point.h"
 
-namespace SmartWin {
+namespace dwt {
 
 struct SizedEvent {
 	SizedEvent(const MSG& msg);

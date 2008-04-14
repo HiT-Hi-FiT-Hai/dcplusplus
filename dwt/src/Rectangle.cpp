@@ -31,7 +31,7 @@
 
 #include <dwt/Rectangle.h>
 
-namespace SmartWin {
+namespace dwt {
 
 Rectangle::Rectangle( long x, long y, long width, long height )
 	: pos( x, y ), size( width, height )
@@ -183,5 +183,5 @@ bool operator==(const Rectangle& lhs, const Rectangle& rhs) {
 	return lhs.pos == rhs.pos && lhs.size == rhs.size;
 }
 
-const SmartWin::Rectangle letTheSystemDecide( CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT );
+const dwt::Rectangle letTheSystemDecide( CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT );
 }

@@ -60,8 +60,8 @@ static const char* downloadNames[] = {
 	N_("Size")
 };
 
-TransferView::TransferView(SmartWin::Widget* parent, SmartWin::TabView* mdi_) : 
-	WidgetFactory<SmartWin::Container>(parent),
+TransferView::TransferView(dwt::Widget* parent, dwt::TabView* mdi_) : 
+	WidgetFactory<dwt::Container>(parent),
 	connections(0),
 	connectionsWindow(0),
 	downloads(0),
@@ -82,20 +82,20 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::TabView* mdi_) :
 		cs.caption = T_("Connections");
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.location = tabs->getUsableArea(true);
-		connectionsWindow = SmartWin::WidgetCreator<Container>::create(tabs, cs);
+		connectionsWindow = dwt::WidgetCreator<Container>::create(tabs, cs);
 		connectionsWindow->setHelpId(IDH_CONNECTIONS);
 		tabs->addPage(T_("Connections"), 0);
 
 		cs.style &= ~WS_VISIBLE;
 		cs.caption = T_("Downloads");
-		downloadsWindow = SmartWin::WidgetCreator<Container>::create(tabs, cs);
+		downloadsWindow = dwt::WidgetCreator<Container>::create(tabs, cs);
 		downloadsWindow->setHelpId(IDH_DOWNLOADS);
 		tabs->addPage(T_("Downloads"), 1);
 	}
 	
 	{
-		arrows = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
-		SmartWin::Bitmap tmp(IDB_ARROWS);
+		arrows = dwt::ImageListPtr(new dwt::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
+		dwt::Bitmap tmp(IDB_ARROWS);
 		arrows->add(tmp, RGB(255, 0, 255));
 	}
 	{
@@ -126,7 +126,7 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::TabView* mdi_) :
 	}
 
 	onSized(std::tr1::bind(&TransferView::handleSized, this, _1));
-	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), SmartWin::Message(WM_DESTROY));
+	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), dwt::Message(WM_DESTROY));
 	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
 	noEraseBackground();
 	
@@ -154,18 +154,18 @@ void TransferView::handleTabSelected() {
 	}
 }
 
-void TransferView::handleSized(const SmartWin::SizedEvent& sz) {
+void TransferView::handleSized(const dwt::SizedEvent& sz) {
 	layout();
 }
 
 void TransferView::layout() {
-	tabs->setBounds(SmartWin::Point(0,0), getClientAreaSize());
-	SmartWin::Rectangle rect = tabs->getUsableArea(true);
+	tabs->setBounds(dwt::Point(0,0), getClientAreaSize());
+	dwt::Rectangle rect = tabs->getUsableArea(true);
 
 	connectionsWindow->setBounds(rect);
-	connections->setBounds(SmartWin::Rectangle(connectionsWindow->getClientAreaSize()));
+	connections->setBounds(dwt::Rectangle(connectionsWindow->getClientAreaSize()));
 	downloadsWindow->setBounds(rect);
-	downloads->setBounds(SmartWin::Rectangle(downloadsWindow->getClientAreaSize()));
+	downloads->setBounds(dwt::Rectangle(downloadsWindow->getClientAreaSize()));
 }
 
 void TransferView::prepareClose() {
@@ -199,7 +199,7 @@ TransferView::WidgetMenuPtr TransferView::makeContextMenu(ConnectionInfo* ii) {
 	return menu;
 }
 
-bool TransferView::handleConnectionsMenu(SmartWin::ScreenCoordinate pt) {
+bool TransferView::handleConnectionsMenu(dwt::ScreenCoordinate pt) {
 	if (connections->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = connections->getContextMenuPos();
@@ -215,7 +215,7 @@ bool TransferView::handleConnectionsMenu(SmartWin::ScreenCoordinate pt) {
 	return false;
 }
 
-bool TransferView::handleDownloadsMenu(SmartWin::ScreenCoordinate pt) {
+bool TransferView::handleDownloadsMenu(dwt::ScreenCoordinate pt) {
 	if (downloads->countSelected() == 1) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = downloads->getContextMenuPos();

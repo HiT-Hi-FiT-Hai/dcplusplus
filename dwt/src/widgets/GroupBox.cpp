@@ -35,7 +35,7 @@
 
 #include <dwt/widgets/GroupBox.h>
 
-namespace SmartWin {
+namespace dwt {
 
 GroupBox::Seed::Seed(const SmartUtil::tstring& caption) : 
 	BaseType::Seed(caption, BS_GROUPBOX) 

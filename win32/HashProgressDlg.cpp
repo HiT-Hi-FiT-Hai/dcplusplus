@@ -25,8 +25,8 @@
 #include <dcpp/HashManager.h>
 #include <dwt/widgets/ProgressBar.h>
 
-HashProgressDlg::HashProgressDlg(SmartWin::Widget* parent, bool aAutoClose) :
-	SmartWin::WidgetFactory<SmartWin::ModalDialog>(parent),
+HashProgressDlg::HashProgressDlg(dwt::Widget* parent, bool aAutoClose) :
+	dwt::WidgetFactory<dwt::ModalDialog>(parent),
 	progress(0),
 	autoClose(aAutoClose)
 {

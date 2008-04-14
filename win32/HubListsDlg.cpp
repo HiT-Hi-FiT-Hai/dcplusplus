@@ -41,8 +41,8 @@ static const WinUtil::HelpItem helpItems[] = {
 	{ 0, 0 }
 };
 
-HubListsDlg::HubListsDlg(SmartWin::Widget* parent) :
-	WidgetFactory<SmartWin::ModalDialog>(parent),
+HubListsDlg::HubListsDlg(dwt::Widget* parent) :
+	WidgetFactory<dwt::ModalDialog>(parent),
 	editBox(0),
 	hubLists(0)
 {

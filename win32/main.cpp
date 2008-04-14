@@ -66,7 +66,7 @@ void term_handler() {
 }
 #endif
 
-int SmartWinMain(SmartWin::Application& app) {
+int SmartWinMain(dwt::Application& app) {
 	dcdebug("StartWinMain\n");
 
 #ifndef _DEBUG
@@ -137,7 +137,7 @@ int SmartWinMain(SmartWin::Application& app) {
 		//WinUtil::mdiParent = wnd->getMDIParent();
 		splash->close();
 		ret = app.run();
-	} catch(const SmartWin::xCeption& e) {
+	} catch(const dwt::xCeption& e) {
 		printf("Exception: %s\n Additional info: %s\n", e.what(), e.whatWndMsg());
 	} catch(const std::exception& e) {
 		printf("Exception: %s\n", e.what());

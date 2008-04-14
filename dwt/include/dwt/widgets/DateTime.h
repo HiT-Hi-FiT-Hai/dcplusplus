@@ -42,7 +42,7 @@
 #include "../aspects/AspectPainting.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// DateTimePicker Control class
 /** \ingroup WidgetControls
@@ -200,7 +200,7 @@ public:
 
 protected:
 	/// Constructor Taking pointer to parent
-	explicit DateTime( SmartWin::Widget * parent );
+	explicit DateTime( dwt::Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -274,7 +274,6 @@ inline void DateTime::setTrailingTextColor( COLORREF color )
 	DateTime_SetMonthCalColor( this->handle(), MCSC_TRAILINGTEXT, color );
 }
 
-// end namespace SmartWin
 }
 
 #endif

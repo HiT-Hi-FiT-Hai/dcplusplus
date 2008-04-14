@@ -21,7 +21,7 @@
 
 #include "FinishedULFrame.h"
 
-FinishedULFrame::FinishedULFrame(SmartWin::TabView* mdiParent) :
+FinishedULFrame::FinishedULFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Finished Uploads"), IDH_FINISHED_UL, IDR_FINISHED_UL)
 {
 }

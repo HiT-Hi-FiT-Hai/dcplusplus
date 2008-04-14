@@ -40,9 +40,7 @@
 #include "../util/tstring.h"
 #include "Handle.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 // Forward declaration
 class Icon;
@@ -93,7 +91,6 @@ private:
 
 };
 
-// end namespace SmartWin
 }
 
 #endif

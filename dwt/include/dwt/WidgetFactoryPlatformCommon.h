@@ -36,9 +36,7 @@
 #ifndef WidgetFactoryPlatformCommon_h
 #define WidgetFactoryPlatformCommon_h
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 // Class for Platform dependant code
 /** This class should be specialized for every different platform we need to
@@ -50,7 +48,6 @@ class WidgetFactoryPlatformImplementation
 {
 };
 
-// end namespace SmartWin
 }
 
 #endif

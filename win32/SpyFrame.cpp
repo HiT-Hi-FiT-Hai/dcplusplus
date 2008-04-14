@@ -36,7 +36,7 @@ static const char* columnNames[] = {
 	N_("Time")
 };
 
-SpyFrame::SpyFrame(SmartWin::TabView* mdiParent) :
+SpyFrame::SpyFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Search Spy"), IDH_SEARCH_SPY, IDR_SPY),
 	searches(0),
 	ignoreTTH(0),
@@ -55,7 +55,7 @@ SpyFrame::SpyFrame(SmartWin::TabView* mdiParent) :
 		searches->createColumns(WinUtil::getStrings(columnNames));
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
-		searches->setSort(COLUMN_COUNT, SmartWin::Table::SORT_INT, false);
+		searches->setSort(COLUMN_COUNT, dwt::Table::SORT_INT, false);
 		searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
 		searches->onContextMenu(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1));
 	}
@@ -86,7 +86,7 @@ SpyFrame::~SpyFrame() {
 }
 
 void SpyFrame::layout() {
-	SmartWin::Rectangle r(this->getClientAreaSize());
+	dwt::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);
 	mapWidget(STATUS_IGNORE_TTH, ignoreTTH);
@@ -166,21 +166,21 @@ void SpyFrame::handleColumnClick(int column) {
 			searches->setSort(searches->getSortColumn(), searches->getSortType(), false);
 	} else {
 		if(column == COLUMN_COUNT) {
-			searches->setSort(column, SmartWin::Table::SORT_INT);
+			searches->setSort(column, dwt::Table::SORT_INT);
 		} else {
-			searches->setSort(column, SmartWin::Table::SORT_STRING_NOCASE);
+			searches->setSort(column, dwt::Table::SORT_STRING_NOCASE);
 		}
 	}
 }
 
-bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool SpyFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(searches->countSelected() == 1) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = searches->getContextMenuPos();
 		}
 
 		WidgetMenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
-		contextMenu->appendItem<WidgetMenu::SimpleDispatcher>(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this, searches->getText(searches->getSelected(), COLUMN_STRING)), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH)));
+		contextMenu->appendItem<WidgetMenu::SimpleDispatcher>(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this, searches->getText(searches->getSelected(), COLUMN_STRING)), dwt::BitmapPtr(new dwt::Bitmap(IDB_SEARCH)));
 
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;

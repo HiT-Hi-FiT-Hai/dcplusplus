@@ -22,7 +22,7 @@
 #include "HoldRedraw.h"
 #include "WinUtil.h"
 
-SystemFrame::SystemFrame(SmartWin::TabView* mdiParent) : 
+SystemFrame::SystemFrame(dwt::TabView* mdiParent) : 
 	BaseType(mdiParent, T_("System Log"), IDH_SYSTEM_LOG, IDR_MAINFRAME),
 	log(0) 
 {
@@ -72,7 +72,7 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 void SystemFrame::layout() {
 	bool scroll = log->scrollIsAtEnd();
 
-	SmartWin::Rectangle r(this->getClientAreaSize());
+	dwt::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);
 

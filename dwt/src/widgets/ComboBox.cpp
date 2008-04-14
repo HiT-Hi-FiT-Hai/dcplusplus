@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/ComboBox.h>
 
-namespace SmartWin {
+namespace dwt {
 
 ComboBox::Seed::Seed() : 
 	BaseType::Seed(WC_COMBOBOX, WS_CHILD | WS_TABSTOP | WS_VSCROLL),

@@ -38,9 +38,7 @@
 
 #include "../Dispatchers.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// \ingroup AspectClasses
 /// Aspect class used by Widgets that have the possibility of being "Double
@@ -68,7 +66,6 @@ protected:
 	virtual ~AspectDblClickable() { }
 };
 
-// end namespace SmartWin
 }
 
 #endif

@@ -39,7 +39,7 @@
 #include "../aspects/AspectDialog.h"
 #include "Frame.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Modal Dialog class
 /** \ingroup WidgetControls
@@ -215,7 +215,6 @@ inline void ModalDialog::endDialog( int retv )
 	::EndDialog( this->handle(), static_cast< INT_PTR >( retv ) );
 }
 
-// end namespace SmartWin
 }
 
 #endif

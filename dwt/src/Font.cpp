@@ -35,9 +35,7 @@
 
 #include <dwt/resources/Font.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 	FontPtr createFont( PredefinedFontTypes fontType )
 	{
@@ -71,5 +69,4 @@ namespace SmartWin
 		return retVal;
 	}
 
-// end namespace SmartWin
 }

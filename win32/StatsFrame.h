@@ -39,12 +39,12 @@ private:
 	enum { LINE_HEIGHT = 10 };
 	enum { AVG_SIZE = 5 };
 
-	StatsFrame(SmartWin::TabView* mdiParent);
+	StatsFrame(dwt::TabView* mdiParent);
 	virtual ~StatsFrame();
 
-	SmartWin::PenPtr pen;
-	SmartWin::PenPtr upPen;
-	SmartWin::PenPtr downPen;
+	dwt::PenPtr pen;
+	dwt::PenPtr upPen;
+	dwt::PenPtr downPen;
 
 	struct Stat {
 		Stat() : scroll(0), speed(0) { }
@@ -70,12 +70,12 @@ private:
 	int64_t lastDown;
 	int64_t max;
 
-	void handlePaint(SmartWin::PaintCanvas& canvas);
+	void handlePaint(dwt::PaintCanvas& canvas);
 
 	void layout();
 	bool eachSecond();
 
-	void drawLine(SmartWin::Canvas& canvas, StatIter begin, StatIter end, SmartWin::Rectangle& rect, long clientRight);
+	void drawLine(dwt::Canvas& canvas, StatIter begin, StatIter end, dwt::Rectangle& rect, long clientRight);
 	void addTick(int64_t bdiff, int64_t tdiff, StatList& lst, AvgList& avg, int scroll);
 };
 

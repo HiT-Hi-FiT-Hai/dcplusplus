@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/ToolBar.h>
 
-namespace SmartWin {
+namespace dwt {
 
 ToolBar::Seed::Seed() :
 	BaseType::Seed(TOOLBARCLASSNAME, WS_CHILD | TBSTYLE_LIST | TBSTYLE_TOOLTIPS)

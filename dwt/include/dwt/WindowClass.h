@@ -36,7 +36,7 @@
 #include "resources/Icon.h"
 #include <boost/noncopyable.hpp>
 
-namespace SmartWin {
+namespace dwt {
 
 class Widget;
 

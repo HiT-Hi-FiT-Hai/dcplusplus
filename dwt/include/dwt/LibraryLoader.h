@@ -43,9 +43,7 @@
 #include <map>
 #include <utility>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Class for helping loading of libraries or dlls
 /** Class normally meant for internal usage but can also be used publicly in user
@@ -133,7 +131,6 @@ private:
 	bool hasCalledLoad;
 };
 
-// end namespace SmartWin
 }
 
 #endif

@@ -51,9 +51,7 @@
 #include <dwt/Application.h>
 #include <dwt/xCeption.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 Widget::~Widget() {
 	
@@ -157,7 +155,7 @@ void Widget::addRemoveExStyle( DWORD addStyle, bool add )
 	}
 }
 
-GlobalAtom Widget::propAtom(_T("SmartWin::Widget*"));
+GlobalAtom Widget::propAtom(_T("dwt::Widget*"));
 
 void Widget::addCallback( const Message& msg, const CallbackType& callback ) {
 	itsCallbacks[msg].push_back(callback);
@@ -183,5 +181,4 @@ bool Widget::tryFire( const MSG & msg, LRESULT & retVal ) {
 	return handled;
 }
 
-// end namespace SmartWin
 }

@@ -33,7 +33,7 @@
 #include <dwt/WidgetCreator.h>
 #include <dwt/widgets/MDIParent.h>
 
-namespace SmartWin {
+namespace dwt {
 
 // TODO Fix caption
 MDIFrame::Seed::Seed(const SmartUtil::tstring& caption) :

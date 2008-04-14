@@ -27,7 +27,7 @@ TextBox::Seed::Seed(const SmartUtil::tstring& caption) :
 {
 }
 
-TextBox::TextBox( SmartWin::Widget * parent ) : BaseType(parent), menuOpened(false) {
+TextBox::TextBox( dwt::Widget * parent ) : BaseType(parent), menuOpened(false) {
 	this->onLeftMouseDblClick(std::tr1::bind(&TextBox::handleLeftDblClick, this, _1));
 
 	/*
@@ -36,11 +36,11 @@ TextBox::TextBox( SmartWin::Widget * parent ) : BaseType(parent), menuOpened(fal
 	*
 	* method described by Jeff Partch in http://groups.google.com/group/microsoft.public.vc.mfc/msg/5e07dc60be3d3baa
 	*/
-	this->onRaw(std::tr1::bind(&TextBox::handleEnterIdle, this, _1, _2), SmartWin::Message(WM_ENTERIDLE));
-	this->onRaw(std::tr1::bind(&TextBox::handleMenuSelect, this, _1, _2), SmartWin::Message(WM_MENUSELECT));
+	this->onRaw(std::tr1::bind(&TextBox::handleEnterIdle, this, _1, _2), dwt::Message(WM_ENTERIDLE));
+	this->onRaw(std::tr1::bind(&TextBox::handleMenuSelect, this, _1, _2), dwt::Message(WM_MENUSELECT));
 }
 
-void TextBox::handleLeftDblClick(const SmartWin::MouseEvent& ev) {
+void TextBox::handleLeftDblClick(const dwt::MouseEvent& ev) {
 	WinUtil::parseDBLClick(textUnderCursor(ev.pos));
 }
 
@@ -65,7 +65,7 @@ LRESULT TextBox::handleEnterIdle(WPARAM wParam, LPARAM lParam) {
 					return 0;
 			}
 
-			menu = SmartWin::WidgetCreator<SmartWin::WidgetMenu>::attach(this, hMenu, WinUtil::Seeds::menu);
+			menu = dwt::WidgetCreator<dwt::WidgetMenu>::attach(this, hMenu, WinUtil::Seeds::menu);
 		}
 	}
 	return 0;

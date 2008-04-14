@@ -24,7 +24,7 @@
 class CertificatesPage : public PropPage
 {
 public:
-	CertificatesPage(SmartWin::Widget* parent);
+	CertificatesPage(dwt::Widget* parent);
 	virtual ~CertificatesPage();
 
 	virtual void write();

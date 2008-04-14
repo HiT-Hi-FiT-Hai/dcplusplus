@@ -38,7 +38,7 @@
 
 #include "Button.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Button Control class
 /** \ingroup WidgetControls
@@ -92,7 +92,7 @@ inline GroupBox::GroupBox( Widget * parent )
 	: BaseType( parent )
 {
 }
-// end namespace SmartWin
+
 }
 
 #endif

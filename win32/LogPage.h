@@ -25,7 +25,7 @@
 class LogPage : public PropPage
 {
 public:
-	LogPage(SmartWin::Widget* parent);
+	LogPage(dwt::Widget* parent);
 	virtual ~LogPage();
 
 	virtual void write();

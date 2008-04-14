@@ -37,7 +37,7 @@
 
 #include <boost/scoped_array.hpp>
 
-namespace SmartWin {
+namespace dwt {
 
 bool Table::ComCtl6 = false;
 
@@ -67,7 +67,7 @@ void Table::create( const Seed & cs )
 #endif
 }
 
-Table::Table( SmartWin::Widget * parent )
+Table::Table( dwt::Widget * parent )
 	: BaseType( parent ),
 	itsEditRow(0),
 	itsEditColumn(0),

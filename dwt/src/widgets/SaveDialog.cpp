@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/SaveDialog.h>
 
-namespace SmartWin {
+namespace dwt {
 
 bool SaveDialog::open(SmartUtil::tstring& target) {
 	OPENFILENAME ofn = { sizeof(OPENFILENAME) }; // common dialog box structure

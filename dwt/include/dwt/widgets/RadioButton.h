@@ -38,7 +38,7 @@
 
 #include "Button.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Button Control class
  /** \ingroup WidgetControls
@@ -125,7 +125,6 @@ inline void RadioButton::setChecked( bool value )
 	this->sendMessage(BM_SETCHECK, value ? BST_CHECKED : BST_UNCHECKED);
 }
 
-// end namespace SmartWin
 }
 
 #endif

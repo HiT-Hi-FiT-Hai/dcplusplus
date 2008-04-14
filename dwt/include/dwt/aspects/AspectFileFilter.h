@@ -40,9 +40,7 @@
 #include "../util/tstring.h"
 #include "../xCeption.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Class for adding a filter to e.g. a LoadDialog dialog.
 /** \ingroup AspectClasses
@@ -144,7 +142,6 @@ private:
 	}
 };
 
-// end namespace SmartWin
 }
 
 #endif

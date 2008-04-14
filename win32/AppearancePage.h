@@ -24,7 +24,7 @@
 class AppearancePage : public PropPage
 {
 public:
-	AppearancePage(SmartWin::Widget* parent);
+	AppearancePage(dwt::Widget* parent);
 	virtual ~AppearancePage();
 
 	virtual void write();

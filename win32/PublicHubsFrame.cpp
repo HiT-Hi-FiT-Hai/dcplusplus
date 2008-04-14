@@ -89,7 +89,7 @@ int PublicHubsFrame::HubInfo::compareItems(const HubInfo* a, const HubInfo* b, i
 	}
 }
 
-PublicHubsFrame::PublicHubsFrame(SmartWin::TabView* mdiParent) :
+PublicHubsFrame::PublicHubsFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Public Hubs"), IDH_PUBLIC_HUBS, IDR_PUBLICHUBS),
 	hubs(0),
 	configure(0),
@@ -211,7 +211,7 @@ void PublicHubsFrame::postClosing() {
 void PublicHubsFrame::layout() {
 	const int border = 2;
 
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 	
 	layoutStatus(r);
 
@@ -230,7 +230,7 @@ void PublicHubsFrame::layout() {
 	r.size.x = (r.width() - 100 - border * 2) / 2 ;
 	filterDesc->setBounds(r);
 
-	SmartWin::Rectangle rc = r;
+	dwt::Rectangle rc = r;
 	// filter edit
 	rc.pos.y += ymessage - 4;
 	rc.size.y = ymessage;
@@ -443,7 +443,7 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 	return insert;
 }
 
-bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool PublicHubsFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(hubs->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = hubs->getContextMenuPos();
@@ -451,7 +451,7 @@ bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 
 		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&PublicHubsFrame::handleConnect, this));
-		menu->appendItem(IDC_ADD, T_("Add To &Favorites"), std::tr1::bind(&PublicHubsFrame::handleAdd, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));
+		menu->appendItem(IDC_ADD, T_("Add To &Favorites"), std::tr1::bind(&PublicHubsFrame::handleAdd, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_HUBS)));
 		menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
 		menu->setDefaultItem(IDC_CONNECT);
 		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);

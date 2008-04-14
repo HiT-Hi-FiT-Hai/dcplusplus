@@ -44,7 +44,7 @@
 #include "../aspects/AspectUpdate.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4101 )
@@ -177,7 +177,7 @@ public:
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit TextBoxBase( SmartWin::Widget * parent );
+	explicit TextBoxBase( dwt::Widget * parent );
 
 	// To assure nobody accidentally deletes any heaped object of this type, parent
 	// is supposed to do so when parent is killed...
@@ -418,7 +418,6 @@ inline int TextBox::lineLength(int c) {
 	return static_cast<int>(::SendMessage(this->handle(), EM_LINELENGTH, static_cast<WPARAM>(c), 0));
 }
 
-// end namespace SmartWin
 }
 
 #endif

@@ -44,8 +44,8 @@ static const WinUtil::HelpItem helpItems[] = {
 	{ 0, 0 }
 };
 
-FavHubProperties::FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry) :
-	WidgetFactory<SmartWin::ModalDialog>(parent),
+FavHubProperties::FavHubProperties(dwt::Widget* parent, FavoriteHubEntry *_entry) :
+	WidgetFactory<dwt::ModalDialog>(parent),
 	name(0),
 	address(0),
 	description(0),

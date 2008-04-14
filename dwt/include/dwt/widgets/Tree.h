@@ -48,14 +48,14 @@
 #include "../aspects/AspectSelection.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// TreeView class
  /** \ingroup WidgetControls
    * \WidgetUsageInfo
    * \image html treeview.PNG
    * A Tree is a treview control, like for instance the documentation to
-   * SmartWin which you are probably reading right now would ( in the web version )
+   * dwt which you are probably reading right now would ( in the web version )
    * have a tree view to the left. <br>
    * Another good example of a tree view is the Explorer of Windows, it has a tree
    * view to the left where you can see the different directories.
@@ -420,7 +420,6 @@ inline Tree::Tree( Widget * parent )
 {
 }
 
-// end namespace SmartWin
 }
 
 #endif

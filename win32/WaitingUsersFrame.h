@@ -41,7 +41,7 @@ protected:
 	friend class MDIChildFrame<WaitingUsersFrame>;
 
 	// Constructor
-	WaitingUsersFrame(SmartWin::TabView* mdiParent);
+	WaitingUsersFrame(dwt::TabView* mdiParent);
 	virtual ~WaitingUsersFrame() { }
 
 	bool preClosing();
@@ -53,7 +53,7 @@ protected:
 	void onGetList();
 	void onCopyFilename();
 	void onRemove();
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool handleChar(int c);
 	void onPrivateMessage();

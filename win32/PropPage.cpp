@@ -25,7 +25,7 @@
 #include <dcpp/SettingsManager.h>
 #include "WinUtil.h"
 
-PropPage::PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::ModelessDialog>(parent) {
+PropPage::PropPage(dwt::Widget* parent) : WidgetFactory<dwt::ModelessDialog>(parent) {
 }
 
 PropPage::~PropPage() {

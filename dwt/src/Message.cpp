@@ -35,9 +35,7 @@
 
 #include <dwt/Message.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 Message::Message( UINT msg_ )
 	: msg( msg_ ),
@@ -108,5 +106,4 @@ bool Message::operator <( const Message & right ) const {
 	return false;
 }
 
-// end namespace SmartWin
 }

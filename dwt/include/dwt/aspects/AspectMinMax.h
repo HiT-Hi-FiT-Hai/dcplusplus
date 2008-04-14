@@ -38,9 +38,7 @@
 
 #include "../WindowsHeaders.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// \ingroup AspectClasses
 /// \ingroup WidgetLayout
@@ -113,7 +111,6 @@ void AspectMinMax< WidgetType >::restore()
 	::ShowWindow(H(), SW_RESTORE );
 }
 
-// end namespace SmartWin
 }
 
 #endif

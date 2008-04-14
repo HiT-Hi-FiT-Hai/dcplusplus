@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/ProgressBar.h>
 
-namespace SmartWin {
+namespace dwt {
 
 ProgressBar::Seed::Seed() :
 	Widget::Seed(PROGRESS_CLASS, WS_CHILD)

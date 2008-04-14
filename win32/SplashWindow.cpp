@@ -26,13 +26,13 @@
 
 #include "WinUtil.h"
 
-SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::Window>(0) {
+SplashWindow::SplashWindow() : dwt::WidgetFactory<dwt::Window>(0) {
 	{
 		Seed cs;
 		cs.style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 		cs.exStyle = WS_EX_STATICEDGE;
 		cs.caption = _T(APPNAME);
-		tmp = new SmartWin::WidgetFactory<SmartWin::Window>(0);
+		tmp = new dwt::WidgetFactory<dwt::Window>(0);
 		tmp->create(cs);
 	}
 	{
@@ -50,16 +50,16 @@ SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::Window>(0) {
 		text = addChild(cs);
 	}
 
-	text->setFont(SmartWin::DefaultGuiFont);
+	text->setFont(dwt::DefaultGuiFont);
 	
-	SmartWin::Point textSize(text->getTextSize(caption));
-	SmartWin::Point desktopSize(getDesktopSize());
+	dwt::Point textSize(text->getTextSize(caption));
+	dwt::Point desktopSize(getDesktopSize());
 	int xmid = desktopSize.x / 2;
 	int ymid = desktopSize.y / 2;
 	int xtext = 300;
 	int ytext = textSize.y + 6;
 	
-	SmartWin::Rectangle r(xmid - xtext/2, ymid - ytext/2, xtext, ytext);
+	dwt::Rectangle r(xmid - xtext/2, ymid - ytext/2, xtext, ytext);
 	setBounds(r);
 	text->setBounds(0, 0, xtext, ytext);
 

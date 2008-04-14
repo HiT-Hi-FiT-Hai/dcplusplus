@@ -23,11 +23,11 @@
 #include <dcpp/Socket.h>
 #include <dcpp/TimerManager.h>
 
-StatsFrame::StatsFrame(SmartWin::TabView* mdiParent) :
+StatsFrame::StatsFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Network Statistics"), IDH_NET_STATS, IDR_NET_STATS),
-	pen(new SmartWin::Pen(WinUtil::textColor)),
-	upPen(new SmartWin::Pen(SETTING(UPLOAD_BAR_COLOR))),
-	downPen(new SmartWin::Pen(SETTING(DOWNLOAD_BAR_COLOR))),
+	pen(new dwt::Pen(WinUtil::textColor)),
+	upPen(new dwt::Pen(SETTING(UPLOAD_BAR_COLOR))),
+	downPen(new dwt::Pen(SETTING(DOWNLOAD_BAR_COLOR))),
 	width(0),
 	height(0),
 	twidth(0),
@@ -50,14 +50,14 @@ StatsFrame::StatsFrame(SmartWin::TabView* mdiParent) :
 StatsFrame::~StatsFrame() {
 }
 
-void StatsFrame::handlePaint(SmartWin::PaintCanvas& canvas) {
-	SmartWin::Rectangle rect = canvas.getPaintRect();
+void StatsFrame::handlePaint(dwt::PaintCanvas& canvas) {
+	dwt::Rectangle rect = canvas.getPaintRect();
 
 	if(rect.width() == 0 || rect.size.y == 0)
 		return;
 
 	{
-		SmartWin::Canvas::Selector select(canvas, *WinUtil::bgBrush);
+		dwt::Canvas::Selector select(canvas, *WinUtil::bgBrush);
 		::BitBlt(canvas.handle(), rect.x(), rect.y(), rect.width(), rect.height(), NULL, 0, 0, PATCOPY);
 	}
 
@@ -70,7 +70,7 @@ void StatsFrame::handlePaint(SmartWin::PaintCanvas& canvas) {
 	int lheight = height / (lines+1);
 
 	{
-		SmartWin::Canvas::Selector select(canvas, *pen);
+		dwt::Canvas::Selector select(canvas, *pen);
 		for(int i = 0; i < lines; ++i) {
 			int ypos = lheight * (i+1);
 			if(ypos > fontHeight + 2) {
@@ -85,21 +85,21 @@ void StatsFrame::handlePaint(SmartWin::PaintCanvas& canvas) {
 				if(height == 0)
 					height = 1;
 				tstring txt = Text::toT(Util::formatBytes(max * (height-ypos) / height) + "/s");
-				SmartWin::Point txtSize = getTextSize(txt);
+				dwt::Point txtSize = getTextSize(txt);
 				long tw = txtSize.x;
 				if(tw + 2 > twidth)
 					twidth = tw + 2;
-				canvas.drawText(txt, SmartWin::Rectangle(SmartWin::Point(1, ypos), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
+				canvas.drawText(txt, dwt::Rectangle(dwt::Point(1, ypos), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
 			}
 		}
 
 		if(rect.x() < twidth) {
 			tstring txt = Text::toT(Util::formatBytes(max) + "/s");
-			SmartWin::Point txtSize = getTextSize(txt);
+			dwt::Point txtSize = getTextSize(txt);
 			long tw = txtSize.x;
 			if(tw + 2 > twidth)
 				twidth = tw + 2;
-			canvas.drawText(txt, SmartWin::Rectangle(SmartWin::Point(1, 1), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
+			canvas.drawText(txt, dwt::Rectangle(dwt::Point(1, 1), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
 		}
 
 	}
@@ -107,18 +107,18 @@ void StatsFrame::handlePaint(SmartWin::PaintCanvas& canvas) {
 	long clientRight = getClientAreaSize().x;
 
 	{
-		SmartWin::Canvas::Selector select(canvas, *upPen);
+		dwt::Canvas::Selector select(canvas, *upPen);
 		drawLine(canvas, up.begin(), up.end(), rect, clientRight);
 	}
 
 	{
-		SmartWin::Canvas::Selector select(canvas, *downPen);
+		dwt::Canvas::Selector select(canvas, *downPen);
 		drawLine(canvas, down.begin(), down.end(), rect, clientRight);
 	}
 }
 
 void StatsFrame::layout() {
-	SmartWin::Rectangle r(getClientAreaSize());
+	dwt::Rectangle r(getClientAreaSize());
 
 	layoutStatus(r);
 
@@ -142,7 +142,7 @@ bool StatsFrame::eachSecond() {
 
 	scrollTick = scrollms - (scroll * 1000);
 
-	SmartWin::Point clientSize = getClientAreaSize();
+	dwt::Point clientSize = getClientAreaSize();
 	RECT rect = { twidth, 0, clientSize.x, clientSize.y };
 	::ScrollWindow(handle(), -((int)scroll), 0, &rect, &rect);
 
@@ -175,7 +175,7 @@ bool StatsFrame::eachSecond() {
 	return true;
 }
 
-void StatsFrame::drawLine(SmartWin::Canvas& canvas, StatIter begin, StatIter end, SmartWin::Rectangle& rect, long clientRight) {
+void StatsFrame::drawLine(dwt::Canvas& canvas, StatIter begin, StatIter end, dwt::Rectangle& rect, long clientRight) {
 	StatIter i;
 	for(i = begin; i != end; ++i) {
 		if((clientRight - (long)i->scroll) < rect.right())

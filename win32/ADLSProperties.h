@@ -22,10 +22,10 @@
 #include <dcpp/ADLSearch.h>
 #include "WidgetFactory.h"
 
-class ADLSProperties : public WidgetFactory<SmartWin::ModalDialog>
+class ADLSProperties : public WidgetFactory<dwt::ModalDialog>
 {
 public:
-	ADLSProperties(SmartWin::Widget* parent, ADLSearch *_search);
+	ADLSProperties(dwt::Widget* parent, ADLSearch *_search);
 	virtual ~ADLSProperties();
 
 	int run() { return createDialog(IDD_ADLS_PROPERTIES); }

@@ -23,7 +23,7 @@
 #include <dcpp/File.h>
 #include <dcpp/Text.h>
 
-NotepadFrame::NotepadFrame(SmartWin::TabView* mdiParent) : 
+NotepadFrame::NotepadFrame(dwt::TabView* mdiParent) : 
 	BaseType(mdiParent, T_("Notepad"), IDH_NOTEPAD, IDR_NOTEPAD),
 	pad(0) 
 {
@@ -66,7 +66,7 @@ bool NotepadFrame::preClosing() {
 }
 
 void NotepadFrame::layout() {
-	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+	dwt::Rectangle r(dwt::Point(0, 0), getClientAreaSize());
 
 	layoutStatus(r);
 

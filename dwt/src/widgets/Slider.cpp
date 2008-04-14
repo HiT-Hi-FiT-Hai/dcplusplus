@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/Slider.h>
 
-namespace SmartWin {
+namespace dwt {
 
 Slider::Seed::Seed() :
 	Widget::Seed(TRACKBAR_CLASS, WS_CHILD | WS_VISIBLE | WS_TABSTOP)

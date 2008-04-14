@@ -74,7 +74,7 @@ PropPage::Item DownloadPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
+DownloadPage::DownloadPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_DOWNLOADPAGE);
 	setHelpId(IDH_DOWNLOADPAGE);
 

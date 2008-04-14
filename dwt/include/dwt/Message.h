@@ -40,9 +40,7 @@
 
 #include <functional>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Class for comparing messages
 /** Class helps out abstract away System Messages, used in e.g. AspectRaw to let user
@@ -95,13 +93,12 @@ inline bool Message::operator==( const Message & right ) const {
 	return msg == right.msg && param == right.param;
 }
 
-// end namespace SmartWin
 }
 
 namespace std { namespace tr1 {
 template<>
-struct hash<SmartWin::Message> {
-	size_t operator()(const SmartWin::Message& message) const { return message.msg * 31 + message.param; }
+struct hash<dwt::Message> {
+	size_t operator()(const dwt::Message& message) const { return message.msg * 31 + message.param; }
 };
 
 } }

@@ -46,7 +46,7 @@
 #include "../resources/Bitmap.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Static Control class
 /** \ingroup WidgetControls
@@ -113,7 +113,7 @@ public:
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit Label( SmartWin::Widget * parent );
+	explicit Label( dwt::Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -149,7 +149,6 @@ inline void Label::setBitmap( const BitmapPtr& bitmap ) {
 	sendMessage(STM_SETIMAGE, ( WPARAM ) IMAGE_BITMAP, reinterpret_cast<LPARAM>(bitmap->handle()));
 }
 
-// end namespace SmartWin
 }
 
 #endif

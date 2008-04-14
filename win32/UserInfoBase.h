@@ -30,11 +30,11 @@ public:
 	void getList();
 	void browseList();
 	void matchQueue();
-	void pm(SmartWin::TabView*);
+	void pm(dwt::TabView*);
 	void grant();
 	void addFav();
 	void removeAll();
-	void connectFav(SmartWin::TabView*);
+	void connectFav(dwt::TabView*);
 
 	UserPtr& getUser() { return user; }
 	UserPtr user;
@@ -70,13 +70,13 @@ public:
 	// std::tr1::bind(&UserInfoBase::connectFav, _1, parent) doesn't seem to work with g++ svn 2007-07-30...
 	// wonder if it's me or the implementation as boost::bind/function swallows it...
 	struct Caller {
-		Caller(SmartWin::TabView* parent_, void (UserInfoBase::*f_)(SmartWin::TabView*)) : parent(parent_), f(f_) { }
+		Caller(dwt::TabView* parent_, void (UserInfoBase::*f_)(dwt::TabView*)) : parent(parent_), f(f_) { }
 		void operator()(UserInfoBase* uib) { (uib->*f)(parent); }
-		SmartWin::TabView* parent;
-		void (UserInfoBase::*f)(SmartWin::TabView*);
+		dwt::TabView* parent;
+		void (UserInfoBase::*f)(dwt::TabView*);
 	};
 	
-	void handlePrivateMessage(SmartWin::TabView* parent) {
+	void handlePrivateMessage(dwt::TabView* parent) {
 		static_cast<T*>(this)->getUserList()->forEachSelectedT(Caller(parent, &UserInfoBase::pm));
 	}
 	void handleGrantSlot() {
@@ -85,12 +85,12 @@ public:
 	void handleRemoveAll() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::removeAll);
 	}
-	void handleConnectFav(SmartWin::TabView* parent) {
+	void handleConnectFav(dwt::TabView* parent) {
 		static_cast<T*>(this)->getUserList()->forEachSelectedT(Caller(parent, &UserInfoBase::connectFav));
 	}
 
 	template<typename MenuType>
-	void appendUserItems(SmartWin::TabView* parent, MenuType menu) {
+	void appendUserItems(dwt::TabView* parent, MenuType menu) {
 		T* This = static_cast<T*>(this);
 		UserInfoBase::UserTraits traits = This->getUserList()->forEachSelectedT(UserInfoBase::UserTraits());
 		menu->appendItem(IDC_GETLIST, T_("&Get file list"), std::tr1::bind(&T::handleGetList, This));
@@ -99,10 +99,10 @@ public:
 		menu->appendItem(IDC_MATCH_QUEUE, T_("&Match queue"), std::tr1::bind(&T::handleMatchQueue, This));
 		menu->appendItem(IDC_PRIVATEMESSAGE, T_("&Send private message"), std::tr1::bind(&T::handlePrivateMessage, This, parent));
 		if(!traits.favOnly)
-			menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&T::handleAddFavorite, This), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_USERS)));
+			menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&T::handleAddFavorite, This), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_USERS)));
 		menu->appendItem(IDC_GRANTSLOT, T_("Grant &extra slot"), std::tr1::bind(&T::handleGrantSlot, This));
 		if(!traits.nonFavOnly)
-			menu->appendItem(IDC_CONNECT, T_("Connect to hub"), std::tr1::bind(&T::handleConnectFav, This, parent), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_HUB)));
+			menu->appendItem(IDC_CONNECT, T_("Connect to hub"), std::tr1::bind(&T::handleConnectFav, This, parent), dwt::BitmapPtr(new dwt::Bitmap(IDB_HUB)));
 		menu->appendSeparatorItem();
 		menu->appendItem(IDC_REMOVE_ALL, T_("Remove user from queue"), std::tr1::bind(&T::handleRemoveAll, This));
 	}

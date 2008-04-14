@@ -68,7 +68,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ 0, 0 }
 };
 
-AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent), languages(0) {
+AppearancePage::AppearancePage(dwt::Widget* parent) : PropPage(parent), languages(0) {
 	createDialog(IDD_APPEARANCEPAGE);
 	setHelpId(IDH_APPEARANCEPAGE);
 

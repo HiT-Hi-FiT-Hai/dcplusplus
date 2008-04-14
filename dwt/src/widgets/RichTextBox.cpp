@@ -33,7 +33,7 @@
 
 #include <dwt/LibraryLoader.h>
 
-namespace SmartWin {
+namespace dwt {
 
 RichTextBox::Seed::Seed() :
 	Widget::Seed(RICHEDIT_CLASS, WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_HSCROLL | ES_LEFT | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_MULTILINE | WS_BORDER | ES_WANTRETURN),

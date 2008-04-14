@@ -45,9 +45,7 @@
 #include "WidgetFactoryPlatformImplementation.h"
 #include "WidgetCreator.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Factory class for creating Widgets from a derived custom class
 /** This is the class you would normally derive from in your own application. <br>
@@ -82,31 +80,31 @@ class WidgetFactory
 public:
 	// Bring widgets into the namespace of the class that inherits from us
 	
-	typedef SmartWin::FolderDialog FolderDialog;
+	typedef dwt::FolderDialog FolderDialog;
 
 	/// MessageBox class and object type.
-	typedef SmartWin::MessageBox MessageBox;
+	typedef dwt::MessageBox MessageBox;
 
 	/// StatusBar class type.
-	typedef SmartWin::StatusBar< > StatusBar;
+	typedef dwt::StatusBar< > StatusBar;
 
 	/// StatusBar object type.
 	typedef typename StatusBar::ObjectType StatusBarPtr;
 
 	/// StatusBarSections class type.
-	typedef SmartWin::StatusBar< Section > StatusBarSections;
+	typedef dwt::StatusBar< Section > StatusBarSections;
 
 	/// StatusBarSections object type.
 	typedef typename StatusBarSections::ObjectType StatusBarSectionsPtr;
 
 	/// LoadFileDialog class type.
-	typedef SmartWin::LoadDialog LoadDialog;
+	typedef dwt::LoadDialog LoadDialog;
 
 	/// SaveFileDialog class and object type.
-	typedef SmartWin::SaveDialog SaveDialog;
+	typedef dwt::SaveDialog SaveDialog;
 
 	/// ColorDialog class and object type.
-	typedef SmartWin::ColorDialog ColorDialog;
+	typedef dwt::ColorDialog ColorDialog;
 
 	/// Default Constructor creating a factory Widget
 	/** Default Constructor creating a factory Widget without a parent, if you need
@@ -162,7 +160,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename ContainerWidgetType>
-WidgetFactory< ContainerWidgetType >::WidgetFactory( SmartWin::Widget * parent )
+WidgetFactory< ContainerWidgetType >::WidgetFactory( dwt::Widget * parent )
 		: WidgetFactoryPlatformImplementation< ContainerWidgetType, CurrentPlatform >( parent )
 {}
 
@@ -215,7 +213,6 @@ WidgetFactory< ContainerWidgetType >::createStatusBarSections( const typename St
 	return WidgetCreator< StatusBarSections >::create( this, cs );
 }
 
-// end namespace SmartWin
 }
 
 #endif

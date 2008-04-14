@@ -42,7 +42,7 @@
 
 #include <richedit.h>
 
-namespace SmartWin {
+namespace dwt {
 
 /// RichEdit Control class
 /** \ingroup WidgetControls
@@ -102,7 +102,7 @@ public:
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit RichTextBox( SmartWin::Widget * parent );
+	explicit RichTextBox( dwt::Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -114,7 +114,7 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline RichTextBox::RichTextBox( SmartWin::Widget * parent )
+inline RichTextBox::RichTextBox( dwt::Widget * parent )
 	: TextBoxBase( parent )
 {
 }
@@ -124,7 +124,6 @@ inline void RichTextBox::setBackgroundColor( COLORREF color )
 	this->sendMessage(EM_SETBKGNDCOLOR, 0, static_cast< LPARAM >( color ) );
 }
 
-// end namespace SmartWin
 }
 
 #endif //! WINCE

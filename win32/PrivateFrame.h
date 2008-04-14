@@ -36,8 +36,8 @@ public:
 		STATUS_LAST
 	};
 	
-	static void gotMessage(SmartWin::TabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage);
-	static void openWindow(SmartWin::TabView* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
+	static void gotMessage(dwt::TabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage);
+	static void openWindow(dwt::TabView* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const UserPtr& u) { return frames.find(u) != frames.end(); }
 	static void closeAll();
 	static void closeAllOffline();
@@ -62,13 +62,13 @@ private:
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
 
-	PrivateFrame(SmartWin::TabView* mdiParent, const UserPtr& replyTo_, bool activte);
+	PrivateFrame(dwt::TabView* mdiParent, const UserPtr& replyTo_, bool activte);
 	virtual ~PrivateFrame();
 	
 	void layout();
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool preClosing();
-	bool handleTabContextMenu(const SmartWin::ScreenCoordinate& pt);
+	bool handleTabContextMenu(const dwt::ScreenCoordinate& pt);
 	void handleGetList();
 	void handleMatchQueue();
 	

@@ -58,10 +58,7 @@
 #endif
 #endif
 
-/// Contains all classes used in SmartWin
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 // Forward declaration of friends
 class Widget;
@@ -225,7 +222,6 @@ private:
 	Application( HINSTANCE hInst, int nCmdShow );
 };
 
-// end namespace SmartWin
 }
 
 #endif

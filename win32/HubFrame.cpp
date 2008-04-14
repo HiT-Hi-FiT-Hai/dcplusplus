@@ -55,7 +55,7 @@ void HubFrame::closeDisconnected() {
 	}
 }
 
-void HubFrame::openWindow(SmartWin::TabView* mdiParent, const string& url) {
+void HubFrame::openWindow(dwt::TabView* mdiParent, const string& url) {
 	for(FrameIter i = frames.begin(); i!= frames.end(); ++i) {
 		HubFrame* frame = *i;
 		if(frame->url == url) {
@@ -67,8 +67,8 @@ void HubFrame::openWindow(SmartWin::TabView* mdiParent, const string& url) {
 	new HubFrame(mdiParent, url);
 }
 
-HubFrame::HubFrame(SmartWin::TabView* mdiParent, const string& url_) : 
-	BaseType(mdiParent, Text::toT(url_), IDH_HUB, SmartWin::IconPtr(new SmartWin::Icon(IDR_HUB))),
+HubFrame::HubFrame(dwt::TabView* mdiParent, const string& url_) : 
+	BaseType(mdiParent, Text::toT(url_), IDH_HUB, dwt::IconPtr(new dwt::Icon(IDR_HUB))),
 	chat(0),
 	message(0),
 	filter(0),
@@ -96,7 +96,7 @@ HubFrame::HubFrame(SmartWin::TabView* mdiParent, const string& url_) :
 		message = addChild(cs);
 		message->setHelpId(IDH_HUB_MESSAGE);
 		addWidget(message, true, false);
-		message->onRaw(std::tr1::bind(&HubFrame::handleMessageGetDlgCode, this), SmartWin::Message(WM_GETDLGCODE));
+		message->onRaw(std::tr1::bind(&HubFrame::handleMessageGetDlgCode, this), dwt::Message(WM_GETDLGCODE));
 		message->onKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
 		message->onSysKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&HubFrame::handleMessageChar, this, _1));
@@ -211,14 +211,14 @@ void HubFrame::layout() {
 
 	const int border = 2;
 	
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 
 	layoutStatus(r);
 	mapWidget(STATUS_SHOW_USERS, showUsers);
 	
 	int ymessage = message->getTextSize(_T("A")).y + 10;
 	int xfilter = showUsers->getChecked() ? std::min(r.width() / 4, 200l) : 0;
-	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.width() - xfilter, ymessage);
+	dwt::Rectangle rm(0, r.size.y - ymessage, r.width() - xfilter, ymessage);
 	message->setBounds(rm);
 
 	r.size.y -= rm.size.y + border;
@@ -1138,7 +1138,7 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 	return insert;
 }
 
-bool HubFrame::handleChatContextMenu(SmartWin::ScreenCoordinate pt) {
+bool HubFrame::handleChatContextMenu(dwt::ScreenCoordinate pt) {
 	bool doMenu = false;
 
 	if(pt.x() == -1 || pt.y() == -1) {
@@ -1161,7 +1161,7 @@ bool HubFrame::handleChatContextMenu(SmartWin::ScreenCoordinate pt) {
 	return doMenu ? handleUsersContextMenu(pt) : false;
 }
 
-bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
+bool HubFrame::handleUsersContextMenu(dwt::ScreenCoordinate pt) {
 	if(users->hasSelected()) {
 		if(pt.x() == -1 || pt.y() == -1) {
 			pt = users->getContextMenuPos();
@@ -1182,21 +1182,21 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 	return false;
 }
 
-bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
+bool HubFrame::handleTabContextMenu(const dwt::ScreenCoordinate& pt) {
 	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	menu->setTitle(getParent()->getTabText(this));
 
 	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
-		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_HUBS)));
 	}
 	
-	menu->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&HubFrame::handleReconnect, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_RECONNECT)));
+	menu->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&HubFrame::handleReconnect, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_RECONNECT)));
 	menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&HubFrame::handleCopyHub, this));
 
 	prepareMenu(menu, UserCommand::CONTEXT_HUB, url);
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&HubFrame::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
+	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&HubFrame::close, this, true), dwt::BitmapPtr(new dwt::Bitmap(IDB_EXIT)));
 
 	inTabMenu = true;
 	

@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/DateTime.h>
 
-namespace SmartWin {
+namespace dwt {
 
 DateTime::Seed::Seed() :
 	BaseType::Seed(DATETIMEPICK_CLASS, WS_CHILD | DTS_SHORTDATEFORMAT),

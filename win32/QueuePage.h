@@ -25,7 +25,7 @@
 class QueuePage : public PropPage
 {
 public:
-	QueuePage(SmartWin::Widget* parent);
+	QueuePage(dwt::Widget* parent);
 	virtual ~QueuePage();
 
 	virtual void write();

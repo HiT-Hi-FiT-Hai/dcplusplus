@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/Tree.h>
 
-namespace SmartWin {
+namespace dwt {
 
 Tree::Seed::Seed() :
 	BaseType::Seed(WC_TREEVIEW, WS_CHILD | WS_TABSTOP),

@@ -9,10 +9,7 @@
 #include "Widget.h"
 #include <stdexcept>
 
-using std::vector;
-
-namespace SmartWin
-{
+namespace dwt {
 
 /// AnchoredItem defined the possible parameters for the addAnchored function.
 /** Each value describes where the widget will be anchored.  "top" for example
@@ -63,7 +60,7 @@ public:
   * from the left to the right side of the parent, keeping its original size.
   * See the AnchoredItem structure above.
   */
-void addAnchored( SmartWin::Widget* widget, int anchors )
+void addAnchored( dwt::Widget* widget, int anchors )
 {
 	if( widget == NULL || widget->handle() == 0 || 
 		widget->getParent() == NULL || widget->getParent()->handle() == 0 )
@@ -117,7 +114,7 @@ void resizeAnchored()
 
 
 private:
-	vector<AnchoredItem> anchored;
+	std::vector<AnchoredItem> anchored;
 
 	
 void resizeAnchoredItem( const AnchoredItem& item )

@@ -47,7 +47,7 @@
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Coolbar Control class
 /** \ingroup WidgetControls
@@ -73,7 +73,7 @@ class CoolBar :
 	private AspectSizable< CoolBar >,
 	public AspectVisible< CoolBar >
 {
-	typedef SmartWin::AspectSizable< CoolBar > AspectSizable;
+	typedef dwt::AspectSizable< CoolBar > AspectSizable;
 	friend class WidgetCreator< CoolBar >;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible
@@ -123,7 +123,7 @@ public:
 
 protected:
 	// CTOR
-	explicit CoolBar( SmartWin::Widget * parent );
+	explicit CoolBar( dwt::Widget * parent );
 
 	// To assure nobody accidentally deletes any heaped object of this type, parent
 	// is supposed to do so when parent is killed...
@@ -155,7 +155,7 @@ inline void CoolBar::refresh()
 
 	// HC comment: sorry ;( but no smiley faces ;) anywhere, not even in comments.
 	// They mess up with my macros to check delimiters ...
-	SmartWin::Rectangle rect;
+	Rectangle rect;
 	if ( ::MoveWindow( this->handle(),
 		rect.x(), rect.y(), rect.width(), rect.height(), TRUE ) == 0 )
 	{
@@ -164,7 +164,6 @@ inline void CoolBar::refresh()
 	}
 }
 
-// end namespace SmartWin
 }
 
 #endif  //WINCE

@@ -39,9 +39,7 @@
 #include "Control.h"
 #include "MDIFrame.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 // Forward declaring friends
 template< class WidgetType >
@@ -124,7 +122,7 @@ public:
 		return (max > 0);
 	}
 	
-	void setActive(SmartWin::Widget* widget) {
+	void setActive(dwt::Widget* widget) {
 		// TODO check that this is an instance of mdichild
 		this->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(widget->handle()));
 	}
@@ -154,7 +152,7 @@ inline MDIParent::MDIParent( Widget * parent )
 	xAssert( parent, _T( "Can't have a MDIParent without a parent..." ) );
 }
 
-// end namespace SmartWin
+// end namespace dwt
 }
 
 #endif

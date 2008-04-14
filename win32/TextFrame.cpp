@@ -25,7 +25,7 @@
 
 static const size_t MAX_TEXT_LEN = 64*1024;
 
-TextFrame::TextFrame(SmartWin::TabView* mdiParent, const string& fileName) : 
+TextFrame::TextFrame(dwt::TabView* mdiParent, const string& fileName) : 
 	BaseType(mdiParent, Text::toT(Util::getFileName(fileName))),
 	pad(0) 
 {
@@ -47,7 +47,7 @@ TextFrame::TextFrame(SmartWin::TabView* mdiParent, const string& fileName) :
 }
 
 void TextFrame::layout() {
-	SmartWin::Rectangle r(this->getClientAreaSize());
+	dwt::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);
 

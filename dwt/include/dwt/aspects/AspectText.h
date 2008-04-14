@@ -40,9 +40,7 @@
 #include "../Dispatchers.h"
 #include "../Message.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that have the possibility of setting the "text"
 /// property of their objects.
@@ -114,7 +112,6 @@ SmartUtil::tstring AspectText< WidgetType >::getText() const
 	return retVal;
 }
 
-// end namespace SmartWin
 }
 
 #endif

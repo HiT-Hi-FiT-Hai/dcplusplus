@@ -36,7 +36,7 @@
 #include "../Dispatchers.h"
 #include "../Message.h"
 
-namespace SmartWin {
+namespace dwt {
 
 template<typename WidgetType>
 class AspectContextMenu {

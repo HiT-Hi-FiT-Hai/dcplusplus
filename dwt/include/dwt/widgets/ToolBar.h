@@ -46,7 +46,7 @@
 
 #include <vector>
 
-namespace SmartWin {
+namespace dwt {
 
 // TODO: Give support for multiple bitmaps...
 /// Toolbar Control class
@@ -291,12 +291,12 @@ inline bool ToolBar::getButtonChecked( unsigned int id )
 	return ( tb.fsState & TBSTATE_CHECKED ) == TBSTATE_CHECKED;
 }
 
-inline ToolBar::ToolBar( SmartWin::Widget * parent )
+inline ToolBar::ToolBar( dwt::Widget * parent )
 	: BaseType( parent )
 {
 }
 
-// end namespace SmartWin
+// end namespace dwt
 }
 #endif
 #endif

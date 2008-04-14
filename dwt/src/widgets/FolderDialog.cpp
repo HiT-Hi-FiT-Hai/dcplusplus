@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/FolderDialog.h>
 
-namespace SmartWin {
+namespace dwt {
 
 FolderDialog& FolderDialog::setRoot( const int csidl ) {
 	if (FAILED(SHGetSpecialFolderLocation( getParentHandle(), csidl, &itsPidlRoot ))) {

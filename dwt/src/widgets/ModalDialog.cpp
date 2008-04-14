@@ -32,7 +32,7 @@
 #include <dwt/widgets/ModalDialog.h>
 #include <dwt/Application.h>
 
-namespace SmartWin {
+namespace dwt {
 
 int ModalDialog::createDialog( unsigned resourceId )
 {

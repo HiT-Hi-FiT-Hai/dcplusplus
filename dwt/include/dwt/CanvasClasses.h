@@ -40,9 +40,7 @@
 #include "resources/Bitmap.h"
 #include "resources/Font.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Helper class for manipulating colors
 /** Helper class for manipulating COLORREF values, contains static functions for
@@ -341,7 +339,7 @@ public:
 	/** Draws a line from rect.pos to rect.pos + rect.size <br>
 	  * (Use Rectangle if you want to fill it.)
 	  */
-	void line( const SmartWin::Rectangle & rect );
+	void line( const dwt::Rectangle & rect );
 
 	/// Fills a polygon defined by vertices.
 	/** Fills a polygon defined by vertices.
@@ -361,7 +359,7 @@ public:
 	/// Draws an ellipse in the Device Context.
 	/** Draws an ellipse within the given rectangle.
 	  */
-	void ellipse( const SmartWin::Rectangle & rect );
+	void ellipse( const dwt::Rectangle & rect );
 
 	/// Draws a Rectangle in the Device Context.
 	/** Draws a Rectangle from (left, top) to (right, bottom).
@@ -373,7 +371,7 @@ public:
 	/** Draws a Rectangle from (pos) to ( pos + size ).
 	  * Uses the current Pen to outline, and the current Brush to fill it.
 	  */
-	void rectangle( const SmartWin::Rectangle & rect );
+	void rectangle( const dwt::Rectangle & rect );
 
 	/// Fills a Rectangle in the Device Context with the given brush.
 	/** Fills a Rectangle from (left, top) to (right, bottom).
@@ -383,7 +381,7 @@ public:
 	/// Fills a Rectangle in the Device Context with the given brush.
 	/** Fills a Rectangle within the given Rectangle.
 	  */
-	void fillRectangle( const SmartWin::Rectangle & rect, Brush & brush );
+	void fillRectangle( const dwt::Rectangle & rect, Brush & brush );
 
 	/// Sets the pixel at (x,y) to be pixcolor. Returns the old pixel color.
 	/** Sets the pixel at (x,y) to be pixcol
@@ -445,7 +443,7 @@ public:
 	  * </ul>
 	  * Google for or look at MSDN what their different meaning are.
 	  */
-	int drawText( const SmartUtil::tstring & text, const SmartWin::Rectangle & rect, unsigned format );
+	int drawText( const SmartUtil::tstring & text, const dwt::Rectangle & rect, unsigned format );
 
 	/// Draws given text inside given Rectangle
 	/** Draw text within coordinates of given Rectangle according to <br>
@@ -733,7 +731,6 @@ private:
 
 inline HDC Canvas::handle() const { return itsHdc; }
 
-// end namespace SmartWin
 }
 
 #endif

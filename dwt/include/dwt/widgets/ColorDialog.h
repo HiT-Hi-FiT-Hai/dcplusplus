@@ -38,7 +38,7 @@
 
 #include "../Widget.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// ChooseColorDialog class
 /** \ingroup WidgetControls
@@ -140,7 +140,6 @@ inline ColorDialog::ColorDialog( Widget * parent )
 {
 }
 
-// end namespace SmartWin
 }
 
 #endif

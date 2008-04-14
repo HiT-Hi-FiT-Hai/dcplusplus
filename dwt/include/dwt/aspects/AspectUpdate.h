@@ -38,9 +38,7 @@
 
 #include "../Dispatchers.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that have the possibility of Updating their text property
 /** \ingroup AspectClasses
@@ -68,7 +66,6 @@ protected:
 	virtual ~AspectUpdate() { }
 };
 
-// end namespace SmartWin
 }
 
 #endif

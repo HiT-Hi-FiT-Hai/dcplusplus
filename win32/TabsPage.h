@@ -25,7 +25,7 @@
 class TabsPage : public PropPage
 {
 public:
-	TabsPage(SmartWin::Widget* parent);
+	TabsPage(dwt::Widget* parent);
 	virtual ~TabsPage();
 
 	virtual void write();

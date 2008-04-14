@@ -45,7 +45,7 @@ PropPage::ListItem TabsPage::listItems[] = {
 	{ 0, 0 }
 };
 
-TabsPage::TabsPage(SmartWin::Widget* parent) : PropPage(parent) {
+TabsPage::TabsPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_TABSPAGE);
 	setHelpId(IDH_TABSPAGE);
 

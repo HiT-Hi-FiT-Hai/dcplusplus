@@ -39,7 +39,7 @@
 #include "../aspects/AspectPainting.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// ProgressBar Control class
 /** \ingroup WidgetControls
@@ -136,7 +136,7 @@ public:
 
 protected:
 	/// CTOR Taking pointer to parent
-	explicit ProgressBar( SmartWin::Widget * parent );
+	explicit ProgressBar( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -203,12 +203,11 @@ inline int ProgressBar::getPosition()
 	return this->sendMessage(PBM_GETPOS );
 }
 
-inline ProgressBar::ProgressBar( SmartWin::Widget * parent )
+inline ProgressBar::ProgressBar( dwt::Widget * parent )
 	: ControlType( parent )
 {
 }
 
-// end namespace SmartWin
 }
 
 #endif

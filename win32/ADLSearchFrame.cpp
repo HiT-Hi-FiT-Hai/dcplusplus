@@ -36,7 +36,7 @@ static const char* columnNames[] = {
 	N_("Max Size")
 };
 
-ADLSearchFrame::ADLSearchFrame(SmartWin::TabView* mdiParent) :
+ADLSearchFrame::ADLSearchFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Automatic Directory Listing Search"), IDH_ADL_SEARCH, IDR_ADLSEARCH),
 	add(0),
 	properties(0),
@@ -57,7 +57,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::TabView* mdiParent) :
 
 		items->onDblClicked(std::tr1::bind(&ADLSearchFrame::handleDoubleClick, this));
 		items->onKeyDown(std::tr1::bind(&ADLSearchFrame::handleKeyDown, this, _1));
-		items->onRaw(std::tr1::bind(&ADLSearchFrame::handleItemChanged, this, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		items->onRaw(std::tr1::bind(&ADLSearchFrame::handleItemChanged, this, _2), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 		items->onContextMenu(std::tr1::bind(&ADLSearchFrame::handleContextMenu, this, _1));
 	}
 
@@ -115,7 +115,7 @@ ADLSearchFrame::~ADLSearchFrame() {
 }
 
 void ADLSearchFrame::layout() {
-	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+	dwt::Rectangle r(dwt::Point(0, 0), getClientAreaSize());
 
 	layoutStatus(r);
 
@@ -124,7 +124,7 @@ void ADLSearchFrame::layout() {
 	const int xbutton = 90;
 	const int xborder = 10;
 
-	SmartWin::Rectangle rb(r.getBottom(ybutton));
+	dwt::Rectangle rb(r.getBottom(ybutton));
 	r.size.y -= ybutton;
 	items->setBounds(r);
 
@@ -283,7 +283,7 @@ LRESULT ADLSearchFrame::handleItemChanged(LPARAM lParam) {
 	return 0;
 }
 
-bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool ADLSearchFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 && pt.y() == -1) {
 		pt = items->getContextMenuPos();
 	}

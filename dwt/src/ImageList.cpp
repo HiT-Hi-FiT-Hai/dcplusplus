@@ -37,9 +37,7 @@
 #include <dwt/Application.h>
 #include <dwt/xCeption.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 ImageList::ImageList( HIMAGELIST imageList, bool own )
 	: ResourceType( imageList, own )
@@ -139,5 +137,4 @@ void ImageList::resize( unsigned newSize )
 	}
 }
 
-// end namespace SmartWin
 }

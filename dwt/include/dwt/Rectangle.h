@@ -34,7 +34,7 @@
 
 #include "Point.h"
 
-namespace SmartWin {
+namespace dwt {
 /// Data structure for defining a rectangle
 /** \ingroup WidgetLayout
   * The member functions are helpful in dividing large rectangles into smaller ones,

@@ -23,10 +23,10 @@
 
 #include "WidgetFactory.h"
 
-class PropPage : public WidgetFactory<SmartWin::ModelessDialog>
+class PropPage : public WidgetFactory<dwt::ModelessDialog>
 {
 public:
-	PropPage(SmartWin::Widget* parent);
+	PropPage(dwt::Widget* parent);
 	virtual ~PropPage();
 
 	virtual void write() = 0;

@@ -32,7 +32,7 @@
 
 #include <dwt/widgets/CheckBox.h>
 
-namespace SmartWin {
+namespace dwt {
 
 CheckBox::Seed::Seed(const SmartUtil::tstring& caption) : 
 	BaseType::Seed(caption, BS_AUTOCHECKBOX | BS_CHECKBOX)

@@ -43,9 +43,7 @@
 #include "Icon.h"
 #include "Handle.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 // Forward declaration
 class ImageList;
@@ -159,7 +157,6 @@ inline HIMAGELIST ImageList::getImageList() const
 	return handle();
 }
 
-// end namespace SmartWin
 }
 
 #endif

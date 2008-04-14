@@ -59,7 +59,7 @@ PropPage::ListItem LogPage::listItems[] = {
 	{ 0, 0 }
 };
 
-LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
+LogPage::LogPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_LOGPAGE);
 	setHelpId(IDH_LOGPAGE);
 
@@ -79,7 +79,7 @@ LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
 	attachChild<Button>(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
 
 	attachChild(dataGrid, IDC_LOG_OPTIONS);
-	dataGrid->onRaw(std::tr1::bind(&LogPage::handleItemChanged, this), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	dataGrid->onRaw(std::tr1::bind(&LogPage::handleItemChanged, this), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
 	logFormat = attachTextBox(IDC_LOG_FORMAT);
 	logFormat->setEnabled(false);

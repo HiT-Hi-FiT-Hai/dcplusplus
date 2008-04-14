@@ -39,9 +39,7 @@
 #include "WindowsHeaders.h"
 #include "util/tstring.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Class for commonalities between the different specializations of the ClipBoard
 /// class
@@ -125,13 +123,13 @@ public:
 	void setClipBoardData( const SmartUtil::tstring & str, const Widget * owner )
 	{
 		if ( !::OpenClipboard( owner->handle() ) )
-			throw SmartWin::xCeption( _T( "Couldn't open the clipboard" ) );
+			throw dwt::xCeption( _T( "Couldn't open the clipboard" ) );
 		try
 		{
 			::EmptyClipboard();
 			HGLOBAL handle = ::GlobalAlloc( GMEM_MOVEABLE, sizeof( TCHAR ) * str.size() + 1 );
 			if ( 0 == handle )
-				throw SmartWin::xCeption( _T( "Couldn't allocate memory to hold clipboard data" ) );
+				throw dwt::xCeption( _T( "Couldn't allocate memory to hold clipboard data" ) );
 			TCHAR * buffer = reinterpret_cast< TCHAR * >( GlobalLock( handle ) );
 			memcpy( buffer, str.c_str(), sizeof( TCHAR ) * str.size() );
 			GlobalUnlock( handle );
@@ -183,7 +181,6 @@ private:
 // For easy access of the most common ClipBoard specializations.
 typedef ClipBoard< SmartUtil::tstring > ClipBoardString;
 
-// end namespace SmartWin
 }
 
 #endif

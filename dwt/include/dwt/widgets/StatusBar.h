@@ -43,7 +43,7 @@
 #include "../aspects/AspectText.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Policy class for StatusBar with sections instead of one large area where
 /// you can add information
@@ -158,7 +158,7 @@ public:
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit StatusBar( SmartWin::Widget * parent );
+	explicit StatusBar( dwt::Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -216,7 +216,7 @@ void StatusBar< TypeOfStatusBar >::refresh()
 	// A status bar can't really be resized since its size is controlled by the
 	// parent window. But to not let the status bar "hang" we need to refresh its
 	// size after the main window is being resized.
-	SmartWin::Rectangle rect;
+	dwt::Rectangle rect;
 	if ( ::MoveWindow( this->handle(),
 		rect.x(), rect.y(), rect.width(), rect.height(), TRUE ) == 0 )
 	{
@@ -238,7 +238,7 @@ Message StatusBar< TypeOfStatusBar >::getDblClickMessage()
 }
 
 template< class TypeOfStatusBar >
-StatusBar< TypeOfStatusBar >::StatusBar( SmartWin::Widget * parent )
+StatusBar< TypeOfStatusBar >::StatusBar( dwt::Widget * parent )
 	: BaseType( parent )
 {
 }
@@ -251,7 +251,7 @@ void StatusBar< TypeOfStatusBar >::create( const Seed & cs )
 		setFont( cs.font );
 }
 
-// end namespace SmartWin
+// end namespace dwt
 }
 
 #endif

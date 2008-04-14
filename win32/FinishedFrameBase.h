@@ -47,7 +47,7 @@ protected:
 	friend class MDIChildFrame<T>;
 	typedef FinishedFrameBase<T, in_UL> ThisType;
 	
-	FinishedFrameBase(SmartWin::TabView* mdiParent, const tstring& title, unsigned helpId, int icon) :
+	FinishedFrameBase(dwt::TabView* mdiParent, const tstring& title, unsigned helpId, int icon) :
 		BaseType(mdiParent, title, helpId, icon),
 		items(0),
 		totalBytes(0),
@@ -84,7 +84,7 @@ protected:
 	virtual ~FinishedFrameBase() { }
 
 	void layout() {
-		SmartWin::Rectangle r(this->getClientAreaSize());
+		dwt::Rectangle r(this->getClientAreaSize());
 
 		this->layoutStatus(r);
 		items->setBounds(r);
@@ -203,7 +203,7 @@ private:
 		return false;
 	}
 
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	bool handleContextMenu(dwt::ScreenCoordinate pt) {
 		if(items->hasSelected()) {
 			if(pt.x() == -1 && pt.y() == -1) {
 				pt = items->getContextMenuPos();

@@ -72,7 +72,7 @@ PropPage::Item UploadPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
+UploadPage::UploadPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UPLOADPAGE);
 	setHelpId(IDH_UPLOADPAGE);
 
@@ -103,7 +103,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	directories->onDblClicked(std::tr1::bind(&UploadPage::handleDoubleClick, this));
 	directories->onKeyDown(std::tr1::bind(&UploadPage::handleKeyDown, this, _1));
-	directories->onRaw(std::tr1::bind(&UploadPage::handleItemChanged, this), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	directories->onRaw(std::tr1::bind(&UploadPage::handleItemChanged, this), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
 	onDragDrop(std::tr1::bind(&UploadPage::handleDragDrop, this, _1));
 
@@ -113,7 +113,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	attachChild(total, IDC_TOTAL);
 	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 
-	ButtonPtr button = attachChild<SmartWin::Button>(IDC_RENAME);
+	ButtonPtr button = attachChild<dwt::Button>(IDC_RENAME);
 	button->onClicked(std::tr1::bind(&UploadPage::handleRenameClicked, this));
 
 	attachChild(button, IDC_REMOVE);

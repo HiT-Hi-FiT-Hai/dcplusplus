@@ -91,7 +91,7 @@ PropPage::Item NetworkPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
+NetworkPage::NetworkPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_NETWORKPAGE);
 	setHelpId(IDH_NETWORKPAGE);
 

@@ -38,7 +38,7 @@
 
 #include "Frame.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// "MDI Frame" class
 /** \ingroup WidgetControls
@@ -106,7 +106,6 @@ inline MDIFrame::~MDIFrame()
 {
 }
 
-// end namespace SmartWin
 }
 
 #endif

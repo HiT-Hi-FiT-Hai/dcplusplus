@@ -1,13 +1,13 @@
 #ifndef SPLASHWINDOW_H_
 #define SPLASHWINDOW_H_
 
-class SplashWindow : public SmartWin::WidgetFactory<SmartWin::Window>  {
+class SplashWindow : public dwt::WidgetFactory<dwt::Window>  {
 public:
 	SplashWindow();
 	~SplashWindow();
 	void operator()(const string& str);
 private:
-	SmartWin::Window* tmp;
+	dwt::Window* tmp;
 	TextBoxPtr text;
 };
 

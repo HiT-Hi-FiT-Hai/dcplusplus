@@ -37,7 +37,7 @@
 
 #include <type_traits>
 
-namespace SmartWin {
+namespace dwt {
 
 template<typename WidgetType>
 class AspectDialog {

@@ -21,10 +21,10 @@
 
 #include "WidgetFactory.h"
 
-class HubListsDlg : public WidgetFactory<SmartWin::ModalDialog>
+class HubListsDlg : public WidgetFactory<dwt::ModalDialog>
 {
 public:
-	HubListsDlg(SmartWin::Widget* parent);
+	HubListsDlg(dwt::Widget* parent);
 	virtual ~HubListsDlg();
 
 	int run() { return createDialog(IDD_HUB_LIST); }

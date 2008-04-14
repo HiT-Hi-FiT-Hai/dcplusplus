@@ -42,27 +42,25 @@
 #include "widgets/WidgetMenu.h"
 #include "WidgetCreator.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Class for WidgetFactoryCode which only exists in Desktop version of Windows API
 /** Desktop version dependant functions which does not exist in Windows CE version of
   * Windows API will be here
   */
 template< typename ContainerWidgetType >
-class WidgetFactoryPlatformImplementation< ContainerWidgetType,  SmartWinDesktop >
+class WidgetFactoryPlatformImplementation< ContainerWidgetType,  dwtDesktop >
 	: public ContainerWidgetType
 {
 public:
 	/// Menu class type.
-	typedef SmartWin::WidgetMenu WidgetMenu;
+	typedef dwt::WidgetMenu WidgetMenu;
 
 	/// Menu object type.
 	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
 
 	/// ChooseFont class and object type.
-	typedef SmartWin::FontDialog FontDialog;
+	typedef dwt::FontDialog FontDialog;
 
 	/// Constructor taking a pointer to it's parent.
 	/** If you for instance create a WidgetChildWindow then use this Constructor
@@ -95,11 +93,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// end namespace SmartWin
 }
 
 #endif //! WidgetFactoryPlatformSmartWinDesktop_h

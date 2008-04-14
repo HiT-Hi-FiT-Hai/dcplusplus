@@ -38,7 +38,7 @@
 
 #include "Button.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Check Box Control class
 /** \ingroup WidgetControls
@@ -87,7 +87,7 @@ public:
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit CheckBox( SmartWin::Widget * parent );
+	explicit CheckBox( dwt::Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -109,12 +109,11 @@ inline bool CheckBox::getChecked()
 	return this->sendMessage(BM_GETCHECK) == BST_CHECKED;
 }
 
-inline CheckBox::CheckBox( SmartWin::Widget * parent )
+inline CheckBox::CheckBox( dwt::Widget * parent )
 	: BaseType( parent )
 {
 }
 
-// end namespace SmartWin
 }
 
 #endif

@@ -53,7 +53,7 @@
 #include <dwt/LibraryLoader.h>
 
 MainWindow::MainWindow() :
-	WidgetFactory<SmartWin::Window>(0), 
+	WidgetFactory<dwt::Window>(0), 
 	paned(0), 
 	transfers(0), 
 	toolbar(0),
@@ -91,7 +91,7 @@ MainWindow::MainWindow() :
 	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
 	onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
-	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _2), SmartWin::Message(WM_APP + 242));
+	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _2), dwt::Message(WM_APP + 242));
 	
 	updateStatus();
 	layout();
@@ -101,10 +101,10 @@ MainWindow::MainWindow() :
 
 	onClosing(std::tr1::bind(&MainWindow::closing, this));
 
-	onRaw(std::tr1::bind(&MainWindow::handleTrayMessage, this), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
-	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this), SmartWin::Message(WM_ENDSESSION));
-	onRaw(std::tr1::bind(&MainWindow::handleCopyData, this, _2), SmartWin::Message(WM_COPYDATA));
-	onRaw(std::tr1::bind(&MainWindow::handleWhereAreYou, this), SmartWin::Message(SingleInstance::WMU_WHERE_ARE_YOU));
+	onRaw(std::tr1::bind(&MainWindow::handleTrayMessage, this), dwt::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
+	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this), dwt::Message(WM_ENDSESSION));
+	onRaw(std::tr1::bind(&MainWindow::handleCopyData, this, _2), dwt::Message(WM_COPYDATA));
+	onRaw(std::tr1::bind(&MainWindow::handleWhereAreYou, this), dwt::Message(SingleInstance::WMU_WHERE_ARE_YOU));
 	
 	TimerManager::getInstance()->start();
 
@@ -137,13 +137,13 @@ MainWindow::MainWindow() :
 		postMessage(WM_COMMAND, IDC_SETTINGS);
 	}
 	
-	filterIter = SmartWin::Application::instance().addFilter(std::tr1::bind(&MainWindow::filter, this, _1));	
-	accel = SmartWin::AcceleratorPtr(new SmartWin::Accelerator(this, IDR_MAINFRAME));
+	filterIter = dwt::Application::instance().addFilter(std::tr1::bind(&MainWindow::filter, this, _1));	
+	accel = dwt::AcceleratorPtr(new dwt::Accelerator(this, IDR_MAINFRAME));
 	
-	int cmdShow = SmartWin::Application::instance().getCmdShow();
+	int cmdShow = dwt::Application::instance().getCmdShow();
 	::ShowWindow(handle(), ((cmdShow == SW_SHOWDEFAULT) || (cmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : cmdShow);
 
-	if(SmartWin::LibraryLoader::getCommonControlsVersion() < PACK_COMCTL_VERSION(5,80))
+	if(dwt::LibraryLoader::getCommonControlsVersion() < PACK_COMCTL_VERSION(5,80))
 		createMessageBox().show(T_("Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONEXCLAMATION);
 }
 
@@ -160,14 +160,14 @@ void MainWindow::initWindow() {
 	if ( (pos_x != static_cast<int>(CW_USEDEFAULT)) &&(pos_y != static_cast<int>(CW_USEDEFAULT))&&(size_x
 	    != static_cast<int>(CW_USEDEFAULT))&&(size_y != static_cast<int>(CW_USEDEFAULT))&&(pos_x > 0&& pos_y > 0)
 	    &&(size_x > 10&& size_y > 10)) {
-		cs.location = SmartWin::Rectangle(pos_x, pos_y, size_x, size_y);
+		cs.location = dwt::Rectangle(pos_x, pos_y, size_x, size_y);
 	}
 
 	cs.exStyle |= WS_EX_APPWINDOW;
 	if (ResourceManager::getInstance()->isRTL())
 		cs.exStyle |= WS_EX_RTLREADING;
 
-	cs.icon = SmartWin::IconPtr(new SmartWin::Icon(IDR_MAINFRAME));
+	cs.icon = dwt::IconPtr(new dwt::Icon(IDR_MAINFRAME));
 	cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 	create(cs);
 	
@@ -188,42 +188,42 @@ void MainWindow::initMenu() {
 	{
 		WidgetMenuPtr file = mainMenu->appendPopup(T_("&File"));
 
-		file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_HUB)));
-		file->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&MainWindow::handleForward, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_RECONNECT)));
-		file->appendItem(IDC_FOLLOW, T_("Follow last redirec&t\tCtrl+T"), std::tr1::bind(&MainWindow::handleForward, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FOLLOW)));
+		file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_HUB)));
+		file->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&MainWindow::handleForward, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_RECONNECT)));
+		file->appendItem(IDC_FOLLOW, T_("Follow last redirec&t\tCtrl+T"), std::tr1::bind(&MainWindow::handleForward, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_FOLLOW)));
 		file->appendSeparatorItem();
 
-		file->appendItem(IDC_OPEN_FILE_LIST, T_("Open file list...\tCtrl+L"), std::tr1::bind(&MainWindow::handleOpenFileList, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_OPEN_FILE_LIST)));
+		file->appendItem(IDC_OPEN_FILE_LIST, T_("Open file list...\tCtrl+L"), std::tr1::bind(&MainWindow::handleOpenFileList, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_OPEN_FILE_LIST)));
 		file->appendItem(IDC_OPEN_OWN_LIST, T_("Open own list"), std::tr1::bind(&MainWindow::handleOpenOwnList, this));
 		file->appendItem(IDC_MATCH_ALL, T_("Match downloaded lists"), std::tr1::bind(&MainWindow::handleMatchAll, this));
 		file->appendItem(IDC_REFRESH_FILE_LIST, T_("Refresh file list\tCtrl+E"), std::tr1::bind(&MainWindow::handleRefreshFileList, this));
 		file->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"), std::tr1::bind(&MainWindow::handleOpenDownloadsDir, this));
 		file->appendSeparatorItem();
 
-		file->appendItem(IDC_SETTINGS, T_("Settings..."), std::tr1::bind(&MainWindow::handleSettings, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SETTINGS)));
+		file->appendItem(IDC_SETTINGS, T_("Settings..."), std::tr1::bind(&MainWindow::handleSettings, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_SETTINGS)));
 		file->appendSeparatorItem();
-		file->appendItem(IDC_EXIT, T_("E&xit"), std::tr1::bind(&MainWindow::handleExit, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
+		file->appendItem(IDC_EXIT, T_("E&xit"), std::tr1::bind(&MainWindow::handleExit, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_EXIT)));
 	}
 
 	{
 		WidgetMenuPtr view = mainMenu->appendPopup(T_("&View"));
 
-		view->appendItem(IDC_PUBLIC_HUBS, T_("&Public Hubs\tCtrl+P"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_PUBLIC_HUBS)));
-		view->appendItem(IDC_FAVORITE_HUBS, T_("&Favorite Hubs\tCtrl+F"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));
-		view->appendItem(IDC_FAVUSERS, T_("Favorite &Users\tCtrl+U"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_USERS)));
+		view->appendItem(IDC_PUBLIC_HUBS, T_("&Public Hubs\tCtrl+P"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_PUBLIC_HUBS)));
+		view->appendItem(IDC_FAVORITE_HUBS, T_("&Favorite Hubs\tCtrl+F"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_HUBS)));
+		view->appendItem(IDC_FAVUSERS, T_("Favorite &Users\tCtrl+U"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_USERS)));
 		view->appendSeparatorItem();
-		view->appendItem(IDC_QUEUE, T_("&Download Queue\tCtrl+D"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DL_QUEUE)));
-		view->appendItem(IDC_FINISHED_DL, T_("Finished Downloads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FINISHED_DL)));
-		view->appendItem(IDC_WAITING_USERS, T_("Waiting Users"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_WAITING_USERS)));
-		view->appendItem(IDC_FINISHED_UL, T_("Finished Uploads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FINISHED_UL)));
+		view->appendItem(IDC_QUEUE, T_("&Download Queue\tCtrl+D"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_DL_QUEUE)));
+		view->appendItem(IDC_FINISHED_DL, T_("Finished Downloads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_FINISHED_DL)));
+		view->appendItem(IDC_WAITING_USERS, T_("Waiting Users"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_WAITING_USERS)));
+		view->appendItem(IDC_FINISHED_UL, T_("Finished Uploads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_FINISHED_UL)));
 		view->appendSeparatorItem();
-		view->appendItem(IDC_SEARCH, T_("&Search\tCtrl+S"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH)));
-		view->appendItem(IDC_ADL_SEARCH, T_("ADL Search"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_ADL_SEARCH)));
-		view->appendItem(IDC_SEARCH_SPY, T_("Search Spy"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH_SPY)));
+		view->appendItem(IDC_SEARCH, T_("&Search\tCtrl+S"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_SEARCH)));
+		view->appendItem(IDC_ADL_SEARCH, T_("ADL Search"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_ADL_SEARCH)));
+		view->appendItem(IDC_SEARCH_SPY, T_("Search Spy"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_SEARCH_SPY)));
 		view->appendSeparatorItem();
-		view->appendItem(IDC_NOTEPAD, T_("&Notepad\tCtrl+N"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_NOTEPAD)));
+		view->appendItem(IDC_NOTEPAD, T_("&Notepad\tCtrl+N"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_NOTEPAD)));
 		view->appendItem(IDC_SYSTEM_LOG, T_("System Log"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-		view->appendItem(IDC_NET_STATS, T_("Network Statistics"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_NETWORK_STATS)));
+		view->appendItem(IDC_NET_STATS, T_("Network Statistics"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_NETWORK_STATS)));
 		view->appendItem(IDC_HASH_PROGRESS, T_("Indexing progress"), std::tr1::bind(&MainWindow::handleHashProgress, this));
 	}
 
@@ -240,10 +240,10 @@ void MainWindow::initMenu() {
 	{
 		WidgetMenuPtr help = mainMenu->appendPopup(T_("&Help"));
 
-		help->appendItem(IDH_STARTPAGE, T_("Help &Contents\tF1"), std::tr1::bind(&WinUtil::help, handle(), _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_HELP)));
+		help->appendItem(IDH_STARTPAGE, T_("Help &Contents\tF1"), std::tr1::bind(&WinUtil::help, handle(), _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_HELP)));
 		help->appendSeparatorItem();
 		help->appendItem(IDH_CHANGELOG, T_("Change Log"), std::tr1::bind(&WinUtil::help, handle(), _1));
-		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DCPP)));
+		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_DCPP)));
 		help->appendSeparatorItem();
 		help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 		help->appendItem(IDC_HELP_DOWNLOADS, T_("Downloads"), std::tr1::bind(&MainWindow::handleLink, this, _1));
@@ -266,15 +266,15 @@ void MainWindow::initToolbar() {
 	cs.style |= TBSTYLE_FLAT;
 	toolbar = addChild(cs);
 	{
-		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
-		SmartWin::Bitmap bmp(IDB_TOOLBAR20);
+		dwt::ImageListPtr list(new dwt::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
+		dwt::Bitmap bmp(IDB_TOOLBAR20);
 		list->add(bmp, RGB(255, 0, 255));
 		
 		toolbar->setNormalImageList(list);
 	}
 	{
-		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
-		SmartWin::Bitmap bmp(IDB_TOOLBAR20_HOT);
+		dwt::ImageListPtr list(new dwt::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
+		dwt::Bitmap bmp(IDB_TOOLBAR20_HOT);
 		list->add(bmp, RGB(255, 0, 255));
 		
 		toolbar->setHotImageList(list);
@@ -316,7 +316,7 @@ void MainWindow::initStatusBar() {
 
 void MainWindow::initTabs() {
 	dcdebug("initTabs\n");
-	tabs = addChild(SmartWin::TabView::Seed(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)));
+	tabs = addChild(dwt::TabView::Seed(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)));
 	tabs->onTitleChanged(std::tr1::bind(&MainWindow::handleTabsTitleChanged, this, _1));
 	tabs->onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
 	paned->setFirst(tabs);
@@ -382,7 +382,7 @@ void MainWindow::handleQuickConnect() {
 	}
 }
 
-void MainWindow::handleSized(const SmartWin::SizedEvent& sz) {
+void MainWindow::handleSized(const dwt::SizedEvent& sz) {
 	if(sz.isMinimized) {
 		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
 			Util::setAway(true);
@@ -536,10 +536,10 @@ bool MainWindow::eachSecond() {
 }
 
 void MainWindow::layout() {
-	SmartWin::Rectangle r(getClientAreaSize());
+	dwt::Rectangle r(getClientAreaSize());
 	
 	toolbar->refresh();
-	SmartWin::Point pt = toolbar->getSize();
+	dwt::Point pt = toolbar->getSize();
 	r.pos.y += pt.y;
 	r.size.y -= pt.y;
 	
@@ -582,7 +582,7 @@ void MainWindow::updateStatus() {
 }
 
 MainWindow::~MainWindow() {
-	SmartWin::Application::instance().removeFilter(filterIter);
+	dwt::Application::instance().removeFilter(filterIter);
 }
 
 void MainWindow::handleSettings() {
@@ -984,7 +984,7 @@ void MainWindow::handleRestore() {
 }
 
 bool MainWindow::tryFire(const MSG& msg, LRESULT& retVal) {
-	bool handled = SmartWin::Window::tryFire(msg, retVal);
+	bool handled = dwt::Window::tryFire(msg, retVal);
 	if(!handled && msg.message == WM_COMMAND && tabs) {
 		handled = tabs->tryFire(msg, retVal);
 	}
@@ -996,7 +996,7 @@ LRESULT MainWindow::handleTrayIcon(LPARAM lParam)
 	if (lParam == WM_LBUTTONUP) {
 		handleRestore();
 	} else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU) {
-		SmartWin::ScreenCoordinate pt;
+		dwt::ScreenCoordinate pt;
 		WidgetMenuPtr trayMenu = createMenu(WinUtil::Seeds::menu);
 		trayMenu->appendItem(IDC_TRAY_SHOW, T_("Show"), std::tr1::bind(&MainWindow::handleRestore, this));
 		trayMenu->appendItem(IDC_TRAY_QUIT, T_("Exit"), std::tr1::bind(&MainWindow::close, this, true));

@@ -31,7 +31,7 @@
 
 #include <dwt/Events.h>
 
-namespace SmartWin {
+namespace dwt {
 
 SizedEvent::SizedEvent( const MSG& msg ) :
 	size(Point::fromLParam(msg.lParam)),

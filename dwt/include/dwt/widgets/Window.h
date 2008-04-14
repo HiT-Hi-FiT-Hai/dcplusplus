@@ -38,7 +38,7 @@
 
 #include "Frame.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// "Window" class
 /** \ingroup WidgetControls
@@ -168,7 +168,6 @@ inline void Window::activatePreviousInstance()
 #endif
 }
 
-// end namespace SmartWin
 }
 
 #endif

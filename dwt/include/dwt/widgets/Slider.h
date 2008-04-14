@@ -41,7 +41,7 @@
 #include "../aspects/AspectScrollable.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Slider Control class
 /** \ingroup WidgetControls
@@ -265,12 +265,11 @@ inline void Slider::assignBuddy( bool beginning, Widget * buddy )
 		reinterpret_cast< LPARAM >( buddy->handle() ) );
 }
 
-inline Slider::Slider( SmartWin::Widget * parent )
+inline Slider::Slider( dwt::Widget * parent )
 	: ControlType( parent )
 {
 }
 
-// end namespace SmartWin
 }
 
 #endif

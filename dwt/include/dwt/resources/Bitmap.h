@@ -41,9 +41,7 @@
 #include "Handle.h"
 #include <boost/intrusive_ptr.hpp>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 struct Point;
 
@@ -118,7 +116,6 @@ private:
 	typedef Handle<GdiPolicy<HBITMAP> > ResourceType;
 };
 
-// end namespace SmartWin
 }
 
 #endif

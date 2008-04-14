@@ -47,20 +47,20 @@ class WinUtil {
 public:
 	static tstring tth;
 
-	static SmartWin::BrushPtr bgBrush;
+	static dwt::BrushPtr bgBrush;
 	static COLORREF textColor;
 	static COLORREF bgColor;
-	static SmartWin::FontPtr font;
-	static SmartWin::FontPtr monoFont;
+	static dwt::FontPtr font;
+	static dwt::FontPtr monoFont;
 	static tstring commands;
-	static SmartWin::ImageListPtr fileImages;
-	static SmartWin::ImageListPtr userImages;
+	static dwt::ImageListPtr fileImages;
+	static dwt::ImageListPtr userImages;
 	static int fileImageCount;
 	static int dirIconIndex;
 	static int dirMaskedIndex;
 	static TStringList lastDirs;
 	static MainWindow* mainWindow;
-	//static SmartWin::TabView* mdiParent;
+	//static dwt::TabView* mdiParent;
 	static DWORD helpCookie;
 	
 	typedef unordered_map<string, int> ImageMap;
@@ -68,13 +68,13 @@ public:
 	static ImageMap fileIndexes;
 	
 	struct Seeds {
-		static const SmartWin::Button::Seed button;
+		static const dwt::Button::Seed button;
 		static const ComboBox::Seed comboBoxStatic;
 		static const ComboBox::Seed comboBoxEdit;
-		static const SmartWin::Table::Seed Table;
-		static const SmartWin::WidgetMenu::Seed menu;
+		static const dwt::Table::Seed Table;
+		static const dwt::WidgetMenu::Seed menu;
 		static const TextBox::Seed textBox;
-		static const SmartWin::Tree::Seed treeView;
+		static const dwt::Tree::Seed treeView;
 	};
 
 	struct HelpItem {
@@ -89,7 +89,7 @@ public:
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
 
 	template<typename A>
-	static void setHelpIds(SmartWin::AspectDialog<A>* dialog, const HelpItem* items) {
+	static void setHelpIds(dwt::AspectDialog<A>* dialog, const HelpItem* items) {
 		dcassert(dialog && items);
 		for(size_t i = 0; items[i].ctrlId != 0; ++i)
 			::SetWindowContextHelpId(dialog->getItem(items[i].ctrlId), items[i].helpId);
@@ -147,7 +147,7 @@ public:
 	static pair<tstring, bool> getHubNames(const UserPtr& u);
 
 	// Hash related
-	static void addHashItems(const SmartWin::WidgetMenu::ObjectType& menu, const TTHValue& tth, const tstring& filename);
+	static void addHashItems(const dwt::WidgetMenu::ObjectType& menu, const TTHValue& tth, const tstring& filename);
 	static void bitziLink(const TTHValue& /*aHash*/);
 	static void copyMagnet(const TTHValue& /*aHash*/, const tstring& /*aFile*/);
 	static void searchHash(const TTHValue& /*aHash*/);
@@ -155,15 +155,15 @@ public:
 	static void addLastDir(const tstring& dir);
 
 	static void openLink(const tstring& url);
-	static bool browseSaveFile(SmartWin::SaveDialog dialog, tstring& file);
-	static bool browseFileList(SmartWin::LoadDialog dialog, tstring& file);
+	static bool browseSaveFile(dwt::SaveDialog dialog, tstring& file);
+	static bool browseFileList(dwt::LoadDialog dialog, tstring& file);
 	
 	static int getOsMajor();
 	static int getOsMinor();
 
 	static void setClipboard(const tstring& str);
 
-	static bool getUCParams(SmartWin::Widget* parent, const UserCommand& cmd, StringMap& sm) throw();
+	static bool getUCParams(dwt::Widget* parent, const UserCommand& cmd, StringMap& sm) throw();
 	
 	static bool parseDBLClick(const tstring& aString);
 	static void parseDchubUrl(const tstring& /*aUrl*/);

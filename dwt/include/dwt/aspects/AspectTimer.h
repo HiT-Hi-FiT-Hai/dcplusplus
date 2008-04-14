@@ -34,7 +34,7 @@
 
 #include "../Message.h"
 
-namespace SmartWin {
+namespace dwt {
 
 template< class WidgetType >
 class AspectTimer {

@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/FontDialog.h>
 
-namespace SmartWin {
+namespace dwt {
 
 bool FontDialog::open(DWORD dwFlags, LOGFONT& font, DWORD& rgbColors)
 {

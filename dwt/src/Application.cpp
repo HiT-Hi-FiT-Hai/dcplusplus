@@ -36,7 +36,9 @@
 #include <dwt/Application.h>
 #include <dwt/util/tstring.h>
 
-using namespace SmartWin;
+extern int SmartWinMain( dwt::Application & app );
+
+namespace dwt {
 
 // link to Common Controls to relieve user of explicitly doing so
 #ifdef _MSC_VER
@@ -51,44 +53,6 @@ using namespace SmartWin;
 
 Application * Application::itsInstance = 0;
 HANDLE Application::itsMutex = 0;
-
-// Declaring (externally) the function needed to be supplied as entry point by Client Applications utilizing the library
-// This function is being called by the internal entry point (WinMain)
-extern int SmartWinMain( Application & app );
-#ifdef WINCE
-int WINAPI ::WinMain
-	( HINSTANCE hInstance
-	, HINSTANCE hPrevInstance
-	, LPTSTR lpCmdLine
-	, int nCmdShow
-	)
-#else
-int PASCAL WinMain
-	( HINSTANCE hInstance
-	, HINSTANCE hPrevInstance
-	, LPSTR lpCmdLine
-	, int nCmdShow
-	)
-#endif
-{
-	unsigned int retVal = 0;
-	bool corruptMemMemLeak = false;
-	
-	Application::init( hInstance, nCmdShow );
-	try
-	{
-		retVal = SmartWinMain( Application::instance() ); // Call library user's startup function.
-		Application::uninit();
-
-		Application::checkCorruptOrMemleak( corruptMemMemLeak );
-	}
-	catch ( xCeption & err )
-	{
-		retVal = Application::reportErr( err, corruptMemMemLeak );
-	}
-	return retVal;
-}
-
 
 // Application implementation
 
@@ -366,6 +330,41 @@ Application::FilterIter Application::addFilter(const FilterFunction& f) {
 
 void Application::removeFilter(const FilterIter& i) {
 	filters.erase(i);
+}
+
+}
+
+// Declaring (externally) the function needed to be supplied as entry point by Client Applications utilizing the library
+// This function is being called by the internal entry point (WinMain)
+#ifdef WINCE
+int WINAPI ::WinMain
+	( HINSTANCE hInstance
+	, HINSTANCE hPrevInstance
+	, LPTSTR lpCmdLine
+	, int nCmdShow
+	)
+#else
+int PASCAL WinMain
+	( HINSTANCE hInstance
+	, HINSTANCE hPrevInstance
+	, LPSTR lpCmdLine
+	, int nCmdShow
+	)
+#endif
+{
+	unsigned int retVal = 0;
+	bool corruptMemMemLeak = false;
+	
+	dwt::Application::init( hInstance, nCmdShow );
+	try {
+		retVal = SmartWinMain( dwt::Application::instance() ); // Call library user's startup function.
+		dwt::Application::uninit();
+
+		dwt::Application::checkCorruptOrMemleak( corruptMemMemLeak );
+	} catch ( dwt::xCeption & err ) {
+		retVal = dwt::Application::reportErr( err, corruptMemMemLeak );
+	}
+	return retVal;
 }
 
 #endif // not __WINE__

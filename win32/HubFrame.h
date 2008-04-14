@@ -52,7 +52,7 @@ public:
 		STATUS_LAST
 	};
 	
-	static void openWindow(SmartWin::TabView* mdiParent, const string& url);
+	static void openWindow(dwt::TabView* mdiParent, const string& url);
 	static void closeDisconnected();
 	static void resortUsers();
 	
@@ -192,7 +192,7 @@ private:
 	typedef FrameList::iterator FrameIter;
 	static FrameList frames;
 
-	HubFrame(SmartWin::TabView* mdiParent, const string& url);
+	HubFrame(dwt::TabView* mdiParent, const string& url);
 	virtual ~HubFrame();
 	
 	void layout();
@@ -235,13 +235,13 @@ private:
 	bool handleMessageChar(int c);
 	bool handleMessageKeyDown(int c);
 	bool handleUsersKeyDown(int c);
-	bool handleChatContextMenu(SmartWin::ScreenCoordinate pt);
-	bool handleUsersContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleChatContextMenu(dwt::ScreenCoordinate pt);
+	bool handleUsersContextMenu(dwt::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	void handleShowUsersClicked();
 	void handleCopyNick();
 	void handleDoubleClickUsers();
-	bool handleTabContextMenu(const SmartWin::ScreenCoordinate& pt);
+	bool handleTabContextMenu(const dwt::ScreenCoordinate& pt);
 	void handleCopyHub();
 	void handleAddAsFavorite();
 	void handleReconnect();

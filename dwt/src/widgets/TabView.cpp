@@ -37,7 +37,7 @@
 #include <dwt/WidgetCreator.h>
 #include <dwt/util/StringUtils.h>
 
-namespace SmartWin {
+namespace dwt {
 
 WindowClass TabView::windowClass(_T("TabView"), &TabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
 

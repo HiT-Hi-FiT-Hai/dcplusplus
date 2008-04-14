@@ -22,10 +22,10 @@
 #include <dcpp/forward.h>
 #include "WidgetFactory.h"
 
-class FavHubProperties : public WidgetFactory<SmartWin::ModalDialog>
+class FavHubProperties : public WidgetFactory<dwt::ModalDialog>
 {
 public:
-	FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry);
+	FavHubProperties(dwt::Widget* parent, FavoriteHubEntry *_entry);
 	virtual ~FavHubProperties();
 
 	int run() { return createDialog(IDD_FAVORITEHUB); }

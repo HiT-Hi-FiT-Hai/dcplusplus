@@ -40,9 +40,7 @@
 #include "../util/tstring.h"
 #include "../aspects/AspectFileFilter.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// SaveFileDialog class
 /** \ingroup WidgetControls
@@ -87,7 +85,7 @@ inline SaveDialog::SaveDialog( Widget * parent )
 {
 }
 
-// end namespace SmartWin
+// end namespace dwt
 }
 
 #endif

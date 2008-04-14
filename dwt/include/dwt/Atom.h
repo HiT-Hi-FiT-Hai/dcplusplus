@@ -34,7 +34,7 @@
 
 #include "WindowsHeaders.h"
 
-namespace SmartWin {
+namespace dwt {
 class AtomBase {
 public:
 	AtomBase(ATOM atom_) : atom(atom_) { }

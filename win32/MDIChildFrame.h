@@ -29,16 +29,16 @@
 
 template<typename T>
 class MDIChildFrame : 
-	public WidgetFactory< SmartWin::Container >,
+	public WidgetFactory< dwt::Container >,
 	public AspectSpeaker<T>, 
 	public AspectStatus<T>
 {
 public:
 	typedef MDIChildFrame<T> ThisType;
-	typedef WidgetFactory< SmartWin::Container > BaseType;
+	typedef WidgetFactory< dwt::Container > BaseType;
 protected:
 
-	MDIChildFrame(SmartWin::TabView* tabView, const tstring& title, unsigned helpId = 0, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) :
+	MDIChildFrame(dwt::TabView* tabView, const tstring& title, unsigned helpId = 0, dwt::IconPtr icon = dwt::IconPtr(), bool activate = true) :
 		BaseType(tabView->getTab()),
 		lastFocus(NULL),
 		alwaysSameFocus(false),
@@ -110,7 +110,7 @@ protected:
 		}
 	}
 	
-	void onTabContextMenu(const std::tr1::function<bool (const SmartWin::ScreenCoordinate&)>& f) {
+	void onTabContextMenu(const std::tr1::function<bool (const dwt::ScreenCoordinate&)>& f) {
 		getParent()->onTabContextMenu(this, f);
 	}
 	
@@ -118,8 +118,8 @@ protected:
 		getParent()->setActive(this);
 	}
 	
-	SmartWin::TabView* getParent() {
-		return static_cast<SmartWin::TabView*>(BaseType::getParent()->getParent());
+	dwt::TabView* getParent() {
+		return static_cast<dwt::TabView*>(BaseType::getParent()->getParent());
 	}
 	
 private:
@@ -129,15 +129,15 @@ private:
 	bool reallyClose;
 
 	void addDlgCodeMessage(ComboBox* widget) {
-		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
+		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), dwt::Message(WM_GETDLGCODE));
 		TextBox* text = widget->getTextBox();
 		if(text)
-			text->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
+			text->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), dwt::Message(WM_GETDLGCODE));
 	}
 
 	template<typename W>
 	void addDlgCodeMessage(W* widget) {
-		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
+		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), dwt::Message(WM_GETDLGCODE));
 	}
 
 	void addColor(ComboBox* widget) {
@@ -148,12 +148,12 @@ private:
 	}
 
 	// don't handle WM_CTLCOLOR* for Buttons or Button-derived controls
-	void addColor(SmartWin::Button* widget) {
+	void addColor(dwt::Button* widget) {
 		// empty on purpose
 	}
 
 	template<typename A>
-	void addColor(SmartWin::AspectColor<A>* widget) {
+	void addColor(dwt::AspectColor<A>* widget) {
 		widget->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 	
@@ -162,7 +162,7 @@ private:
 		
 	}
 
-	void handleSized(const SmartWin::SizedEvent& sz) { 
+	void handleSized(const dwt::SizedEvent& sz) { 
 		static_cast<T*>(this)->layout();
 	}
 	
@@ -184,10 +184,10 @@ private:
 		return 0;
 	}
 
-	bool handleContextMenu(const SmartWin::ScreenCoordinate& pt) {
-		SmartWin::WidgetMenu::ObjectType menu = createMenu(WinUtil::Seeds::menu);
+	bool handleContextMenu(const dwt::ScreenCoordinate& pt) {
+		dwt::WidgetMenu::ObjectType menu = createMenu(WinUtil::Seeds::menu);
 		menu->setTitle(getParent()->getTabText(this));
-		menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&ThisType::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
+		menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&ThisType::close, this, true), dwt::BitmapPtr(new dwt::Bitmap(IDB_EXIT)));
 		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
 	}

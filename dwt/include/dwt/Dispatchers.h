@@ -35,8 +35,7 @@
 #include "WindowsHeaders.h"
 #include <functional>
 
-namespace SmartWin {
-// begin namespace SmartWin
+namespace dwt {
 
 namespace Dispatchers {
 
@@ -76,7 +75,6 @@ struct VoidVoid : public Base<void ()> {
 	}
 };
 
-// end namespace SmartWin
 }
 
 }

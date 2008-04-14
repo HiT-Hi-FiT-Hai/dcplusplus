@@ -38,7 +38,7 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectVisible.h"
 
-namespace SmartWin {
+namespace dwt {
 
 class ToolTip :
 	public MessageMap< Policies::Subclassed >,

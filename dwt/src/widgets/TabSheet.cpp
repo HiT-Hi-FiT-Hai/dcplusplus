@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/TabSheet.h>
 
-namespace SmartWin {
+namespace dwt {
 
 TabSheet::Seed::Seed() :
 	BaseType::Seed(WC_TABCONTROL, WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN),
@@ -66,7 +66,7 @@ unsigned int TabSheet::addPage( const SmartUtil::tstring & header, unsigned inde
 	return ( unsigned int ) newIdx;
 }
 
-SmartWin::Rectangle TabSheet::getUsableArea(bool cutBorders) const
+dwt::Rectangle TabSheet::getUsableArea(bool cutBorders) const
 {
 	RECT rc;
 	::GetWindowRect(handle(), &rc);

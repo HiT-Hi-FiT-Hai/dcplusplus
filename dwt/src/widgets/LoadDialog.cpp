@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/LoadDialog.h>
 
-namespace SmartWin {
+namespace dwt {
 
 bool LoadDialog::open(SmartUtil::tstring& file)
 {

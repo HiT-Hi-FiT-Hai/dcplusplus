@@ -39,9 +39,7 @@
 #include "../Message.h"
 #include "../CanvasClasses.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that have the possibility of handling the erase
 /// background property
@@ -96,7 +94,6 @@ protected:
 	}
 };
 
-// end namespace SmartWin
 }
 
 #endif

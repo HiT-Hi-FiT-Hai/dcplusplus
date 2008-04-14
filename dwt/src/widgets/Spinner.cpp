@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/Spinner.h>
 
-namespace SmartWin {
+namespace dwt {
 
 Spinner::Seed::Seed() :
 	Widget::Seed(UPDOWN_CLASS, WS_CHILD | WS_VISIBLE | WS_TABSTOP),

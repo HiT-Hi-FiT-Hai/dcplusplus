@@ -53,7 +53,7 @@
 
 #include <vector>
 
-namespace SmartWin {
+namespace dwt {
 
 /// List View Control class
 /** \ingroup WidgetControls
@@ -457,7 +457,7 @@ public:
 	void create( const Seed & cs = Seed() );
 
 	// Constructor Taking pointer to parent
-	explicit Table( SmartWin::Widget * parent );
+	explicit Table( dwt::Widget * parent );
 
 protected:
 	/// Adds or Removes extended list view styles from the list view
@@ -920,7 +920,7 @@ LRESULT Table::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & l
 					text->createSubclass( editControl );
 
 #ifndef WINCE
-					text->itsRect = SmartWin::Rectangle( r.left, r.top, r.right, r.bottom );
+					text->itsRect = dwt::Rectangle( r.left, r.top, r.right, r.bottom );
 					text->setBounds( text->itsRect );
 					text->setScrollBarHorizontally( false );
 					text->setScrollBarVertically( false );
@@ -994,7 +994,7 @@ LRESULT Table::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & l
 	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 #endif
-// end namespace SmartWin
+
 }
 
 #endif

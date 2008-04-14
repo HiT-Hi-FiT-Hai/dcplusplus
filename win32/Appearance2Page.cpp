@@ -62,7 +62,7 @@ PropPage::Item Appearance2Page::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
+Appearance2Page::Appearance2Page(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_APPEARANCE2PAGE);
 	setHelpId(IDH_APPEARANCE2PAGE);
 
@@ -76,7 +76,7 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	downBar = SETTING(DOWNLOAD_BAR_COLOR);
 
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), logFont);
-	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
+	font = dwt::FontPtr(new dwt::Font(::CreateFontIndirect(&logFont), true));
 
 	attachChild(example, IDC_COLOREXAMPLE);
 	example->setColor(fg, bg);
@@ -130,7 +130,7 @@ void Appearance2Page::handleTextClicked() {
 	if(createFontDialog().open(CF_EFFECTS | CF_SCREENFONTS, logFont_, fg_)) {
 		logFont = logFont_;
 		fg = fg_;
-		font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
+		font = dwt::FontPtr(new dwt::Font(::CreateFontIndirect(&logFont), true));
 		example->setColor(fg, bg);
 		example->setFont(font);
 		example->invalidateWidget();

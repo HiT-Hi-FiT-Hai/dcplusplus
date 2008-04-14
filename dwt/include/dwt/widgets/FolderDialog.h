@@ -40,7 +40,7 @@
 #include "../util/tstring.h"
 #include <shlobj.h>
 
-namespace SmartWin {
+namespace dwt {
 
 /// ChooseFolderDialog class
 /** \ingroup WidgetControls
@@ -122,7 +122,6 @@ inline FolderDialog::~FolderDialog() {
 	::CoTaskMemFree(itsPidlRoot);
 }
 
-// end namespace SmartWin
 }
 
 #endif

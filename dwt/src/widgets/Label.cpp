@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/Label.h>
 
-namespace SmartWin {
+namespace dwt {
 
 Label::Seed::Seed(const SmartUtil::tstring& caption) :
 	BaseType::Seed(WC_STATIC, WS_CHILD | SS_NOTIFY, 0, caption),

@@ -36,9 +36,7 @@
 #include <dwt/resources/Icon.h>
 #include <dwt/Application.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 Icon::Icon( HICON icon, bool own )
 	: ResourceType(icon, own)
@@ -60,5 +58,4 @@ HICON Icon::getIcon() const {
 	return handle();
 }
 
-// end namespace SmartWin
 }

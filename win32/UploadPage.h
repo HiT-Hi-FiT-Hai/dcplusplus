@@ -25,7 +25,7 @@
 class UploadPage : public PropPage
 {
 public:
-	UploadPage(SmartWin::Widget* parent);
+	UploadPage(dwt::Widget* parent);
 	virtual ~UploadPage();
 
 	virtual void write();

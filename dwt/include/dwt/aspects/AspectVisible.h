@@ -38,9 +38,7 @@
 
 #include "../Dispatchers.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// \ingroup AspectClasses
 /// Aspect class used by Widgets that have the possibility of manipulating the
@@ -109,7 +107,7 @@ bool AspectVisible< WidgetType >::getVisible() const
 {
 	return ::IsWindowVisible( H() ) != 0;
 }
-// end namespace SmartWin
+
 }
 
 #endif

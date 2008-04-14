@@ -21,7 +21,7 @@
 
 class HoldRedraw {
 public:
-	HoldRedraw(SmartWin::Widget* w_, bool reallyHold = true) : w(w_) {
+	HoldRedraw(dwt::Widget* w_, bool reallyHold = true) : w(w_) {
 		if(reallyHold) {
 			::SendMessage(w->handle(), WM_SETREDRAW, FALSE, 0);
 		} else {
@@ -33,7 +33,7 @@ public:
 			::SendMessage(w->handle(), WM_SETREDRAW, TRUE, 0);
 	}
 private:
-	SmartWin::Widget* w;
+	dwt::Widget* w;
 };
 
 #endif /*DCPLUSPLUS_WIN32_HOLDREDRAW_H_*/

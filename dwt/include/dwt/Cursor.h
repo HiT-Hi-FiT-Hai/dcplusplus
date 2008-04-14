@@ -38,9 +38,7 @@
 
 #include "WindowsHeaders.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Class for manipulating the mouse cursor
 /** Use getCursor and store the returned object until you wish to change back to the
@@ -80,7 +78,6 @@ public:
 	}
 };
 
-// end namespace SmartWin
 }
 
 #endif

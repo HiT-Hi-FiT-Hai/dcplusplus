@@ -25,7 +25,7 @@
 class FinishedULFrame : public FinishedFrameBase<FinishedULFrame, true>
 {
 public:
-	FinishedULFrame(SmartWin::TabView* mdiParent);
+	FinishedULFrame(dwt::TabView* mdiParent);
 	virtual ~FinishedULFrame() { }
 
 	typedef FinishedFrameBase<FinishedULFrame, true> BaseType;

@@ -39,8 +39,7 @@
 #include "../Message.h"
 #include "../Dispatchers.h"
 
-namespace SmartWin {
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that can be activated.
 /** \ingroup AspectClasses
@@ -104,7 +103,6 @@ bool AspectActivate< WidgetType >::getActive() const
 	return ::GetActiveWindow() == static_cast< const WidgetType * >( this )->handle();
 }
 
-// end namespace SmartWin
 }
 
 #endif

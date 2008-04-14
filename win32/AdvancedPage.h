@@ -24,7 +24,7 @@
 class AdvancedPage : public PropPage
 {
 public:
-	AdvancedPage(SmartWin::Widget* parent);
+	AdvancedPage(dwt::Widget* parent);
 	virtual ~AdvancedPage();
 
 	virtual void write();

@@ -48,7 +48,7 @@
 
 #include <boost/scoped_ptr.hpp>
 
-namespace SmartWin {
+namespace dwt {
 
 template<typename Policy>
 class Composite : 
@@ -73,40 +73,40 @@ public:
 	// TODO Maybe move this to a separate class?
 	// This brings these classes into the namespace of classes that inherit from Composite
 	// Note; only child windows should be here...
-	typedef SmartWin::Button Button;
-	typedef SmartWin::ButtonPtr ButtonPtr;
-	typedef SmartWin::CheckBox CheckBox;
-	typedef SmartWin::CheckBoxPtr CheckBoxPtr;
-	typedef SmartWin::ComboBox ComboBox;
-	typedef SmartWin::ComboBoxPtr ComboBoxPtr;
-	typedef SmartWin::Container Container;
-	typedef SmartWin::ContainerPtr ContainerPtr;
-	typedef SmartWin::CoolBar CoolBar;
-	typedef SmartWin::CoolBarPtr CoolBarPtr;
-	typedef SmartWin::DateTime DateTime;
-	typedef SmartWin::DateTimePtr DateTimePtr;
-	typedef SmartWin::GroupBox GroupBox;
-	typedef SmartWin::GroupBoxPtr GroupBoxPtr;
-	typedef SmartWin::Label Label;
-	typedef SmartWin::LabelPtr LabelPtr;
-	typedef SmartWin::ProgressBar ProgressBar;
-	typedef SmartWin::ProgressBarPtr ProgressBarPtr;
-	typedef SmartWin::RadioButton RadioButton;
-	typedef SmartWin::RadioButtonPtr RadioButtonPtr;
-	typedef SmartWin::Spinner Spinner;
-	typedef SmartWin::SpinnerPtr SpinnerPtr;
-	typedef SmartWin::Table Table;
-	typedef SmartWin::TablePtr TablePtr;
-	typedef SmartWin::TabSheet TabSheet;
-	typedef SmartWin::TabSheetPtr TabSheetPtr;
-	typedef SmartWin::TextBox TextBox;
-	typedef SmartWin::TextBoxPtr TextBoxPtr;
-	typedef SmartWin::ToolBar ToolBar;
-	typedef SmartWin::ToolBarPtr ToolBarPtr;
-	typedef SmartWin::ToolTip ToolTip;
-	typedef SmartWin::ToolTipPtr ToolTipPtr;
-	typedef SmartWin::Tree Tree;
-	typedef SmartWin::TreePtr TreePtr;
+	typedef dwt::Button Button;
+	typedef dwt::ButtonPtr ButtonPtr;
+	typedef dwt::CheckBox CheckBox;
+	typedef dwt::CheckBoxPtr CheckBoxPtr;
+	typedef dwt::ComboBox ComboBox;
+	typedef dwt::ComboBoxPtr ComboBoxPtr;
+	typedef dwt::Container Container;
+	typedef dwt::ContainerPtr ContainerPtr;
+	typedef dwt::CoolBar CoolBar;
+	typedef dwt::CoolBarPtr CoolBarPtr;
+	typedef dwt::DateTime DateTime;
+	typedef dwt::DateTimePtr DateTimePtr;
+	typedef dwt::GroupBox GroupBox;
+	typedef dwt::GroupBoxPtr GroupBoxPtr;
+	typedef dwt::Label Label;
+	typedef dwt::LabelPtr LabelPtr;
+	typedef dwt::ProgressBar ProgressBar;
+	typedef dwt::ProgressBarPtr ProgressBarPtr;
+	typedef dwt::RadioButton RadioButton;
+	typedef dwt::RadioButtonPtr RadioButtonPtr;
+	typedef dwt::Spinner Spinner;
+	typedef dwt::SpinnerPtr SpinnerPtr;
+	typedef dwt::Table Table;
+	typedef dwt::TablePtr TablePtr;
+	typedef dwt::TabSheet TabSheet;
+	typedef dwt::TabSheetPtr TabSheetPtr;
+	typedef dwt::TextBox TextBox;
+	typedef dwt::TextBoxPtr TextBoxPtr;
+	typedef dwt::ToolBar ToolBar;
+	typedef dwt::ToolBarPtr ToolBarPtr;
+	typedef dwt::ToolTip ToolTip;
+	typedef dwt::ToolTipPtr ToolTipPtr;
+	typedef dwt::Tree Tree;
+	typedef dwt::TreePtr TreePtr;
 	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

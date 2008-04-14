@@ -38,9 +38,7 @@
 
 #include "Widget.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 template<typename Policy>
 class MessageMap : public Policy {
@@ -194,7 +192,6 @@ class Normal
 	: public Widget
 {
 public:
-	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	Normal(Widget* parent) : Widget(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
@@ -260,7 +257,6 @@ class MDIChild
 	: public Widget
 {
 public:
-	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	MDIChild(Widget* parent) : Widget(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
@@ -335,7 +331,6 @@ public:
 
 }
 
-// end namespace SmartWin
 }
 
 #endif

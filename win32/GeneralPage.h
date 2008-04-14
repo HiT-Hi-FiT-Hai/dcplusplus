@@ -24,7 +24,7 @@
 class GeneralPage : public PropPage
 {
 public:
-	GeneralPage(SmartWin::Widget* parent);
+	GeneralPage(dwt::Widget* parent);
 	virtual ~GeneralPage();
 
 	virtual void write();

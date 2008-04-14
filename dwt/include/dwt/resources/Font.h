@@ -41,9 +41,7 @@
 #include "../xCeption.h"
 #include "Handle.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 class Font;
 typedef boost::intrusive_ptr< Font > FontPtr;
@@ -169,7 +167,6 @@ FontPtr createFont( const SmartUtil::tstring & faceName,
  DWORD pitchAndFamliy = FF_DONTCARE
  );
 
-// end namespace SmartWin
 }
 
 #endif

@@ -39,7 +39,7 @@
 #include "../util/tstring.h"
 #include "../Widget.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// MessageBox class
 /** \ingroup WidgetControls
@@ -67,7 +67,7 @@ public:
 	~MessageBox()
 	{}
 
-	explicit MessageBox( SmartWin::Widget * parent = 0 );
+	explicit MessageBox( dwt::Widget * parent = 0 );
 
 	// Next three enums are here INTENTIONALLY to abstract away Win32API
 	/// Enums for which buttons you want the MessageBox to have.
@@ -146,7 +146,6 @@ inline MessageBox::RetVal MessageBox::show( const SmartUtil::tstring & body, con
 	return static_cast< RetVal >( ::MessageBox( getParentHandle(), body.c_str(), header.c_str(), buttons | icon ) );
 }
 
-// end namespace SmartWin
 }
 
 #endif

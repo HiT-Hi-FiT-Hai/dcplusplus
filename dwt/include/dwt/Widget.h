@@ -47,9 +47,7 @@
 #include <functional>
 #include <tr1/unordered_map>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 using namespace std::tr1::placeholders;
 
@@ -247,7 +245,6 @@ T hwnd_cast(HWND hwnd) {
 	return dynamic_cast<T>(w);
 }
 
-// end namespace SmartWin
 }
 
 #endif

@@ -40,7 +40,7 @@
 #include <dwt/resources/Brush.h>
 #include <dwt/resources/Pen.h>
 
-namespace SmartWin {
+namespace dwt {
 
 const int WidgetMenu::borderGap = 3;
 const int WidgetMenu::pointerGap = 5;
@@ -50,7 +50,7 @@ const int WidgetMenu::separatorHeight = 8;
 const int WidgetMenu::minSysMenuItemWidth = 130;
 Point WidgetMenu::defaultImageSize = Point( 16, 16 );
 
-WidgetMenu::WidgetMenu( SmartWin::Widget* parent ) :
+WidgetMenu::WidgetMenu( dwt::Widget* parent ) :
 isSysMenu(false),
 itsChildrenRef(itsChildren),
 itsItemDataRef(itsItemData),
@@ -70,7 +70,7 @@ void WidgetMenu::createHelper(const Seed& cs) {
 			LOGFONT lf;
 			::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
 			lf.lfWeight = FW_BOLD;
-			itsTitleFont = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&lf), true));
+			itsTitleFont = dwt::FontPtr(new dwt::Font(::CreateFontIndirect(&lf), true));
 		}
 
 		// set default drawing

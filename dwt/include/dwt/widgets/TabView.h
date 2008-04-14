@@ -40,7 +40,7 @@
 #include <list>
 #include <vector>
 
-namespace SmartWin {
+namespace dwt {
 /** 
  * A container that keeps widgets in tabs and handles switching etc
  */
@@ -154,7 +154,7 @@ private:
 	LRESULT handleToolTip(LPARAM lParam);
 	void handleLeftMouseDown(const MouseEvent& mouseEventResult);
 	void handleLeftMouseUp(const MouseEvent& mouseEventResult);
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 	void handleMiddleMouseDown(const MouseEvent& mouseEventResult);
 	void handleHelp(HWND hWnd, unsigned id);
 	

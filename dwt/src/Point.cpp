@@ -36,9 +36,7 @@
 #include <dwt/Point.h>
 #include <dwt/Widget.h>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 void Point::maxOf( const Point & p ) {
 	if ( p.x > x )
@@ -94,5 +92,4 @@ ClientCoordinate::operator ScreenCoordinate() const {
 	return pt;
 }
 
-// end namespace SmartWin
 }

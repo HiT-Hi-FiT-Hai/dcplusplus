@@ -69,7 +69,7 @@ WindowsPage::ListItem WindowsPage::confirmItems[] = {
 	{ 0, 0 }
 };
 
-WindowsPage::WindowsPage(SmartWin::Widget* parent) : PropPage(parent) {
+WindowsPage::WindowsPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_WINDOWSPAGE);
 	setHelpId(IDH_WINDOWSPAGE);
 

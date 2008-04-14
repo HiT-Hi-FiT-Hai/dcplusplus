@@ -39,7 +39,7 @@
 #ifndef __GNUC__
 #ifdef WINCE
 
-	static const SmartWin::Platform CurrentPlatform = SmartWin::SmartWinCE;
+	static const dwt::Platform CurrentPlatform = dwt::dwtCE;
 
 	#pragma comment(linker, "/nodefaultlib:libc.lib")
 	#pragma comment(linker, "/nodefaultlib:libcd.lib")

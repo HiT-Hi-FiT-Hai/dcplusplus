@@ -26,7 +26,7 @@
 class UCPage : public PropPage
 {
 public:
-	UCPage(SmartWin::Widget* parent);
+	UCPage(dwt::Widget* parent);
 	virtual ~UCPage();
 
 	virtual void write();

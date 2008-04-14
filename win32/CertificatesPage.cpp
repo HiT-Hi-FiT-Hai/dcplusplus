@@ -61,7 +61,7 @@ PropPage::ListItem CertificatesPage::listItems[] = {
 	{ 0, 0 }
 };
 
-CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : PropPage(parent) {
+CertificatesPage::CertificatesPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_CERTIFICATESPAGE);
 	setHelpId(IDH_CERTIFICATESPAGE);
 

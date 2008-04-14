@@ -76,7 +76,7 @@ int DirectoryListingFrame::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int 
 	}
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::TabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(dwt::TabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -94,7 +94,7 @@ void DirectoryListingFrame::closeAll(){
 		::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::TabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(dwt::TabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -105,8 +105,8 @@ void DirectoryListingFrame::openWindow(SmartWin::TabView* mdiParent, const UserP
 	}
 }
 
-DirectoryListingFrame::DirectoryListingFrame(SmartWin::TabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
-	BaseType(mdiParent, _T(""), IDH_FILE_LIST, SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
+DirectoryListingFrame::DirectoryListingFrame(dwt::TabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
+	BaseType(mdiParent, _T(""), IDH_FILE_LIST, dwt::IconPtr(new dwt::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),
 	paned(0),
@@ -185,8 +185,8 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::TabView* mdiParent, const
 	setStatus(STATUS_FIND, T_("Find"));
 	setStatus(STATUS_NEXT, T_("Next"));
 
-	files->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
-	dirs->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
+	files->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), dwt::Message(WM_XBUTTONUP));
+	dirs->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), dwt::Message(WM_XBUTTONUP));
 	string nick = ClientManager::getInstance()->getNicks(dl->getUser()->getCID())[0];
 	treeRoot = dirs->insert(NULL, new ItemInfo(Text::toT(nick), dl->getRoot()));
 
@@ -225,7 +225,7 @@ void DirectoryListingFrame::loadXML(const string& txt) {
 }
 
 void DirectoryListingFrame::layout() {
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 
 	layoutStatus(r);
 
@@ -392,7 +392,7 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 	}
 }
 
-bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
+bool DirectoryListingFrame::handleFilesContextMenu(dwt::ScreenCoordinate pt) {
 	WidgetMenuPtr contextMenu;
 	if(files->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
@@ -430,7 +430,7 @@ bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt
 	return false;
 }
 
-bool DirectoryListingFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
+bool DirectoryListingFrame::handleDirsContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 && pt.y() == -1) {
 		pt = dirs->getContextMenuPos();
 	} else {

@@ -25,16 +25,16 @@ template<class WidgetType>
 class AspectStatus {
 	typedef AspectStatus<WidgetType> ThisType;
 protected:
-	typedef SmartWin::StatusBar<SmartWin::Section>::ThisType StatusBarSections;
+	typedef dwt::StatusBar<dwt::Section>::ThisType StatusBarSections;
 	typedef StatusBarSections::ObjectType StatusBarSectionsPtr;
 
 	AspectStatus() : status(0) {
 		statusSizes.resize(WidgetType::STATUS_LAST);
-		filterIter = SmartWin::Application::instance().addFilter(std::tr1::bind(&ThisType::filter, this, _1));
+		filterIter = dwt::Application::instance().addFilter(std::tr1::bind(&ThisType::filter, this, _1));
 	}
 
 	~AspectStatus() {
-		SmartWin::Application::instance().removeFilter(filterIter);
+		dwt::Application::instance().removeFilter(filterIter);
 	}
 
 	void initStatus(bool sizeGrip = false) {
@@ -42,7 +42,7 @@ protected:
 		cs.font = WinUtil::font;
 		status = static_cast<WidgetType*>(this)->addChild(cs);
 
-		statusTip = static_cast<WidgetType*>(this)->addChild(SmartWin::ToolTip::Seed());
+		statusTip = static_cast<WidgetType*>(this)->addChild(dwt::ToolTip::Seed());
 		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));
 	}
 	
@@ -63,15 +63,15 @@ protected:
 		status->setText(text, s);
 	}
 	
-	void layoutStatus(SmartWin::Rectangle& r) {
+	void layoutStatus(dwt::Rectangle& r) {
 		status->refresh();
 
-		SmartWin::Point sz(status->getSize());
+		dwt::Point sz(status->getSize());
 		r.size.y -= sz.y;
 		layoutSections(sz);
 	}
 	
-	void layoutSections(const SmartWin::Point& sz) {
+	void layoutSections(const dwt::Point& sz) {
 		statusSizes[WidgetType::STATUS_STATUS] = 0;
 		statusSizes[WidgetType::STATUS_STATUS] = sz.x - std::accumulate(statusSizes.begin(), statusSizes.end(), 0); 
 
@@ -79,7 +79,7 @@ protected:
 		statusTip->setMaxTipWidth(statusSizes[WidgetType::STATUS_STATUS]);
 	}
 	
-	void mapWidget(int s, SmartWin::Widget* widget) {
+	void mapWidget(int s, dwt::Widget* widget) {
 		POINT p[2];
 		::SendMessage(status->handle(), SB_GETRECT, s, reinterpret_cast<LPARAM>(p));
 		::MapWindowPoints(status->handle(), static_cast<WidgetType*>(this)->handle(), (POINT*)p, 2);
@@ -91,8 +91,8 @@ protected:
 	std::vector<unsigned> statusSizes;
 
 private:
-	SmartWin::Application::FilterIter filterIter;
-	SmartWin::ToolTipPtr statusTip;
+	dwt::Application::FilterIter filterIter;
+	dwt::ToolTipPtr statusTip;
 	TStringList lastLines;
 	tstring tip;
 	

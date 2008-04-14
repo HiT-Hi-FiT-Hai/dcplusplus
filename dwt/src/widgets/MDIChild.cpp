@@ -33,7 +33,7 @@
 
 #include <dwt/Application.h>
 
-namespace SmartWin {
+namespace dwt {
 
 MDIChild::Seed::Seed(const SmartUtil::tstring& caption) :
 	BaseType::Seed(caption, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS, WS_EX_MDICHILD),

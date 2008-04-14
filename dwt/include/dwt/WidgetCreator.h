@@ -38,9 +38,7 @@
 
 #include "Widget.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Helper creational class
 /** Since all Widgets in the SmartWin core have protected constructors this is the
@@ -105,7 +103,6 @@ public:
 	}
 };
 
-// end namespace SmartWin
 }
 
 #endif

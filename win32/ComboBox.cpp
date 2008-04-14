@@ -25,7 +25,7 @@ ComboBox::Seed::Seed() :
 {
 }
 
-ComboBox::ComboBox( SmartWin::Widget * parent ) : BaseType(parent), textBox(0) {
+ComboBox::ComboBox( dwt::Widget * parent ) : BaseType(parent), textBox(0) {
 }
 
 ComboBox::TextBoxPtr ComboBox::getTextBox() {
@@ -34,7 +34,7 @@ ComboBox::TextBoxPtr ComboBox::getTextBox() {
 		if((style & CBS_SIMPLE)  == CBS_SIMPLE || (style & CBS_DROPDOWN) == CBS_DROPDOWN) {
 			HWND wnd = ::FindWindowEx(handle(), NULL, _T("EDIT"), NULL);
 			if(wnd && wnd != handle())
-				textBox = SmartWin::WidgetCreator< TextBox >::attach(this, wnd);
+				textBox = dwt::WidgetCreator< TextBox >::attach(this, wnd);
 		}
 	}
 	return textBox;

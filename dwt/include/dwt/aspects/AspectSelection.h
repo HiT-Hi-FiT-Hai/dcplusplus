@@ -38,9 +38,7 @@
 
 #include "../Dispatchers.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that have the possibility of being "selecting"
 /// item(s).
@@ -109,7 +107,6 @@ bool AspectSelection<WidgetType, IndexType>::hasSelected() const {
 	return countSelected() > 0;
 }
 
-// end namespace SmartWin
 }
 
 #endif

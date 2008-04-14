@@ -24,10 +24,10 @@
 #include <dcpp/Util.h>
 #include "WidgetFactory.h"
 
-class LineDlg : public WidgetFactory<SmartWin::ModalDialog>
+class LineDlg : public WidgetFactory<dwt::ModalDialog>
 {
 public:
-	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_ = Util::emptyStringT, bool password_ = false);
+	LineDlg(dwt::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_ = Util::emptyStringT, bool password_ = false);
 	
 	int run() { return createDialog(IDD_LINE); }
 	

@@ -41,7 +41,7 @@ protected:
 	friend class StaticFrame<SpyFrame>;
 	friend class MDIChildFrame<SpyFrame>;
 
-	SpyFrame(SmartWin::TabView* mdiParent);
+	SpyFrame(dwt::TabView* mdiParent);
 	virtual ~SpyFrame();
 
 	void layout();
@@ -80,7 +80,7 @@ private:
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
 	void handleColumnClick(int column);
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 
 	void handleSearch(const tstring& searchString);
 

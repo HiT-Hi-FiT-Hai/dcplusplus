@@ -51,7 +51,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ 0, 0 }
 };
 
-AdvancedPage::AdvancedPage(SmartWin::Widget* parent) : PropPage(parent) {
+AdvancedPage::AdvancedPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_ADVANCEDPAGE);
 	setHelpId(IDH_ADVANCEDPAGE);
 

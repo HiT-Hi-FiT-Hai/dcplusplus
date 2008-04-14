@@ -20,8 +20,8 @@
 #define DCPLUSPLUS_WIN32_TextBox_H_
 
 /** Our own flavour of text boxes that handle double clicks and have fancy menus */
-class TextBox : public SmartWin::TextBox {
-	typedef SmartWin::TextBox BaseType;
+class TextBox : public dwt::TextBox {
+	typedef dwt::TextBox BaseType;
 
 public:
 	typedef TextBox ThisType;
@@ -34,15 +34,15 @@ public:
 		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
 	};
 
-	explicit TextBox( SmartWin::Widget * parent );
+	explicit TextBox( dwt::Widget * parent );
 
 private:
-	void handleLeftDblClick(const SmartWin::MouseEvent& ev);
+	void handleLeftDblClick(const dwt::MouseEvent& ev);
 
 	LRESULT handleEnterIdle(WPARAM wParam, LPARAM lParam);
 	LRESULT handleMenuSelect(WPARAM wParam, LPARAM lParam);
 
-	SmartWin::WidgetMenu::ObjectType menu;
+	dwt::WidgetMenu::ObjectType menu;
 	bool menuOpened;
 };
 

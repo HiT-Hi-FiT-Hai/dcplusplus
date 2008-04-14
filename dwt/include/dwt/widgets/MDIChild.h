@@ -47,7 +47,7 @@
 
 #include <boost/scoped_ptr.hpp>
 
-namespace SmartWin {
+namespace dwt {
 
 /// MDI Child Control class
 /** \ingroup WidgetControls
@@ -125,7 +125,6 @@ inline MDIChild::MDIChild( Widget * parent )
 	: BaseType( parent )
 {}
 
-// end namespace SmartWin
 }
 
 #endif //! WINCE

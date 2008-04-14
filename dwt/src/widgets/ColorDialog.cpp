@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/ColorDialog.h>
 
-namespace SmartWin {
+namespace dwt {
 
 bool ColorDialog::open( ColorParams & colorParams, bool basic, bool allowFullOpen ) {
 	CHOOSECOLOR cc = { sizeof( CHOOSECOLOR ) };

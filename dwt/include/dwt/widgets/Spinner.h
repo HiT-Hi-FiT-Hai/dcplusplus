@@ -41,7 +41,7 @@
 #include "../aspects/AspectScrollable.h"
 #include "Control.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /** sideeffect=\par Side Effects:
   */
@@ -170,12 +170,11 @@ inline int Spinner::setValue( int v )
 #endif
 }
 
-inline Spinner::Spinner( SmartWin::Widget * parent )
+inline Spinner::Spinner( dwt::Widget * parent )
 	: ControlType( parent )
 {
 }
 
-// end namespace SmartWin
 }
 
 #endif

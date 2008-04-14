@@ -47,8 +47,7 @@
 #include "../aspects/AspectText.h"
 #include "Control.h"
 
-namespace SmartWin
-{
+namespace dwt {
 
 /// ComboBox Control class
 /** \ingroup WidgetControls
@@ -227,7 +226,6 @@ inline ComboBox::ComboBox( Widget * parent )
 {
 }
 
-// end namespace SmartWin
 }
 
 #endif

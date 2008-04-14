@@ -41,7 +41,7 @@
 #include "../aspects/AspectFileFilter.h"
 #include <vector>
 
-namespace SmartWin {
+namespace dwt {
 
 /// LoadFileDialog class
 /** \ingroup WidgetControls
@@ -97,7 +97,6 @@ inline LoadDialog::LoadDialog( Widget * parent )
 	: AspectFileFilter<LoadDialog>( parent )
 {}
 
-// end namespace SmartWin
 }
 
 #endif

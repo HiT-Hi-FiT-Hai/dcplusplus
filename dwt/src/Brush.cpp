@@ -31,7 +31,7 @@
 
 #include <dwt/resources/Brush.h>
 
-namespace SmartWin {
+namespace dwt {
 
 Brush::Brush(HBRUSH h, bool own) : ResourceType(h, own) {
 	

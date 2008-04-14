@@ -37,9 +37,7 @@
 #include <dwt/LibraryLoader.h>
 #include <utility>
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 // Static members definitions!
 Utilities::CriticalSection LibraryLoader::itsCs;
@@ -134,5 +132,4 @@ DWORD LibraryLoader::getCommonControlsVersion() {
 	return 0;
 }
 
-// end namespace SmartWin
 }

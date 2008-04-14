@@ -24,7 +24,7 @@
 class Advanced3Page : public PropPage
 {
 public:
-	Advanced3Page(SmartWin::Widget* parent);
+	Advanced3Page(dwt::Widget* parent);
 	virtual ~Advanced3Page();
 
 	virtual void write();

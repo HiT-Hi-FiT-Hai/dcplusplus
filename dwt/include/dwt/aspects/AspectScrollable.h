@@ -39,9 +39,7 @@
 #include "../Dispatchers.h"
 #include "../Message.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that have the possibility of scrolling
 /** \ingroup AspectClasses
@@ -96,7 +94,6 @@ bool AspectScrollable< WidgetType >::scrollIsAtEnd()
 	return (scrollInfo.nPos == static_cast<int>(scrollInfo.nMax - std::max(scrollInfo.nPage - 1, 0u)));
 }
 
-// end namespace SmartWin
 }
 
 #endif

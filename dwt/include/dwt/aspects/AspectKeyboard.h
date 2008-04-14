@@ -38,9 +38,7 @@
 
 #include "../Message.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /** 
  * Base functionality that doesn't depend on template parameters
@@ -183,7 +181,6 @@ protected:
 	}
 };
 
-// end namespace SmartWin
 }
 
 #endif

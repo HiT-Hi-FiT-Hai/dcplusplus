@@ -27,10 +27,10 @@
 
 #include "WidgetFactory.h"
 
-class MagnetDlg : public WidgetFactory<SmartWin::ModalDialog>
+class MagnetDlg : public WidgetFactory<dwt::ModalDialog>
 {
 public:
-	MagnetDlg(SmartWin::Widget* parent, const tstring& aHash, const tstring& aFileName);
+	MagnetDlg(dwt::Widget* parent, const tstring& aHash, const tstring& aFileName);
 	virtual ~MagnetDlg();
 
 	int run() { return createDialog(IDD_MAGNET); }

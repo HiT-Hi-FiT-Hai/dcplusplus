@@ -38,9 +38,7 @@
 
 #include "../Dispatchers.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that have the possibility of being "clicked".
 /** \ingroup AspectClasses
@@ -70,7 +68,6 @@ protected:
 	virtual ~AspectClickable() { }
 };
 
-// end namespace SmartWin
 }
 
 #endif

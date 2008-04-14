@@ -39,9 +39,7 @@
 #include "../Message.h"
 #include "../Dispatchers.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that have the possibility of changing the enabled
 /// property
@@ -107,7 +105,6 @@ bool AspectEnabled< WidgetType >::getEnabled() const
 	return ::IsWindowEnabled( W().handle() ) != 0;
 }
 
-// end namespace SmartWin
 }
 
 #endif

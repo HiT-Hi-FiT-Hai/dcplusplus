@@ -39,7 +39,7 @@
 
 #include "../Widget.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// ChooseFontDialog class
 /** \ingroup WidgetControls
@@ -86,7 +86,6 @@ inline FontDialog::FontDialog( Widget * parent )
 {
 }
 
-// end namespace SmartWin
 }
 
 #endif

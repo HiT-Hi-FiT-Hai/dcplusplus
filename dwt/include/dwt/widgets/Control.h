@@ -46,7 +46,7 @@
 #include "../aspects/AspectTimer.h"
 #include "../aspects/AspectVisible.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /** Base class for all windows */
 template<typename Policy>

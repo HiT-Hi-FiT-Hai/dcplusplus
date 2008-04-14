@@ -39,7 +39,7 @@
 #include "../aspects/AspectDialog.h"
 #include "Frame.h"
 
-namespace SmartWin {
+namespace dwt {
 
 /// Dialog class
 /** \ingroup WidgetControls
@@ -82,7 +82,6 @@ inline ModelessDialog::ModelessDialog( Widget * parent )
 	: BaseType( parent )
 {}
 
-// end namespace SmartWin
 }
 
 #endif

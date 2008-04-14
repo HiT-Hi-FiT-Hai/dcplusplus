@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/TextBox.h>
 
-namespace SmartWin {
+namespace dwt {
 
 TextBox::Seed::Seed(const SmartUtil::tstring& caption) : 
 	BaseType::Seed(WC_EDIT, WS_CHILD | WS_TABSTOP, WS_EX_CLIENTEDGE, caption),

@@ -32,7 +32,7 @@
 #include <dwt/widgets/MDIParent.h>
 #include <dwt/Application.h>
 
-namespace SmartWin {
+namespace dwt {
 
 MDIParent::Seed::Seed() : 
 	BaseType::Seed(_T("MDICLIENT"), WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VSCROLL | WS_HSCROLL, WS_EX_CLIENTEDGE),

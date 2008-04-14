@@ -44,7 +44,7 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "stanislav maslovski, david grundberg, pavel andreev, yakov suraev. "
 "Keep it coming!";
 
-AboutDlg::AboutDlg(SmartWin::Widget* parent) : WidgetFactory<SmartWin::ModalDialog>(parent) {
+AboutDlg::AboutDlg(dwt::Widget* parent) : WidgetFactory<dwt::ModalDialog>(parent) {
 	onInitDialog(std::tr1::bind(&AboutDlg::handleInitDialog, this));
 	onSpeaker(std::tr1::bind(&AboutDlg::handleSpeaker, this, _1, _2));
 }

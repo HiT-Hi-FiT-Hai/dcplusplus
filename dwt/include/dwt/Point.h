@@ -38,9 +38,7 @@
 
 #include "WindowsHeaders.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// POD structure for defining a point
 /** Used in e.g. functions that take a mouse position etc...
@@ -176,8 +174,6 @@ inline bool operator == ( const Point & lhs, const Point & rhs ) {
 
 inline bool operator != ( const Point & lhs, const Point & rhs ) { return !( lhs == rhs ); }
 
-
-// end namespace SmartWin
 }
 
 #endif

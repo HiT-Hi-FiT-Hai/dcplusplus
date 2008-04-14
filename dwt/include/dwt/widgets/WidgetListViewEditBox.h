@@ -38,9 +38,7 @@
 
 #include "TextBox.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 namespace private_
 {
@@ -57,7 +55,7 @@ public:
 	// Object type
 	typedef ThisType * ObjectType;
 
-	explicit TableEditBox( SmartWin::Widget * parent );
+	explicit TableEditBox( dwt::Widget * parent );
 
 	virtual ~TableEditBox()
 	{}
@@ -68,7 +66,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline TableEditBox::TableEditBox( SmartWin::Widget * parent )
+inline TableEditBox::TableEditBox( dwt::Widget * parent )
 	: TextBox( parent )
 {
 	// Can't have a text box without a parent...
@@ -107,7 +105,6 @@ LRESULT TableEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT ms
 // end namespace private_
 }
 
-// end namespace SmartWin
 }
 
 #endif

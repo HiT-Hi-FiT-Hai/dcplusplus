@@ -39,9 +39,7 @@
 
 #include "Widget.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Platform specific code for the application class for Windows CE version of
 /// Windows API
@@ -72,7 +70,6 @@ public:
 	}
 };
 
-// end namespace SmartWin
 }
 
 #endif //! ApplicationPlatformWinCE_h

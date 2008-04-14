@@ -38,9 +38,7 @@
 
 #include "../Message.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 /// Aspect class used by Widgets that can handle "raw" events.
 /** \ingroup AspectClasses
@@ -97,7 +95,6 @@ protected:
 	{}
 };
 
-// end namespace SmartWin
 }
 
 #endif

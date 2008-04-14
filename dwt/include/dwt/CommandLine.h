@@ -40,9 +40,7 @@
 #include <vector>
 #include "util/tstring.h"
 
-namespace SmartWin
-{
-// begin namespace SmartWin
+namespace dwt {
 
 class Application;
 
@@ -72,7 +70,6 @@ private:
 	mutable SmartUtil::tstring itsRawCmdLine;
 };
 
-// end namespace SmartWin
 }
 
 #endif

@@ -31,7 +31,7 @@
 
 #include <dwt/widgets/RadioButton.h>
 
-namespace SmartWin {
+namespace dwt {
 
 RadioButton::Seed::Seed(const SmartUtil::tstring& caption) : 
 	BaseType::Seed(caption, BS_AUTORADIOBUTTON)

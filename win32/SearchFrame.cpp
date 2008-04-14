@@ -71,7 +71,7 @@ int SearchFrame::SearchInfo::compareItems(SearchInfo* a, SearchInfo* b, int col)
 }
 
 
-void SearchFrame::openWindow(SmartWin::TabView* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
+void SearchFrame::openWindow(dwt::TabView* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
 	SearchFrame* pChild = new SearchFrame(mdiParent, str, size, mode, type);
 	frames.insert(pChild);
 }
@@ -81,8 +81,8 @@ void SearchFrame::closeAll() {
 		(*i)->close(true);
 }
 
-SearchFrame::SearchFrame(SmartWin::TabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
-	BaseType(mdiParent, T_("Search"), IDH_SEARCH, SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
+SearchFrame::SearchFrame(dwt::TabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
+	BaseType(mdiParent, T_("Search"), IDH_SEARCH, dwt::IconPtr(new dwt::Icon(IDR_SEARCH))),
 	searchLabel(0),
 	searchBox(0),
 	purge(0),
@@ -224,7 +224,7 @@ SearchFrame::SearchFrame(SmartWin::TabView* mdiParent, const tstring& initialStr
 		dummy.push_back(Util::emptyStringT);
 		hubs->createColumns(dummy);
 
-		hubs->onRaw(std::tr1::bind(&SearchFrame::handleHubItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		hubs->onRaw(std::tr1::bind(&SearchFrame::handleHubItemChanged, this, _1, _2), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
 		hubs->insert(new HubInfo(Util::emptyStringT, T_("Only where I'm op"), false));
 		hubs->setChecked(0, false);
@@ -298,7 +298,7 @@ SearchFrame::~SearchFrame() {
 }
 
 void SearchFrame::layout() {
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 	
 	layoutStatus(r);
 	mapWidget(STATUS_SHOW_UI, showUI);
@@ -307,7 +307,7 @@ void SearchFrame::layout() {
 
 		const long width = 220, labelH = 16, margin = 4, spacing = 2, groupSpacing = 4;
 		
-		SmartWin::Rectangle rect = r;
+		dwt::Rectangle rect = r;
 		
 		results->setBounds(rect.getRight(rect.width() - width));
 		
@@ -331,8 +331,8 @@ void SearchFrame::layout() {
 		
 		rect.pos.y += yedit + spacing;
 		
-		purge->setBounds(SmartWin::Rectangle(rect.x(), rect.y(), 75, yedit));
-		doSearch->setBounds(SmartWin::Rectangle(rect.right() - 100, rect.y(), 100, yedit));
+		purge->setBounds(dwt::Rectangle(rect.x(), rect.y(), 75, yedit));
+		doSearch->setBounds(dwt::Rectangle(rect.right() - 100, rect.y(), 100, yedit));
 		
 		rect.pos.y += yedit + groupSpacing;
 		
@@ -343,7 +343,7 @@ void SearchFrame::layout() {
 		
 		long w2 = rect.size.x - 2 * spacing;
 		
-		SmartWin::Rectangle third = rect;
+		dwt::Rectangle third = rect;
 		
 		third.size.y = comboH;
 		third.size.x = w2 / 3;
@@ -632,7 +632,7 @@ bool SearchFrame::handleKeyDown(int c) {
 	return false;
 }
 
-bool SearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool SearchFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(results->countSelected() > 0) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = results->getContextMenuPos();
