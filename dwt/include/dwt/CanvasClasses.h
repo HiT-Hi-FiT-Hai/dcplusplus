@@ -165,8 +165,8 @@ public:
 	/// BitBlasts buffer into specified rectangle of source
 	void blast( const Rectangle & rectangle )
 	{
-		if ( ::BitBlt( itsSource, rectangle.x(), rectangle.y(), rectangle.width(), rectangle.height(), this->CanvasType::itsHdc, rectangle.x(), rectangle.y(), SRCCOPY ) == FALSE )
-			throw xCeption( _T( "Couldn't bit blast in blast()" ) );
+		// note; ::BitBlt might fail with ERROR_INVALID_HANDLE when the desktop isn't visible
+		::BitBlt( itsSource, rectangle.x(), rectangle.y(), rectangle.width(), rectangle.height(), this->CanvasType::itsHdc, rectangle.x(), rectangle.y(), SRCCOPY );
 	}
 
 	/// Transparently draws bitmap
