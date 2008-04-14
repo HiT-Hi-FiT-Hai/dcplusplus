@@ -96,7 +96,7 @@ public:
 		
 		FontPtr font;
 
-		SmartUtil::tstring format;
+		tstring format;
 		COLORREF backgroundColor;
 		COLORREF monthBackgroundColor;
 		COLORREF monthTextColor;
@@ -156,7 +156,7 @@ public:
 	  * E.g. if you send in "yyyy - MM - dd HH:mm:ss" the control would show e.g.: 
 	  * "2004 - 12 - 24 17:50:14"       
 	  */
-	void setFormat( const SmartUtil::tstring & format );
+	void setFormat( const tstring & format );
 
 	/// Sets the bacground color used between months in the calender
 	/** The color filled between months in the calender
@@ -231,7 +231,7 @@ inline void DateTime::setDateTime( const SYSTEMTIME & st )
 	DateTime_SetSystemtime( this->handle(), GDT_VALID, & st );
 }
 
-inline void DateTime::setFormat( const SmartUtil::tstring & format )
+inline void DateTime::setFormat( const tstring & format )
 {
 	DateTime_SetFormat( this->handle(), format.c_str() );
 }

@@ -31,7 +31,7 @@ public:
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;
 
-		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
+		Seed(const tstring& caption = tstring());
 	};
 
 	explicit TextBox( dwt::Widget * parent );

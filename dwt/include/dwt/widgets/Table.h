@@ -147,7 +147,7 @@ public:
 	  * the value is actually changed. <br>
 	  * If the event handler returns false, the new value is NOT inserted; if the
 	  * return value is true, the old value is replaced with the new. Parameters
-	  * passed is unsigned column, unsigned row and SmartUtil::tstring reference
+	  * passed is unsigned column, unsigned row and tstring reference
 	  * which is the new value, the value can be manipulated and changed within your
 	  * event handler.
 	  */
@@ -209,12 +209,12 @@ public:
 	  * The above does NOT apply for ROWS, meaning it will get the text of the NEW
 	  * row if row is moved due to a sort e.g.
 	  */
-	SmartUtil::tstring getText( unsigned int row, unsigned int column );
+	tstring getText( unsigned int row, unsigned int column );
 
 	/// Sets the text of the given cell
 	/** Sets a new string value for a given cell.
 	  */
-	void setText( unsigned row, unsigned column, const SmartUtil::tstring & newVal );
+	void setText( unsigned row, unsigned column, const tstring & newVal );
 
 	/// Returns a vector containing all the selected rows of the grid.
 	/** The return vector contains unsigned integer values, each value defines a row
@@ -264,7 +264,7 @@ public:
 	/// Returns the name of a specific column
 	/** Which column you wish to retrieve the name for is supplied in the "id" parameter.
 	  */
-	SmartUtil::tstring getColumnName( unsigned col );
+	tstring getColumnName( unsigned col );
 
 	bool setColumnOrder(const std::vector<int>& columns);
 	
@@ -281,7 +281,7 @@ public:
 	  * <br>
 	  * Columns will be added the way they sequentially appear in the vector.
 	  */
-	void createColumns( const std::vector< SmartUtil::tstring > & colNames );
+	void createColumns( const std::vector< tstring > & colNames );
 
 	/// Deletes the given column
 	/** Column zero CANNOT be deleted.
@@ -392,7 +392,7 @@ public:
 	  * image list that will be shown on the row. <br>
 	  * Call createColumns before inserting items.
 	  */
-	int insert( const std::vector< SmartUtil::tstring > & row, LPARAM lPar = 0, int index = - 1, int iconIndex = - 1 );
+	int insert( const std::vector< tstring > & row, LPARAM lPar = 0, int index = - 1, int iconIndex = - 1 );
 
 	/// Reserves a number of items to the list
 	/** To be used in combination with the "onGetItem" event <br>
@@ -441,7 +441,7 @@ public:
 	
 	int getNext(int i, int type) const;
 	
-    int find(const SmartUtil::tstring& b, int start = -1, bool aPartial = false);
+    int find(const tstring& b, int start = -1, bool aPartial = false);
 
     void select(int row);
     
@@ -507,7 +507,7 @@ private:
 	void updateArrow();
 #ifdef PORT_ME
 	// Private validate function, this ones returns the "read only" property of the list
-	static bool defaultValidate( EventHandlerClass * parent, Table * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue );
+	static bool defaultValidate( EventHandlerClass * parent, Table * list, unsigned int col, unsigned int row, tstring & newValue );
 #endif
 	// Calculates the adjustment from the columns of an item.
 	int xoffFromColumn( int column, int & logicalColumn );
@@ -658,7 +658,7 @@ inline size_t Table::countSelectedImpl() const {
 	return static_cast<size_t>(ListView_GetSelectedCount( this->handle() ));
 }
 
-inline void Table::setText( unsigned row, unsigned column, const SmartUtil::tstring & newVal ) {
+inline void Table::setText( unsigned row, unsigned column, const tstring & newVal ) {
 	ListView_SetItemText( this->handle(), row, column, const_cast < TCHAR * >( newVal.c_str() ) );
 }
 
@@ -671,7 +671,7 @@ inline void Table::setReadOnly( bool value ) {
 	this->Widget::addRemoveStyle( LVS_EDITLABELS, !value );
 }
 
-inline SmartUtil::tstring Table::getColumnName( unsigned col ) {
+inline tstring Table::getColumnName( unsigned col ) {
 	// TODO: Fix
 	const int BUFFER_MAX = 2048;
 	TCHAR buffer[BUFFER_MAX + 1];
@@ -756,7 +756,7 @@ inline size_t Table::sizeImpl() const {
 }
 
 #ifdef PORT_ME
-bool Table::defaultValidate( EventHandlerClass * parent, Table * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue )
+bool Table::defaultValidate( EventHandlerClass * parent, Table * list, unsigned int col, unsigned int row, tstring & newValue )
 {
 	list->updateWidget();
 	return !list->getReadOnly();
@@ -802,7 +802,7 @@ inline int Table::getNext(int i, int type) const {
 	return ListView_GetNextItem(this->handle(), i, type);
 }
 
-inline int Table::find(const SmartUtil::tstring& b, int start, bool aPartial) {
+inline int Table::find(const tstring& b, int start, bool aPartial) {
     LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
     return ListView_FindItem(this->handle(), start, &fi);
 }

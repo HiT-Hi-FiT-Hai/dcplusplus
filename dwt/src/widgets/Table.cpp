@@ -150,7 +150,7 @@ void Table::clearSelection() {
 	}
 }
 
-void Table::createColumns( const std::vector< SmartUtil::tstring > & colNames )
+void Table::createColumns( const std::vector< tstring > & colNames )
 {
 	// Deleting all data
 	clear();
@@ -160,7 +160,7 @@ void Table::createColumns( const std::vector< SmartUtil::tstring > & colNames )
 
 	lvColumn.cx = 100;
 	int x = 0;
-	for ( std::vector< SmartUtil::tstring >::const_iterator idx = colNames.begin();
+	for ( std::vector< tstring >::const_iterator idx = colNames.begin();
 		idx != colNames.end();
 		++idx, ++x )
 	{
@@ -173,7 +173,7 @@ void Table::createColumns( const std::vector< SmartUtil::tstring > & colNames )
 	}
 }
 
-int Table::insert(const std::vector< SmartUtil::tstring > & row, LPARAM lPar, int index, int iconIndex) {
+int Table::insert(const std::vector< tstring > & row, LPARAM lPar, int index, int iconIndex) {
 	if (index == - 1) {
 		// Appending at bottom
 		index = ListView_GetItemCount( this->handle() );
@@ -193,7 +193,7 @@ int Table::insert(const std::vector< SmartUtil::tstring > & row, LPARAM lPar, in
 	}
 	lvi.mask = LVIF_TEXT;
 	lvi.iSubItem = 1;
-	for (std::vector< SmartUtil::tstring >::const_iterator idx = row.begin() + 1; idx != row.end(); ++idx ) {
+	for (std::vector< tstring >::const_iterator idx = row.begin() + 1; idx != row.end(); ++idx ) {
 		lvi.pszText = const_cast < TCHAR * >(idx->c_str() );
 		lvi.cchTextMax = static_cast< int >(idx->size() );
 		if ( !ListView_SetItem( this->handle(), & lvi )) {
@@ -227,7 +227,7 @@ ScreenCoordinate Table::getContextMenuPos() {
 	return ClientCoordinate(pt, this);
 }
 
-SmartUtil::tstring Table::getText( unsigned int row, unsigned int column )
+tstring Table::getText( unsigned int row, unsigned int column )
 {
 	// TODO: Get string length first?
 	const int BUFFER_MAX = 2048;

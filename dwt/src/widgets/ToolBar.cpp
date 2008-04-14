@@ -59,7 +59,7 @@ void ToolBar::appendSeparator()
 	}
 }
 
-void ToolBar::appendItem( int image, const SmartUtil::tstring& toolTip, const Dispatcher::F& f)
+void ToolBar::appendItem( int image, const tstring& toolTip, const Dispatcher::F& f)
 {
 	int id = -1;
 	

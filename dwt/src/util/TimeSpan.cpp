@@ -35,8 +35,8 @@
 
 #include <dwt/util/TimeSpan.h>
 
-namespace SmartUtil
-{
+namespace dwt { namespace util {
+
 TimeSpan::TimeSpan()
 	: itsNumberOfMilliseconds( 0 )
 {}
@@ -49,4 +49,5 @@ TimeSpan::TimeSpan( int days, int hours, int minutes, int seconds )
 		+ ( 1000 * 86400 * days )
 	)
 {}
-}
+
+} }

@@ -34,9 +34,10 @@
 */
 
 #include <dwt/util/DateTime.h>
+#include <dwt/util/TimeSpan.h>
 
-namespace SmartUtil
-{
+namespace dwt { namespace util {
+
 DateTime::DateTime()
 {
 	itsSysTime.wYear = 1601;
@@ -232,4 +233,5 @@ bool operator != ( const DateTime & lhs, const DateTime & rhs )
 {
 	return !(lhs == rhs);
 }
-}
+
+} }

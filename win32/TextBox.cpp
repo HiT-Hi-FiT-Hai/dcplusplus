@@ -22,7 +22,7 @@
 
 #include "WinUtil.h"
 
-TextBox::Seed::Seed(const SmartUtil::tstring& caption) : 
+TextBox::Seed::Seed(const tstring& caption) : 
 	BaseType::Seed(caption)
 {
 }

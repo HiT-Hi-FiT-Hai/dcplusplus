@@ -146,7 +146,7 @@ void WidgetMenu::setMenu() {
 		throw xCeption( _T( "SetMenu in WidgetMenu::setMenu fizzled..." ) );
 }
 
-WidgetMenu::ObjectType WidgetMenu::appendPopup( const SmartUtil::tstring & text, MenuItemDataPtr itemData )
+WidgetMenu::ObjectType WidgetMenu::appendPopup( const tstring & text, MenuItemDataPtr itemData )
 {
 	// create popup menu pointer
 	ObjectType retVal ( new WidgetMenu(itsParent) );
@@ -318,7 +318,7 @@ void WidgetMenu::setDefaultItem( UINT id, bool byPosition )
 	::SetMenuDefaultItem(handle(), id, byPosition);
 }
 
-SmartUtil::tstring WidgetMenu::getText( unsigned id, bool byPosition )
+tstring WidgetMenu::getText( unsigned id, bool byPosition )
 {
 	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
 
@@ -335,7 +335,7 @@ SmartUtil::tstring WidgetMenu::getText( unsigned id, bool byPosition )
 	return mi.dwTypeData;
 }
 
-void WidgetMenu::setText( unsigned id, const SmartUtil::tstring& text )
+void WidgetMenu::setText( unsigned id, const tstring& text )
 {
 	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
 
@@ -347,7 +347,7 @@ void WidgetMenu::setText( unsigned id, const SmartUtil::tstring& text )
 		throw xCeption( _T( "Couldn't set item info in WidgetMenu::setText" ) );
 }
 
-void WidgetMenu::setTitle( const SmartUtil::tstring & title, bool drawSidebar /* = false */)
+void WidgetMenu::setTitle( const tstring & title, bool drawSidebar /* = false */)
 {
 	if(!ownerDrawn)
 		return;
@@ -575,16 +575,16 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		const int length = info.cch + 1;
 		std::vector< TCHAR > buffer( length );
 		int count = ::GetMenuString( wrapper->menu->handle(), wrapper->index, & buffer[0], length, MF_BYPOSITION );
-		SmartUtil::tstring itemText( buffer.begin(), buffer.begin() + count );
+		tstring itemText( buffer.begin(), buffer.begin() + count );
 
 		// index will contain accelerator position
 		size_t index = itemText.find_last_of( _T( '\t' ) );
 
 		// split item text to draw accelerator correctly
-		SmartUtil::tstring text = itemText.substr( 0, index );
+		tstring text = itemText.substr( 0, index );
 
 		// get accelerator
-		SmartUtil::tstring accelerator;
+		tstring accelerator;
 
 		if ( index != itemText.npos )
 			accelerator = itemText.substr( index + 1 );
@@ -771,7 +771,7 @@ bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	const int length = info.cch + 1;
 	std::vector< TCHAR > buffer ( length );
 	int count = ::GetMenuString( wrapper->menu->handle(), wrapper->index, & buffer[0], length, MF_BYPOSITION );
-	SmartUtil::tstring itemText ( buffer.begin(), buffer.begin() + count );
+	tstring itemText ( buffer.begin(), buffer.begin() + count );
 
 	// now get text extents
 	SIZE textSize;
@@ -934,7 +934,7 @@ int WidgetMenu::getCount() const
 	return count;
 }
 
-void WidgetMenu::appendItem(unsigned int id, const SmartUtil::tstring & text, MenuItemDataPtr itemData)
+void WidgetMenu::appendItem(unsigned int id, const tstring & text, MenuItemDataPtr itemData)
 {
 	// init structure for new item
 	MENUITEMINFO info;
@@ -978,7 +978,7 @@ void WidgetMenu::appendItem(unsigned int id, const SmartUtil::tstring & text, Me
 		throw xCeption( _T( "Couldn't insert/update item in WidgetMenu::appendItem" ) );
 }
 
-void WidgetMenu::appendItem(unsigned int id, const SmartUtil::tstring & text, BitmapPtr image)
+void WidgetMenu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
 {
 	MenuItemDataPtr itemData(new MenuItemData());
 	if(ownerDrawn)

@@ -70,7 +70,7 @@ public:
 
 protected:
 	struct Seed : public BaseType::Seed {
-		Seed(LPCTSTR className, DWORD style, DWORD exStyle = 0, const SmartUtil::tstring& caption = SmartUtil::tstring());
+		Seed(LPCTSTR className, DWORD style, DWORD exStyle = 0, const tstring& caption = tstring());
 	};
 
 	typedef Control<Policy> ControlType;
@@ -86,7 +86,7 @@ Control<Policy>::Control(Widget* parent) : BaseType(parent) {
 }
 
 template<typename Policy>
-Control<Policy>::Seed::Seed(LPCTSTR className, DWORD style, DWORD exStyle, const SmartUtil::tstring& caption) : 
+Control<Policy>::Seed::Seed(LPCTSTR className, DWORD style, DWORD exStyle, const tstring& caption) : 
 	BaseType::Seed(className, style | WS_VISIBLE, exStyle, caption)
 {
 	

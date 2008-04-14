@@ -34,7 +34,7 @@
 
 namespace dwt {
 
-CheckBox::Seed::Seed(const SmartUtil::tstring& caption) : 
+CheckBox::Seed::Seed(const tstring& caption) : 
 	BaseType::Seed(caption, BS_AUTOCHECKBOX | BS_CHECKBOX)
 {
 	

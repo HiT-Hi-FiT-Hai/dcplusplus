@@ -37,7 +37,7 @@
 #define DWT_xCeption_h
 
 #include "WindowsHeaders.h"
-#include "util/tstring.h"
+#include "tstring.h"
 #include "util/StringConversion.h"
 #include <stdexcept>
 
@@ -59,7 +59,7 @@ public:
 	  */
 	xCeption( const TCHAR * err ) throw()
 		: std::exception(),
-		itsAsciiErrorMsg( SmartUtil::AsciiGuaranteed::doConvert( err, SmartUtil::ConversionCodepage::ANSI ) ),
+		itsAsciiErrorMsg( util::AsciiGuaranteed::doConvert( err, util::ConversionCodepage::ANSI ) ),
 		itsFormatWndMessage( 0 )
 	{
 		errId = ::GetLastError();
@@ -68,9 +68,9 @@ public:
 	/// Overloaded Constructor basically doing the same as the const TCHAR * version
 	/** See the const TCHAR * err overloaded version
 	  */
-	xCeption( const SmartUtil::tstring & err ) throw()
+	xCeption( const tstring & err ) throw()
 		: std::exception(),
-		itsAsciiErrorMsg( SmartUtil::AsciiGuaranteed::doConvert( err, SmartUtil::ConversionCodepage::ANSI ) ),
+		itsAsciiErrorMsg( util::AsciiGuaranteed::doConvert( err, util::ConversionCodepage::ANSI ) ),
 		itsFormatWndMessage( 0 )
 	{
 		errId = ::GetLastError();

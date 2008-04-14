@@ -63,7 +63,7 @@ protected:
 	Container(Widget* parent) : BaseType(parent) { }
 };
 
-inline Container::Seed::Seed() : BaseType::Seed(SmartUtil::tstring(), WS_CHILD | WS_CLIPSIBLINGS, 0) {
+inline Container::Seed::Seed() : BaseType::Seed(tstring(), WS_CHILD | WS_CLIPSIBLINGS, 0) {
 	
 }
 

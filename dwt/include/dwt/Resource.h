@@ -37,7 +37,7 @@
 #define DWT_Resources_h
 
 #include "WindowsHeaders.h"
-#include "util/tstring.h"
+#include "tstring.h"
 
 namespace dwt {
 
@@ -52,9 +52,9 @@ namespace dwt {
 		/// Constructor taking path to a resource dll
 		/** Pass in the path to the DLL you wish to load resources from
 		  */
-		explicit Resource(const SmartUtil::tstring & file);
+		explicit Resource(const tstring & file);
 
-		SmartUtil::tstring operator[] ( unsigned key );
+		tstring operator[] ( unsigned key );
 
 		// DTOR freeing the instance handle
 		virtual ~Resource();

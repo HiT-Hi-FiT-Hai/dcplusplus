@@ -351,7 +351,7 @@ bool MainWindow::filter(MSG& msg) {
 	return false;
 }
 
-void MainWindow::handleTabsTitleChanged(const SmartUtil::tstring& title) {
+void MainWindow::handleTabsTitleChanged(const tstring& title) {
 	setText(title.empty() ? _T(APPNAME) _T(" ") _T(VERSIONSTRING) : _T(APPNAME) _T(" ") _T(VERSIONSTRING) _T(" - [") + title + _T("]"));
 }
 

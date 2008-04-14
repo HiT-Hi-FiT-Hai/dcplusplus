@@ -37,7 +37,7 @@
 #define DWT_LibraryLoader_h
 
 #include "WindowsHeaders.h"
-#include "util/tstring.h"
+#include "tstring.h"
 #include "Threads.h"
 #include "xCeption.h"
 #include <map>
@@ -81,7 +81,7 @@ public:
 	  * just allocate a static stack object of this type with the given library name
 	  * anywhere you need to ensure your library must be loaded!
 	  */
-	LibraryLoader( const SmartUtil::tstring & libraryName );
+	LibraryLoader( const tstring & libraryName );
 
 	/// Argument free Constructor
 	/** Argument free Constructor, does NOTHING call load to actually load library!
@@ -90,9 +90,9 @@ public:
 
 	/// Actually loads library
 	/** Call this one to actually load the given library or use Constructor taking
-	  * SmartUtil::tstring argument which automatically loads library!
+	  * tstring argument which automatically loads library!
 	  */
-	void load( const SmartUtil::tstring & libraryName );
+	void load( const tstring & libraryName );
 
 
 
@@ -103,7 +103,7 @@ public:
 	  * FARPROC x1 = richEditLibrary.getProcAddress( _T("CreateTextServices") ); <br>
 	  * FARPROC x2 = richEditLibrary.getProcAddress( 4 ); <br>
 	  */
-	FARPROC getProcAddress( const SmartUtil::tstring & procedureName );
+	FARPROC getProcAddress( const tstring & procedureName );
 
 	/// Get procedure address from loaded library by ordinal value
 	/** 
@@ -124,10 +124,10 @@ public:
 private:
 	LibraryLoader( const LibraryLoader & ); // DENY COPY
 	LibraryLoader & operator =( const LibraryLoader & ); // DENY ASSIGNMENT
-	SmartUtil::tstring itsLibraryName;
+	tstring itsLibraryName;
 	HMODULE itsHMod;
 	static Utilities::CriticalSection itsCs;
-	static std::map< SmartUtil::tstring, std::pair< int, HMODULE > > itsLibrariesLoaded;
+	static std::map< tstring, std::pair< int, HMODULE > > itsLibrariesLoaded;
 	bool hasCalledLoad;
 };
 

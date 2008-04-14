@@ -33,7 +33,7 @@
 
 namespace dwt {
 
-Label::Seed::Seed(const SmartUtil::tstring& caption) :
+Label::Seed::Seed(const tstring& caption) :
 	BaseType::Seed(WC_STATIC, WS_CHILD | SS_NOTIFY, 0, caption),
 	font(new Font(DefaultGuiFont))
 {

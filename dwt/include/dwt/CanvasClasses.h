@@ -443,13 +443,13 @@ public:
 	  * </ul>
 	  * Google for or look at MSDN what their different meaning are.
 	  */
-	int drawText( const SmartUtil::tstring & text, const dwt::Rectangle & rect, unsigned format );
+	int drawText( const tstring & text, const dwt::Rectangle & rect, unsigned format );
 
 	/// Draws given text inside given Rectangle
 	/** Draw text within coordinates of given Rectangle according to <br>
 	  * setTextColor, setTextAlign, SetTextJustification
 	  */
-	void extTextOut( const SmartUtil::tstring & text, unsigned x, unsigned y );
+	void extTextOut( const tstring & text, unsigned x, unsigned y );
 
 	/// Sets the TextColor of the this Canvas.
 	/** Sets the TextColor for future TextOut() calls. Returns the previous color.

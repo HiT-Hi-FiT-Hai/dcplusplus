@@ -43,7 +43,7 @@ void CoolBar::create( const Seed & cs ) {
 }
 
 void CoolBar::addChild( Widget * child,
-	unsigned width, unsigned height, const SmartUtil::tstring & txt
+	unsigned width, unsigned height, const tstring & txt
 	)
 {
 	REBARBANDINFO rbBand;

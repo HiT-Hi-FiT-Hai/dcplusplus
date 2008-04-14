@@ -37,7 +37,7 @@
 #define DWT_AspectFileFilter_h
 
 #include "../WindowsHeaders.h"
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "../xCeption.h"
 
 namespace dwt {
@@ -58,7 +58,7 @@ public:
 	  * "HTML Files" etc. filter is the actual filter to filter in files to show
 	  * normally this would be e.g. "*.html".
 	  */
-	WidgetType& addFilter( const SmartUtil::tstring & filterName, const SmartUtil::tstring & filter )
+	WidgetType& addFilter( const tstring & filterName, const tstring & filter )
 	{
 		itsFilter.insert( itsFilter.end(), filterName.begin(), filterName.end() );
 		itsFilter.push_back( '\0' );
@@ -82,7 +82,7 @@ public:
 		return *static_cast<WidgetType*>(this);
 	}
 	
-	WidgetType& setDefaultExtension(const SmartUtil::tstring& defExt) {
+	WidgetType& setDefaultExtension(const tstring& defExt) {
 		itsDefExt = defExt;
 		return *static_cast<WidgetType*>(this);
 	}
@@ -99,7 +99,7 @@ public:
 	/** If given your dialog will try to start in the given directory, otherwise it
 	  * will use the working directory of the process.
 	  */
-	WidgetType& setInitialDirectory( const SmartUtil::tstring& initialDir ) {
+	WidgetType& setInitialDirectory( const tstring& initialDir ) {
 		itsInitialDir = initialDir;
 		return *static_cast<WidgetType*>(this);
 	}
@@ -133,11 +133,11 @@ protected:
 
 private:
 	unsigned int itsActiveFilter;
-	SmartUtil::tstring itsInitialDir;
-	SmartUtil::tstring itsFilter;
-	SmartUtil::tstring itsDefExt;
+	tstring itsInitialDir;
+	tstring itsFilter;
+	tstring itsDefExt;
 	
-	static const TCHAR* ifNotEmpty(const SmartUtil::tstring& str) {
+	static const TCHAR* ifNotEmpty(const tstring& str) {
 		return str.empty() ? NULL : str.c_str();
 	}
 };

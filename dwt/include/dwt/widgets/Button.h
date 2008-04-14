@@ -81,7 +81,7 @@ public:
 		FontPtr font;
 
 		/// Fills with default parameters
-		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring(), DWORD style = 0);
+		Seed(const tstring& caption_ = tstring(), DWORD style = 0);
 	};
 
 	template<typename SeedType>

@@ -32,13 +32,15 @@
 #include <dwt/util/StringUtils.h>
 #include <dwt/WindowsHeaders.h>
 
-namespace SmartUtil {
-	tstring escapeMenu(tstring str) {
-		tstring::size_type i = 0;
-		while( (i = str.find(_T('&'), i)) != tstring::npos) {
-			str.insert(str.begin()+i, 1, _T('&'));
-			i += 2;
-		}
-		return str;
+namespace dwt { namespace util {
+
+tstring escapeMenu(tstring str) {
+	tstring::size_type i = 0;
+	while( (i = str.find(_T('&'), i)) != tstring::npos) {
+		str.insert(str.begin()+i, 1, _T('&'));
+		i += 2;
 	}
+	return str;
 }
+
+} }

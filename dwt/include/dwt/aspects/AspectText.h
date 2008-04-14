@@ -36,7 +36,7 @@
 #ifndef DWT_AspectText_h
 #define DWT_AspectText_h
 
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "../Dispatchers.h"
 #include "../Message.h"
 
@@ -54,22 +54,22 @@ class AspectText
 	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
 
-	static SmartUtil::tstring getText(const MSG& msg) { 
-		return SmartUtil::tstring( reinterpret_cast< TCHAR * >( msg.lParam ) );
+	static tstring getText(const MSG& msg) { 
+		return tstring( reinterpret_cast< TCHAR * >( msg.lParam ) );
 	}
 	
-	typedef Dispatchers::ConvertBase<SmartUtil::tstring, &AspectText<WidgetType>::getText, false> Dispatcher;
-	friend class Dispatchers::ConvertBase<SmartUtil::tstring, &AspectText<WidgetType>::getText, false>;
+	typedef Dispatchers::ConvertBase<tstring, &AspectText<WidgetType>::getText, false> Dispatcher;
+	friend class Dispatchers::ConvertBase<tstring, &AspectText<WidgetType>::getText, false>;
 public:
 	/// Sets the text of the AspectText realizing class
 	/** The txt parameter is the new text to put into the realizing object.
 	  */
-	void setText( const SmartUtil::tstring & txt );
+	void setText( const tstring & txt );
 
 	/// Gets the text of the AspectText realizing class
 	/** The Return value is the text of the realizing class.
 	  */
-	SmartUtil::tstring getText() const;
+	tstring getText() const;
 	
 	/// Length of text in characters
 	size_t length() const;
@@ -77,7 +77,7 @@ public:
 	/// \ingroup EventHandlersAspectText
 	/// Setting the event handler for the "setText" event
 	/** When the text changes in the Widget this event will be raised. <br>
-	  * The parameter passed is SmartUtil::tstring & which is the new text of the
+	  * The parameter passed is tstring & which is the new text of the
 	  * Widget.
 	  */
 	void onTextChanging(const typename Dispatcher::F& f) {
@@ -92,7 +92,7 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template< class WidgetType >
-void AspectText< WidgetType >::setText( const SmartUtil::tstring & txt ) {
+void AspectText< WidgetType >::setText( const tstring & txt ) {
 	W().sendMessage(WM_SETTEXT, 0, reinterpret_cast< LPARAM >(txt.c_str()) );
 }
 
@@ -102,12 +102,12 @@ size_t AspectText< WidgetType >::length( ) const {
 }
 
 template< class WidgetType >
-SmartUtil::tstring AspectText< WidgetType >::getText() const
+tstring AspectText< WidgetType >::getText() const
 {
 	size_t textLength = length();
 	if ( textLength == 0 )
 		return _T( "" );
-	SmartUtil::tstring retVal(textLength + 1, 0);
+	tstring retVal(textLength + 1, 0);
 	retVal.resize(W().sendMessage(WM_GETTEXT, static_cast<WPARAM>(textLength + 1), reinterpret_cast<LPARAM>(&retVal[0])));
 	return retVal;
 }

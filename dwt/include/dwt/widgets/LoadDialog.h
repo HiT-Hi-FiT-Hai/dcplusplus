@@ -37,7 +37,7 @@
 #define DWT_LoadDialog_h
 
 #include "../Widget.h"
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "../aspects/AspectFileFilter.h"
 #include <vector>
 
@@ -70,7 +70,7 @@ public:
 	  * before calling this function, if you wish the dialog to show only certain
 	  * types of files.
 	  */
-	bool open(SmartUtil::tstring& file);
+	bool open(tstring& file);
 
 	/// Shows the dialog
 	/** Returns an empty vector if user press cancel. <br>
@@ -80,7 +80,7 @@ public:
 	  * before calling this function, if you wish the dialog to show only certain
 	  * types of files.
 	  */
-	bool open(std::vector<SmartUtil::tstring>& files);
+	bool open(std::vector<tstring>& files);
 
 	// Constructor Taking pointer to parent
 	explicit LoadDialog( Widget * parent = 0 );

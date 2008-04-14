@@ -33,7 +33,7 @@
 
 namespace dwt {
 
-RadioButton::Seed::Seed(const SmartUtil::tstring& caption) : 
+RadioButton::Seed::Seed(const tstring& caption) : 
 	BaseType::Seed(caption, BS_AUTORADIOBUTTON)
 {
 }

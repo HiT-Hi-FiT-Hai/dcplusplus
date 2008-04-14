@@ -38,7 +38,7 @@
 
 #ifndef WINCE
 
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "../resources/Icon.h"
 #include "../Policies.h"
 #include "../WindowClass.h"
@@ -88,7 +88,7 @@ public:
 		bool activate;
 		
 		/// Fills with default parameters
-		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
+		Seed(const tstring& caption = tstring());
 
 	};
 

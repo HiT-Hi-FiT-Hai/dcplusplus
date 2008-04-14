@@ -94,7 +94,7 @@ public:
 		FontPtr font;
 
 		/// Fills with default parameters
-		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
+		Seed(const tstring& caption_ = tstring());
 	};
 
 	/// Actually creates the Static Control

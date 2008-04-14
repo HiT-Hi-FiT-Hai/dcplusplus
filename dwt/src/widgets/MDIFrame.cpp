@@ -36,7 +36,7 @@
 namespace dwt {
 
 // TODO Fix caption
-MDIFrame::Seed::Seed(const SmartUtil::tstring& caption) :
+MDIFrame::Seed::Seed(const tstring& caption) :
 	BaseType::Seed(caption, 0, 0)
 {
 }

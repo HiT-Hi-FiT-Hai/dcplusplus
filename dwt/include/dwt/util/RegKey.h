@@ -37,122 +37,122 @@
 #define DWT_RegKey_H
 
 #include "../WindowsHeaders.h"
-#include "tstring.h"
+#include "../tstring.h"
 #include "xCeptionSmartUtilities.h"
-#include <shlwapi.h>
 #include <vector>
 
 /// Contains utility class for reading and editing the registry
-namespace SmartUtil
+namespace dwt { namespace util {
+
+class RegKey
 {
-	class RegKey
-	{
-	private:
-		HKEY m_hKeyHandle;
-		DWORD m_dwDisposition;
-		REGSAM m_pAccess;
+private:
+	HKEY m_hKeyHandle;
+	DWORD m_dwDisposition;
+	REGSAM m_pAccess;
 
-		struct _REGKEYINFO {
-			TCHAR achClass[MAX_PATH];				// buffer for class name
-			DWORD cchClassName;						// size of class string
-			DWORD cSubKeys;							// number of subkeys
-			DWORD cbMaxSubKey;						// longest subkey size
-			DWORD cchMaxClass;						// longest class string
-			DWORD cValues;							// number of values for key
-			DWORD cchMaxValue;						// longest value name
-			DWORD cbMaxValueData;					// longest value data
-			DWORD cbSecurityDescriptor;				// size of security descriptor
-			FILETIME ftLastWriteTime;				// last write time
-		} REGKEYINFO;
-	public:
-		/// Normal constructor
-		/** Constructs a new instanc of this class
-		  */
-		RegKey(void);
+	struct _REGKEYINFO {
+		TCHAR achClass[MAX_PATH];				// buffer for class name
+		DWORD cchClassName;						// size of class string
+		DWORD cSubKeys;							// number of subkeys
+		DWORD cbMaxSubKey;						// longest subkey size
+		DWORD cchMaxClass;						// longest class string
+		DWORD cValues;							// number of values for key
+		DWORD cchMaxValue;						// longest value name
+		DWORD cbMaxValueData;					// longest value data
+		DWORD cbSecurityDescriptor;				// size of security descriptor
+		FILETIME ftLastWriteTime;				// last write time
+	} REGKEYINFO;
+public:
+	/// Normal constructor
+	/** Constructs a new instanc of this class
+	  */
+	RegKey(void);
 
-		/// Constructor, with parameters to open/create a reg key
-		/** Constructor taking a hKey and SmartUtil::tstring to specify the key to open. <br>
-		  * hKey could be HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE or HKEY_USERS
-		  */
-		RegKey(HKEY hKey, SmartUtil::tstring lpSubKey,REGSAM samDesired = KEY_ALL_ACCESS,bool createIfNotExists = false);
+	/// Constructor, with parameters to open/create a reg key
+	/** Constructor taking a hKey and tstring to specify the key to open. <br>
+	  * hKey could be HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE or HKEY_USERS
+	  */
+	RegKey(HKEY hKey, tstring lpSubKey,REGSAM samDesired = KEY_ALL_ACCESS,bool createIfNotExists = false);
 
-		/// Deconstructor
-		/** Deconstructor, close keys if they are still open
-		  */
-		~RegKey(void);
+	/// Deconstructor
+	/** Deconstructor, close keys if they are still open
+	  */
+	~RegKey(void);
 
-		/// Open or create a reg key
-		/** Open a reg key or create before <br>
-		  * hKey could be HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE or HKEY_USERS
-		  */
-		bool open(HKEY hKey, SmartUtil::tstring lpSubKey,REGSAM samDesired = KEY_ALL_ACCESS,bool createIfNotExists = false);
+	/// Open or create a reg key
+	/** Open a reg key or create before <br>
+	  * hKey could be HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE or HKEY_USERS
+	  */
+	bool open(HKEY hKey, tstring lpSubKey,REGSAM samDesired = KEY_ALL_ACCESS,bool createIfNotExists = false);
 
-		/// Close open key
-		/** Close open key
-		  */
-		void close(void);
+	/// Close open key
+	/** Close open key
+	  */
+	void close(void);
 
-		/// Check for an open key
-		/** Check for an open key
-		  */
-		bool isOpen(void) { return (m_hKeyHandle != NULL); }
+	/// Check for an open key
+	/** Check for an open key
+	  */
+	bool isOpen(void) { return (m_hKeyHandle != NULL); }
 
-		/// Check for a new key
-		/** Call this if you are sure that you have an open key!
-		  * It returns true if the open key was created by open or false if that key alredy exists.
-		  */
-		bool isNewKey(void) { return (m_dwDisposition == REG_CREATED_NEW_KEY); }
+	/// Check for a new key
+	/** Call this if you are sure that you have an open key!
+	  * It returns true if the open key was created by open or false if that key alredy exists.
+	  */
+	bool isNewKey(void) { return (m_dwDisposition == REG_CREATED_NEW_KEY); }
 
-		/// Delete the specific subkey of the current open key
-		/** Delete the specific subkey of the current open key. The key must be empty or set recursiv=true to delete all content, too.
-		  */
-		bool deleteSubkey(SmartUtil::tstring lpSubKey, bool recursiv = false);
+	/// Delete the specific subkey of the current open key
+	/** Delete the specific subkey of the current open key. The key must be empty or set recursiv=true to delete all content, too.
+	  */
+	bool deleteSubkey(tstring lpSubKey, bool recursiv = false);
 
-		/// Delete the specific value of the current open key
-		/** Delete the specific value of the current open key
-		  */
-		bool deleteValue(SmartUtil::tstring lpValue);
+	/// Delete the specific value of the current open key
+	/** Delete the specific value of the current open key
+	  */
+	bool deleteValue(tstring lpValue);
 
-		/// Get value names
-		/** Get value names
-		  */
-		std::vector<SmartUtil::tstring> getValues(void);
+	/// Get value names
+	/** Get value names
+	  */
+	std::vector<tstring> getValues(void);
 
-		/// Get subkeys
-		/** Get subkeys
-		  */
-		std::vector<SmartUtil::tstring> getSubkeys(void);
+	/// Get subkeys
+	/** Get subkeys
+	  */
+	std::vector<tstring> getSubkeys(void);
 
-		/// Set DWORD
-		/** Writes a DWORD value
-		  */
-		bool writeDword(SmartUtil::tstring lpValueName, DWORD dwValueDword);
-		
-		/// Set string
-		/** Writes a string value
-		  */
-		bool writeString(SmartUtil::tstring lpValueName, SmartUtil::tstring dwValueString);
-		
-		/// Set binary
-		/** Writes a binary value
-		  */
-		bool writeBinary(SmartUtil::tstring lpValueName, void* pValueBinary, int length);
+	/// Set DWORD
+	/** Writes a DWORD value
+	  */
+	bool writeDword(tstring lpValueName, DWORD dwValueDword);
+	
+	/// Set string
+	/** Writes a string value
+	  */
+	bool writeString(tstring lpValueName, tstring dwValueString);
+	
+	/// Set binary
+	/** Writes a binary value
+	  */
+	bool writeBinary(tstring lpValueName, void* pValueBinary, int length);
 
-		/// Read DWORD
-		/** Read a DWORD value
-		  */
-		DWORD readDword(SmartUtil::tstring lpValueName);
+	/// Read DWORD
+	/** Read a DWORD value
+	  */
+	DWORD readDword(tstring lpValueName);
 
-		/// Read string
-		/** Read a string value
-		  */
-		SmartUtil::tstring readString(SmartUtil::tstring lpValueName);
+	/// Read string
+	/** Read a string value
+	  */
+	tstring readString(tstring lpValueName);
 
-		/// Read binary
-		/** Read a binary value
-		  */
-		void readBinary(SmartUtil::tstring lpValueName,void* pValueData, int size);
-	};
-}
+	/// Read binary
+	/** Read a binary value
+	  */
+	void readBinary(tstring lpValueName,void* pValueData, int size);
+};
+
+} }
 
 #endif

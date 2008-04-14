@@ -33,7 +33,7 @@
 
 namespace dwt {
 
-Button::Seed::Seed(const SmartUtil::tstring& caption, DWORD style) : 
+Button::Seed::Seed(const tstring& caption, DWORD style) : 
 	BaseType::Seed(WC_BUTTON, style | WS_CHILD | WS_TABSTOP, 0, caption),
 	font(new Font(DefaultGuiFont))
 {

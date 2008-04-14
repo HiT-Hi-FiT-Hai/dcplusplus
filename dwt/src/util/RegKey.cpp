@@ -35,248 +35,248 @@
 
 #include <dwt/util/RegKey.h>
 
-namespace SmartUtil
+namespace dwt { namespace util {
+
+RegKey::RegKey(void)
 {
+	m_hKeyHandle = NULL;
+	m_dwDisposition = 0;
+	m_pAccess = KEY_ALL_ACCESS;
+	memset(&REGKEYINFO,0,sizeof(_REGKEYINFO));
+	REGKEYINFO.cchClassName = MAX_PATH;
+}
 
-	RegKey::RegKey(void)
-	{
-		m_hKeyHandle = NULL;
-		m_dwDisposition = 0;
-		m_pAccess = KEY_ALL_ACCESS;
-		memset(&REGKEYINFO,0,sizeof(_REGKEYINFO));
-		REGKEYINFO.cchClassName = MAX_PATH;
-	}
-
-	RegKey::RegKey(HKEY hKey, SmartUtil::tstring lpSubKey,REGSAM samDesired,bool createIfNotExists)
-	{
-		m_hKeyHandle = NULL;
-		m_dwDisposition = 0;
-		m_pAccess = KEY_ALL_ACCESS;
-		memset(&REGKEYINFO,0,sizeof(_REGKEYINFO));
-		REGKEYINFO.cchClassName = MAX_PATH;
-		if(!open(hKey,lpSubKey,samDesired,createIfNotExists)) {
-			xCeptionSmartUtilities x( "Couldn't open registry key" );
-			throw x;
-		}
-	}
-
-	RegKey::~RegKey(void)
-	{
-		if(m_hKeyHandle != NULL) close();
-	}
-
-	bool RegKey::open(HKEY hKey, SmartUtil::tstring lpSubKey,REGSAM samDesired,bool createIfNotExists)
-	{
-		if(m_hKeyHandle != NULL) close();
-		LONG lResult;
-		m_pAccess = samDesired;
-		if(createIfNotExists)
-			lResult = RegCreateKeyEx(hKey,lpSubKey.c_str(),0,NULL,REG_OPTION_NON_VOLATILE, samDesired, NULL, &m_hKeyHandle, &m_dwDisposition);
-		else {
-			m_dwDisposition = REG_OPENED_EXISTING_KEY;
-			lResult = RegOpenKeyEx(hKey, lpSubKey.c_str(), 0, samDesired, &m_hKeyHandle);
-		}
-		if(lResult != ERROR_SUCCESS) return false;
-		lResult = RegQueryInfoKey(
-			m_hKeyHandle,						// key handle 
-			REGKEYINFO.achClass,                // buffer for class name 
-			&REGKEYINFO.cchClassName,           // size of class string 
-			NULL,								// reserved 
-			&REGKEYINFO.cSubKeys,               // number of subkeys 
-			&REGKEYINFO.cbMaxSubKey,            // longest subkey size 
-			&REGKEYINFO.cchMaxClass,            // longest class string 
-			&REGKEYINFO.cValues,                // number of values for this key 
-			&REGKEYINFO.cchMaxValue,            // longest value name 
-			&REGKEYINFO.cbMaxValueData,         // longest value data 
-			&REGKEYINFO.cbSecurityDescriptor,   // security descriptor 
-			&REGKEYINFO.ftLastWriteTime);       // last write time
-		return true;
-	}
-
-	void RegKey::close(void)
-	{
-		if(m_hKeyHandle != NULL) {
-			RegCloseKey(m_hKeyHandle);
-			m_hKeyHandle = NULL;
-			m_dwDisposition = 0;
-			m_pAccess = KEY_ALL_ACCESS;
-			memset(&REGKEYINFO,0,sizeof(_REGKEYINFO));
-			REGKEYINFO.cchClassName = MAX_PATH;
-		}
-	}
-
-	bool RegKey::deleteSubkey(SmartUtil::tstring lpSubKey, bool recursiv)
-	{
-		if(m_hKeyHandle == NULL) {
-			xCeptionSmartUtilities x(  "No open reg key!" );
-			throw x;
-		}
-		if(lpSubKey.length() == 0) {
-			xCeptionSmartUtilities x(  "No subkey specified!" );
-			throw x;
-		}
-		LONG lResult;
-		if(recursiv)
-			lResult = SHDeleteKey(m_hKeyHandle,lpSubKey.c_str());
-		else
-			lResult = SHDeleteEmptyKey(m_hKeyHandle,lpSubKey.c_str());
-		return (lResult == ERROR_SUCCESS);
-	}
-
-	bool RegKey::deleteValue(SmartUtil::tstring lpValue)
-	{
-		return (ERROR_SUCCESS == RegDeleteValue(m_hKeyHandle,lpValue.c_str()));
-	}
-
-	std::vector<SmartUtil::tstring> RegKey::getValues(void)
-	{
-		if(m_hKeyHandle == NULL) {
-			xCeptionSmartUtilities x(  "No open reg key!" );
-			throw x;
-		}
-		if(!(m_pAccess & KEY_ENUMERATE_SUB_KEYS)) {
-			xCeptionSmartUtilities x("You need to have KEY_ENUMERATE_SUB_KEYS access rights!" );
-			throw x;
-		}
-
-		DWORD cbName;
-		LONG lResult;
-		std::vector<SmartUtil::tstring> v;
-		if(REGKEYINFO.cValues) {
-			TCHAR* tmp = (TCHAR*)malloc((REGKEYINFO.cchMaxValue + 1) * sizeof(TCHAR));
-			for(int i=0; i<REGKEYINFO.cValues; i++) {
-				memset(tmp,0,(REGKEYINFO.cchMaxValue + 1) * sizeof(TCHAR));
-				cbName = 16383;
-				lResult = RegEnumValue(m_hKeyHandle, i,
-                     tmp, 
-                     &cbName, 
-                     NULL, 
-                     NULL, 
-                     NULL, 
-                     NULL); 
-				if(lResult == ERROR_SUCCESS) v.push_back(tmp);
-			}
-			free(tmp);
-		}
-		return v;
-	}
-
-	std::vector<SmartUtil::tstring> RegKey::getSubkeys(void)
-	{
-		if(m_hKeyHandle == NULL) {
-			xCeptionSmartUtilities x(  "No open reg key!"  );
-			throw x;
-		}
-		if(!(m_pAccess & KEY_ENUMERATE_SUB_KEYS)) {
-			xCeptionSmartUtilities x( "You need to have KEY_ENUMERATE_SUB_KEYS access rights!" );
-			throw x;
-		}
-
-		DWORD cbName;
-		LONG lResult;
-		std::vector<SmartUtil::tstring> v;
-		if(REGKEYINFO.cSubKeys) {
-			TCHAR* tmp = (TCHAR*)malloc((REGKEYINFO.cbMaxSubKey + 1) * sizeof(TCHAR));
-			FILETIME ftLastWriteTime;
-			for(int i=0; i<REGKEYINFO.cSubKeys; i++) {
-				memset(tmp,0,(REGKEYINFO.cbMaxSubKey + 1) * sizeof(TCHAR));
-				cbName = 255;
-				lResult = RegEnumKeyEx(m_hKeyHandle, i,
-                     tmp, 
-                     &cbName, 
-                     NULL, 
-                     NULL, 
-                     NULL, 
-                     &ftLastWriteTime); 
-				if(lResult == ERROR_SUCCESS) v.push_back(tmp);
-			}
-			free(tmp);
-		}
-		return v;
-	}
-
-	bool RegKey::writeDword(SmartUtil::tstring lpValueName, DWORD dwValueDword)
-	{
-		if(m_hKeyHandle == NULL) {
-			xCeptionSmartUtilities x(  "No open reg key!"  );
-			throw x;
-		}
-		return (RegSetValueEx(m_hKeyHandle,lpValueName.c_str(),0,REG_DWORD,(LPBYTE)dwValueDword,sizeof(DWORD)) == ERROR_SUCCESS);
-	}
-
-	bool RegKey::writeString(SmartUtil::tstring lpValueName, SmartUtil::tstring dwValueString)
-	{
-		if(m_hKeyHandle == NULL) {
-			xCeptionSmartUtilities x( "No open reg key!" );
-			throw x;
-		}
-		return (RegSetValueEx(m_hKeyHandle,lpValueName.c_str(),0,REG_SZ,(LPBYTE)dwValueString.c_str(),(dwValueString.length() + 1) * sizeof(TCHAR)) == ERROR_SUCCESS);
-	}
-	
-	bool RegKey::writeBinary(SmartUtil::tstring lpValueName, void* pValueBinary, int size)
-	{
-		if(m_hKeyHandle == NULL) {
-			xCeptionSmartUtilities x(  "No open reg key!" );
-			throw x;
-		}
-		return (RegSetValueEx(m_hKeyHandle,lpValueName.c_str(),0,REG_BINARY,(LPBYTE)pValueBinary,size) == ERROR_SUCCESS);
-	}
-
-	DWORD RegKey::readDword(SmartUtil::tstring lpValueName)
-	{
-		if(m_hKeyHandle == NULL) {
-			xCeptionSmartUtilities x("No open reg key!");
-			throw x;
-		}
-		DWORD dwRegTyp = REG_DWORD;
-		DWORD dwLen = sizeof(DWORD);
-		LONG lResult = ERROR_SUCCESS;
-		lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, 0, &dwLen);
-		DWORD v = 0;
-		if(lResult == ERROR_SUCCESS) lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, (LPBYTE)&v, &dwLen);
-		if(lResult != ERROR_SUCCESS) {
-			xCeptionSmartUtilities x( "Error while retreiving value!" );
-			throw x;
-		}
-		return v;
-	}
-
-	SmartUtil::tstring RegKey::readString(SmartUtil::tstring lpValueName)
-	{
-		if(m_hKeyHandle == NULL) {
-			xCeptionSmartUtilities x( "No open reg key!" );
-			throw x;
-		}
-		DWORD dwRegTyp = REG_SZ;
-		DWORD dwLen = 524289 * sizeof(TCHAR);
-		TCHAR tmp[524289];
-		memset(tmp,0,dwLen);
-		LONG lResult = ERROR_SUCCESS;
-		lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, 0, &dwLen);
-		if(lResult == ERROR_SUCCESS) lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, (LPBYTE)tmp, &dwLen);
-		if(lResult != ERROR_SUCCESS) {
-			xCeptionSmartUtilities x( "Error while retreiving value!" );
-			throw x;
-		}
-		tmp[524288] = '\0';
-		SmartUtil::tstring v = tmp;
-		return v;
-	}
-
-	void RegKey::readBinary(SmartUtil::tstring lpValueName,void* pValueData, int size)
-	{
-		if(m_hKeyHandle == NULL) {
-			xCeptionSmartUtilities x( "No open reg key!" );
-			throw x;
-		}
-		DWORD dwRegTyp = REG_BINARY;
-		DWORD dwLen = size;
-		LONG lResult = ERROR_SUCCESS;
-		lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, 0, &dwLen);
-		if(lResult == ERROR_SUCCESS) lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, (LPBYTE)pValueData, &dwLen);
-		if(lResult != ERROR_SUCCESS) {
-			xCeptionSmartUtilities x( "Error while retreiving value!" );
-			throw x;
-		}
+RegKey::RegKey(HKEY hKey, tstring lpSubKey,REGSAM samDesired,bool createIfNotExists)
+{
+	m_hKeyHandle = NULL;
+	m_dwDisposition = 0;
+	m_pAccess = KEY_ALL_ACCESS;
+	memset(&REGKEYINFO,0,sizeof(_REGKEYINFO));
+	REGKEYINFO.cchClassName = MAX_PATH;
+	if(!open(hKey,lpSubKey,samDesired,createIfNotExists)) {
+		xCeptionSmartUtilities x( "Couldn't open registry key" );
+		throw x;
 	}
 }
+
+RegKey::~RegKey(void)
+{
+	if(m_hKeyHandle != NULL) close();
+}
+
+bool RegKey::open(HKEY hKey, tstring lpSubKey,REGSAM samDesired,bool createIfNotExists)
+{
+	if(m_hKeyHandle != NULL) close();
+	LONG lResult;
+	m_pAccess = samDesired;
+	if(createIfNotExists)
+		lResult = RegCreateKeyEx(hKey,lpSubKey.c_str(),0,NULL,REG_OPTION_NON_VOLATILE, samDesired, NULL, &m_hKeyHandle, &m_dwDisposition);
+	else {
+		m_dwDisposition = REG_OPENED_EXISTING_KEY;
+		lResult = RegOpenKeyEx(hKey, lpSubKey.c_str(), 0, samDesired, &m_hKeyHandle);
+	}
+	if(lResult != ERROR_SUCCESS) return false;
+	lResult = RegQueryInfoKey(
+		m_hKeyHandle,						// key handle 
+		REGKEYINFO.achClass,                // buffer for class name 
+		&REGKEYINFO.cchClassName,           // size of class string 
+		NULL,								// reserved 
+		&REGKEYINFO.cSubKeys,               // number of subkeys 
+		&REGKEYINFO.cbMaxSubKey,            // longest subkey size 
+		&REGKEYINFO.cchMaxClass,            // longest class string 
+		&REGKEYINFO.cValues,                // number of values for this key 
+		&REGKEYINFO.cchMaxValue,            // longest value name 
+		&REGKEYINFO.cbMaxValueData,         // longest value data 
+		&REGKEYINFO.cbSecurityDescriptor,   // security descriptor 
+		&REGKEYINFO.ftLastWriteTime);       // last write time
+	return true;
+}
+
+void RegKey::close(void)
+{
+	if(m_hKeyHandle != NULL) {
+		RegCloseKey(m_hKeyHandle);
+		m_hKeyHandle = NULL;
+		m_dwDisposition = 0;
+		m_pAccess = KEY_ALL_ACCESS;
+		memset(&REGKEYINFO,0,sizeof(_REGKEYINFO));
+		REGKEYINFO.cchClassName = MAX_PATH;
+	}
+}
+
+bool RegKey::deleteSubkey(tstring lpSubKey, bool recursiv)
+{
+	if(m_hKeyHandle == NULL) {
+		xCeptionSmartUtilities x(  "No open reg key!" );
+		throw x;
+	}
+	if(lpSubKey.length() == 0) {
+		xCeptionSmartUtilities x(  "No subkey specified!" );
+		throw x;
+	}
+	LONG lResult;
+	if(recursiv)
+		lResult = SHDeleteKey(m_hKeyHandle,lpSubKey.c_str());
+	else
+		lResult = SHDeleteEmptyKey(m_hKeyHandle,lpSubKey.c_str());
+	return (lResult == ERROR_SUCCESS);
+}
+
+bool RegKey::deleteValue(tstring lpValue)
+{
+	return (ERROR_SUCCESS == RegDeleteValue(m_hKeyHandle,lpValue.c_str()));
+}
+
+std::vector<tstring> RegKey::getValues(void)
+{
+	if(m_hKeyHandle == NULL) {
+		xCeptionSmartUtilities x(  "No open reg key!" );
+		throw x;
+	}
+	if(!(m_pAccess & KEY_ENUMERATE_SUB_KEYS)) {
+		xCeptionSmartUtilities x("You need to have KEY_ENUMERATE_SUB_KEYS access rights!" );
+		throw x;
+	}
+
+	DWORD cbName;
+	LONG lResult;
+	std::vector<tstring> v;
+	if(REGKEYINFO.cValues) {
+		TCHAR* tmp = (TCHAR*)malloc((REGKEYINFO.cchMaxValue + 1) * sizeof(TCHAR));
+		for(int i=0; i<REGKEYINFO.cValues; i++) {
+			memset(tmp,0,(REGKEYINFO.cchMaxValue + 1) * sizeof(TCHAR));
+			cbName = 16383;
+			lResult = RegEnumValue(m_hKeyHandle, i,
+                 tmp, 
+                 &cbName, 
+                 NULL, 
+                 NULL, 
+                 NULL, 
+                 NULL); 
+			if(lResult == ERROR_SUCCESS) v.push_back(tmp);
+		}
+		free(tmp);
+	}
+	return v;
+}
+
+std::vector<tstring> RegKey::getSubkeys(void)
+{
+	if(m_hKeyHandle == NULL) {
+		xCeptionSmartUtilities x(  "No open reg key!"  );
+		throw x;
+	}
+	if(!(m_pAccess & KEY_ENUMERATE_SUB_KEYS)) {
+		xCeptionSmartUtilities x( "You need to have KEY_ENUMERATE_SUB_KEYS access rights!" );
+		throw x;
+	}
+
+	DWORD cbName;
+	LONG lResult;
+	std::vector<tstring> v;
+	if(REGKEYINFO.cSubKeys) {
+		TCHAR* tmp = (TCHAR*)malloc((REGKEYINFO.cbMaxSubKey + 1) * sizeof(TCHAR));
+		FILETIME ftLastWriteTime;
+		for(int i=0; i<REGKEYINFO.cSubKeys; i++) {
+			memset(tmp,0,(REGKEYINFO.cbMaxSubKey + 1) * sizeof(TCHAR));
+			cbName = 255;
+			lResult = RegEnumKeyEx(m_hKeyHandle, i,
+                 tmp, 
+                 &cbName, 
+                 NULL, 
+                 NULL, 
+                 NULL, 
+                 &ftLastWriteTime); 
+			if(lResult == ERROR_SUCCESS) v.push_back(tmp);
+		}
+		free(tmp);
+	}
+	return v;
+}
+
+bool RegKey::writeDword(tstring lpValueName, DWORD dwValueDword)
+{
+	if(m_hKeyHandle == NULL) {
+		xCeptionSmartUtilities x(  "No open reg key!"  );
+		throw x;
+	}
+	return (RegSetValueEx(m_hKeyHandle,lpValueName.c_str(),0,REG_DWORD,(LPBYTE)dwValueDword,sizeof(DWORD)) == ERROR_SUCCESS);
+}
+
+bool RegKey::writeString(tstring lpValueName, tstring dwValueString)
+{
+	if(m_hKeyHandle == NULL) {
+		xCeptionSmartUtilities x( "No open reg key!" );
+		throw x;
+	}
+	return (RegSetValueEx(m_hKeyHandle,lpValueName.c_str(),0,REG_SZ,(LPBYTE)dwValueString.c_str(),(dwValueString.length() + 1) * sizeof(TCHAR)) == ERROR_SUCCESS);
+}
+
+bool RegKey::writeBinary(tstring lpValueName, void* pValueBinary, int size)
+{
+	if(m_hKeyHandle == NULL) {
+		xCeptionSmartUtilities x(  "No open reg key!" );
+		throw x;
+	}
+	return (RegSetValueEx(m_hKeyHandle,lpValueName.c_str(),0,REG_BINARY,(LPBYTE)pValueBinary,size) == ERROR_SUCCESS);
+}
+
+DWORD RegKey::readDword(tstring lpValueName)
+{
+	if(m_hKeyHandle == NULL) {
+		xCeptionSmartUtilities x("No open reg key!");
+		throw x;
+	}
+	DWORD dwRegTyp = REG_DWORD;
+	DWORD dwLen = sizeof(DWORD);
+	LONG lResult = ERROR_SUCCESS;
+	lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, 0, &dwLen);
+	DWORD v = 0;
+	if(lResult == ERROR_SUCCESS) lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, (LPBYTE)&v, &dwLen);
+	if(lResult != ERROR_SUCCESS) {
+		xCeptionSmartUtilities x( "Error while retreiving value!" );
+		throw x;
+	}
+	return v;
+}
+
+tstring RegKey::readString(tstring lpValueName)
+{
+	if(m_hKeyHandle == NULL) {
+		xCeptionSmartUtilities x( "No open reg key!" );
+		throw x;
+	}
+	DWORD dwRegTyp = REG_SZ;
+	DWORD dwLen = 524289 * sizeof(TCHAR);
+	TCHAR tmp[524289];
+	memset(tmp,0,dwLen);
+	LONG lResult = ERROR_SUCCESS;
+	lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, 0, &dwLen);
+	if(lResult == ERROR_SUCCESS) lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, (LPBYTE)tmp, &dwLen);
+	if(lResult != ERROR_SUCCESS) {
+		xCeptionSmartUtilities x( "Error while retreiving value!" );
+		throw x;
+	}
+	tmp[524288] = '\0';
+	tstring v = tmp;
+	return v;
+}
+
+void RegKey::readBinary(tstring lpValueName,void* pValueData, int size)
+{
+	if(m_hKeyHandle == NULL) {
+		xCeptionSmartUtilities x( "No open reg key!" );
+		throw x;
+	}
+	DWORD dwRegTyp = REG_BINARY;
+	DWORD dwLen = size;
+	LONG lResult = ERROR_SUCCESS;
+	lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, 0, &dwLen);
+	if(lResult == ERROR_SUCCESS) lResult = RegQueryValueEx(m_hKeyHandle, lpValueName.c_str(), 0, &dwRegTyp, (LPBYTE)pValueData, &dwLen);
+	if(lResult != ERROR_SUCCESS) {
+		xCeptionSmartUtilities x( "Error while retreiving value!" );
+		throw x;
+	}
+}
+
+} }

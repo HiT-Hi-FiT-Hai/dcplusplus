@@ -37,7 +37,7 @@
 #define DWT_ClipBoard_h
 
 #include "WindowsHeaders.h"
-#include "util/tstring.h"
+#include "tstring.h"
 
 namespace dwt {
 
@@ -86,9 +86,9 @@ class ClipBoard
 	ClipBoard();
 };
 
-/// Class for manipulating the clipboard, specialized for SmartUtil::tstring
+/// Class for manipulating the clipboard, specialized for tstring
 /// clipboard operations.
-/** At the moment SmartWin only supports SmartUtil::tstring clipboard operations.
+/** At the moment SmartWin only supports tstring clipboard operations.
   * <br>
   * More clipboard formats will be supported in later version. <br>
   * Every clipboard class is a Singleton to make access easy. <br>
@@ -96,7 +96,7 @@ class ClipBoard
   * later as the type you stuffed it in as!</b>
   */
 template< >
-class ClipBoard< SmartUtil::tstring > : public ClipBoardBase
+class ClipBoard< tstring > : public ClipBoardBase
 {
 public:
 	/// Returns the actual instance of the object
@@ -114,13 +114,13 @@ public:
 
 	/// Sets clipboard data to given string
 	/** Takes a "parent" window which will "own" the clipboard and a
-	  * SmartUtil::tstring which will be stuffed into the clipboard and made <br>
+	  * tstring which will be stuffed into the clipboard and made <br>
 	  * accessible for other applications as CF_TEXT or your own application. <br>
 	  * Just remember that if you use this specialized instance of the clipboard
 	  * class you must access the clipboard again (through getClipBoardData) <br>
-	  * through the same specialization (SmartUtil::tstring specialization).
+	  * through the same specialization (tstring specialization).
 	  */
-	void setClipBoardData( const SmartUtil::tstring & str, const Widget * owner )
+	void setClipBoardData( const tstring & str, const Widget * owner )
 	{
 		if ( !::OpenClipboard( owner->handle() ) )
 			throw dwt::xCeption( _T( "Couldn't open the clipboard" ) );
@@ -151,7 +151,7 @@ public:
 	  * if the clipboard is either empty or if the clipboard data was of the wrong
 	  * format.
 	  */
-	SmartUtil::tstring getClipBoardData( const Widget * owner ) const
+	tstring getClipBoardData( const Widget * owner ) const
 	{
 		if ( !::IsClipboardFormatAvailable( CF_TEXT ) )
 			return _T( "" );
@@ -160,7 +160,7 @@ public:
 		HANDLE handle = ::GetClipboardData( CF_TEXT );
 		if ( 0 == handle )
 			return _T( "" );
-		SmartUtil::tstring retVal( reinterpret_cast< TCHAR * >( GlobalLock( handle ) ) );
+		tstring retVal( reinterpret_cast< TCHAR * >( GlobalLock( handle ) ) );
 		GlobalUnlock( handle );
 		CloseClipboard();
 		return retVal;
@@ -179,7 +179,7 @@ private:
 
 /// \ingroup GlobalStuff
 // For easy access of the most common ClipBoard specializations.
-typedef ClipBoard< SmartUtil::tstring > ClipBoardString;
+typedef ClipBoard< tstring > ClipBoardString;
 
 }
 

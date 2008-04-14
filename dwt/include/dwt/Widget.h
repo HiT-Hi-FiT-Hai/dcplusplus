@@ -40,7 +40,7 @@
 #include "Atom.h"
 #include "Rectangle.h"
 #include "Message.h"
-#include "util/tstring.h"
+#include "tstring.h"
 
 #include <boost/noncopyable.hpp>
 #include <list>
@@ -150,7 +150,7 @@ protected:
 		  * It is feed directly to CreateWindowEx, this means that it follows its
 		  * conventions. In particular, the string "#num" has a special meaning.
 		  */
-		SmartUtil::tstring caption;
+		tstring caption;
 
 		/// The style of the object (starts with WS_ or BS_ etc...)
 		/** WARNING: The creation of most of the controls require WS_CHILD to be set.
@@ -169,7 +169,7 @@ protected:
 
 		/// Constructor initializing all member variables to default values
 		Seed(LPCTSTR className_, DWORD style_ = WS_VISIBLE, DWORD exStyle_ = 0, 
-			const SmartUtil::tstring& caption_ = SmartUtil::tstring(), 
+			const tstring& caption_ = tstring(), 
 			const Rectangle& location_ = letTheSystemDecide, HMENU menuHandle_ = NULL)
 			: className(className_), caption(caption_), style( style_ ), exStyle( exStyle_ ), location( location_ ), menuHandle( menuHandle_ )
 		{}

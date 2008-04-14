@@ -34,7 +34,7 @@
 */
 
 #include <dwt/Application.h>
-#include <dwt/util/tstring.h>
+#include <dwt/tstring.h>
 
 extern int SmartWinMain( dwt::Application & app );
 
@@ -145,7 +145,7 @@ const CommandLine & Application::getCommandLine() const
 
 bool Application::isAppAlreadyRunning()
 {
-	SmartUtil::tstring appPath = getModulePath() + getModuleFileName();
+	tstring appPath = getModulePath() + getModuleFileName();
 	itsMutex = ::CreateMutex( NULL, FALSE, appPath.c_str() );
 	if ( !itsMutex )
 		return false;
@@ -213,19 +213,19 @@ Application & Application::instance()
 	return * itsInstance;
 }
 
-SmartUtil::tstring Application::getModulePath() const
+tstring Application::getModulePath() const
 {
 	TCHAR retVal[2049];
 	GetModuleFileName( 0, retVal, 2048 );
-	SmartUtil::tstring retStr = retVal;
+	tstring retStr = retVal;
 	retStr = retStr.substr( 0, retStr.find_last_of( '\\' ) + 1 );
 	return retStr;
 }
 
-SmartUtil::tstring Application::getModuleFileName() const
+tstring Application::getModuleFileName() const
 {
 	TCHAR retVal[2049];
-	return SmartUtil::tstring(retVal, GetModuleFileName(0, retVal, 2048));
+	return tstring(retVal, GetModuleFileName(0, retVal, 2048));
 }
 
 #ifdef __WINE__

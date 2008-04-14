@@ -130,14 +130,14 @@ void TabView::remove(Container* w) {
 
 	// when no tab is opened
 	if(titleChangedFunction && (active == -1))
-		titleChangedFunction(SmartUtil::tstring());
+		titleChangedFunction(tstring());
 }
 
-SmartUtil::tstring TabView::getTabText(Container* w) {
+tstring TabView::getTabText(Container* w) {
 	int i = findTab(w);
 	if(i != -1)
 		return tab->getText(i);
-	return SmartUtil::tstring();
+	return tstring();
 }
 
 void TabView::onTabContextMenu(Container* w, const ContextMenuFunction& f) {
@@ -219,7 +219,7 @@ TabView::TabInfo* TabView::getTabInfo(int i) {
 	return i == -1 ? 0 : reinterpret_cast<TabInfo*>(tab->getData(i));
 }
 
-bool TabView::handleTextChanging(Container* w, const SmartUtil::tstring& newText) {
+bool TabView::handleTextChanging(Container* w, const tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
 		tab->setText(i, formatTitle(newText));
@@ -231,10 +231,10 @@ bool TabView::handleTextChanging(Container* w, const SmartUtil::tstring& newText
 	return true;
 }
 
-SmartUtil::tstring TabView::formatTitle(SmartUtil::tstring title) {
+tstring TabView::formatTitle(tstring title) {
 	if(title.length() > MAX_TITLE_LENGTH)
 		title = title.substr(0, MAX_TITLE_LENGTH - 3) + _T("...");
-	return SmartUtil::escapeMenu(title);
+	return util::escapeMenu(title);
 }
 
 void TabView::handleSized(const SizedEvent& sz) {

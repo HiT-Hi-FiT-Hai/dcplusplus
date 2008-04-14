@@ -51,7 +51,7 @@ class TabView :
 	public AspectSizable<TabView>
 {
 	typedef MessageMap<Policies::Normal> BaseType;
-	typedef std::tr1::function<void (const SmartUtil::tstring&)> TitleChangedFunction;
+	typedef std::tr1::function<void (const tstring&)> TitleChangedFunction;
 	typedef std::tr1::function<void (HWND, unsigned)> HelpFunction;
 	typedef std::tr1::function<bool (const ScreenCoordinate&)> ContextMenuFunction;
 
@@ -82,7 +82,7 @@ public:
 	ContainerPtr getActive();
 	void setActive(ContainerPtr w) { setActive(findTab(w)); }
 
-	SmartUtil::tstring getTabText(ContainerPtr w);
+	tstring getTabText(ContainerPtr w);
 
 	void onTitleChanged(const TitleChangedFunction& f) {
 		titleChangedFunction = f;
@@ -137,7 +137,7 @@ private:
 	std::vector<IconPtr> icons;
 	int active;
 	ContainerPtr dragging;
-	SmartUtil::tstring tipText;
+	tstring tipText;
 	
 	int findTab(ContainerPtr w);
 	
@@ -147,7 +147,7 @@ private:
 	
 	void setTop(ContainerPtr w);
 
-	bool handleTextChanging(ContainerPtr w, const SmartUtil::tstring& newText);
+	bool handleTextChanging(ContainerPtr w, const tstring& newText);
 	void handleSized(const SizedEvent&);
 	void handleTabSelected();
 	LRESULT handleToolTip(LPARAM lParam);
@@ -157,7 +157,7 @@ private:
 	void handleMiddleMouseDown(const MouseEvent& mouseEventResult);
 	void handleHelp(HWND hWnd, unsigned id);
 	
-	SmartUtil::tstring formatTitle(SmartUtil::tstring title);
+	tstring formatTitle(tstring title);
 	void layout();
 	
 	int addIcon(const IconPtr& icon);

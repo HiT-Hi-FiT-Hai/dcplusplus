@@ -47,7 +47,7 @@ Bitmap::Bitmap( unsigned resourceId, unsigned flags )
 	: ResourceType( ( HBITMAP )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION ) )
 {}
 
-Bitmap::Bitmap( const SmartUtil::tstring & filePath, unsigned flags )
+Bitmap::Bitmap( const tstring & filePath, unsigned flags )
 #ifdef WINCE
 	: itsBitmap( ::SHLoadImageFile( filePath.c_str() ) )
 #else

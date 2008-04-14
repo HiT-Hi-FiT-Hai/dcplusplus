@@ -33,7 +33,7 @@
 
 namespace dwt {
 
-Window::Seed::Seed(const SmartUtil::tstring& caption) : BaseType::Seed(caption, 0, 0) {
+Window::Seed::Seed(const tstring& caption) : BaseType::Seed(caption, 0, 0) {
 }
 
 void Window::create(const Seed& cs) {

@@ -93,12 +93,12 @@ public:
 	/// Returns the current selected text from the text box
 	/** The selected text of the text box is the return value from this.
 	  */
-	SmartUtil::tstring getSelection() const;
+	tstring getSelection() const;
 
 	/// Appends text to the text box
 	/** The txt parameter is the new text to append to the text box.
 	  */
-	void addText( const SmartUtil::tstring & txt );
+	void addText( const tstring & txt );
 
 	/// Replaces the currently selected text in the text box with the given text parameter
 	/** If canUndo is true this operation is stacked into the undo que ( can be
@@ -107,10 +107,10 @@ public:
 	  * If there is not currently any selected text, the input text is inserted at
 	  * the current location of the caret.
 	  */
-	void replaceSelection( const SmartUtil::tstring & txt, bool canUndo = true );
+	void replaceSelection( const tstring & txt, bool canUndo = true );
 
 	/// Finds the given text in the text field and returns true if successfully
-	int findText( const SmartUtil::tstring & txt, unsigned offset = 0 ) const;
+	int findText( const tstring & txt, unsigned offset = 0 ) const;
 
 	/// Returns the position of the caret
 	int getCaretPos();
@@ -207,7 +207,7 @@ public:
 		FontPtr font;
 
 		/// Fills with default parameters
-		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
+		Seed(const tstring& caption = tstring());
 	};
 	
 	/// Adds (or removes) the numbers property
@@ -250,9 +250,9 @@ public:
 	
 	int lineLength(int c);
 	
-	SmartUtil::tstring getLine(int line);
+	tstring getLine(int line);
 
-	SmartUtil::tstring textUnderCursor(const ScreenCoordinate& p);
+	tstring textUnderCursor(const ScreenCoordinate& p);
 	
 	/// Actually creates the TextBox
 	/** You should call WidgetFactory::createTextBox if you instantiate class
@@ -287,20 +287,20 @@ inline void TextBoxBase::setSelection( int start, int end )
 	this->sendMessage(EM_SETSEL, start, end );
 }
 
-inline void TextBoxBase::replaceSelection( const SmartUtil::tstring & txt, bool canUndo )
+inline void TextBoxBase::replaceSelection( const tstring & txt, bool canUndo )
 {
 	this->sendMessage(EM_REPLACESEL, static_cast< WPARAM >( canUndo ? TRUE : FALSE ), reinterpret_cast< LPARAM >( txt.c_str() ) );
 }
 
-inline void TextBoxBase::addText( const SmartUtil::tstring & addtxt )
+inline void TextBoxBase::addText( const tstring & addtxt )
 {
 	setSelection( length() );
 	replaceSelection( addtxt ); 
 }
 
-inline int TextBoxBase::findText( const SmartUtil::tstring & txt, unsigned offset ) const
+inline int TextBoxBase::findText( const tstring & txt, unsigned offset ) const
 {
-	SmartUtil::tstring txtOfBox = this->getText();
+	tstring txtOfBox = this->getText();
 	size_t position = txtOfBox.find( txt, offset );
 	if ( position == std::string::npos )
 		return -1;

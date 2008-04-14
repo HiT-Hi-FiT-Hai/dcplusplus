@@ -77,7 +77,7 @@ class Tree :
 protected:
 	struct Dispatcher
 	{
-		typedef std::tr1::function<bool (const SmartUtil::tstring&)> F;
+		typedef std::tr1::function<bool (const tstring&)> F;
 
 		Dispatcher(const F& f_) : f(f_) { }
 
@@ -86,7 +86,7 @@ protected:
 			NMTVDISPINFO * nmDisp = reinterpret_cast< NMTVDISPINFO * >( msg.lParam );
 			if ( nmDisp->item.pszText != 0 )
 			{
-				SmartUtil::tstring newText = nmDisp->item.pszText;
+				tstring newText = nmDisp->item.pszText;
 				update = f(newText);
 			}
 			return update ? TRUE : FALSE;
@@ -140,7 +140,7 @@ public:
 	  * The "selectedIconIndex" optionally specifies the icon index of the item in the
 	  * selected state (if not specified or -1, it defaults to the iconIndex)
 	  */
-	HTREEITEM insert( const SmartUtil::tstring & text, HTREEITEM parent = NULL, LPARAM param = 0, int iconIndex = - 1, int selectedIconIndex = - 1 );
+	HTREEITEM insert( const tstring & text, HTREEITEM parent = NULL, LPARAM param = 0, int iconIndex = - 1, int selectedIconIndex = - 1 );
 
 	HTREEITEM getNext(HTREEITEM node, unsigned flag);
 
@@ -226,17 +226,17 @@ public:
 	/// Returns the text of the current selected node
 	/** Returns the text of the current selected node in the tree view.
 	  */
-	SmartUtil::tstring getSelectedText();
+	tstring getSelectedText();
 
 	/// Returns the text of a particular node
 	/** Returns the text of a particular node.
 	  */
-	SmartUtil::tstring getText( HTREEITEM node );
+	tstring getText( HTREEITEM node );
 
 	/// \ingroup EventHandlersTree
 	/// Sets the event handler for what function to be called when a label is edited.
 	/** Event handler signature is must be "bool foo( Tree *,
-	  * SmartUtil::tstring & )" and it must be contained as a member of the class
+	  * tstring & )" and it must be contained as a member of the class
 	  * that is defined as the EventHandlerClass, normally either the Window
 	  * derived class or the class derived from Tree. <br>
 	  * Return true from your event handler if you wish the label to actually become

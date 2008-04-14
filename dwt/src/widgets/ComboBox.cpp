@@ -48,10 +48,10 @@ void ComboBox::create( const Seed & cs ) {
 		sendMessage(CB_SETEXTENDEDUI, TRUE);
 }
 
-SmartUtil::tstring ComboBox::getValue( int index ) {
+tstring ComboBox::getValue( int index ) {
 	// Uses CB_GETLBTEXTLEN and CB_GETLBTEXT
 	int txtLength = ComboBox_GetLBTextLen( handle(), index );
-	SmartUtil::tstring retVal(txtLength, '\0');
+	tstring retVal(txtLength, '\0');
 	ComboBox_GetLBText( handle(), index, &retVal[0] );
 	return retVal;
 }

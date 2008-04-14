@@ -37,7 +37,7 @@
 #define DWT_Font_h
 
 #include "../WindowsHeaders.h"
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "../xCeption.h"
 #include "Handle.h"
 
@@ -94,7 +94,7 @@ public:
 	/** The object can't be manipulated after creation so when creating an instance
 	  * of this class be sure you are certain that you know what you want.
 	  */
-	Font( const SmartUtil::tstring & faceName, int height = 10,
+	Font( const tstring & faceName, int height = 10,
 		int width = 10,
 		int weight = 2,
 		DWORD charSet = ANSI_CHARSET,
@@ -152,7 +152,7 @@ FontPtr createFont( PredefinedFontTypes fontType );
   * typedef FontPtr and not <br>
   * the shared_ptr itself since this may change in future releases.
   */
-FontPtr createFont( const SmartUtil::tstring & faceName,
+FontPtr createFont( const tstring & faceName,
  int height = 10,
  int width = 10,
  int weight = 2,

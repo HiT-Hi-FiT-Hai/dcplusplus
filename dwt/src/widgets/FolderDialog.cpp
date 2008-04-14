@@ -40,7 +40,7 @@ FolderDialog& FolderDialog::setRoot( const int csidl ) {
 	return *this;
 }
 
-bool FolderDialog::open(SmartUtil::tstring& folder) {
+bool FolderDialog::open(tstring& folder) {
 	BROWSEINFO bws = { 0 };
 	bws.hwndOwner = getParentHandle();
 	bws.pidlRoot = itsPidlRoot;

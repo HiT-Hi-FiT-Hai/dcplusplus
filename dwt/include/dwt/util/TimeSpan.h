@@ -36,30 +36,31 @@
 #ifndef DWT_TimeSpan_H
 #define DWT_TimeSpan_H
 
-namespace SmartUtil
+namespace dwt { namespace util {
+
+class TimeSpan;
+class DateTime;
+DateTime operator +( const DateTime & date, const TimeSpan & time );
+DateTime operator -( const DateTime & date, const TimeSpan & time );
+
+/// A timespan helper class
+/** A timespan is an "amount of time" and is useful for adding and subtracting from a DateTime object.
+  */
+class TimeSpan
 {
-	class TimeSpan;
-	class DateTime;
-	DateTime operator +( const DateTime & date, const TimeSpan & time );
-	DateTime operator -( const DateTime & date, const TimeSpan & time );
+	friend DateTime operator +( const DateTime & date, const TimeSpan & time );
+	friend DateTime operator -( const DateTime & date, const TimeSpan & time );
+private:
+	long long itsNumberOfMilliseconds;
 
-	/// A timespan helper class
-	/** A timespan is an "amount of time" and is useful for adding and subtracting from a DateTime object.
-	  */
-	class TimeSpan
-	{
-		friend DateTime operator +( const DateTime & date, const TimeSpan & time );
-		friend DateTime operator -( const DateTime & date, const TimeSpan & time );
-	private:
-		long long itsNumberOfMilliseconds;
+public:
+	/// Contructs an empty TimeSpan meaning having 0 as the Span periode.
+	TimeSpan();
 
-	public:
-		/// Contructs an empty TimeSpan meaning having 0 as the Span periode.
-		TimeSpan();
+	/// Construct a timespan consisting of the initial values given.
+	TimeSpan( int days, int hours, int minutes, int seconds );
+};
 
-		/// Construct a timespan consisting of the initial values given.
-		TimeSpan( int days, int hours, int minutes, int seconds );
-	};
-}
+} }
 
 #endif

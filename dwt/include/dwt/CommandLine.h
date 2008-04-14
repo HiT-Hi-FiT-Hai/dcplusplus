@@ -38,7 +38,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <vector>
-#include "util/tstring.h"
+#include "tstring.h"
 
 namespace dwt {
 
@@ -55,19 +55,19 @@ class CommandLine : public boost::noncopyable
 public:
 	/// Returns a vector of the actual params
 	/** The parameters are split using standard argv semantics */
-	const std::vector< SmartUtil::tstring > & getParams() const;
+	const std::vector< tstring > & getParams() const;
 
 	/// Returns the "raw" command line parameter
 	/** For those of you which MUST have the actual RAW command line parameter you
 	  * can use this function which will return them as given to the application.
 	  */
-	const SmartUtil::tstring& getParamsRaw() const;
+	const tstring& getParamsRaw() const;
 private:
 	// Only Application which is friend can instantiate an object of this type!!
 	CommandLine( ) { }
 
-	mutable std::vector< SmartUtil::tstring > itsCmdLine;
-	mutable SmartUtil::tstring itsRawCmdLine;
+	mutable std::vector< tstring > itsCmdLine;
+	mutable tstring itsRawCmdLine;
 };
 
 }

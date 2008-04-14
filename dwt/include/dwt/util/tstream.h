@@ -33,21 +33,42 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <dwt/util/tstring.h>
 
-namespace SmartUtil
-{
-	tstring string_replace(const tstring & source, const tstring & whatToReplace, const tstring & whatToReplaceWith)
-	{
-		tstring retVal = source;
-		while( true )
-		{
-			tstring::iterator start = std::search(retVal.begin(), retVal.end(), whatToReplace.begin(), whatToReplace.end());
-			if( start == retVal.end() )
-				break;
-			tstring::iterator end = start + whatToReplace.size();
-			retVal.replace(start, end, whatToReplaceWith);
-		}
-		return retVal;
-	}
+#include <sstream>
+#include <fstream>
+
+namespace dwt { namespace util {
+
+#if defined UNICODE || defined _UNICODE
+
+typedef std::wstringstream tstringstream;
+typedef std::wostringstream tostringstream;
+typedef std::wistringstream tistringstream;
+
+typedef std::wostream tostream;
+typedef std::wistream tistream;
+typedef std::wiostream tiostream;
+
+typedef std::wfilebuf tfilebuf;
+typedef std::wfstream tfstream;
+typedef std::wifstream tifstream;
+typedef std::wofstream tofstream;
+
+#else
+
+typedef std::stringstream tstringstream;
+typedef std::ostringstream tostringstream;
+typedef std::istringstream tistringstream;
+
+typedef std::ostream tostream;
+typedef std::istream tistream;
+typedef std::iostream tiostream;
+
+typedef std::filebuf tfilebuf;
+typedef std::fstream tfstream;
+typedef std::ifstream tifstream;
+typedef std::ofstream tofstream;
+
+#   endif //_FSTREAM_
+
 }

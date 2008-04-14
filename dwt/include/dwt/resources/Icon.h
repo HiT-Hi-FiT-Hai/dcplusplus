@@ -37,7 +37,7 @@
 #define DWT_Icon_h
 
 #include "../WindowsHeaders.h"
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "Handle.h"
 
 namespace dwt {
@@ -81,7 +81,7 @@ public:
 	  * Class takes "control" of HICON meaning it will automatically free the
 	  * contained HICON upon destruction
 	  */
-	explicit Icon( const SmartUtil::tstring & filePath );
+	explicit Icon( const tstring & filePath );
 
 	/// Deprecated, use handle()
 	HICON getIcon() const;

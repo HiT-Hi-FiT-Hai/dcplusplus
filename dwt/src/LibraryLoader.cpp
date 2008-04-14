@@ -41,7 +41,7 @@ namespace dwt {
 
 // Static members definitions!
 Utilities::CriticalSection LibraryLoader::itsCs;
-std::map< SmartUtil::tstring, std::pair< int, HMODULE > > LibraryLoader::itsLibrariesLoaded;
+std::map< tstring, std::pair< int, HMODULE > > LibraryLoader::itsLibrariesLoaded;
 
 LibraryLoader::~LibraryLoader()
 {
@@ -62,7 +62,7 @@ LibraryLoader::~LibraryLoader()
 	}
 }
 
-void LibraryLoader::load( const SmartUtil::tstring & libraryName )
+void LibraryLoader::load( const tstring & libraryName )
 {
 	// Need a lock here since we're accessing the shared static version of its map!
 	Utilities::ThreadLock lock( LibraryLoader::itsCs );
@@ -78,13 +78,13 @@ void LibraryLoader::load( const SmartUtil::tstring & libraryName )
 
 	hasCalledLoad = true;
 
-	std::map< SmartUtil::tstring, std::pair< int, HMODULE > >::const_iterator exists = LibraryLoader::itsLibrariesLoaded.find( libraryName );
+	std::map< tstring, std::pair< int, HMODULE > >::const_iterator exists = LibraryLoader::itsLibrariesLoaded.find( libraryName );
 	if ( LibraryLoader::itsLibrariesLoaded.end() == exists )
 	{
 		// Loading library
 		itsHMod = ::LoadLibrary( libraryName.c_str() );
 
-		// TODO: Rewrite xAssert to get support for submitting SmartUtil::tstrings (could show library name)
+		// TODO: Rewrite xAssert to get support for submitting tstrings (could show library name)
 		xAssert( itsHMod != 0, _T( "Error while trying to load library or dll!" ) );
 
 		// SUCCESS!
@@ -97,7 +97,7 @@ void LibraryLoader::load( const SmartUtil::tstring & libraryName )
 	}
 }
 
-LibraryLoader::LibraryLoader( const SmartUtil::tstring & libraryName )
+LibraryLoader::LibraryLoader( const tstring & libraryName )
 	: itsLibraryName( libraryName ),
 	hasCalledLoad( false )
 {
@@ -110,9 +110,9 @@ LibraryLoader::LibraryLoader()
 }
 
 // Get procedure address from loaded library by name
-FARPROC LibraryLoader::getProcAddress( const SmartUtil::tstring & procedureName )
+FARPROC LibraryLoader::getProcAddress( const tstring & procedureName )
 {
-	return ::GetProcAddress( itsHMod, SmartUtil::AsciiGuaranteed::doConvert( procedureName, SmartUtil::ConversionCodepage::ANSI ).c_str() );
+	return ::GetProcAddress( itsHMod, util::AsciiGuaranteed::doConvert( procedureName, util::ConversionCodepage::ANSI ).c_str() );
 }
 
 // Get procedure address from loaded library by ordinal value

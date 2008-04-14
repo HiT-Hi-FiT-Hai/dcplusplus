@@ -46,7 +46,7 @@ void TabSheet::create( const Seed & cs )
 		setFont( cs.font );
 }
 
-unsigned int TabSheet::addPage( const SmartUtil::tstring & header, unsigned index, LPARAM data, int image )
+unsigned int TabSheet::addPage( const tstring & header, unsigned index, LPARAM data, int image )
 {
 	TCITEM item;
 	item.mask = TCIF_TEXT | TCIF_PARAM;
@@ -90,7 +90,7 @@ void TabSheet::setImageList(const ImageListPtr& imageList_)
 	TabCtrl_SetImageList(handle(), imageList->handle());
 }
 
-SmartUtil::tstring TabSheet::getText(unsigned idx) const
+tstring TabSheet::getText(unsigned idx) const
 {
 	TCITEM item = { TCIF_TEXT };
 	TCHAR buffer[200];

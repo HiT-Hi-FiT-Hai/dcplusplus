@@ -33,7 +33,7 @@
 
 namespace dwt {
 
-bool SaveDialog::open(SmartUtil::tstring& target) {
+bool SaveDialog::open(tstring& target) {
 	OPENFILENAME ofn = { sizeof(OPENFILENAME) }; // common dialog box structure
 	fillOFN( ofn, 0 );
 

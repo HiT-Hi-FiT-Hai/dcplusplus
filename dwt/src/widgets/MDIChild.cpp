@@ -35,7 +35,7 @@
 
 namespace dwt {
 
-MDIChild::Seed::Seed(const SmartUtil::tstring& caption) :
+MDIChild::Seed::Seed(const tstring& caption) :
 	BaseType::Seed(caption, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS, WS_EX_MDICHILD),
 	activate(true)
 {

@@ -53,12 +53,12 @@ template< class WidgetType >
 class AspectDragDrop
 {
 	struct Dispatcher {
-		typedef std::tr1::function<void (std::vector< SmartUtil::tstring>, Point )> F;
+		typedef std::tr1::function<void (std::vector< tstring>, Point )> F;
 
 		Dispatcher(const F& f_) : f(f_) { }
 		
 		bool operator()(const MSG& msg, LRESULT& ret) {
-			std::vector<SmartUtil::tstring> files;
+			std::vector<tstring> files;
 			Point pt;
 			HDROP handle = (HDROP)msg.wParam;
 			if (handle) { 
@@ -91,8 +91,8 @@ public:
 	  *
 	  * Example:
 	  *
-	  * void DropFile(std::vector<SmartUtil::tstring> files, Point droppoint) {
-	  * 	SmartUtil::tstring path = files.at(0);
+	  * void DropFile(std::vector<tstring> files, Point droppoint) {
+	  * 	tstring path = files.at(0);
 	  * 	setText(path); 
 	  * 	int x = droppoint.x;
 	  * 	int y = droppoint.y;

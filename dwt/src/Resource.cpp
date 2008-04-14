@@ -37,7 +37,7 @@
 
 namespace dwt {
 
-Resource::Resource(const SmartUtil::tstring & file)
+Resource::Resource(const tstring & file)
 {
 	itsInstanceHandle = ::LoadLibrary(file.c_str());
 }
@@ -47,7 +47,7 @@ Resource::~Resource()
 	::FreeLibrary(itsInstanceHandle);
 }
 
-SmartUtil::tstring Resource::operator[] ( unsigned key )
+tstring Resource::operator[] ( unsigned key )
 {
 	TCHAR buffer[2000];
 	int success = ::LoadString(itsInstanceHandle, key, buffer, 1000);

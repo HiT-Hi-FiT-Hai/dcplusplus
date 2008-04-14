@@ -154,7 +154,7 @@ public:
 	  * then continues with the next row. <br>
 	  * The internal position of bound is updated.
 	  */
-	void setSizePerTextPerPlace( Place & bound, const SmartUtil::tstring & text,
+	void setSizePerTextPerPlace( Place & bound, const tstring & text,
 								 int extraX = 0, int extraY = 0 );
 
 	/// Returns the screen size.
@@ -200,7 +200,7 @@ public:
 	  * This is useful if you want to allocate enough space to fit known text. <br>
 	  * It accounts for the set font too.
 	  */
-	Point getTextSize( const SmartUtil::tstring & text );
+	Point getTextSize( const tstring & text );
 
 	/// Brings the widget to the front
 	/** Makes the widget become the front most widget meaning it will not be obscured
@@ -342,7 +342,7 @@ void AspectSizable< WidgetType >::setPositionPerPlace( Place & bound )
 
 template< class WidgetType >
 void AspectSizable< WidgetType >
-::setSizePerTextPerPlace( Place & bound, const SmartUtil::tstring & text,
+::setSizePerTextPerPlace( Place & bound, const tstring & text,
 						  int extraX, int extraY )
 {
 	Point textSize = getTextSize( text );
@@ -418,7 +418,7 @@ Point AspectSizable< WidgetType >::getClientAreaSize() const
 
 template< class WidgetType >
 Point AspectSizable< WidgetType >
-::getTextSize( const SmartUtil::tstring & text )
+::getTextSize( const tstring & text )
 {
 	// Some win32 api code to determine the actual size of the string
 	HWND hWnd = H();

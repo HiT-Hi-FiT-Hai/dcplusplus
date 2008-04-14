@@ -1033,7 +1033,7 @@ bool QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startId, void 
 	for(QueueItem::SourceConstIter i = sources.begin(); i != sources.end(); ++i) {
 		const QueueItem::Source& source = *i;
 		if(offline || source.getUser()->isOnline()) {
-			tstring nick = SmartUtil::escapeMenu(WinUtil::getNicks(source.getUser()));
+			tstring nick = dwt::util::escapeMenu(WinUtil::getNicks(source.getUser()));
 			menu->appendItem<WidgetMenu::SimpleDispatcher>(id++, nick, std::tr1::bind(handler, this, source.getUser()));
 		}
 	}

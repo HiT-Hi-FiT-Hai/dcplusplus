@@ -37,7 +37,7 @@
 #define DWT_WidgetChooseFolder_h
 
 #include "../Widget.h"
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include <shlobj.h>
 
 namespace dwt {
@@ -75,7 +75,7 @@ public:
 	  * before calling this function, if you wish the dialog to show only certain
 	  * types of folders.
 	  */
-	bool open(SmartUtil::tstring& folder);
+	bool open(tstring& folder);
 
 	/// Sets the root directory in the WidgetChooseFolder Widget
 	/** If given your dialog will try to start with the given directory as root, otherwise it
@@ -83,7 +83,7 @@ public:
 	  */ 
 	FolderDialog& setRoot( const int CSIDL = CSIDL_DESKTOPDIRECTORY );
 
-	FolderDialog& setTitle( const SmartUtil::tstring& title );
+	FolderDialog& setTitle( const tstring& title );
 	
 	~FolderDialog();
 
@@ -97,7 +97,7 @@ private:
 	}
 
 	Widget* itsParent;
-	SmartUtil::tstring itsTitle;
+	tstring itsTitle;
 	LPITEMIDLIST itsPidlRoot;
 	
 	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
@@ -113,7 +113,7 @@ inline FolderDialog::FolderDialog( Widget * parent )
 {
 }
 
-inline FolderDialog& FolderDialog::setTitle( const SmartUtil::tstring& title ) {
+inline FolderDialog& FolderDialog::setTitle( const tstring& title ) {
 	itsTitle = title;
 	return *this;
 }

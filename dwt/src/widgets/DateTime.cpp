@@ -30,6 +30,7 @@
 */
 
 #include <dwt/widgets/DateTime.h>
+#include <dwt/util/TimeSpan.h>
 
 namespace dwt {
 

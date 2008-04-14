@@ -37,7 +37,7 @@
 #define DWT_ImageList_h
 
 #include "../WindowsHeaders.h"
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "../Point.h"
 #include "Bitmap.h"
 #include "Icon.h"

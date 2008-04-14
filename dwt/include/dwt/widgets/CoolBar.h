@@ -131,7 +131,7 @@ protected:
 
 private:
 	// Adds up the given child to a new rebar band...
-	void addChild( Widget * child, unsigned width, unsigned height, const SmartUtil::tstring & txt );
+	void addChild( Widget * child, unsigned width, unsigned height, const tstring & txt );
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

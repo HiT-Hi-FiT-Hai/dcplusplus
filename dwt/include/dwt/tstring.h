@@ -33,40 +33,23 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <dwt/resources/Font.h>
+#include <string>
 
-namespace dwt {
+#ifndef DWT_tstring_smartwin_H
+#define DWT_tstring_smartwin_H
 
-	FontPtr createFont( PredefinedFontTypes fontType )
-	{
-		FontPtr retVal( new Font( fontType ) );
-		return retVal;
-	}
+namespace dwt { 
 
-	FontPtr createFont
-		( const tstring & faceName
-		, int height
-		, int width
-		, int weight
-		, DWORD charSet
-		, bool italic
-		, bool underline
-		, bool strikeOut
-		, int escapementOrientation
-		, DWORD outputPrecision
-		, DWORD clipPrecision
-		, DWORD quality
-		, DWORD pitchAndFamliy
-		 )
-	{
-		FontPtr retVal(
-			new Font
-				( faceName, height, width, weight, charSet, italic, underline
-				, strikeOut, escapementOrientation, outputPrecision, clipPrecision
-				, quality, pitchAndFamliy
-				)
-			);
-		return retVal;
-	}
+#if defined UNICODE || defined _UNICODE
 
-}
+typedef std::wstring tstring;
+
+#else  // UNICODE
+
+typedef std::string tstring;
+
+#endif //UNICODE
+
+} 
+
+#endif

@@ -38,43 +38,44 @@
 
 #include <exception>
 
-namespace SmartUtil
+namespace dwt { namespace util {
+
+/// Exception class for SmartUtil library
+class xCeptionSmartUtilities : public std::exception
 {
-	/// Exception class for SmartUtil library
-	class xCeptionSmartUtilities : public std::exception
-	{
-		public:
-			/// Constructor taking a const char pointer
-			/** The char * will contain the description returned from the virtual member function called what()
-			  */
-			xCeptionSmartUtilities( const char * err ) throw()
-				: std::exception(),
-				itsAsciiErrorMsg( err )
-			{}
+	public:
+		/// Constructor taking a const char pointer
+		/** The char * will contain the description returned from the virtual member function called what()
+		  */
+		xCeptionSmartUtilities( const char * err ) throw()
+			: std::exception(),
+			itsAsciiErrorMsg( err )
+		{}
 
-			/// Overloaded Constructor basically doing the same as the const TCHAR * version
-			/** See the const char * err overloaded version
-			  */
-			xCeptionSmartUtilities( const std::string & err ) throw()
-				: std::exception(),
-				itsAsciiErrorMsg( err )
-			{}
+		/// Overloaded Constructor basically doing the same as the const TCHAR * version
+		/** See the const char * err overloaded version
+		  */
+		xCeptionSmartUtilities( const std::string & err ) throw()
+			: std::exception(),
+			itsAsciiErrorMsg( err )
+		{}
 
-			/// Returns a descriptive error message explaining what went wrong
-			/** Overridden from the std::exception::what()<br>
-			  * This function will ALWAYS return a char * string since it must be compliant with std::exception::what() function
-			  */
-			virtual const char * what() const throw()
-			{
-				return itsAsciiErrorMsg.c_str();
-			}
+		/// Returns a descriptive error message explaining what went wrong
+		/** Overridden from the std::exception::what()<br>
+		  * This function will ALWAYS return a char * string since it must be compliant with std::exception::what() function
+		  */
+		virtual const char * what() const throw()
+		{
+			return itsAsciiErrorMsg.c_str();
+		}
 
-			virtual ~xCeptionSmartUtilities() throw()
-			{};
+		virtual ~xCeptionSmartUtilities() throw()
+		{};
 
-		private:
-			std::string itsAsciiErrorMsg;
-	};
-}
+	private:
+		std::string itsAsciiErrorMsg;
+};
+
+} }
 
 #endif

@@ -37,7 +37,7 @@
 
 namespace dwt {
 
-GroupBox::Seed::Seed(const SmartUtil::tstring& caption) : 
+GroupBox::Seed::Seed(const tstring& caption) : 
 	BaseType::Seed(caption, BS_GROUPBOX) 
 {
 	

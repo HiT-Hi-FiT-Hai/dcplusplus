@@ -46,7 +46,7 @@ void Tree::create( const Seed & cs )
 		setFont( cs.font );
 }
 
-HTREEITEM Tree::insert( const SmartUtil::tstring & text, HTREEITEM parent, LPARAM param, int iconIndex, int selectedIconIndex )
+HTREEITEM Tree::insert( const tstring & text, HTREEITEM parent, LPARAM param, int iconIndex, int selectedIconIndex )
 {
 	TVITEMEX t = { TVIF_TEXT };
 	if ( param != 0 )
@@ -71,14 +71,14 @@ HTREEITEM Tree::insert( const SmartUtil::tstring & text, HTREEITEM parent, LPARA
 	return TreeView_InsertItem(this->handle(), &tv);
 }
 
-SmartUtil::tstring Tree::getSelectedText() {
+tstring Tree::getSelectedText() {
 	return getText(TreeView_GetSelection(this->handle()));
 }
 
-SmartUtil::tstring Tree::getText( HTREEITEM node )
+tstring Tree::getText( HTREEITEM node )
 {
 	if(node == NULL) {
-		return SmartUtil::tstring();
+		return tstring();
 	}
 	
 	TVITEMEX item = { TVIF_HANDLE | TVIF_TEXT, node };
@@ -90,7 +90,7 @@ SmartUtil::tstring Tree::getText( HTREEITEM node )
 	{
 		return buffer;
 	}
-	return SmartUtil::tstring();
+	return tstring();
 }
 
 void Tree::eraseChildren( HTREEITEM node )

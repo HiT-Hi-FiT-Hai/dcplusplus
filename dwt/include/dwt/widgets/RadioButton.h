@@ -72,7 +72,7 @@ public:
 		typedef ThisType WidgetType;
 
 		/// Fills with default parameters
-		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
+		Seed(const tstring& caption_ = tstring());
 	};
 
 	/// Returns true if the RadioButton is selected

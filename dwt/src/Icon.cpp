@@ -46,7 +46,7 @@ Icon::Icon( unsigned resourceId )
 	: ResourceType(::LoadIcon( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) ) )
 {}
 
-Icon::Icon( const SmartUtil::tstring & filePath )
+Icon::Icon( const tstring & filePath )
 #ifdef WINCE
 	: itsIcon( ::LoadIcon( Application::instance().getAppHandle(), filePath.c_str() ) )
 #else

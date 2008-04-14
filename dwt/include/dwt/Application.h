@@ -37,7 +37,7 @@
 #define DWT_Application_h
 
 #include "WindowsHeaders.h"
-#include "util/tstring.h"
+#include "tstring.h"
 #include "CommandLine.h"
 #include "ApplicationPlatform.h"
 #include "xCeption.h"
@@ -118,7 +118,7 @@ public:
 	  * If you want to have the path AND the FILENAME of the image process you must
 	  * use Application::getModuleFileName.
 	  */
-	SmartUtil::tstring getModulePath() const;
+	tstring getModulePath() const;
 
 	/// Returns the full filename to the process
 	/** NOTE! <br>
@@ -126,7 +126,7 @@ public:
 	  * image name. <br>
 	  * If you want to have only the path you must use Application::getModulePath.
 	  */
-	SmartUtil::tstring getModuleFileName() const;
+	tstring getModuleFileName() const;
 
 	typedef std::tr1::function<bool (MSG&)> FilterFunction;
 	// List becuse its iterators aren't invalidated on add/delete...

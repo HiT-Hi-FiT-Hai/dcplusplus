@@ -38,15 +38,15 @@
 
 namespace dwt {
 
-const std::vector< SmartUtil::tstring > & CommandLine::getParams() const
+const std::vector< tstring > & CommandLine::getParams() const
 {
 	if(itsCmdLine.empty()) {
 		// Maybe we haven't converted them yet...
 		bool inEscape = false;
 		bool inQuote = false;
-		SmartUtil::tstring param;
+		tstring param;
 		for(size_t i = 0; i < getParamsRaw().size(); ++i) {
-			SmartUtil::tstring::value_type c = getParamsRaw()[i];
+			tstring::value_type c = getParamsRaw()[i];
 			if(c == '\\') {
 				if(inEscape) {
 					param.push_back(c);
@@ -73,7 +73,7 @@ const std::vector< SmartUtil::tstring > & CommandLine::getParams() const
 	return itsCmdLine;
 }
 
-const SmartUtil::tstring& CommandLine::getParamsRaw() const {
+const tstring& CommandLine::getParamsRaw() const {
 	if(itsRawCmdLine.empty()) {
 		itsRawCmdLine = GetCommandLine();
 	}

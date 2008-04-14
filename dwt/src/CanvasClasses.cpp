@@ -189,7 +189,7 @@ bool Canvas::extFloodFill( int x, int y, COLORREF color, bool fillTilColorFound 
 }
 #endif //!WINCE
 
-int Canvas::drawText( const SmartUtil::tstring & text, const dwt::Rectangle & rect, unsigned format )
+int Canvas::drawText( const tstring & text, const dwt::Rectangle & rect, unsigned format )
 {
 	RECT rc = rect;
 	int retVal = ::DrawText( itsHdc, text.c_str(), ( int ) text.length(), & rc, format );
@@ -201,7 +201,7 @@ int Canvas::drawText( const SmartUtil::tstring & text, const dwt::Rectangle & re
 	return retVal;
 }
 
-void Canvas::extTextOut( const SmartUtil::tstring & text, unsigned x, unsigned y )
+void Canvas::extTextOut( const tstring & text, unsigned x, unsigned y )
 {
 	if ( 0 == ::ExtTextOut( itsHdc, x, y, 0, NULL, text.c_str(), ( unsigned ) text.length(), 0 ) )
 	{

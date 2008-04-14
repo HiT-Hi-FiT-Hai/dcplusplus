@@ -170,7 +170,7 @@ private:
 	LRESULT handleCopyData(LPARAM lParam);
 	LRESULT handleWhereAreYou();
 
-	void handleTabsTitleChanged(const SmartUtil::tstring& title);
+	void handleTabsTitleChanged(const tstring& title);
 	
 	void layout();
 	bool eachSecond();

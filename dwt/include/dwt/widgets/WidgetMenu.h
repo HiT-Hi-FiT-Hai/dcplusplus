@@ -229,7 +229,7 @@ public:
 	* A popup is basically another branch in the menu hierarchy <br>
 	* See the WidgetMenu project for a demonstration.
 	*/
-	ObjectType appendPopup( const SmartUtil::tstring & text, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData()) );
+	ObjectType appendPopup( const tstring & text, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData()) );
 
 	/// Returns the "System Menu"
 	/** The system menu is a special menu that ( normally ) is accessed by pressing
@@ -283,29 +283,29 @@ public:
 	* defined for several menu items even in fact across menu objects, therefore
 	* this number should be unique across the application.
 	*/
-	void appendItem(unsigned int id, const SmartUtil::tstring & text, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData()));
+	void appendItem(unsigned int id, const tstring & text, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData()));
 
 	template<typename DispatcherType>
-	void appendItem(unsigned int id, const SmartUtil::tstring & text, const typename DispatcherType::F& f, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData())) {
+	void appendItem(unsigned int id, const tstring & text, const typename DispatcherType::F& f, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData())) {
 		appendItem(id, text, itemData);
 		callbacks.insert(std::make_pair(id, DispatcherType(f)));
 	}
 
-	void appendItem(unsigned int id, const SmartUtil::tstring & text, const IdDispatcher::F& f, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData())) {
+	void appendItem(unsigned int id, const tstring & text, const IdDispatcher::F& f, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData())) {
 		appendItem<IdDispatcher>(id, text, f, itemData);
 	}
 
-	void appendItem(unsigned int id, const SmartUtil::tstring & text, BitmapPtr image);
+	void appendItem(unsigned int id, const tstring & text, BitmapPtr image);
 
 	template<typename DispatcherType>
-	void appendItem(unsigned int id, const SmartUtil::tstring & text, const typename DispatcherType::F& f, BitmapPtr image) {
+	void appendItem(unsigned int id, const tstring & text, const typename DispatcherType::F& f, BitmapPtr image) {
 		MenuItemDataPtr itemData(new MenuItemData());
 		if(ownerDrawn)
 			itemData->Image = image;
 		appendItem<DispatcherType>(id, text, f, itemData);
 	}
 
-	void appendItem(unsigned int id, const SmartUtil::tstring & text, const IdDispatcher::F& f, BitmapPtr image) {
+	void appendItem(unsigned int id, const tstring & text, const IdDispatcher::F& f, BitmapPtr image) {
 		appendItem<IdDispatcher>(id, text, f, image);
 	}
 
@@ -360,7 +360,7 @@ public:
 	/// Sets menu title
 	/** A WidgetMenu can have a title, this function sets that title
 	*/
-	void setTitle( const SmartUtil::tstring & title, bool drawSidebar = false );
+	void setTitle( const tstring & title, bool drawSidebar = false );
 
 	/// Sets title font
 	/** Create a font through e.g. createFont in WidgetFactory or similar and set the
@@ -411,13 +411,13 @@ public:
 	/** Which menu item you wish to retrieve the text for is defined by the "id"
 	  * parameter of the function.
 	  */
-	SmartUtil::tstring getText( unsigned idOrPos, bool byPos );
+	tstring getText( unsigned idOrPos, bool byPos );
 
 	/// Sets the text of a specific menu item
 	/** Which menu item you wish to set the text is defined by the "id"
 	  * parameter of the function.
 	  */
-	void setText( unsigned id, const SmartUtil::tstring& text );
+	void setText( unsigned id, const tstring& text );
 
 	/// Returns item data
 	MenuItemDataPtr getData( int itemIndex );
@@ -491,7 +491,7 @@ private:
 	FontPtr font;
 
 	// Menu title
-	SmartUtil::tstring itsTitle;
+	tstring itsTitle;
 
 	// Menu title font
 	FontPtr itsTitleFont;

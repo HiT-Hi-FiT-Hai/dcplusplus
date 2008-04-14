@@ -121,7 +121,7 @@ public:
 
 protected:
 	struct Seed : public BaseType::Seed {
-		Seed(const SmartUtil::tstring& caption, DWORD style, DWORD exStyle);
+		Seed(const tstring& caption, DWORD style, DWORD exStyle);
 	};
 
 	// Protected since this Widget we HAVE to inherit from
@@ -138,7 +138,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename Policy>
-Frame<Policy>::Seed::Seed(const SmartUtil::tstring& caption, DWORD style, DWORD exStyle) : 
+Frame<Policy>::Seed::Seed(const tstring& caption, DWORD style, DWORD exStyle) : 
 	BaseType::Seed(caption, style | WS_OVERLAPPEDWINDOW, exStyle)
 {
 	

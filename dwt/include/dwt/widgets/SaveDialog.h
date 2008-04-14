@@ -37,7 +37,7 @@
 #define DWT_SaveDialog_h
 
 #include "../Widget.h"
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "../aspects/AspectFileFilter.h"
 
 namespace dwt {
@@ -65,7 +65,7 @@ public:
 	/** Returns string() or "empty string" if user press cancel. <br>
 	  * Returns a "file path" if user presses ok.
 	  */
-	bool open(SmartUtil::tstring& target);
+	bool open(tstring& target);
 
 	/// Constructor Taking pointer to parent
 	explicit SaveDialog( Widget * parent = 0 );

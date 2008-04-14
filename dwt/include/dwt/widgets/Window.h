@@ -91,7 +91,7 @@ public:
 		typedef ThisType WidgetType;
 
 		/// Fills with default parameters
-		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
+		Seed(const tstring& caption = tstring());
 	};
 
 	/// Actually creates the window

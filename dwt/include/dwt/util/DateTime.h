@@ -36,96 +36,96 @@
 #ifndef DWT_DateTime_H
 #define DWT_DateTime_H
 
-#include <string.h>
 #include "../WindowsHeaders.h"
-#include "TimeSpan.h"
-#include "tstring.h"
+#include "../tstring.h"
 #include <time.h>
 
-/// Contains utility classes for helping out with different aspects in SmartWin and SmartSOAP
-namespace SmartUtil
+namespace dwt { namespace util {
+
+class DateTime;
+class TimeSpan;
+
+DateTime operator +( const DateTime & date, const TimeSpan & time );
+DateTime operator -( const DateTime & date, const TimeSpan & time );
+
+/// Date and Time class
+/** Class is inspired from the .Net Framework class System.DateTime and usable areas would be e.g. to parse DateTime objects transfered across SOAP callings
+  */
+class DateTime
 {
-	class DateTime;
-	DateTime operator +( const DateTime & date, const TimeSpan & time );
-	DateTime operator -( const DateTime & date, const TimeSpan & time );
+	friend DateTime operator +( const DateTime & date, const TimeSpan & time );
+	friend DateTime operator -( const DateTime & date, const TimeSpan & time );
+private:
+	SYSTEMTIME itsSysTime;
 
-	/// Date and Time class
-	/** Class is inspired from the .Net Framework class System.DateTime and usable areas would be e.g. to parse DateTime objects transfered across SOAP callings
+public:
+	/// Constructs by default the smallest possible date
+	DateTime();
+
+	/// Construct a new DateTime from the given SYSTEMTIME
+	explicit DateTime( const SYSTEMTIME & sysTime );
+
+	/// Constructs a date according to the values given
+	DateTime( unsigned year, unsigned month, unsigned day, unsigned hour = 0, unsigned minute = 0, unsigned seconds = 0, unsigned milliseconds = 0 );
+
+	/// Constructs a date according to a unix timestamp value
+	DateTime( time_t unixtimestamp );
+
+	/// Copy constructor
+	DateTime( const DateTime & rhs );
+
+	/// Assignment operator which makes a perfect copy of the DateTime object on the right hand side of the assignment operator
+	DateTime & operator =( const DateTime & rhs );
+
+	/// Assignment operator which makes a copy of the SYSTEMTIME object on the right hand side of the assignment operator
+	DateTime & operator =( const SYSTEMTIME & rhs );
+
+	/// Explicit conversion to SYSTEMTIME
+	const SYSTEMTIME & getSystemTime();
+
+	/// Stamps the time part of the DateTime and returns an object containing only DATE information (or the TIME information is all zeros)
+	DateTime date();
+
+	/// Static constructor creating a DateTime which will hold the Date and Time of the creation of the object
+	static DateTime now();
+
+	/// Static constructor creating the smallest possible value
+	static DateTime minValue();
+
+	/// Converts the date to a string in the format "yyyy.MM.ddThh:mm:ss"
+	/** Example: "2005.12.29T23:11:52"
 	  */
-	class DateTime
-	{
-		friend DateTime operator +( const DateTime & date, const TimeSpan & time );
-		friend DateTime operator -( const DateTime & date, const TimeSpan & time );
-	private:
-		SYSTEMTIME itsSysTime;
+	tstring toString() const;
 
-	public:
-		/// Constructs by default the smallest possible date
-		DateTime();
+	/// Returns a string containing only the Time of the object
+	/** The format must be in format of e.g. "hh.mm.ss" or "mm-ss/hh" etc where "hh" is hours, "mm" is minutes and "ss" is seconds.
+	  */
+	tstring toTimeString( const tstring & format ) const;
 
-		/// Construct a new DateTime from the given SYSTEMTIME
-		explicit DateTime( const SYSTEMTIME & sysTime );
+	/// Returns only the date part of the date time structure in a string format
+	/** The format must be in format of e.g. "dd:MM-yyyy" or "yyyy:MM:dd" where "yyyy" is four digits year, "MM" is two digits months and "dd" is two digits day.
+	  */
+	tstring toDateString( const tstring & format ) const;
 
-		/// Constructs a date according to the values given
-		DateTime( unsigned year, unsigned month, unsigned day, unsigned hour = 0, unsigned minute = 0, unsigned seconds = 0, unsigned milliseconds = 0 );
+	/// Converts the date to a unix timestamp
+	time_t toUnixTimestamp() const;
+};
 
-		/// Constructs a date according to a unix timestamp value
-		DateTime( time_t unixtimestamp );
+// TODO: Comments....
+DateTime operator +( const DateTime & date, const TimeSpan & time );
 
-		/// Copy constructor
-		DateTime( const DateTime & rhs );
+bool operator >( const DateTime & lhs, const DateTime & rhs );
 
-		/// Assignment operator which makes a perfect copy of the DateTime object on the right hand side of the assignment operator
-		DateTime & operator =( const DateTime & rhs );
+bool operator <( const DateTime & lhs, const DateTime & rhs );
 
-		/// Assignment operator which makes a copy of the SYSTEMTIME object on the right hand side of the assignment operator
-		DateTime & operator =( const SYSTEMTIME & rhs );
+bool operator >=( const DateTime & lhs, const DateTime & rhs );
 
-		/// Explicit conversion to SYSTEMTIME
-		const SYSTEMTIME & getSystemTime();
+bool operator <=( const DateTime & lhs, const DateTime & rhs );
 
-		/// Stamps the time part of the DateTime and returns an object containing only DATE information (or the TIME information is all zeros)
-		DateTime date();
+bool operator == ( const DateTime & lhs, const DateTime & rhs );
 
-		/// Static constructor creating a DateTime which will hold the Date and Time of the creation of the object
-		static DateTime now();
-
-		/// Static constructor creating the smallest possible value
-		static DateTime minValue();
-
-		/// Converts the date to a string in the format "yyyy.MM.ddThh:mm:ss"
-		/** Example: "2005.12.29T23:11:52"
-		  */
-		tstring toString() const;
-
-		/// Returns a string containing only the Time of the object
-		/** The format must be in format of e.g. "hh.mm.ss" or "mm-ss/hh" etc where "hh" is hours, "mm" is minutes and "ss" is seconds.
-		  */
-		tstring toTimeString( const tstring & format ) const;
-
-		/// Returns only the date part of the date time structure in a string format
-		/** The format must be in format of e.g. "dd:MM-yyyy" or "yyyy:MM:dd" where "yyyy" is four digits year, "MM" is two digits months and "dd" is two digits day.
-		  */
-		tstring toDateString( const tstring & format ) const;
-
-		/// Converts the date to a unix timestamp
-		time_t toUnixTimestamp() const;
-	};
-
-	// TODO: Comments....
-	DateTime operator +( const DateTime & date, const TimeSpan & time );
-
-	bool operator >( const DateTime & lhs, const DateTime & rhs );
-
-	bool operator <( const DateTime & lhs, const DateTime & rhs );
-
-	bool operator >=( const DateTime & lhs, const DateTime & rhs );
-
-	bool operator <=( const DateTime & lhs, const DateTime & rhs );
-
-	bool operator == ( const DateTime & lhs, const DateTime & rhs );
-
-	bool operator != ( const DateTime & lhs, const DateTime & rhs );
-}
+bool operator != ( const DateTime & lhs, const DateTime & rhs );
+	
+} }
 
 #endif

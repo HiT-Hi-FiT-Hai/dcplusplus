@@ -33,7 +33,7 @@
 
 namespace dwt {
 
-TextBox::Seed::Seed(const SmartUtil::tstring& caption) : 
+TextBox::Seed::Seed(const tstring& caption) : 
 	BaseType::Seed(WC_EDIT, WS_CHILD | WS_TABSTOP, WS_EX_CLIENTEDGE, caption),
 	font(new Font(DefaultGuiFont))
 {
@@ -45,8 +45,8 @@ void TextBox::create( const Seed & cs ) {
 		setFont( cs.font );
 }
 
-SmartUtil::tstring TextBox::getLine(int line) {
-	SmartUtil::tstring tmp;
+tstring TextBox::getLine(int line) {
+	tstring tmp;
 	tmp.resize(std::max(2, lineLength(lineIndex(line))));
 	
 	*reinterpret_cast<WORD*>(&tmp[0]) = static_cast<WORD>(tmp.size());
@@ -54,31 +54,31 @@ SmartUtil::tstring TextBox::getLine(int line) {
 	return tmp;
 }
 
-SmartUtil::tstring TextBox::textUnderCursor(const ScreenCoordinate& p) {
+tstring TextBox::textUnderCursor(const ScreenCoordinate& p) {
 	int i = charFromPos(p);
 	int line = lineFromPos(p);
 	int c = (i - lineIndex(line)) & 0xFFFF;
 	
-	SmartUtil::tstring tmp = getLine(line);
+	tstring tmp = getLine(line);
 	
-	SmartUtil::tstring::size_type start = tmp.find_last_of(_T(" <\t\r\n"), c);
-	if(start == SmartUtil::tstring::npos)
+	tstring::size_type start = tmp.find_last_of(_T(" <\t\r\n"), c);
+	if(start == tstring::npos)
 		start = 0;
 	else
 		start++;
 	
-	SmartUtil::tstring::size_type end = tmp.find_first_of(_T(" >\t\r\n"), start + 1);
-	if(end == SmartUtil::tstring::npos)
+	tstring::size_type end = tmp.find_first_of(_T(" >\t\r\n"), start + 1);
+	if(end == tstring::npos)
 		end = tmp.size();
 	
 	return tmp.substr(start, end-start);
 }
 
-SmartUtil::tstring TextBoxBase::getSelection() const
+tstring TextBoxBase::getSelection() const
 {
 	DWORD start, end;
 	this->sendMessage( EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
-	SmartUtil::tstring retVal = this->getText().substr( start, end - start );
+	tstring retVal = this->getText().substr( start, end - start );
 	return retVal;
 }
 

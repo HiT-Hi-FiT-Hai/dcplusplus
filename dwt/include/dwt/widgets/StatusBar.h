@@ -118,7 +118,7 @@ public:
 	/// Sets the text of the given section number
 	/** Use this one to set the text of a specific section of the StatusBar
 	  */
-	void setText( const SmartUtil::tstring & newText, unsigned partNo = 0);
+	void setText( const tstring & newText, unsigned partNo = 0);
 
 	/// Actually creates the StatusBar
 	/** You should call WidgetFactory::createStatusBar if you instantiate class
@@ -153,7 +153,7 @@ inline StatusBar::Seed::Seed(bool sizeGrip) : BaseType::Seed(STATUSCLASSNAME, WS
 	}
 }
 
-inline void StatusBar::setText( const SmartUtil::tstring & newText, unsigned partNo ) {
+inline void StatusBar::setText( const tstring & newText, unsigned partNo ) {
 	sendMessage(SB_SETTEXT, static_cast< WPARAM >( partNo ), reinterpret_cast< LPARAM >( newText.c_str() ) );
 }
 

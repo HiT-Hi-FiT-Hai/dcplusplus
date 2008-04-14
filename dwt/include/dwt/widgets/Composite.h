@@ -125,7 +125,7 @@ public:
 		HCURSOR cursor;
 
 		/// Fills with default parameters
-		Seed(const SmartUtil::tstring& caption, DWORD style, DWORD exStyle);
+		Seed(const tstring& caption, DWORD style, DWORD exStyle);
 	};
 
 	template<typename SeedType>
@@ -145,7 +145,7 @@ private:
 };
 
 template<typename Policy>
-Composite<Policy>::Seed::Seed(const SmartUtil::tstring& caption, DWORD style, DWORD exStyle) : 
+Composite<Policy>::Seed::Seed(const tstring& caption, DWORD style, DWORD exStyle) : 
 	BaseType::Seed(NULL, style | WS_CLIPCHILDREN, 0, caption),
 	background(( HBRUSH )( COLOR_APPWORKSPACE + 1 )),
 	menuName(NULL),

@@ -54,7 +54,7 @@ class ToolTip :
 
 	struct Dispatcher
 	{
-		typedef std::tr1::function<const SmartUtil::tstring& ()> F;
+		typedef std::tr1::function<const tstring& ()> F;
 
 		Dispatcher(const F& f_) : f(f_) { }
 

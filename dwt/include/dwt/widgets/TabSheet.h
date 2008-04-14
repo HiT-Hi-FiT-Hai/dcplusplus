@@ -115,9 +115,9 @@ public:
 		explicit Seed();
 	};
 
-	SmartUtil::tstring getText(unsigned idx) const;
+	tstring getText(unsigned idx) const;
 	
-	void setText(unsigned idx, const SmartUtil::tstring& text);
+	void setText(unsigned idx, const tstring& text);
 
 	/// Setting the event handler for the "selection changing" event
 	/** The event handler must have the signature "bool foo( TabSheet * Widget,
@@ -137,7 +137,7 @@ public:
 	  * where you wish to put the new page
 	  */
 	// the negative values are already covered by throwing an exception
-	unsigned int addPage( const SmartUtil::tstring & header, unsigned index, LPARAM lParam = 0, int image = -1 );
+	unsigned int addPage( const tstring & header, unsigned index, LPARAM lParam = 0, int image = -1 );
 
 	int getImage(unsigned idx) const;
 
@@ -291,7 +291,7 @@ inline void TabSheet::setSelectedImpl( int idx ) {
 	TabCtrl_SetCurSel( this->handle(), idx );
 }
 
-inline void TabSheet::setText( unsigned index, const SmartUtil::tstring& text )
+inline void TabSheet::setText( unsigned index, const tstring& text )
 {
 	TCITEM item = { TCIF_TEXT };
 	item.pszText = const_cast < TCHAR * >( text.c_str() );

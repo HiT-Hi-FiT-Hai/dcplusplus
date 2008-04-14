@@ -72,7 +72,7 @@ public:
 	struct Seed : public BaseType::Seed
 	{
 		/// Fills with default parameters
-		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
+		Seed(const tstring& caption = tstring());
 	};
 
 	/// Actually creates the window

@@ -41,7 +41,7 @@ namespace dwt {
 
 int WindowClass::itsInstanceNo;
 
-WindowClass::WindowClass(const SmartUtil::tstring& className, WNDPROC wndProc, LPCTSTR menu, HBRUSH background, IconPtr icon_, IconPtr smallIcon_, HCURSOR cursor) : atom(0), icon(icon_), smallIcon(smallIcon_) {
+WindowClass::WindowClass(const tstring& className, WNDPROC wndProc, LPCTSTR menu, HBRUSH background, IconPtr icon_, IconPtr smallIcon_, HCURSOR cursor) : atom(0), icon(icon_), smallIcon(smallIcon_) {
 	WNDCLASSEX wc = { sizeof(WNDCLASSEX) };
 	wc.lpfnWndProc = wndProc;
 	wc.lpszMenuName = menu;
@@ -66,7 +66,7 @@ WindowClass::~WindowClass() {
 	}
 }
 
-SmartUtil::tstring WindowClass::getNewClassName(Widget* widget)
+tstring WindowClass::getNewClassName(Widget* widget)
 {
 	std::basic_stringstream< TCHAR > className;
 	className << typeid(*widget).name() << ++itsInstanceNo;

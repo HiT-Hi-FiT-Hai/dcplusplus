@@ -32,10 +32,12 @@
 #ifndef DWT_STRINGUTILS_H_
 #define DWT_STRINGUTILS_H_
 
-#include "tstring.h"
+#include "../tstring.h"
 
-namespace SmartUtil {
+namespace dwt { namespace util {
+
 tstring escapeMenu(tstring str);
-}
+
+} }
 
 #endif /*STRINGUTILS_H_*/

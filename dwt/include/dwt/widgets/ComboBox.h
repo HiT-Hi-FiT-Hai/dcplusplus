@@ -107,19 +107,19 @@ public:
 	/// Appends a value to the ComboBox.
 	/** The return value is the index of the new item appended.
 	  */
-	int addValue( const SmartUtil::tstring & val );
+	int addValue( const tstring & val );
 
 	/// Appends a value to the ComboBox.
 	/** The return value is the index of the new item appended.
 	  */
-	int insertValue(int pos, const SmartUtil::tstring & val );
+	int insertValue(int pos, const tstring & val );
 
 	/// Returns the string at the zero - based index of the items present in the
 	/// ComboBox.
 	/** Returns the string of the ComboBox at the given index. <br>
 	  * Possible indices are [0.. getCount() - 1]
 	  */
-	SmartUtil::tstring getValue( int index );
+	tstring getValue( int index );
 
 	/// Actually creates the ComboBox Control
 	/** You should call WidgetFactory::createComboBox if you instantiate class
@@ -195,7 +195,7 @@ inline void ComboBox::eraseImpl( int index )
 	ComboBox_DeleteString( handle(), index );
 }
 
-inline int ComboBox::addValue( const SmartUtil::tstring & val )
+inline int ComboBox::addValue( const tstring & val )
 {
 	int newIdx = ComboBox_AddString( handle(), ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )
@@ -206,7 +206,7 @@ inline int ComboBox::addValue( const SmartUtil::tstring & val )
 	return newIdx;
 }
 
-inline int ComboBox::insertValue( int pos, const SmartUtil::tstring & val )
+inline int ComboBox::insertValue( int pos, const tstring & val )
 {
 	int newIdx = ComboBox_InsertString( handle(), pos, ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )

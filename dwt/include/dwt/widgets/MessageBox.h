@@ -36,7 +36,7 @@
 #ifndef DWT_MessageBox_h
 #define DWT_MessageBox_h
 
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "../Widget.h"
 
 namespace dwt {
@@ -122,8 +122,8 @@ public:
 	  * Fourth parameter is the Icon you want the Message Box to display ( normally 
 	  * in the upper left corner )       
 	  */
-	RetVal show( const SmartUtil::tstring & body,
-		const SmartUtil::tstring & header = _T( "Message" ),
+	RetVal show( const tstring & body,
+		const tstring & header = _T( "Message" ),
 		Buttons buttons = BOX_OK,
 		Icon icon = BOX_ICONINFORMATION );
 
@@ -141,7 +141,7 @@ inline MessageBox::MessageBox( Widget * parent )
 	: itsParent( parent )
 {}
 
-inline MessageBox::RetVal MessageBox::show( const SmartUtil::tstring & body, const SmartUtil::tstring & header, Buttons buttons, Icon icon )
+inline MessageBox::RetVal MessageBox::show( const tstring & body, const tstring & header, Buttons buttons, Icon icon )
 {
 	return static_cast< RetVal >( ::MessageBox( getParentHandle(), body.c_str(), header.c_str(), buttons | icon ) );
 }

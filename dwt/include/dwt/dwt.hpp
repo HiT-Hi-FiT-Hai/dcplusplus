@@ -57,7 +57,7 @@
 #include "resources/Icon.h"
 #include "resources/ImageList.h"
 #include "resources/Pen.h"
-#include "util/tstring.h"
+#include "tstring.h"
 #include "widgets/Button.h"
 #include "widgets/CheckBox.h"
 #include "widgets/ComboBox.h"

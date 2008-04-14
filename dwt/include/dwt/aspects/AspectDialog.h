@@ -32,7 +32,7 @@
 #ifndef DWT_ASPECTDIALOG_H_
 #define DWT_ASPECTDIALOG_H_
 
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "../WidgetCreator.h"
 
 #include <type_traits>
@@ -49,7 +49,7 @@ public:
 		return ::GetDlgItem(H(), id);
 	}
 
-	void setItemText(int id, const SmartUtil::tstring& text) {
+	void setItemText(int id, const tstring& text) {
 		::SetDlgItemText(H(), id, text.c_str());
 	}
 	

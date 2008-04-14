@@ -37,7 +37,7 @@
 #define DWT_Bitmap_h
 
 #include "../WindowsHeaders.h"
-#include "../util/tstring.h"
+#include "../tstring.h"
 #include "Handle.h"
 #include <boost/intrusive_ptr.hpp>
 
@@ -90,7 +90,7 @@ public:
 	  * <li>Icons (ICO)</li>
 	  * </ul>
 	  */
-	explicit Bitmap( const SmartUtil::tstring & filePath, unsigned flags = LR_CREATEDIBSECTION );
+	explicit Bitmap( const tstring & filePath, unsigned flags = LR_CREATEDIBSECTION );
 
 	/// @deprecated, use handle
 	HBITMAP getBitmap() const;
