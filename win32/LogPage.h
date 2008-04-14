@@ -35,7 +35,7 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
-	TablePtr dataGrid;
+	TablePtr logOptions;
 	TextBoxPtr logFormat;
 	TextBoxPtr logFile;
 
@@ -47,7 +47,7 @@ private:
 	TStringPairList options;
 
 	void handleBrowseClicked();
-	LRESULT handleItemChanged();
+	void handleSelectionChanged();
 
 	void getValues();
 };

@@ -447,6 +447,7 @@ void HubFrame::addChat(const tstring& aLine) {
 	if(scroll)
 		chat->sendMessage(WM_VSCROLL, SB_BOTTOM);
 
+	WinUtil::playSound(SettingsManager::SOUND_MAIN_CHAT);
 	setDirty(SettingsManager::BOLD_HUB);
 }
 

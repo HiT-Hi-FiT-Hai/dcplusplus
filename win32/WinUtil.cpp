@@ -314,6 +314,16 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	return true;
 }
 
+void WinUtil::playSound(int setting) {
+	string sound = SettingsManager::getInstance()->get((SettingsManager::StrSetting)setting);
+	if(!sound.empty()) {
+		if(sound == "beep")
+			::MessageBeep(MB_OK);
+		else
+			::PlaySound(Text::toT(sound).c_str(), NULL, SND_FILENAME | SND_ASYNC);
+	}
+}
+
 void WinUtil::openFile(const tstring& file) {
 	::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }

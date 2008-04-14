@@ -51,6 +51,7 @@ public:
 
 protected:
 	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
+	void initList(HWND list);
 	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void translate(HWND page, TextItem* items);
 };

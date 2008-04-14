@@ -224,15 +224,12 @@ BEGIN
     LTEXT           "Donate ???:s! (ok, $$$ is fine too =) (see help menu)",IDC_COLOREXAMPLE,107,17,91,32,SS_NOPREFIX | SS_SUNKEN | WS_BORDER | NOT WS_GROUP
     PUSHBUTTON      "Uploads",IDC_SETTINGS_UPLOAD_BAR_COLOR,209,17,51,14
     PUSHBUTTON      "Downloads",IDC_SETTINGS_DOWNLOAD_BAR_COLOR,209,35,51,14
-    GROUPBOX        "Sounds",IDC_SETTINGS_SOUNDS,6,62,264,42
-    CONTROL         "Make an annoying sound every time a private message is received",IDC_PRIVATE_MESSAGE_BEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,74,246,10
-    CONTROL         "Make an annoying sound when a private message window is opened",IDC_PRIVATE_MESSAGE_BEEP_OPEN,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,87,246,10
+    GROUPBOX        "Sounds",IDC_SETTINGS_SOUNDS,6,62,264,77
+    CONTROL         "",IDC_SOUNDS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,16,73,244,40
+    LTEXT           "Notification sound",IDC_BEEP_NOTIFICATION,16,120,66,8
+    EDITTEXT        IDC_BEEPFILE,85,118,119,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Browse...",IDC_BROWSE,210,119,50,12
     LTEXT           "Note; most of these options require that you restart DC++",IDC_SETTINGS_REQUIRES_RESTART,7,209,253,8
-    LTEXT           "Notification sound",IDC_BEEP_NOTIFICATION,10,110,66,8
-    EDITTEXT        IDC_BEEPFILE,85,108,119,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "&Browse...",IDC_BROWSE,210,109,50,12
 END
 
 IDD_LOGPAGE DIALOGEX 100, 0, 275, 225

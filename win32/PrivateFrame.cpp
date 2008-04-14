@@ -61,21 +61,10 @@ void PrivateFrame::gotMessage(dwt::TabView* mdiParent, const UserPtr& from, cons
 			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && user->isSet(User::BOT)))
 				p->sendMessage(Text::toT(Util::getAwayMessage()));
 		}
-
-		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-			if (SETTING(BEEPFILE).empty())
-				MessageBeep(MB_OK);
-			else
-				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
-		}
+		WinUtil::playSound(SettingsManager::SOUND_PM_WINDOW);
 	} else {
-		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
-			if (SETTING(BEEPFILE).empty())
-				MessageBeep(MB_OK);
-			else
-				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
-		}
 		i->second->addChat(aMessage);
+		WinUtil::playSound(SettingsManager::SOUND_PM);
 	}
 }
 

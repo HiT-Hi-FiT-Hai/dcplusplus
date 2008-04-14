@@ -30,20 +30,35 @@ public:
 	virtual void write();
 
 private:
-	static Item items[];
 	static TextItem texts[];
 
+	struct SoundOption {
+		const char* text;
+		int setting;
+		tstring file;
+	};
+	static SoundOption soundOptions[];
+
 	LabelPtr example;
+	TablePtr sounds;
+	LabelPtr beepFileLabel;
+	TextBoxPtr beepFile;
+	ButtonPtr browse;
 
 	COLORREF fg, bg, upBar, downBar;
 	dwt::FontPtr font;
 	LOGFONT logFont;
+	int oldSelection;
 
 	void handleBackgroundClicked();
 	void handleTextClicked();
 	void handleULClicked();
 	void handleDLClicked();
+	void handleSelectionChanged();
 	void handleBrowseClicked();
+
+	void setBeepEnabled(bool enabled);
+	void saveSoundOptions();
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_APPEARANCE_2_PAGE_H)

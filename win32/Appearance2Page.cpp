@@ -32,16 +32,14 @@ static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_COLOREXAMPLE, IDH_SETTINGS_APPEARANCE2_COLORS },
 	{ IDC_SETTINGS_UPLOAD_BAR_COLOR, IDH_SETTINGS_APPEARANCE2_UPLOAD_BAR_COLOR },
 	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, IDH_SETTINGS_APPEARANCE2_DOWNLOAD_BAR_COLOR },
-	{ IDC_SETTINGS_REQUIRES_RESTART, IDH_SETTINGS_APPEARANCE_REQUIRES_RESTART },
 	{ IDC_BEEP_NOTIFICATION, IDH_SETTINGS_APPEARANCE2_BEEPFILE },
 	{ IDC_BEEPFILE, IDH_SETTINGS_APPEARANCE2_BEEPFILE },
 	{ IDC_BROWSE, IDH_SETTINGS_APPEARANCE2_BEEPFILE },
+	{ IDC_SETTINGS_REQUIRES_RESTART, IDH_SETTINGS_APPEARANCE_REQUIRES_RESTART },
 	{ 0, 0 }
 };
 
 PropPage::TextItem Appearance2Page::texts[] = {
-	{ IDC_BEEP_NOTIFICATION, N_("Notification sound") },
-	{ IDC_BROWSE, N_("&Browse...") },
 	{ IDC_SETTINGS_COLORS, N_("Colors") },
 	{ IDC_SELWINCOLOR, N_("Select &window color") },
 	{ IDC_SELTEXT, N_("Select &text style") },
@@ -49,26 +47,25 @@ PropPage::TextItem Appearance2Page::texts[] = {
 	{ IDC_SETTINGS_REQUIRES_RESTART, N_("Note; most of these options require that you restart DC++") },
 	{ IDC_SETTINGS_UPLOAD_BAR_COLOR, N_("Uploads") },
 	{ IDC_SETTINGS_SOUNDS, N_("Sounds") },
-	{ IDC_PRIVATE_MESSAGE_BEEP, N_("Make an annoying sound every time a private message is received") },
-	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, N_("Make an annoying sound when a private message window is opened") },
 	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, N_("Downloads") },
+	{ IDC_BEEP_NOTIFICATION, N_("Notification sound") },
+	{ IDC_BROWSE, N_("&Browse...") },
 	{ 0, 0 }
 };
 
-PropPage::Item Appearance2Page::items[] = {
-	{ IDC_PRIVATE_MESSAGE_BEEP, SettingsManager::PRIVATE_MESSAGE_BEEP, PropPage::T_BOOL },
-	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, SettingsManager::PRIVATE_MESSAGE_BEEP_OPEN, PropPage::T_BOOL },
-	{ IDC_BEEPFILE, SettingsManager::BEEPFILE, PropPage::T_STR },
-	{ 0, 0, PropPage::T_END }
+Appearance2Page::SoundOption Appearance2Page::soundOptions[] = {
+	{ N_("Every time a main chat message is received"), SettingsManager::SOUND_MAIN_CHAT, Util::emptyStringT },
+	{ N_("Every time a private message is received"), SettingsManager::SOUND_PM, Util::emptyStringT },
+	{ N_("When a private message window is opened"), SettingsManager::SOUND_PM_WINDOW, Util::emptyStringT },
+	{ 0, 0, Util::emptyStringT }
 };
 
-Appearance2Page::Appearance2Page(dwt::Widget* parent) : PropPage(parent) {
+Appearance2Page::Appearance2Page(dwt::Widget* parent) : PropPage(parent), oldSelection(-1) {
 	createDialog(IDD_APPEARANCE2PAGE);
 	setHelpId(IDH_APPEARANCE2PAGE);
 
 	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
-	PropPage::read(handle(), items, 0, 0);
 
 	fg = SETTING(TEXT_COLOR);
 	bg = SETTING(BACKGROUND_COLOR);
@@ -82,30 +79,48 @@ Appearance2Page::Appearance2Page(dwt::Widget* parent) : PropPage(parent) {
 	example->setColor(fg, bg);
 	example->setFont(font);
 
-	ButtonPtr button = attachChild<Button>(IDC_SELWINCOLOR);
-	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
+	attachChild(sounds, IDC_SOUNDS);
+	PropPage::initList(sounds->handle());
 
-	button = attachChild<Button>(IDC_SELTEXT);
-	button->onClicked(std::tr1::bind(&Appearance2Page::handleTextClicked, this));
+	{
+		ButtonPtr button = attachChild<Button>(IDC_SELWINCOLOR);
+		button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
 
-	button = attachChild<Button>(IDC_SETTINGS_UPLOAD_BAR_COLOR);
-	button->onClicked(std::tr1::bind(&Appearance2Page::handleULClicked, this));
+		button = attachChild<Button>(IDC_SELTEXT);
+		button->onClicked(std::tr1::bind(&Appearance2Page::handleTextClicked, this));
 
-	button = attachChild<Button>(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
-	button->onClicked(std::tr1::bind(&Appearance2Page::handleDLClicked, this));
+		button = attachChild<Button>(IDC_SETTINGS_UPLOAD_BAR_COLOR);
+		button->onClicked(std::tr1::bind(&Appearance2Page::handleULClicked, this));
 
-	button = attachChild<Button>(IDC_BROWSE);
-	button->onClicked(std::tr1::bind(&Appearance2Page::handleBrowseClicked, this));
+		button = attachChild<Button>(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
+		button->onClicked(std::tr1::bind(&Appearance2Page::handleDLClicked, this));
+	}
 
-	attachChild<TextBox>(IDC_BEEPFILE);
+	attachChild(beepFileLabel, IDC_BEEP_NOTIFICATION);
+
+	attachChild(beepFile, IDC_BEEPFILE);
+
+	attachChild(browse, IDC_BROWSE);
+	browse->onClicked(std::tr1::bind(&Appearance2Page::handleBrowseClicked, this));
+
+	setBeepEnabled(false);
+
+	for(size_t i = 0; soundOptions[i].setting != 0; ++i) {
+		soundOptions[i].file = Text::toT(SettingsManager::getInstance()->get((SettingsManager::StrSetting)soundOptions[i].setting));
+
+		TStringList row;
+		row.push_back(T_(soundOptions[i].text));
+		sounds->setChecked(sounds->insert(row), !soundOptions[i].file.empty());
+	}
+	sounds->setColumnWidth(0, LVSCW_AUTOSIZE);
+	saveSoundOptions();
+	sounds->onSelectionChanged(std::tr1::bind(&Appearance2Page::handleSelectionChanged, this));
 }
 
 Appearance2Page::~Appearance2Page() {
 }
 
 void Appearance2Page::write() {
-	PropPage::write(handle(), items, 0,0);
-
 	SettingsManager* settings = SettingsManager::getInstance();
 
 	settings->set(SettingsManager::TEXT_COLOR, (int)fg);
@@ -113,6 +128,10 @@ void Appearance2Page::write() {
 	settings->set(SettingsManager::UPLOAD_BAR_COLOR, (int)upBar);
 	settings->set(SettingsManager::DOWNLOAD_BAR_COLOR, (int)downBar);
 	settings->set(SettingsManager::TEXT_FONT, Text::fromT(WinUtil::encodeFont(logFont)));
+
+	saveSoundOptions();
+	for(size_t i = 0; soundOptions[i].setting != 0; ++i)
+		settings->set((SettingsManager::StrSetting)soundOptions[i].setting, Text::fromT(soundOptions[i].file));
 }
 
 void Appearance2Page::handleBackgroundClicked() {
@@ -151,13 +170,52 @@ void Appearance2Page::handleDLClicked() {
 	}
 }
 
+void Appearance2Page::handleSelectionChanged() {
+	saveSoundOptions();
+
+	int sel = sounds->getSelected();
+	if(sel >= 0) {
+		bool checked = sounds->isChecked(sel);
+		setBeepEnabled(checked);
+		beepFile->setText(
+			(checked && soundOptions[sel].file != _T("beep"))
+			? soundOptions[sel].file
+			: Util::emptyStringT
+		);
+	} else {
+		setBeepEnabled(false);
+		beepFile->setText(Util::emptyStringT);
+	}
+	oldSelection = sel;
+}
+
 void Appearance2Page::handleBrowseClicked() {
-	TCHAR buf[MAX_PATH];
-
-	::GetDlgItemText(handle(), IDC_BEEPFILE, buf, MAX_PATH);
-	tstring x = buf;
-
+	tstring x = beepFile->getText();
 	if(createLoadDialog().open(x)) {
-		setItemText(IDC_BEEPFILE, x);
+		beepFile->setText(x);
+	}
+}
+
+void Appearance2Page::setBeepEnabled(bool enabled) {
+	beepFileLabel->setEnabled(enabled);
+	beepFile->setEnabled(enabled);
+	browse->setEnabled(enabled);
+}
+
+void Appearance2Page::saveSoundOptions() {
+	for(size_t i = 0; i < sounds->size(); ++i) {
+		if(sounds->isChecked(i)) {
+			if(soundOptions[i].file.empty())
+				soundOptions[i].file = _T("beep");
+		} else
+			soundOptions[i].file = Util::emptyStringT;
+	}
+
+	if(oldSelection >= 0) {
+		if(sounds->isChecked(oldSelection)) {
+			tstring text = beepFile->getText();
+			soundOptions[oldSelection].file = text.empty() ? _T("beep") : text;
+		} else
+			soundOptions[oldSelection].file = Util::emptyStringT;
 	}
 }

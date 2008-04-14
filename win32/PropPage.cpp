@@ -63,14 +63,7 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 	}
 
 	if(listItems != NULL) {
-		ListView_SetExtendedListViewStyle(list, LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
-
-		RECT rc;
-		::GetClientRect(list, &rc);
-		LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH };
-		lv.fmt = LVCFMT_LEFT;
-		lv.cx = rc.right - rc.left;
-		ListView_InsertColumn(list, 0, &lv);
+		initList(list);
 
 		LVITEM lvi = { LVIF_TEXT };
 		for(int i = 0; listItems[i].setting != 0; i++) {
@@ -83,6 +76,17 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 
 		ListView_SetColumnWidth(list, 0, LVSCW_AUTOSIZE);
 	}
+}
+
+void PropPage::initList(HWND list) {
+	ListView_SetExtendedListViewStyle(list, LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
+
+	RECT rc;
+	::GetClientRect(list, &rc);
+	LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH };
+	lv.fmt = LVCFMT_LEFT;
+	lv.cx = rc.right - rc.left;
+	ListView_InsertColumn(list, 0, &lv);
 }
 
 void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL */, HWND list /* = NULL */)
