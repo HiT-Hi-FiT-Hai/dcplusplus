@@ -48,32 +48,6 @@
 
 namespace dwt {
 
-/// Contains information about menu item
-struct MenuItemData
-{
-	/// Menu item text color
-	COLORREF TextColor;
-
-	/// Menu item image
-	BitmapPtr Image;
-
-	/// Creates new menu item with specified data
-	MenuItemData(
-		BitmapPtr image = BitmapPtr( new Bitmap( ( HBITMAP ) NULL ) ), // defaults to empty bitmap
-		COLORREF textColor = ::GetSysColor( COLOR_MENUTEXT ) )
-		: TextColor( textColor ),
-		Image( image )
-	{}
-};
-
-/// \ingroup GlobalStuff
-// MenuItemDataPtr type, contains rendering data for e.g. Menu
-/** Helps easily create color values and so on for a Menu item! <br>
-* Each Menu Item can have different colors and so on, use this smart pointer to set
-* those values!
-*/
-typedef std::tr1::shared_ptr< MenuItemData > MenuItemDataPtr;
-
 /// Struct for coloring different areas of Menu
 /** Contains the different color settings of the Menu <br>
 * Default values to constructor makes menu look roughly like MSVC++7.1 menus
@@ -230,7 +204,7 @@ public:
 	* A popup is basically another branch in the menu hierarchy <br>
 	* See the Menu project for a demonstration.
 	*/
-	ObjectType appendPopup( const tstring & text, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData()) );
+	ObjectType appendPopup( const tstring & text );
 
 	/// Returns the "System Menu"
 	/** The system menu is a special menu that ( normally ) is accessed by pressing
@@ -284,29 +258,16 @@ public:
 	* defined for several menu items even in fact across menu objects, therefore
 	* this number should be unique across the application.
 	*/
-	void appendItem(unsigned int id, const tstring & text, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData()));
+
+	void appendItem(unsigned int id, const tstring & text, BitmapPtr image = BitmapPtr());
 
 	template<typename DispatcherType>
-	void appendItem(unsigned int id, const tstring & text, const typename DispatcherType::F& f, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData())) {
-		appendItem(id, text, itemData);
+	void appendItem(unsigned int id, const tstring & text, const typename DispatcherType::F& f, BitmapPtr image = BitmapPtr()) {
+		appendItem(id, text, image);
 		callbacks.insert(std::make_pair(id, DispatcherType(f)));
 	}
 
-	void appendItem(unsigned int id, const tstring & text, const IdDispatcher::F& f, MenuItemDataPtr itemData = MenuItemDataPtr(new MenuItemData())) {
-		appendItem<IdDispatcher>(id, text, f, itemData);
-	}
-
-	void appendItem(unsigned int id, const tstring & text, BitmapPtr image);
-
-	template<typename DispatcherType>
-	void appendItem(unsigned int id, const tstring & text, const typename DispatcherType::F& f, BitmapPtr image) {
-		MenuItemDataPtr itemData(new MenuItemData());
-		if(ownerDrawn)
-			itemData->Image = image;
-		appendItem<DispatcherType>(id, text, f, itemData);
-	}
-
-	void appendItem(unsigned int id, const tstring & text, const IdDispatcher::F& f, BitmapPtr image) {
+	void appendItem(unsigned int id, const tstring & text, const IdDispatcher::F& f, BitmapPtr image = BitmapPtr()) {
 		appendItem<IdDispatcher>(id, text, f, image);
 	}
 
@@ -420,9 +381,6 @@ public:
 	  */
 	void setText( unsigned id, const tstring& text );
 
-	/// Returns item data
-	MenuItemDataPtr getData( int itemIndex );
-
 	ObjectType getChild(UINT position);
 
 	virtual ~Menu();
@@ -453,15 +411,19 @@ private:
 		// Specifies if item is menu title
 		bool isMenuTitleItem;
 
-		// Contains item data
-		MenuItemDataPtr data;
+		/// Menu item text color
+		COLORREF textColor;
+
+		/// Menu item image
+		BitmapPtr image;
 
 		// Wrapper  Constructor
-		ItemDataWrapper( const Menu* menu_, int itemIndex, MenuItemDataPtr itemData, bool isTitleItem = false )
-			: menu( menu_ )
-			, index( itemIndex )
-			, isMenuTitleItem( isTitleItem )
-			, data( itemData )
+		ItemDataWrapper( const Menu* menu_, int itemIndex, bool isTitleItem = false, BitmapPtr image_ = BitmapPtr()) : 
+			menu( menu_ ), 
+			index( itemIndex ),
+			isMenuTitleItem( isTitleItem ),
+			textColor(::GetSysColor(COLOR_MENUTEXT)),
+			image(image_)
 		{}
 
 		~ItemDataWrapper()

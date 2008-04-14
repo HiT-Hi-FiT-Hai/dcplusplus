@@ -911,8 +911,7 @@ void QueueFrame::clearTree(HTREEITEM item) {
 // Put it here to avoid a copy for each recursion...
 static TCHAR tmpBuf[1024];
 void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
-	TVINSERTSTRUCT tvis;
-	memset(&tvis, 0, sizeof(tvis));
+	TVINSERTSTRUCT tvis = { 0 };
 	tvis.itemex.hItem = item;
 	tvis.itemex.mask = TVIF_CHILDREN | TVIF_HANDLE | TVIF_IMAGE | TVIF_INTEGRAL | TVIF_PARAM |
 		TVIF_SELECTEDIMAGE | TVIF_STATE | TVIF_TEXT;

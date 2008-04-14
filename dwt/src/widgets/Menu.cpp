@@ -115,9 +115,7 @@ void Menu::attach(HMENU hMenu, const Seed& cs) {
 		const int count = getCount();
 		for(int i = 0; i < count; ++i) {
 			// init structure for items
-			MENUITEMINFO info;
-			memset( & info, 0, sizeof( info ) );
-			info.cbSize = sizeof( MENUITEMINFO );
+			MENUITEMINFO info = { sizeof( MENUITEMINFO ) };
 
 			// set flags
 			info.fMask = MIIM_FTYPE | MIIM_DATA;
@@ -127,7 +125,7 @@ void Menu::attach(HMENU hMenu, const Seed& cs) {
 				info.fType |= MFT_OWNERDRAW;
 
 				// create item data wrapper
-				ItemDataWrapper * wrapper = new ItemDataWrapper( this, i, MenuItemDataPtr( new MenuItemData() ) );
+				ItemDataWrapper * wrapper = new ItemDataWrapper( this, i );
 				info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 
 				if(::SetMenuItemInfo(itsHandle, i, TRUE, &info))
@@ -146,16 +144,14 @@ void Menu::setMenu() {
 		throw xCeption( _T( "SetMenu in Menu::setMenu fizzled..." ) );
 }
 
-Menu::ObjectType Menu::appendPopup( const tstring & text, MenuItemDataPtr itemData )
+Menu::ObjectType Menu::appendPopup( const tstring & text )
 {
 	// create popup menu pointer
 	ObjectType retVal ( new Menu(itsParent) );
 	retVal->create( Seed(ownerDrawn, itsColorInfo, font) );
 
 	// init structure for new item
-	MENUITEMINFO info;
-	memset( & info, 0, sizeof( info ) );
-	info.cbSize = sizeof( MENUITEMINFO );
+	MENUITEMINFO info = { sizeof( MENUITEMINFO ) };
 
 	// set flags
 	info.fMask = MIIM_SUBMENU | MIIM_CHECKMARKS | MIIM_STRING;
@@ -176,7 +172,7 @@ Menu::ObjectType Menu::appendPopup( const tstring & text, MenuItemDataPtr itemDa
 		info.fType = MFT_OWNERDRAW;
 
 		// create item data
-		wrapper = new ItemDataWrapper( this, position, itemData );
+		wrapper = new ItemDataWrapper( this, position );
 		info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 	}
 
@@ -230,15 +226,6 @@ int Menu::getItemIndex( unsigned int id )
 			return index;
 
 	return - 1;
-}
-
-MenuItemDataPtr Menu::getData( int itemIndex )
-{
-	for(size_t i = 0; i < itsItemData.size(); ++i)
-		if(itsItemData[i]->index == itemIndex)
-			return itsItemData[i]->data;
-
-	return MenuItemDataPtr();
 }
 
 Menu::~Menu()
@@ -361,9 +348,7 @@ void Menu::setTitle( const tstring & title, bool drawSidebar /* = false */)
 	if ( !drawSidebar )
 	{
 		// init struct for title info
-		MENUITEMINFO info;
-		memset( & info, 0, sizeof( MENUITEMINFO ) );
-		info.cbSize = sizeof( MENUITEMINFO );
+		MENUITEMINFO info = { sizeof( MENUITEMINFO ) };
 
 		// set flags
 		info.fMask = MIIM_STATE | MIIM_STRING | MIIM_FTYPE | MIIM_DATA;
@@ -374,7 +359,7 @@ void Menu::setTitle( const tstring & title, bool drawSidebar /* = false */)
 		info.dwTypeData = const_cast< LPTSTR >( title.c_str() );
 
 		// created info for title item
-		ItemDataWrapper * wrapper = new ItemDataWrapper( this, 0, MenuItemDataPtr( new MenuItemData() ), true );
+		ItemDataWrapper * wrapper = new ItemDataWrapper( this, 0, true );
 
 		// set item data
 		info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
@@ -405,9 +390,7 @@ bool Menu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	const bool isMenuBar = ::GetMenu( wrapper->menu->getParent()->handle() ) == wrapper->menu->handle();
 
 	// init struct for menu item info
-	MENUITEMINFO info;
-	memset( & info, 0, sizeof( MENUITEMINFO ) );
-	info.cbSize = sizeof( MENUITEMINFO );
+	MENUITEMINFO info = { sizeof( MENUITEMINFO ) };
 
 	// set flags
 	info.fMask = MIIM_CHECKMARKS | MIIM_FTYPE | MIIM_DATA | MIIM_STATE | MIIM_STRING;
@@ -417,10 +400,6 @@ bool Menu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 
 	// check if item is owner drawn
 	xAssert( ( info.fType & MFT_OWNERDRAW ) != 0, _T( "Not a owner - drawn item in drawItem()" ) );
-
-	// get item data
-	MenuItemDataPtr data ( wrapper->data );
-	xAssert( data != 0, _T( "Couldn't find item data in drawItem()" ) );
 
 	// get state info
 	bool isGrayed = ( drawInfo->itemState & ODS_GRAYED ) == ODS_GRAYED;
@@ -433,13 +412,18 @@ bool Menu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	HBITMAP image = NULL;
 
 	// if checked/unchecked image is avaiable
-	if ( ( info.hbmpChecked != NULL ) && ( info.hbmpUnchecked != NULL ) )
+	if ( ( info.hbmpChecked != NULL ) && ( info.hbmpUnchecked != NULL ) ) {
 		image = isChecked ? info.hbmpChecked : info.hbmpUnchecked;
-	else // get normal image
-		image = data->Image->getBitmap();
+	} else if(wrapper->image) {// get normal image
+		image = wrapper->image->handle();
+	}
 
 	// this will contain image size
-	Point imageSize = data->Image->getBitmapSize();
+	Point imageSize(0, 0);
+	if(wrapper->image) {
+		// TODO and if we use hbmpChecked etc?
+		imageSize = wrapper->image->getBitmapSize();
+	}
 
 	if ( ( imageSize.x == 0 ) && ( imageSize.y == 0 ) ) // no image
 		imageSize = defaultImageSize; // set default image size
@@ -597,7 +581,7 @@ bool Menu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 			isGrayed ? ::GetSysColor(COLOR_GRAYTEXT) :
 			wrapper->isMenuTitleItem ? colorInfo.colorTitleText :
 			highlight ? colorInfo.colorHighlightText :
-			data->TextColor
+			wrapper->textColor
 			);
 
 		// Select item font
@@ -734,9 +718,7 @@ bool Menu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	UINT & itemHeight = measureInfo->itemHeight;
 
 	// init struct for item info
-	MENUITEMINFO info;
-	memset( & info, 0, sizeof( MENUITEMINFO ) );
-	info.cbSize = sizeof( MENUITEMINFO );
+	MENUITEMINFO info = { sizeof( MENUITEMINFO ) };
 
 	// set up flags
 	info.fMask = MIIM_FTYPE | MIIM_DATA | MIIM_CHECKMARKS | MIIM_STRING;
@@ -763,10 +745,6 @@ bool Menu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	// get its DC
 	HDC hdc = ::GetDC( wrapper->menu->getParent()->handle() );
 
-	// get the item data
-	MenuItemDataPtr data = wrapper->data;
-	xAssert( data != 0, _T( "Couldn't find item data in measureItem()" ) );
-
 	// get item text
 	const int length = info.cch + 1;
 	std::vector< TCHAR > buffer ( length );
@@ -789,7 +767,7 @@ bool Menu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	itemHeight = textSize.cy + borderGap;
 
 	// check to see if item has an image
-	Point imageSize = data->Image->getBitmapSize();
+	Point imageSize = wrapper->image ? wrapper->image->getBitmapSize() : Point(0, 0); 
 
 	// this will contain checked/unchecked image size
 	Point checkImageSize;
@@ -852,9 +830,8 @@ bool Menu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 void Menu::appendSeparatorItem()
 {
 	// init structure for new item
-	MENUITEMINFO itemInfo;
-	memset( & itemInfo, 0, sizeof( itemInfo ) );
-	itemInfo.cbSize = sizeof( MENUITEMINFO );
+	MENUITEMINFO itemInfo = { sizeof( MENUITEMINFO ) };
+
 
 	// set flags
 	itemInfo.fMask = MIIM_FTYPE;
@@ -869,7 +846,7 @@ void Menu::appendSeparatorItem()
 		itemInfo.fType |= MFT_OWNERDRAW;
 
 		// create item data wrapper
-		wrapper = new ItemDataWrapper( this, position, MenuItemDataPtr( new MenuItemData() ) );
+		wrapper = new ItemDataWrapper( this, position );
 		itemInfo.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 	}
 
@@ -934,12 +911,10 @@ int Menu::getCount() const
 	return count;
 }
 
-void Menu::appendItem(unsigned int id, const tstring & text, MenuItemDataPtr itemData)
+void Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
 {
 	// init structure for new item
-	MENUITEMINFO info;
-	memset( & info, 0, sizeof( info ) );
-	info.cbSize = sizeof( MENUITEMINFO );
+	MENUITEMINFO info = { sizeof(MENUITEMINFO) };
 
 	// set flags
 	info.fMask = MIIM_DATA | MIIM_FTYPE | MIIM_CHECKMARKS | MIIM_ID | MIIM_STRING;
@@ -964,7 +939,7 @@ void Menu::appendItem(unsigned int id, const tstring & text, MenuItemDataPtr ite
 		info.fType = MFT_OWNERDRAW;
 
 		// set item data
-		wrapper = new ItemDataWrapper( this, index, itemData );
+		wrapper = new ItemDataWrapper( this, index, false, image);
 		info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 	}
 
@@ -976,14 +951,6 @@ void Menu::appendItem(unsigned int id, const tstring & text, MenuItemDataPtr ite
 	}
 	else
 		throw xCeption( _T( "Couldn't insert/update item in Menu::appendItem" ) );
-}
-
-void Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
-{
-	MenuItemDataPtr itemData(new MenuItemData());
-	if(ownerDrawn)
-		itemData->Image = image;
-	appendItem(id, text, itemData);
 }
 
 unsigned Menu::trackPopupMenu( const ScreenCoordinate& sc, unsigned flags )
