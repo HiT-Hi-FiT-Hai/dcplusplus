@@ -75,13 +75,13 @@ class TextBoxBase :
 	public AspectText< TextBoxBase >,
 	public AspectUpdate< TextBoxBase >
 {
+	typedef CommonControl BaseType;
 	friend class WidgetCreator< TextBoxBase >;
 	friend class AspectUpdate<TextBoxBase>;
 
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 
 protected:
-	typedef CommonControl BaseType;
 
 public:
 	/// Sets the current selection of the Edit Control
@@ -194,6 +194,7 @@ private:
 class TextBox : 
 	public TextBoxBase 
 {
+	typedef TextBoxBase BaseType;
 public:
 	typedef TextBox ThisType;
 	

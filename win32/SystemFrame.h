@@ -27,6 +27,7 @@
 class SystemFrame : public StaticFrame<SystemFrame>,
 	private LogManagerListener
 {
+	typedef StaticFrame<SystemFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -34,7 +35,6 @@ public:
 	};
 	
 private:
-	typedef StaticFrame<SystemFrame> BaseType;
 	friend class StaticFrame<SystemFrame>;
 	friend class MDIChildFrame<SystemFrame>;
 	

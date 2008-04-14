@@ -33,6 +33,7 @@ class QueueFrame :
 	public StaticFrame<QueueFrame>,
 	private QueueManagerListener
 {
+	typedef StaticFrame<QueueFrame> BaseType;
 public:
 	enum Status {
 		STATUS_SHOW_TREE,
@@ -45,7 +46,6 @@ public:
 	};
 
 private:
-	typedef StaticFrame<QueueFrame> BaseType;
 	friend class StaticFrame<QueueFrame>;
 	friend class MDIChildFrame<QueueFrame>;
 	

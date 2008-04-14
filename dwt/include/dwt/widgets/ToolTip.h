@@ -49,6 +49,7 @@ class ToolTip :
 	public AspectRaw< ToolTip >,
 	public AspectVisible< ToolTip >
 {
+	typedef MessageMap< Policies::Subclassed > BaseType;
 	friend class WidgetCreator< ToolTip >;
 
 	struct Dispatcher
@@ -72,8 +73,6 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
-
-	typedef MessageMap< Policies::Subclassed > BaseType;
 
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;

@@ -30,7 +30,11 @@
 #include <dcpp/TimerManager.h>
 
 template<class T, bool in_UL>
-class FinishedFrameBase : public StaticFrame<T>, private FinishedManagerListener {
+class FinishedFrameBase : 
+	public StaticFrame<T>, 
+	private FinishedManagerListener 
+{
+	typedef StaticFrame<T> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -41,7 +45,6 @@ public:
 	};
 
 protected:
-	typedef StaticFrame<T> BaseType;
 	typedef MDIChildFrame<T> MDIChildType;
 	friend class StaticFrame<T>;
 	friend class MDIChildFrame<T>;

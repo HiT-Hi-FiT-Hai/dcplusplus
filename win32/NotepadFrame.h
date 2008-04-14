@@ -22,7 +22,10 @@
 #include "StaticFrame.h"
 #include "resource.h"
 
-class NotepadFrame : public StaticFrame<NotepadFrame> {
+class NotepadFrame : 
+	public StaticFrame<NotepadFrame> 
+{
+	typedef StaticFrame<NotepadFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -30,7 +33,6 @@ public:
 	};
 	
 protected:
-	typedef StaticFrame<NotepadFrame> BaseType;
 	friend class StaticFrame<NotepadFrame>;
 	friend class MDIChildFrame<NotepadFrame>;
 	

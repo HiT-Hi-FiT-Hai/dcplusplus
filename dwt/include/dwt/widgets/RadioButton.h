@@ -52,9 +52,9 @@ namespace dwt {
    * previously selected one.
    */
 class RadioButton :
-	// Aspects
 	public Button
 {
+	typedef Button BaseType;
 	friend class WidgetCreator< RadioButton >;
 public:
 	/// Class type
@@ -63,8 +63,6 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 	
-	typedef Button BaseType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget

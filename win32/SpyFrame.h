@@ -25,6 +25,7 @@
 #include "resource.h"
 
 class SpyFrame : public StaticFrame<SpyFrame>, private ClientManagerListener {
+	typedef StaticFrame<SpyFrame> BaseType;
 public:
 	enum Status {
 		STATUS_IGNORE_TTH,
@@ -37,7 +38,6 @@ public:
 	};
 
 protected:
-	typedef StaticFrame<SpyFrame> BaseType;
 	friend class StaticFrame<SpyFrame>;
 	friend class MDIChildFrame<SpyFrame>;
 

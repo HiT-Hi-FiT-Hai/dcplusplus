@@ -50,6 +50,7 @@ class TabView :
 	public AspectRaw<TabView>,
 	public AspectSizable<TabView>
 {
+	typedef MessageMap<Policies::Normal> BaseType;
 	typedef std::tr1::function<void (const SmartUtil::tstring&)> TitleChangedFunction;
 	typedef std::tr1::function<void (HWND, unsigned)> HelpFunction;
 	typedef std::tr1::function<bool (const ScreenCoordinate&)> ContextMenuFunction;
@@ -61,8 +62,6 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 	
-	typedef MessageMap<Policies::Normal> BaseType;
-
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;
 

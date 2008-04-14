@@ -81,6 +81,8 @@ class Table :
 	public AspectScrollable< Table >,
 	public AspectSelection< Table, int >
 {
+	typedef CommonControl BaseType;
+
 	struct HeaderDispatcher {
 		typedef std::tr1::function<void (int)> F;
 
@@ -110,8 +112,6 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
-
-	typedef CommonControl BaseType;
 
 	typedef std::tr1::function<int (LPARAM a, LPARAM b)> SortFunction;
 	

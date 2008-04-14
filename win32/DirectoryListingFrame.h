@@ -33,6 +33,7 @@ class DirectoryListingFrame :
 	public MDIChildFrame<DirectoryListingFrame>,
 	public AspectUserCommand<DirectoryListingFrame>
 {
+	typedef MDIChildFrame<DirectoryListingFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -53,7 +54,6 @@ public:
 	static void closeAll();
 
 protected:
-	typedef MDIChildFrame<DirectoryListingFrame> BaseType;
 	friend class MDIChildFrame<DirectoryListingFrame>;
 	friend class AspectUserCommand<DirectoryListingFrame>;
 	

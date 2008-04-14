@@ -27,6 +27,7 @@ class WidgetPaned :
 	public dwt::AspectVisible< WidgetPaned< horizontal > >,
 	public dwt::AspectRaw< WidgetPaned< horizontal > >
 {
+	typedef dwt::MessageMap< dwt::Policies::Normal > BaseType;
 	friend class dwt::WidgetCreator< WidgetPaned >;
 public:
 	/// Class type
@@ -34,8 +35,6 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
-
-	typedef dwt::MessageMap< dwt::Policies::Normal > BaseType;
 
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;

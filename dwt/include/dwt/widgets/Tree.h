@@ -73,6 +73,7 @@ class Tree :
 	public AspectFont< Tree >,
 	public AspectSelection< Tree, HTREEITEM >
 {
+	typedef CommonControl BaseType;
 protected:
 	struct Dispatcher
 	{
@@ -108,8 +109,6 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
-
-	typedef CommonControl BaseType;
 
 	/// Seed class
 	 /** This class contains all of the values needed to create the widget. It also

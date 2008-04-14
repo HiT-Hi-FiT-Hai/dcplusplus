@@ -30,6 +30,7 @@ class PrivateFrame :
 	private ClientManagerListener,
 	public AspectUserCommand<PrivateFrame>
 {
+	typedef MDIChildFrame<PrivateFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -45,7 +46,6 @@ public:
 	void sendMessage(const tstring& msg, bool thirdPerson = false);
 
 private:
-	typedef MDIChildFrame<PrivateFrame> BaseType;
 	friend class MDIChildFrame<PrivateFrame>;
 	friend class AspectUserCommand<PrivateFrame>;
 	

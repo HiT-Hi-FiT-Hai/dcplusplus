@@ -31,6 +31,7 @@ class PublicHubsFrame :
 	public StaticFrame<PublicHubsFrame>,
 	public FavoriteManagerListener
 {
+	typedef StaticFrame<PublicHubsFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -40,7 +41,6 @@ public:
 	};
 	
 private:
-	typedef StaticFrame<PublicHubsFrame> BaseType;
 	friend class StaticFrame<PublicHubsFrame>;
 	friend class MDIChildFrame<PublicHubsFrame>;
 

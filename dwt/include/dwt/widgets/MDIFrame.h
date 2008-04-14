@@ -55,6 +55,7 @@ namespace dwt {
 class MDIFrame
 	: public Frame< Policies::MDIFrame<MDIFrame> >
 {
+	typedef Frame< Policies::MDIFrame<MDIFrame> > BaseType;
 public:
 	/// Class type
 	typedef MDIFrame ThisType;
@@ -62,7 +63,6 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 
-	typedef Frame< Policies::MDIFrame<MDIFrame> > BaseType;
 	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

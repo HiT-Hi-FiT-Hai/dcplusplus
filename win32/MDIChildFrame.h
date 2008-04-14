@@ -33,9 +33,9 @@ class MDIChildFrame :
 	public AspectSpeaker<T>, 
 	public AspectStatus<T>
 {
+	typedef WidgetFactory< dwt::Container > BaseType;
 public:
 	typedef MDIChildFrame<T> ThisType;
-	typedef WidgetFactory< dwt::Container > BaseType;
 protected:
 
 	MDIChildFrame(dwt::TabView* tabView, const tstring& title, unsigned helpId = 0, dwt::IconPtr icon = dwt::IconPtr(), bool activate = true) :

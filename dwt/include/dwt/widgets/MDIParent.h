@@ -65,15 +65,14 @@ class MDIParent :
 	public Control< Policies::Subclassed >
 
 {
+	typedef Control<Policies::Subclassed> BaseType;
 	friend class WidgetCreator< MDIParent >;
 public:
 	/// Class type
 	typedef MDIParent ThisType;
 
 	/// Object type
-	typedef ThisType * ObjectType;
-	
-	typedef Control<Policies::Subclassed> BaseType;
+	typedef ThisType * ObjectType;	
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

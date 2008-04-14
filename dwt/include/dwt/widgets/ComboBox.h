@@ -71,6 +71,7 @@ class ComboBox :
 	public AspectSelection< ComboBox, int >,
 	public AspectText< ComboBox >
 {
+	typedef CommonControl BaseType;
 	friend class WidgetCreator< ComboBox >;
 	friend class AspectCollection<ComboBox, int>;
 	friend class AspectColor<ComboBox>;
@@ -85,7 +86,6 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 	
-	typedef CommonControl BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

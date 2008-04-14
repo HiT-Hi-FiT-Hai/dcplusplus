@@ -24,6 +24,7 @@
 
 class StatsFrame : public StaticFrame<StatsFrame>
 {
+	typedef StaticFrame<StatsFrame> BaseType;
 public:
 	enum Stats {
 		STATUS_STATUS,
@@ -31,7 +32,6 @@ public:
 	};
 
 private:
-	typedef StaticFrame<StatsFrame> BaseType;
 	friend class StaticFrame<StatsFrame>;
 	friend class MDIChildFrame<StatsFrame>;
 

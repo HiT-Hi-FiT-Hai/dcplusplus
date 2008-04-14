@@ -53,8 +53,9 @@ T convert(const MSG& msg) {
 }
 
 template<typename P, P (*C)(const MSG&) = convert<P>, bool handled = true >
-struct ConvertBase : public Base<void(const P&)> {
+class ConvertBase : public Base<void(const P&)> {
 	typedef Base<void(const P&)> BaseType;
+public:
 	ConvertBase(const typename BaseType::F& f_) : BaseType(f_) { }
 	
 	bool operator()(const MSG& msg, LRESULT& ret) {

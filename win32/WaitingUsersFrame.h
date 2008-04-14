@@ -30,13 +30,13 @@ class WaitingUsersFrame :
 	public StaticFrame<WaitingUsersFrame>, 
 	public UploadManagerListener 
 {
+	typedef StaticFrame<WaitingUsersFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
 		STATUS_LAST
 	};
 protected:
-	typedef StaticFrame<WaitingUsersFrame> BaseType;
 	friend class StaticFrame<WaitingUsersFrame>;
 	friend class MDIChildFrame<WaitingUsersFrame>;
 

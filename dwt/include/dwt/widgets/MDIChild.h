@@ -68,8 +68,8 @@ class MDIChild :
 	public AspectMinMax<MDIChild>
 
 {
-public:
 	typedef Composite<Policies::MDIChild> BaseType;
+public:
 	
 	/// Class type
 	typedef MDIChild ThisType;

@@ -22,7 +22,10 @@
 #include "StaticFrame.h"
 #include <dcpp/ADLSearch.h>
 
-class ADLSearchFrame : public StaticFrame<ADLSearchFrame> {
+class ADLSearchFrame : 
+	public StaticFrame<ADLSearchFrame> 
+{
+	typedef StaticFrame<ADLSearchFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -30,7 +33,6 @@ public:
 	};
 
 protected:
-	typedef StaticFrame<ADLSearchFrame> BaseType;
 	friend class StaticFrame<ADLSearchFrame>;
 	friend class MDIChildFrame<ADLSearchFrame>;
 

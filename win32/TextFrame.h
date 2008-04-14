@@ -23,6 +23,7 @@
 
 class TextFrame : public MDIChildFrame<TextFrame>
 {
+	typedef MDIChildFrame<TextFrame> BaseType;
 public:
 	TextFrame(dwt::TabView* mdiParent, const string& fileName);
 	enum Status {
@@ -31,7 +32,6 @@ public:
 	};
 	
 private:
-	typedef MDIChildFrame<TextFrame> BaseType;
 	friend class MDIChildFrame<TextFrame>;
 
 	TextBoxPtr pad;

@@ -53,7 +53,9 @@ class CheckBox :
 	// Aspect classes
 	public Button
 {
+	typedef Button BaseType;
 	friend class WidgetCreator< CheckBox >;
+	
 public:
 	/// Class type
 	typedef CheckBox ThisType;
@@ -61,8 +63,6 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 	
-	typedef Button BaseType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget

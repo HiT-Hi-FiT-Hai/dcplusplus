@@ -59,6 +59,7 @@ class Button :
 	public AspectPainting< Button >,
 	public AspectText< Button >
 {
+	typedef CommonControl BaseType;
 	friend class AspectClickable<Button>;
 	friend class AspectDblClickable<Button>;
 	friend class WidgetCreator<Button>;
@@ -68,8 +69,6 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
-
-	typedef CommonControl BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

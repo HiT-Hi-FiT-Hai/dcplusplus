@@ -73,6 +73,7 @@ class CoolBar :
 	private AspectSizable< CoolBar >,
 	public AspectVisible< CoolBar >
 {
+	typedef MessageMap<Policies::Subclassed> BaseType;
 	typedef dwt::AspectSizable< CoolBar > AspectSizable;
 	friend class WidgetCreator< CoolBar >;
 public:
@@ -95,8 +96,6 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 	
-	typedef MessageMap<Policies::Subclassed> BaseType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget

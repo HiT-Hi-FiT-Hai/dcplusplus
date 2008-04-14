@@ -43,14 +43,13 @@ namespace dwt {
 class Container :
 	public Composite<Policies::Normal>
 {
+	typedef Composite<Policies::Normal> BaseType;
 	friend class WidgetCreator<Container>;
 public:
 	typedef Container ThisType;
 	
 	typedef ThisType* ObjectType;
 	
-	typedef Composite<Policies::Normal> BaseType;
-
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;
 		

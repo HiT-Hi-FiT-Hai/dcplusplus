@@ -64,6 +64,7 @@ class ModalDialog :
 	public Frame< Policies::ModalDialog >,
 	public AspectDialog<ModalDialog >
 {
+	typedef Frame< Policies::ModalDialog > BaseType;
 	struct Dispatcher
 	{
 		typedef std::tr1::function<bool ()> F;
@@ -79,7 +80,6 @@ class ModalDialog :
 	};
 
 public:
-	typedef Frame< Policies::ModalDialog > BaseType;
 	
 	/// Class type
 	typedef ModalDialog ThisType;

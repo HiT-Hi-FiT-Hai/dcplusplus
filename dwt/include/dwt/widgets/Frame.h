@@ -73,14 +73,13 @@ class Frame :
 	public Composite< Policy >,
 	public AspectMinMax<Frame<Policy> >
 {
+	typedef Composite< Policy > BaseType;
 public:
 	/// Class type
 	typedef Frame< Policy > ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
-	
-	typedef Composite< Policy > BaseType;
 	
 #ifndef WINCE
 	/// Animates a window

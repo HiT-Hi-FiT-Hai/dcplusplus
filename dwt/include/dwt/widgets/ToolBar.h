@@ -64,6 +64,7 @@ class ToolBar :
 	public AspectFocus< ToolBar >,
 	public AspectFont< ToolBar >
 {
+	typedef CommonControl BaseType;
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 	friend class WidgetCreator< ToolBar >;
 public:
@@ -72,8 +73,6 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
-
-	typedef CommonControl BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

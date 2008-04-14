@@ -35,6 +35,7 @@ class SearchFrame :
 	public AspectUserInfo<SearchFrame>,
 	public AspectUserCommand<SearchFrame>
 {
+	typedef MDIChildFrame<SearchFrame> BaseType;
 public:
 	enum Status {
 		STATUS_SHOW_UI,
@@ -48,7 +49,6 @@ public:
 	static void closeAll();
 
 private:
-	typedef MDIChildFrame<SearchFrame> BaseType;
 	friend class MDIChildFrame<SearchFrame>;
 	friend class AspectUserInfo<SearchFrame>;
 	friend class AspectUserCommand<SearchFrame>;

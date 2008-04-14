@@ -113,6 +113,7 @@ class StatusBar :
 	public AspectFont< StatusBar< TypeOfStatusBar > >,
 	public AspectPainting< StatusBar< TypeOfStatusBar > >
 {
+	typedef CommonControl BaseType;
 	friend class WidgetCreator< StatusBar >;
 	friend class AspectClickable< StatusBar< TypeOfStatusBar > >;
 	friend class AspectDblClickable< StatusBar< TypeOfStatusBar > >;
@@ -122,8 +123,6 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
-
-	typedef CommonControl BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

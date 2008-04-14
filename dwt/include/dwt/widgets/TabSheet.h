@@ -72,6 +72,7 @@ class TabSheet :
 	public AspectSelection< TabSheet, int >,
 	public AspectText< TabSheet >
 {
+	typedef CommonControl BaseType;
 	friend class AspectCollection<TabSheet, int>;
 	friend class AspectSelection<TabSheet, int>;
 	friend class WidgetCreator< TabSheet >;
@@ -99,8 +100,6 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
-
-	typedef CommonControl BaseType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

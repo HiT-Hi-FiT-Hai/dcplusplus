@@ -24,7 +24,6 @@
 template<class ContentType, bool managed = true>
 class TypedTable : public dwt::Table
 {
-private:
 	typedef typename dwt::Table BaseType;
 	typedef TypedTable<ContentType, managed> ThisType;
 	

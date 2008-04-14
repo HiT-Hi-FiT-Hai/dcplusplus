@@ -33,6 +33,7 @@ class UsersFrame :
 	private FavoriteManagerListener,
 	public AspectUserInfo<UsersFrame>
 {
+	typedef StaticFrame<UsersFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -40,7 +41,6 @@ public:
 	};
 
 protected:
-	typedef StaticFrame<UsersFrame> BaseType;
 	friend class StaticFrame<UsersFrame>;
 	friend class MDIChildFrame<UsersFrame>;
 	friend class AspectUserInfo<UsersFrame>;

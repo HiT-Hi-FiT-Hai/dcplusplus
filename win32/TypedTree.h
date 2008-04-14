@@ -24,7 +24,6 @@
 template<class ContentType>
 class TypedTree : public dwt::Tree
 {
-private:
 	typedef typename dwt::Tree BaseType;
 	typedef TypedTree<ContentType> ThisType;
 	
