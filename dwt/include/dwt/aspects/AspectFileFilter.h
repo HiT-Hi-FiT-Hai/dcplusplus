@@ -52,6 +52,8 @@ namespace dwt {
 template<typename WidgetType>
 class AspectFileFilter
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+
 public:
 	/// Adds a filter to the object.
 	/** filterName is the friendly name of the filter, normally this would be e.g.
@@ -64,7 +66,7 @@ public:
 		itsFilter.push_back( '\0' );
 		itsFilter.insert( itsFilter.end(), filter.begin(), filter.end() );
 		itsFilter.push_back( '\0' );
-		return *static_cast<WidgetType*>(this);
+		return W();
 	}
 
 	/// Sets the active filter to the specified index
@@ -79,12 +81,12 @@ public:
 			throw x;
 		}
 		itsActiveFilter = filterNo;
-		return *static_cast<WidgetType*>(this);
+		return W();
 	}
 	
 	WidgetType& setDefaultExtension(const tstring& defExt) {
 		itsDefExt = defExt;
-		return *static_cast<WidgetType*>(this);
+		return W();
 	}
 
 	/// Returns the active filter of the object
@@ -101,42 +103,52 @@ public:
 	  */
 	WidgetType& setInitialDirectory( const tstring& initialDir ) {
 		itsInitialDir = initialDir;
-		return *static_cast<WidgetType*>(this);
+		return W();
+	}
+
+	bool open(tstring& file, unsigned flags = 0) {
+		// get the current directory and restore it later to avoid directory locks
+		TCHAR buf[MAX_PATH];
+		::GetCurrentDirectory(MAX_PATH, buf);
+
+		OPENFILENAME ofn = { 0 };
+		getOFN(ofn);
+		ofn.lpstrFile = const_cast<LPTSTR>(file.c_str());
+		ofn.Flags = flags;
+
+		bool ret = W().openImpl(ofn);
+		if(ret)
+			file = ofn.lpstrFile;
+
+		::SetCurrentDirectory(buf);
+		return ret;
 	}
 
 protected:
-	Widget* itsParent;
-
-	static const int PATH_BUFFER_SIZE = 32768;
-
-	TCHAR szFile[PATH_BUFFER_SIZE];
-	
-	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
-
 	AspectFileFilter(Widget* parent)
 		: itsParent(parent), itsActiveFilter( 0 )
 	{}
 
-	// Fills out the common members of the OPENFILENAME struct.
-	// This is called for both LoadDialog and for SaveDialog Widgets
-	void fillOFN( OPENFILENAME & ofn, int flags ) {
-		ofn.hwndOwner = getParentHandle();
-
-		ofn.nMaxFile = PATH_BUFFER_SIZE;
-		ofn.lpstrFile = szFile;
-		ofn.lpstrDefExt = ifNotEmpty(itsDefExt);
-		ofn.lpstrInitialDir = ifNotEmpty(itsInitialDir);
+	void getOFN(OPENFILENAME& ofn) {
+		ofn.lStructSize = sizeof(OPENFILENAME);
+		ofn.hwndOwner = itsParent ? itsParent->handle() : NULL;
 		ofn.lpstrFilter = ifNotEmpty(itsFilter);
 		ofn.nFilterIndex = this->getActiveFilter();
-		ofn.Flags = flags;
+		ofn.nMaxFile = PATH_BUFFER_SIZE;
+		ofn.lpstrInitialDir = ifNotEmpty(itsInitialDir);
+		ofn.lpstrDefExt = ifNotEmpty(itsDefExt);
 	}
 
 private:
+	static const int PATH_BUFFER_SIZE = 32768;
+
+	Widget* itsParent;
+
 	unsigned int itsActiveFilter;
 	tstring itsInitialDir;
 	tstring itsFilter;
 	tstring itsDefExt;
-	
+
 	static const TCHAR* ifNotEmpty(const tstring& str) {
 		return str.empty() ? NULL : str.c_str();
 	}

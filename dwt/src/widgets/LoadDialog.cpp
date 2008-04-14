@@ -33,22 +33,23 @@
 
 namespace dwt {
 
-bool LoadDialog::open(tstring& file)
-{
-	OPENFILENAME ofn = { sizeof(OPENFILENAME) }; // common dialog box structure
-	fillOFN( ofn, OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY );
-
-	if ( ::GetOpenFileName( & ofn ) ) {
-		file = ofn.lpstrFile;
-		return true;
-	}
-	return false;
+bool LoadDialog::openImpl(OPENFILENAME& ofn) {
+	ofn.Flags |= OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
+	return ::GetOpenFileName(&ofn);
 }
 
-bool LoadDialog::open(std::vector<tstring>& files) 
+bool LoadDialog::openMultiple(std::vector<tstring>& files, unsigned flags) 
 { 
-	OPENFILENAME ofn = { sizeof(OPENFILENAME) }; // common dialog box structure
-	fillOFN( ofn, OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT ); 
+	// get the current directory and restore it later to avoid directory locks
+	TCHAR buf[MAX_PATH];
+	::GetCurrentDirectory(MAX_PATH, buf);
+
+	OPENFILENAME ofn;
+	getOFN(ofn);
+	ofn.lpstrFile = files.empty() ? 0 : const_cast<LPTSTR>(files[0].c_str());
+	ofn.Flags = flags | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT;
+
+	bool ret = false;
 	if( ::GetOpenFileName(&ofn) ) 
 	{  
 		// If a single file is selected, the lpstrFile string is just the path terminated by TWO null bytes 
@@ -74,9 +75,11 @@ bool LoadDialog::open(std::vector<tstring>& files)
 				fileName = array_p; // fileName is substring from array_p to next null  
 			} 
 		}  
-		return true;
-	} 
-	return false; 
+		ret = true;
+	}
+
+	::SetCurrentDirectory(buf);
+	return ret;
 } 
 
 }

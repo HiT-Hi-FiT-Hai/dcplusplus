@@ -53,6 +53,9 @@ namespace dwt {
 class LoadDialog
 	: public AspectFileFilter<LoadDialog>
 {
+	typedef AspectFileFilter<LoadDialog> BaseType;
+	friend class AspectFileFilter<LoadDialog>;
+
 public:
 	/// Class type
 	typedef LoadDialog ThisType;
@@ -63,16 +66,6 @@ public:
 	typedef ThisType ObjectType;
 
 	/// Shows the dialog
-	/** Returns string() or "empty string" if user press cancel. <br>
-	  * Returns a "file path" if user presses ok. <br>
-	  * Use the inherited functions AspectFileFilter::addFilter and
-	  * AspectFileFilter::activeFilter <br>
-	  * before calling this function, if you wish the dialog to show only certain
-	  * types of files.
-	  */
-	bool open(tstring& file);
-
-	/// Shows the dialog
 	/** Returns an empty vector if user press cancel. <br>
 	  * Returns a vector of "file paths" if user presses ok. <br>
 	  * Use the inherited functions AspectFileFilter::addFilter and
@@ -80,13 +73,14 @@ public:
 	  * before calling this function, if you wish the dialog to show only certain
 	  * types of files.
 	  */
-	bool open(std::vector<tstring>& files);
+	bool openMultiple(std::vector<tstring>& files, unsigned flags = 0);
 
 	// Constructor Taking pointer to parent
 	explicit LoadDialog( Widget * parent = 0 );
 
-	~LoadDialog() { }
 private:
+	// AspectFileFilter
+	bool openImpl(OPENFILENAME& ofn);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +88,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 inline LoadDialog::LoadDialog( Widget * parent )
-	: AspectFileFilter<LoadDialog>( parent )
+	: BaseType( parent )
 {}
 
 }

@@ -37,7 +37,6 @@
 #define DWT_SaveDialog_h
 
 #include "../Widget.h"
-#include "../tstring.h"
 #include "../aspects/AspectFileFilter.h"
 
 namespace dwt {
@@ -52,6 +51,9 @@ namespace dwt {
 class SaveDialog
 	: public AspectFileFilter<SaveDialog>
 {
+	typedef AspectFileFilter<SaveDialog> BaseType;
+	friend class AspectFileFilter<SaveDialog>;
+
 public:
 	/// Class type
 	typedef SaveDialog ThisType;
@@ -61,19 +63,12 @@ public:
 	  */
 	typedef ThisType ObjectType;
 
-	/// Shows the dialog
-	/** Returns string() or "empty string" if user press cancel. <br>
-	  * Returns a "file path" if user presses ok.
-	  */
-	bool open(tstring& target);
-
 	/// Constructor Taking pointer to parent
 	explicit SaveDialog( Widget * parent = 0 );
 
-	virtual ~SaveDialog()
-	{}
-
 private:
+	// AspectFileFilter
+	bool openImpl(OPENFILENAME& ofn);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +76,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 inline SaveDialog::SaveDialog( Widget * parent )
-	: AspectFileFilter<SaveDialog>( parent )
+	: BaseType( parent )
 {
 }
 

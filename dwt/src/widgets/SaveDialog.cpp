@@ -33,15 +33,8 @@
 
 namespace dwt {
 
-bool SaveDialog::open(tstring& target) {
-	OPENFILENAME ofn = { sizeof(OPENFILENAME) }; // common dialog box structure
-	fillOFN( ofn, 0 );
-
-	if ( ::GetSaveFileName( & ofn ) ) {
-		target = ofn.lpstrFile;
-		return true;
-	}
-	return false;
+bool SaveDialog::openImpl(OPENFILENAME& ofn) {
+	return ::GetSaveFileName(&ofn);
 }
 
 }
