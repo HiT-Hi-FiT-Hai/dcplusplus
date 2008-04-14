@@ -71,26 +71,25 @@ TransferView::TransferView(dwt::Widget* parent, dwt::TabView* mdi_) :
 	create();
 	
 	{
-		TabSheet::Seed tcs;
-		tcs.style |= TCS_HOTTRACK | TCS_RAGGEDRIGHT | TCS_FOCUSNEVER;
-		tabs = addChild(tcs);
-		tabs->onSelectionChanged(std::tr1::bind(&TransferView::handleTabSelected, this));
-	}
-	
+		TabView::Seed cs;
+		cs.location = getBounds();
+		tabs = addChild(cs);
+	}		
+
 	{
 		Container::Seed cs;
 		cs.caption = T_("Connections");
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
-		cs.location = tabs->getUsableArea(true);
+		cs.location = tabs->getClientSize();
 		connectionsWindow = dwt::WidgetCreator<Container>::create(tabs, cs);
 		connectionsWindow->setHelpId(IDH_CONNECTIONS);
-		tabs->addPage(T_("Connections"), 0);
+		tabs->add(connectionsWindow, dwt::IconPtr());
 
 		cs.style &= ~WS_VISIBLE;
 		cs.caption = T_("Downloads");
 		downloadsWindow = dwt::WidgetCreator<Container>::create(tabs, cs);
 		downloadsWindow->setHelpId(IDH_DOWNLOADS);
-		tabs->addPage(T_("Downloads"), 1);
+		tabs->add(downloadsWindow, dwt::IconPtr());
 	}
 	
 	{
@@ -142,29 +141,13 @@ TransferView::~TransferView() {
 
 }
 
-void TransferView::handleTabSelected() {
-	int i = tabs->getSelected();
-	
-	if(i == 0) {
-		::ShowWindow(downloadsWindow->handle(), SW_HIDE);
-		::ShowWindow(connectionsWindow->handle(), SW_SHOW);
-	} else {
-		::ShowWindow(connectionsWindow->handle(), SW_HIDE);
-		::ShowWindow(downloadsWindow->handle(), SW_SHOW);
-	}
-}
-
 void TransferView::handleSized(const dwt::SizedEvent& sz) {
 	layout();
 }
 
 void TransferView::layout() {
 	tabs->setBounds(dwt::Point(0,0), getClientAreaSize());
-	dwt::Rectangle rect = tabs->getUsableArea(true);
-
-	connectionsWindow->setBounds(rect);
 	connections->setBounds(dwt::Rectangle(connectionsWindow->getClientAreaSize()));
-	downloadsWindow->setBounds(rect);
 	downloads->setBounds(dwt::Rectangle(downloadsWindow->getClientAreaSize()));
 }
 

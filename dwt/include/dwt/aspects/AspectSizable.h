@@ -70,8 +70,8 @@ class AspectSizable
 
 	HWND H() const { return W().handle(); }
 
-	typedef Dispatchers::ConvertBase<SizedEvent> SizeDispatcher;
-	typedef Dispatchers::ConvertBase<Point, &Point::fromMSG> MoveDispatcher;
+	typedef Dispatchers::ConvertBase<SizedEvent, &Dispatchers::convert<SizedEvent>, false>  SizeDispatcher;
+	typedef Dispatchers::ConvertBase<Point, &Point::fromMSG, false> MoveDispatcher;
 
 public:
 	/// Sets the new size and position of the window

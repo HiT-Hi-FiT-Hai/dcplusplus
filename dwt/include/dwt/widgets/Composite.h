@@ -101,8 +101,8 @@ public:
 	typedef dwt::StatusBarPtr StatusBarPtr;
 	typedef dwt::Table Table;
 	typedef dwt::TablePtr TablePtr;
-	typedef dwt::TabSheet TabSheet;
-	typedef dwt::TabSheetPtr TabSheetPtr;
+	typedef dwt::TabView TabView;
+	typedef dwt::TabViewPtr TabViewPtr;
 	typedef dwt::TextBox TextBox;
 	typedef dwt::TextBoxPtr TextBoxPtr;
 	typedef dwt::ToolBar ToolBar;

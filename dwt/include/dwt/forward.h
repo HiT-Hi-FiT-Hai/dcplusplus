@@ -98,9 +98,6 @@ typedef StatusBar* StatusBarPtr;
 class Table;
 typedef Table* TablePtr;
 
-class TabSheet;
-typedef TabSheet* TabSheetPtr;
-
 class TabView;
 typedef TabView* TabViewPtr;
 

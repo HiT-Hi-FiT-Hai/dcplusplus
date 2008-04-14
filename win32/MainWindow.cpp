@@ -756,7 +756,7 @@ DWORD WINAPI MainWindow::stopper(void* p) {
 	MainWindow* mf = reinterpret_cast<MainWindow*>(p);
 	HWND wnd, wnd2 = NULL;
 
-	while( (wnd=::GetWindow(mf->getTabView()->getTab()->handle(), GW_CHILD)) != NULL) {
+	while( (wnd=::GetWindow(mf->getTabView()->handle(), GW_CHILD)) != NULL) {
 		if(wnd == wnd2) {
 			::Sleep(100);
 		} else {

@@ -32,11 +32,17 @@
 #ifndef DWT_WIDGETTABVIEW_H_
 #define DWT_WIDGETTABVIEW_H_
 
+#include "../resources/ImageList.h"
+#include "../Rectangle.h"
+#include "../aspects/AspectCollection.h"
+#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectFont.h"
+#include "../aspects/AspectPainting.h"
+#include "../aspects/AspectSelection.h"
+#include "../aspects/AspectText.h"
 #include "../WindowClass.h"
-#include "../Policies.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectMouse.h"
+#include "Control.h"
+
 #include <list>
 #include <vector>
 
@@ -45,12 +51,19 @@ namespace dwt {
  * A container that keeps widgets in tabs and handles switching etc
  */
 class TabView :
-	public MessageMap< Policies::Normal >,
-
-	public AspectRaw<TabView>,
-	public AspectSizable<TabView>
+	public CommonControl,
+	// Aspects
+	private AspectCollection<TabView, int>,
+	public AspectFocus< TabView >,
+	public AspectFont< TabView >,
+	public AspectPainting< TabView >,
+	public AspectSelection< TabView, int >,
+	public AspectText< TabView >
 {
-	typedef MessageMap<Policies::Normal> BaseType;
+	typedef CommonControl BaseType;
+	friend class AspectCollection<TabView, int>;
+	friend class AspectSelection<TabView, int>;
+	friend class WidgetCreator< TabView >;
 	typedef std::tr1::function<void (const tstring&)> TitleChangedFunction;
 	typedef std::tr1::function<void (HWND, unsigned)> HelpFunction;
 	typedef std::tr1::function<bool (const ScreenCoordinate&)> ContextMenuFunction;
@@ -64,6 +77,8 @@ public:
 	
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;
+
+		FontPtr font;
 
 		bool toggleActive;
 
@@ -96,15 +111,11 @@ public:
 
 	bool filter(const MSG& msg);
 	
-	TabSheetPtr getTab();
-
 	const Rectangle& getClientSize() const { return clientSize; }
 	
 	void create( const Seed & cs = Seed() );
 
 protected:
-	friend class WidgetCreator<TabView>;
-	
 	explicit TabView(Widget* parent);
 	
 	virtual ~TabView() { }
@@ -120,7 +131,6 @@ private:
 	
 	static WindowClass windowClass;
 	
-	TabSheetPtr tab;
 	ToolTipPtr tip;
 
 	TitleChangedFunction titleChangedFunction;
@@ -134,6 +144,7 @@ private:
 	typedef WindowList::iterator WindowIter;
 	WindowList viewOrder;
 	Rectangle clientSize;
+	ImageListPtr imageList;
 	std::vector<IconPtr> icons;
 	int active;
 	ContainerPtr dragging;
@@ -162,11 +173,58 @@ private:
 	
 	int addIcon(const IconPtr& icon);
 	void swapWidgets(ContainerPtr oldW, ContainerPtr newW);
+	
+	tstring getText(unsigned idx) const;
+	
+	void setText(unsigned idx, const tstring& text);
+
+	// AspectCollection
+	void eraseImpl( int row );
+	void clearImpl();
+	size_t sizeImpl() const;
+	
+	// AspectSelection
+	int getSelectedImpl() const;
+	void setSelectedImpl( int idx );
+	// AspectSelection expectation implementation
+	static Message getSelectionChangedMessage();
+
+	const ImageListPtr& getImageList() const;
+	
+	int hitTest(const ScreenCoordinate& pt);
+	
+	/// Get the area not used by the tabs
+	/** This function should be used after adding the pages, so that the area not used by
+	  * the tabs can be calculated accurately. It returns coordinates respect to the
+	  * TabControl, this is, you have to adjust for the position of the control itself.   
+	  */
+	Rectangle getUsableArea(bool cutBorders = false) const;
+
 };
 
-inline TabSheetPtr TabView::getTab() {
-	return tab;
+inline Message TabView::getSelectionChangedMessage() {
+	return Message( WM_NOTIFY, TCN_SELCHANGE );
 }
 
+inline void TabView::eraseImpl(int i) {
+	TabCtrl_DeleteItem(this->handle(), i);
+}
+
+inline void TabView::clearImpl() {
+	TabCtrl_DeleteAllItems(handle());
+}
+
+inline size_t TabView::sizeImpl() const {
+	return static_cast<size_t>(TabCtrl_GetItemCount(this->handle()));
+}
+
+inline void TabView::setSelectedImpl( int idx ) {
+	TabCtrl_SetCurSel( this->handle(), idx );
+}
+
+inline int TabView::getSelectedImpl() const {
+	return TabCtrl_GetCurSel( this->handle() );
+}
+	
 }
 #endif /*WIDGETTABVIEW_H_*/

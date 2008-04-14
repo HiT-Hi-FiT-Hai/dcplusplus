@@ -33,7 +33,6 @@
 
 #include <dwt/widgets/Container.h>
 #include <dwt/widgets/ToolTip.h>
-#include <dwt/widgets/TabSheet.h>
 #include <dwt/WidgetCreator.h>
 #include <dwt/util/StringUtils.h>
 
@@ -42,14 +41,68 @@ namespace dwt {
 WindowClass TabView::windowClass(_T("TabView"), &TabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
 
 TabView::Seed::Seed(bool toggleActive_) :
-	BaseType::Seed(windowClass.getClassName(), WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE),
+	BaseType::Seed(WC_TABCONTROL, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE |
+		 TCS_HOTTRACK | TCS_MULTILINE | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER),
+	font(new Font(DefaultGuiFont)),
 	toggleActive(toggleActive_)
 {
+	// Flicker bugfix, as described in SWT:
+	/*
+	* Feature in Windows.  The tab control window class
+	* uses the CS_HREDRAW and CS_VREDRAW style bits to
+	* force a full redraw of the control and all children
+	* when resized.  This causes flashing.  The fix is to
+	* register a new window class without these bits and
+	* implement special code that damages only the exposed
+	* area.
+	* 
+	* NOTE:  Screen readers look for the exact class name
+	* of the control in order to provide the correct kind
+	* of assistance.  Therefore, it is critical that the
+	* new window class have the same name.  It is possible
+	* to register a local window class with the same name
+	* as a global class.  Since bits that affect the class
+	* are being changed, it is possible that other native
+	* code, other than SWT, could create a control with
+	* this class name, and fail unexpectedly.
+	*/
+
+	static bool first = true;
+	if(first) {
+		// From SWT:
+		/*
+		* Feature in Windows.  The tab control window class
+		* uses the CS_HREDRAW and CS_VREDRAW style bits to
+		* force a full redraw of the control and all children
+		* when resized.  This causes flashing.  The fix is to
+		* register a new window class without these bits and
+		* implement special code that damages only the exposed
+		* area.
+		* 
+		* NOTE:  Screen readers look for the exact class name
+		* of the control in order to provide the correct kind
+		* of assistance.  Therefore, it is critical that the
+		* new window class have the same name.  It is possible
+		* to register a local window class with the same name
+		* as a global class.  Since bits that affect the class
+		* are being changed, it is possible that other native
+		* code, other than SWT, could create a control with
+		* this class name, and fail unexpectedly.
+		*/
+		WNDCLASSEX cls = { sizeof(WNDCLASSEX) };
+		::GetClassInfoEx(NULL, WC_TABCONTROL, &cls);
+		
+		cls.lpszClassName = WC_TABCONTROL;
+		cls.hInstance = ::GetModuleHandle(NULL);
+		cls.style &= ~(CS_HREDRAW | CS_VREDRAW | CS_GLOBALCLASS);
+		
+		::RegisterClassEx(&cls);
+		first = false;
+	}
 }
 
 TabView::TabView(Widget* w) :
 	BaseType(w),
-	tab(0),
 	tip(0),
 	toggleActive(false),
 	inTab(false),
@@ -61,31 +114,49 @@ void TabView::create(const Seed & cs) {
 	PolicyType::create(cs);
 	toggleActive = cs.toggleActive;
 
-	TabSheet::Seed tcs;
-	tcs.style = WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE |
-		 TCS_HOTTRACK | TCS_MULTILINE | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER;
-	tab = WidgetCreator<TabSheet>::create(this, tcs);
-	tab->setImageList(ImageListPtr(new ImageList(16, 16, ILC_COLOR32 | ILC_MASK)));
-	tab->onSelectionChanged(std::tr1::bind(&TabView::handleTabSelected, this));
-	onSized(std::tr1::bind(&TabView::handleSized, this, _1));
-	tab->onLeftMouseDown(std::tr1::bind(&TabView::handleLeftMouseDown, this, _1));
-	tab->onLeftMouseUp(std::tr1::bind(&TabView::handleLeftMouseUp, this, _1));
-	tab->onContextMenu(std::tr1::bind(&TabView::handleContextMenu, this, _1));
-	tab->onMiddleMouseDown(std::tr1::bind(&TabView::handleMiddleMouseDown, this, _1));
-	tab->onHelp(std::tr1::bind(&TabView::handleHelp, this, _1, _2));
+	if(cs.font)
+		setFont( cs.font );
 
-	tip = WidgetCreator<ToolTip>::attach(this, tab->getToolTips()); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
-	if(tip) {
-		tip->addRemoveStyle(TTS_NOPREFIX, true);
-		tip->onRaw(std::tr1::bind(&TabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
-	}
+	imageList = new ImageList(16, 16, ILC_COLOR32 | ILC_MASK);
+	
+	TabCtrl_SetImageList(handle(), imageList->handle());
+
+	onSelectionChanged(std::tr1::bind(&TabView::handleTabSelected, this));
+	onLeftMouseDown(std::tr1::bind(&TabView::handleLeftMouseDown, this, _1));
+	onLeftMouseUp(std::tr1::bind(&TabView::handleLeftMouseUp, this, _1));
+	onContextMenu(std::tr1::bind(&TabView::handleContextMenu, this, _1));
+	onMiddleMouseDown(std::tr1::bind(&TabView::handleMiddleMouseDown, this, _1));
+	onHelp(std::tr1::bind(&TabView::handleHelp, this, _1, _2));
+
+	onSized(std::tr1::bind(&TabView::handleSized, this, _1));
+
+	tip = WidgetCreator<ToolTip>::attach(this, TabCtrl_GetToolTips(handle())); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
+	tip->addRemoveStyle(TTS_NOPREFIX, true);
+	tip->onRaw(std::tr1::bind(&TabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
 }
 
 void TabView::add(Container* w, const IconPtr& icon) {
 	int image = addIcon(icon);
-	size_t tabs = tab->size();
+	size_t tabs = size();
 	TabInfo* ti = new TabInfo(w);
-	tab->addPage(formatTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(ti), image);
+	tstring title = formatTitle(w->getText());
+	
+	TCITEM item = { 0 };
+	item.mask = TCIF_TEXT | TCIF_PARAM;
+	item.pszText = const_cast < TCHAR * >( title.c_str() );
+	item.lParam = reinterpret_cast<LPARAM>(ti);
+
+	if(image != -1) {
+		item.mask |= TCIF_IMAGE;
+		item.iImage = image;
+	}
+	
+	int newIdx = TabCtrl_InsertItem( handle(), tabs, &item );
+	if ( newIdx == - 1 )
+	{
+		xCeption x( _T( "Error while trying to add page into Tab Sheet" ) );
+		throw x;
+	}
 
 	viewOrder.push_front(w);
 
@@ -104,7 +175,7 @@ void TabView::add(Container* w, const IconPtr& icon) {
 }
 
 Container* TabView::getActive() {
-	TabInfo* ti = getTabInfo(tab->getSelected());
+	TabInfo* ti = getTabInfo(getSelected());
 	return ti ? ti->w : 0;
 }
 
@@ -113,7 +184,7 @@ void TabView::remove(Container* w) {
 		setActive(*(--(--viewOrder.end())));
 	}
 	
-	Container* cur = getTabInfo(tab->getSelected())->w;
+	Container* cur = getTabInfo(getSelected())->w;
 	
 	viewOrder.remove(w);
 
@@ -123,7 +194,7 @@ void TabView::remove(Container* w) {
 	int i = findTab(w);
 	if(i != -1) {
 		delete getTabInfo(i);
-		tab->erase(i);
+		erase(i);
 		layout();
 	}
 	active = findTab(cur);
@@ -136,7 +207,7 @@ void TabView::remove(Container* w) {
 tstring TabView::getTabText(Container* w) {
 	int i = findTab(w);
 	if(i != -1)
-		return tab->getText(i);
+		return getText(i);
 	return tstring();
 }
 
@@ -151,7 +222,7 @@ void TabView::setActive(int i) {
 	if(i == -1)
 		return;
 
-	tab->setSelected(i);
+	setSelected(i);
 	handleTabSelected();
 }
 
@@ -172,7 +243,7 @@ void TabView::swapWidgets(Container* oldW, Container* newW) {
 }
 
 void TabView::handleTabSelected() {
-	int i = tab->getSelected();
+	int i = getSelected();
 	if(i == active) {
 		return;
 	}
@@ -189,7 +260,8 @@ void TabView::handleTabSelected() {
 	if(!inTab)
 		setTop(ti->w);
 	active = i;
-	tab->setHighlight(i, false);
+	
+	TabCtrl_HighlightItem(handle(), i, FALSE);
 
 	if(titleChangedFunction)
 		titleChangedFunction(ti->w->getText());
@@ -197,13 +269,13 @@ void TabView::handleTabSelected() {
 
 void TabView::mark(Container* w) {
 	int i = findTab(w);
-	if(i != -1 && i != tab->getSelected()) {
-		tab->setHighlight(i, true);
+	if(i != -1 && i != getSelected()) {
+		TabCtrl_HighlightItem(handle(), i, TRUE);
 	}
 }
 
 int TabView::findTab(Container* w) {
-	for(size_t i = 0; i < tab->size(); ++i) {
+	for(size_t i = 0; i < size(); ++i) {
 		if(getTabInfo(i)->w == w) {
 			return static_cast<int>(i);
 		}
@@ -216,13 +288,18 @@ TabView::TabInfo* TabView::getTabInfo(Container* w) {
 }
 
 TabView::TabInfo* TabView::getTabInfo(int i) {
-	return i == -1 ? 0 : reinterpret_cast<TabInfo*>(tab->getData(i));
+	if(i != -1) {
+		TCITEM item = { TCIF_PARAM };
+		TabCtrl_GetItem(handle(), i, &item);
+		return reinterpret_cast<TabInfo*>(item.lParam);
+	}
+	return 0;
 }
 
 bool TabView::handleTextChanging(Container* w, const tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
-		tab->setText(i, formatTitle(newText));
+		setText(i, formatTitle(newText));
 		layout();
 
 		if((i == active) && titleChangedFunction)
@@ -238,14 +315,15 @@ tstring TabView::formatTitle(tstring title) {
 }
 
 void TabView::handleSized(const SizedEvent& sz) {
-	tab->setBounds(Rectangle(sz.size));
+	// TODO the tab control itself has not seen the message yet so getUsableArea will return an invalid size if
+	// the number of rows changes for a multirow tab
 	layout();
 }
 
 void TabView::layout() {
-	Rectangle tmp = tab->getUsableArea(true);
+	Rectangle tmp = getUsableArea(true);
 	if(!(tmp == clientSize)) {
-		int i = tab->getSelected();
+		int i = getSelected();
 		if(i != -1) {
 			getTabInfo(i)->w->setBounds(tmp);
 		}
@@ -312,7 +390,7 @@ int TabView::addIcon(const IconPtr& icon) {
 		if(image == -1) {
 			image = icons.size();
 			icons.push_back(icon);
-			tab->getImageList()->add(*icon);
+			getImageList()->add(*icon);
 		}
 	}
 	return image;
@@ -329,13 +407,13 @@ LRESULT TabView::handleToolTip(LPARAM lParam) {
 }
 
 void TabView::handleLeftMouseDown(const MouseEvent& mouseEventResult) {
-	TabInfo* ti = getTabInfo(tab->hitTest(mouseEventResult.pos));
+	TabInfo* ti = getTabInfo(hitTest(mouseEventResult.pos));
 	if(ti) {
 		if(mouseEventResult.isShiftPressed)
 			ti->w->close();
 		else {
 			dragging = ti->w;
-			::SetCapture(tab->handle());
+			::SetCapture(handle());
 		}
 	}
 }
@@ -350,11 +428,11 @@ void TabView::handleLeftMouseUp(const MouseEvent& mouseEventResult) {
 		if(dragPos == -1)
 			return;
 
-		int dropPos = tab->hitTest(mouseEventResult.pos);
+		int dropPos = hitTest(mouseEventResult.pos);
 
 		if(dropPos == -1) {
 			// not in the tab control; move the tab to the end
-			dropPos = tab->size() - 1;
+			dropPos = size() - 1;
 		}
 
 		if(dropPos == dragPos) {
@@ -368,14 +446,18 @@ void TabView::handleLeftMouseUp(const MouseEvent& mouseEventResult) {
 		}
 
 		// save some information about the tab before we erase it
-		TabInfo* ti = getTabInfo(dragPos);
-		int image = tab->getImage(dragPos);
+		TCITEM item = { TCIF_TEXT | TCIF_PARAM | TCIF_IMAGE };
+		TCHAR buf[1024] = { 0 };
+		item.pszText = buf;
+		item.cchTextMax = (sizeof(buf) / sizeof(TCHAR)) - 1;
+		
+		TabCtrl_GetItem( this->handle(), dragPos, & item );
 
-		tab->erase(dragPos);
+		erase(dragPos);
 
-		tab->addPage(formatTitle(ti->w->getText()), dropPos, reinterpret_cast<LPARAM>(ti), image);
+		TabCtrl_InsertItem(handle(), dropPos, &item);
 
-		active = tab->getSelected();
+		active = getSelected();
 
 		layout();
 	}
@@ -384,16 +466,16 @@ void TabView::handleLeftMouseUp(const MouseEvent& mouseEventResult) {
 bool TabView::handleContextMenu(ScreenCoordinate pt) {
 	TabInfo* ti = 0;
 	if(pt.x() == -1 && pt.y() == -1) {
-		int i = tab->getSelected();
+		int i = getSelected();
 		
 		RECT rc;
-		if(i == -1 || !TabCtrl_GetItemRect(tab->handle(), i, &rc)) {
+		if(i == -1 || !TabCtrl_GetItemRect(handle(), i, &rc)) {
 			return false;
 		}
 		pt = ScreenCoordinate(Point(rc.left, rc.top));
 		ti = getTabInfo(i);
 	} else {
-		int i = tab->hitTest(pt);
+		int i = hitTest(pt);
 		if(i == -1) {
 			return false;
 		}
@@ -408,7 +490,7 @@ bool TabView::handleContextMenu(ScreenCoordinate pt) {
 }
 
 void TabView::handleMiddleMouseDown(const MouseEvent& mouseEventResult) {
-	TabInfo* ti = getTabInfo(tab->hitTest(mouseEventResult.pos));
+	TabInfo* ti = getTabInfo(hitTest(mouseEventResult.pos));
 	if(ti)
 		ti->w->close();
 }
@@ -416,7 +498,7 @@ void TabView::handleMiddleMouseDown(const MouseEvent& mouseEventResult) {
 void TabView::handleHelp(HWND hWnd, unsigned id) {
 	if(helpFunction) {
 		// hWnd and id are those of the whole tab control; not those of the specific tab on which the user wants help for
-		TabInfo* ti = getTabInfo(tab->hitTest(ScreenCoordinate(Point::fromLParam(::GetMessagePos()))));
+		TabInfo* ti = getTabInfo(hitTest(ScreenCoordinate(Point::fromLParam(::GetMessagePos()))));
 		if(ti)
 			id = ti->w->getHelpId();
 
@@ -432,7 +514,7 @@ bool TabView::filter(const MSG& msg) {
 	if(msg.message == WM_KEYUP && msg.wParam == VK_CONTROL) {
 		inTab = false;
 
-		TabInfo* ti = getTabInfo(tab->getSelected());
+		TabInfo* ti = getTabInfo(getSelected());
 		if(ti) {
 			setTop(ti->w);
 		}
@@ -442,6 +524,53 @@ bool TabView::filter(const MSG& msg) {
 		return true;
 	}
 	return false;
+}
+
+void TabView::setText( unsigned index, const tstring& text )
+{
+	TCITEM item = { TCIF_TEXT };
+	item.pszText = const_cast < TCHAR * >( text.c_str() );
+	TabCtrl_SetItem(this->handle(), index, &item);
+}
+
+tstring TabView::getText(unsigned idx) const
+{
+	TCITEM item = { TCIF_TEXT };
+	TCHAR buffer[1024];
+	item.cchTextMax = (sizeof(buffer) / sizeof(TCHAR)) - 1 ;
+	item.pszText = buffer;
+	if ( !TabCtrl_GetItem( this->handle(), idx, & item ) )
+	{
+		throw xCeption( _T( "Couldn't retrieve text in TabView::getText." ) );
+	}
+	return buffer;
+}
+
+dwt::Rectangle TabView::getUsableArea(bool cutBorders) const
+{
+	RECT rc;
+	::GetClientRect(handle(), &rc);
+	TabCtrl_AdjustRect( this->handle(), false, &rc );
+	Rectangle rect( rc );
+	if(cutBorders) {
+		Rectangle rctabs(getClientAreaSize());
+		// Get rid of ugly border...assume y border is the same as x border
+		long border = (rctabs.width() - rect.width()) / 2;
+		rect.pos.x = rctabs.x();
+		rect.size.x = rctabs.width();
+		rect.size.y += border;
+	}
+	return rect;
+}
+
+const ImageListPtr& TabView::getImageList() const {
+	return imageList;
+}
+
+int TabView::hitTest(const ScreenCoordinate& pt) {
+	TCHITTESTINFO tci = { ClientCoordinate(pt, this).getPoint() };
+		
+	return TabCtrl_HitTest(handle(), &tci);
 }
 
 }

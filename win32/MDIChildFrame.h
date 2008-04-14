@@ -39,7 +39,7 @@ public:
 protected:
 
 	MDIChildFrame(dwt::TabView* tabView, const tstring& title, unsigned helpId = 0, dwt::IconPtr icon = dwt::IconPtr(), bool activate = true) :
-		BaseType(tabView->getTab()),
+		BaseType(tabView),
 		lastFocus(NULL),
 		alwaysSameFocus(false),
 		reallyClose(false)
@@ -119,7 +119,7 @@ protected:
 	}
 	
 	dwt::TabView* getParent() {
-		return static_cast<dwt::TabView*>(BaseType::getParent()->getParent());
+		return static_cast<dwt::TabView*>(BaseType::getParent());
 	}
 	
 private:

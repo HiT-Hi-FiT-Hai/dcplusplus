@@ -39,7 +39,6 @@
 #include <dwt/widgets/ModelessDialog.h>
 #include <dwt/widgets/RadioButton.h>
 #include <dwt/widgets/Table.h>
-#include <dwt/widgets/TabSheet.h>
 #include <dwt/widgets/TabView.h>
 #include <dwt/widgets/TextBox.h>
 #include <dwt/widgets/Tree.h>

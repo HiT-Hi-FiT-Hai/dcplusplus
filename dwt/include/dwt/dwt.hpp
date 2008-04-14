@@ -78,7 +78,6 @@
 #include "widgets/Spinner.h"
 #include "widgets/StatusBar.h"
 #include "widgets/Table.h"
-#include "widgets/TabSheet.h"
 #include "widgets/TabView.h"
 #include "widgets/TextBox.h"
 #include "widgets/Tree.h"

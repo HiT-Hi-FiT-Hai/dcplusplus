@@ -241,9 +241,9 @@ private:
 	WidgetDownloadsPtr downloads;
 	ContainerPtr downloadsWindow;
 
-	TabSheetPtr tabs;
+	TabViewPtr tabs;
 	
-	dwt::TabView* mdi;
+	TabViewPtr mdi;
 	dwt::ImageListPtr arrows;
 
 	bool startup;
@@ -262,7 +262,6 @@ private:
 	void runUserCommand(const UserCommand& uc);
 	bool handleKeyDown(int c);
 	void handleDblClicked();
-	void handleTabSelected();
 	
 	MenuPtr makeContextMenu(ConnectionInfo* ii);
 
