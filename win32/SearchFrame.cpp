@@ -868,9 +868,6 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 		}
 	}
 
-	if (filterShared != BOOLSETTING(SEARCH_FILTER_SHARED))
-		SettingsManager::getInstance()->set(SettingsManager::SEARCH_FILTER_SHARED, filterShared);
-
 	// Filter already shared files
 	if( filterShared ) {
 		const TTHValue& t = aResult->getTTH();
@@ -943,6 +940,8 @@ void SearchFrame::runSearch() {
 	// Change Default Settings If Changed
 	if (onlyFree != BOOLSETTING(SEARCH_ONLY_FREE_SLOTS))
 		SettingsManager::getInstance()->set(SettingsManager::SEARCH_ONLY_FREE_SLOTS, onlyFree);
+	if (filterShared != BOOLSETTING(SEARCH_FILTER_SHARED))
+		SettingsManager::getInstance()->set(SettingsManager::SEARCH_FILTER_SHARED, filterShared);
 	if (!initialType && fileType->getSelected() != SETTING(LAST_SEARCH_TYPE))
 		SettingsManager::getInstance()->set(SettingsManager::LAST_SEARCH_TYPE, fileType->getSelected());
 

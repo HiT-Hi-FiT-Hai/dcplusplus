@@ -77,7 +77,7 @@ const string SettingsManager::settingTags[] =
 	"UseTLS", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches",
 	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
 	"TLSPort", "FastHash", "SortFavUsersFirst", "ShowShellMenu", "MinSegmentSize", "FollowLinks",
-	"SendBloom", "OwnerDrawnMenus", "Coral", "SearchFilterShared"
+	"SendBloom", "OwnerDrawnMenus", "Coral", "SearchFilterShared",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
