@@ -281,7 +281,7 @@ void PublicHubsFrame::updateDropDown() {
 	for(StringList::iterator idx = lists.begin(); idx != lists.end(); ++idx) {
 		pubLists->addValue(Text::toT(*idx).c_str());
 	}
-	pubLists->setSelected(FavoriteManager::getInstance()->getSelectedHubList());
+	pubLists->setSelected((FavoriteManager::getInstance()->getSelectedHubList()) % lists.size());
 }
 
 void PublicHubsFrame::updateList() {
