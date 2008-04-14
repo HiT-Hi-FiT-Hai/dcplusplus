@@ -46,30 +46,9 @@ TabView::Seed::Seed(bool toggleActive_) :
 	font(new Font(DefaultGuiFont)),
 	toggleActive(toggleActive_)
 {
-	// Flicker bugfix, as described in SWT:
-	/*
-	* Feature in Windows.  The tab control window class
-	* uses the CS_HREDRAW and CS_VREDRAW style bits to
-	* force a full redraw of the control and all children
-	* when resized.  This causes flashing.  The fix is to
-	* register a new window class without these bits and
-	* implement special code that damages only the exposed
-	* area.
-	* 
-	* NOTE:  Screen readers look for the exact class name
-	* of the control in order to provide the correct kind
-	* of assistance.  Therefore, it is critical that the
-	* new window class have the same name.  It is possible
-	* to register a local window class with the same name
-	* as a global class.  Since bits that affect the class
-	* are being changed, it is possible that other native
-	* code, other than SWT, could create a control with
-	* this class name, and fail unexpectedly.
-	*/
-
 	static bool first = true;
 	if(first) {
-		// From SWT:
+		// Flicker bugfix, as described in SWT:
 		/*
 		* Feature in Windows.  The tab control window class
 		* uses the CS_HREDRAW and CS_VREDRAW style bits to
