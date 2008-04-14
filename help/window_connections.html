@@ -7,11 +7,33 @@
 </head>
 <body>
 <h1>Connections</h1>
-This lists your current connections, uploads (from you to the other peer) and downloads (from the other peer to you) with other peers in the network.
+This lists your current connections to other peers in the network, uploads (from you to the other peer) and downloads (from the other peer to you).
 <h2>Columns</h2>
 <dl style="margin-left: 40px;">
-  <dt>...</dt>
-  <dd>...</dd>
+  <dt>User</dt>
+  <dd>The nick of the connected user</dd>
+  <dt>Hub</dt>
+  <dd>Displays the hub which the user connected through</dd>
+  <dt>Status</dt>
+  <dd>Shows the current status of the connection which includes Connecting, Downloading, Uploading, No slots available, Idle, Disconnected or Terminated. During data transfer you can see here the name of the file, the actual chunk of the file beeing downloaded from the connected peer and may one or more letters in [box brackets] as well. These letters specify the properties of the transfer :
+  <br>&nbsp;
+  <li style="margin-left: 10px;">[T] - TTH Checked</li>
+  <li style="margin-left: 10px;">[Z] - ZLib Compressed transfer</li>
+  <li style="margin-left: 10px;">[S] - Trusted secure connection</li>
+  <li style="margin-left: 10px;">[U] - Untrusted secure connection</li>
+  </dd>
+  <dt>Speed</dt>
+  <dd>The actual up or download speed</dd>
+  <dt>Chunk</dt>
+  <dd>Remaining and total size of the actual chunk beeing downloaded</dd>
+  <dt>Transferred (Ratio)</dt>
+  <dd>Shows the total number of data bytes transferred since the connection's estabilished. The compression ratio (in case of compressed transfers) added in parentheses</dd>
+  <dt>Queued</dt>
+  <dd>During download this column displays the total size of files in the queue available from this connection</dd>
+  <dt>Cipher</dt>
+  <dd>In case of a secure connection it shows the encoding method</dd>
+  <dt>IP</dt>
+  <dd>IP address and country code (if available) of the connected peer</dd>
 </dl>
 </body>
 </html>
