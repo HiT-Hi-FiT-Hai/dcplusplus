@@ -125,17 +125,6 @@ HubFrame::HubFrame(dwt::TabView* mdiParent, const string& url_) :
 	}
 
 	{
-		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style |= WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		chat = addChild(cs);
-		chat->setHelpId(IDH_HUB_CHAT);
-		chat->setTextLimit(0);
-		addWidget(chat);
-		paned->setFirst(chat);
-		chat->onContextMenu(std::tr1::bind(&HubFrame::handleChatContextMenu, this, _1));
-	}
-
-	{
 		users = addChild(WidgetUsers::Seed());
 		addWidget(users);
 		paned->setSecond(users);
@@ -150,6 +139,17 @@ HubFrame::HubFrame(dwt::TabView* mdiParent, const string& url_) :
 		users->onDblClicked(std::tr1::bind(&HubFrame::handleDoubleClickUsers, this));
 		users->onKeyDown(std::tr1::bind(&HubFrame::handleUsersKeyDown, this, _1));
 		users->onContextMenu(std::tr1::bind(&HubFrame::handleUsersContextMenu, this, _1));
+	}
+
+	{
+		TextBox::Seed cs = WinUtil::Seeds::textBox;
+		cs.style |= WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+		chat = addChild(cs);
+		chat->setHelpId(IDH_HUB_CHAT);
+		chat->setTextLimit(0);
+		addWidget(chat);
+		paned->setFirst(chat);
+		chat->onContextMenu(std::tr1::bind(&HubFrame::handleChatContextMenu, this, _1));
 	}
 	
 	{
