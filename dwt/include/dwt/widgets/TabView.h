@@ -169,7 +169,7 @@ private:
 	void handleHelp(HWND hWnd, unsigned id);
 	
 	tstring formatTitle(tstring title);
-	void layout();
+	LRESULT layout();
 	
 	int addIcon(const IconPtr& icon);
 	void swapWidgets(ContainerPtr oldW, ContainerPtr newW);

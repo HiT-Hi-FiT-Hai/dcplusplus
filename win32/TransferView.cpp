@@ -60,6 +60,10 @@ static const char* downloadNames[] = {
 	N_("Size")
 };
 
+static void fills(dwt::ContainerPtr parent, dwt::TablePtr control) {
+	control->setBounds(dwt::Rectangle(parent->getClientAreaSize()));
+}
+
 TransferView::TransferView(dwt::Widget* parent, dwt::TabView* mdi_) : 
 	WidgetFactory<dwt::Container>(parent),
 	connections(0),
@@ -123,6 +127,9 @@ TransferView::TransferView(dwt::Widget* parent, dwt::TabView* mdi_) :
 
 		downloads->onContextMenu(std::tr1::bind(&TransferView::handleDownloadsMenu, this, _1));
 	}
+	
+	connectionsWindow->onSized(std::tr1::bind(&fills, connectionsWindow, connections));
+	downloadsWindow->onSized(std::tr1::bind(&fills, downloadsWindow, downloads));
 
 	onSized(std::tr1::bind(&TransferView::handleSized, this, _1));
 	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), dwt::Message(WM_DESTROY));
@@ -147,8 +154,6 @@ void TransferView::handleSized(const dwt::SizedEvent& sz) {
 
 void TransferView::layout() {
 	tabs->setBounds(dwt::Point(0,0), getClientAreaSize());
-	connections->setBounds(dwt::Rectangle(connectionsWindow->getClientAreaSize()));
-	downloads->setBounds(dwt::Rectangle(downloadsWindow->getClientAreaSize()));
 }
 
 void TransferView::prepareClose() {

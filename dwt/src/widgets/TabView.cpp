@@ -40,6 +40,8 @@ namespace dwt {
 
 WindowClass TabView::windowClass(_T("TabView"), &TabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
 
+static UINT RESIZE_MESSAGE = 0;
+
 TabView::Seed::Seed(bool toggleActive_) :
 	BaseType::Seed(WC_TABCONTROL, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE |
 		 TCS_HOTTRACK | TCS_MULTILINE | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER),
@@ -98,6 +100,8 @@ TabView::Seed::Seed(bool toggleActive_) :
 		
 		::RegisterClassEx(&cls);
 		first = false;
+		
+		RESIZE_MESSAGE = ::RegisterWindowMessage(_T("TabView_Refresh"));
 	}
 }
 
@@ -130,6 +134,8 @@ void TabView::create(const Seed & cs) {
 
 	onSized(std::tr1::bind(&TabView::handleSized, this, _1));
 
+	onRaw(std::tr1::bind(&TabView::layout, this), Message(RESIZE_MESSAGE));
+	
 	tip = WidgetCreator<ToolTip>::attach(this, TabCtrl_GetToolTips(handle())); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
 	tip->addRemoveStyle(TTS_NOPREFIX, true);
 	tip->onRaw(std::tr1::bind(&TabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
@@ -315,12 +321,14 @@ tstring TabView::formatTitle(tstring title) {
 }
 
 void TabView::handleSized(const SizedEvent& sz) {
-	// TODO the tab control itself has not seen the message yet so getUsableArea will return an invalid size if
-	// the number of rows changes for a multirow tab
-	layout();
+	// We defer the layout because the tab control itself must process WM_SIZE first in order to calculate the
+	// number of rows (otherwise getUsableArea returns the usable area before the resize...)
+	// This is less than ideal since it means the children will not be synchronously resized which apps may expect
+	// TODO Fix this...
+	postMessage(RESIZE_MESSAGE);
 }
 
-void TabView::layout() {
+LRESULT TabView::layout() {
 	Rectangle tmp = getUsableArea(true);
 	if(!(tmp == clientSize)) {
 		int i = getSelected();
@@ -329,6 +337,8 @@ void TabView::layout() {
 		}
 		clientSize = tmp;
 	}
+	// Dummy return value to satisfy onRaw - this should be fixed sometime...
+	return 0;
 }
 
 void TabView::next(bool reverse) {
