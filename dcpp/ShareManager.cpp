@@ -293,7 +293,7 @@ void ShareManager::load(SimpleXML& aXml) {
 
 			const string& virtualName = aXml.getChildAttrib("Virtual");
 			string vName = validateVirtual(virtualName.empty() ? Util::getLastDir(realPath) : virtualName);
-			shares.insert(std::make_pair(realPath, virtualName));
+			shares.insert(std::make_pair(realPath, vName));
 		}
 		aXml.stepOut();
 	}
