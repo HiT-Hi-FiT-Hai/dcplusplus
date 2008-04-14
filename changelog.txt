@@ -27,12 +27,14 @@
 * [L#211313] Fixed bad virtual name being loaded (thanks kulmegil)
 * [L#202801] Allow virtual folders to have the same name
 * Allow more characters in virtual names
-* Improved transfer speed averaging 
+* [L#190015] Improved transfer speed averaging 
 * [L#212411] Fixed downloading multiple file lists (poy)
 * Added filter already shared from search results (thanks smir)
 * [L#206521] Fixed directory not being removable (thanks poy)
 * Reduced resize flicker some
 * Added various sound options (thanks poy)
+* [L#211497] Segment size is automatically chosen depending on speed
+* [L#209876] Added option to completely disable segmented downloads 
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)

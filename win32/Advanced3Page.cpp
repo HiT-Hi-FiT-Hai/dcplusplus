@@ -62,9 +62,6 @@ static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_SOCKET_OUT_BUFFER, IDH_SETTINGS_ADVANCED3_SOCKET_OUT_BUFFER },
 	{ IDC_SOCKET_OUT_BUFFER, IDH_SETTINGS_ADVANCED3_SOCKET_OUT_BUFFER },
 	{ IDC_SETTINGS_B3, IDH_SETTINGS_ADVANCED3_SOCKET_OUT_BUFFER },
-	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, IDH_SETTINGS_ADVANCED3_MIN_SEGMENT_SIZE },
-	{ IDC_MIN_SEGMENT_SIZE, IDH_SETTINGS_ADVANCED3_MIN_SEGMENT_SIZE },
-	{ IDC_SETTINGS_KB3, IDH_SETTINGS_ADVANCED3_MIN_SEGMENT_SIZE },
 	{ 0, 0 }
 };
 
@@ -89,8 +86,6 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_B2, N_("B") },
 	{ IDC_SETTINGS_SOCKET_OUT_BUFFER, N_("Socket write buffer") },
 	{ IDC_SETTINGS_B3, N_("B") },
-	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, N_("Min segment size") },
-	{ IDC_SETTINGS_KB3, N_("KiB") },
 	{ 0, 0 }
 };
 
@@ -107,7 +102,6 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_PRIVATE_ID, SettingsManager::PRIVATE_ID, PropPage::T_STR },
 	{ IDC_AUTO_REFRESH_TIME, SettingsManager::AUTO_REFRESH_TIME, PropPage::T_INT },
 	{ IDC_AUTO_SEARCH_LIMIT, SettingsManager::AUTO_SEARCH_LIMIT, PropPage::T_INT },
-	{ IDC_MIN_SEGMENT_SIZE, SettingsManager::MIN_SEGMENT_SIZE, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -135,7 +129,6 @@ Advanced3Page::Advanced3Page(dwt::Widget* parent) : PropPage(parent) {
 	attachChild<TextBox>(IDC_BIND_ADDRESS);
 	attachChild<TextBox>(IDC_SOCKET_IN_BUFFER);
 	attachChild<TextBox>(IDC_SOCKET_OUT_BUFFER);
-	attachChild<TextBox>(IDC_MIN_SEGMENT_SIZE);
 }
 
 Advanced3Page::~Advanced3Page() {

@@ -92,24 +92,33 @@ Segment QueueItem::getNextSegment(int64_t blockSize, double lastSpeed, int64_t l
 		return Segment(0, -1);
 	}
 	
-	int64_t remaining = getSize() - getDownloadedBytes();
-	
-	int64_t targetSize = std::max(blockSize, lastSize);
-	if(lastSpeed > 0) {
-		double msecs = 1000 * targetSize / lastSpeed;
-		if(msecs < SEGMENT_TIME / 4) {
-			targetSize *= 2;
-		} else if(msecs < SEGMENT_TIME / 1.25) {
-			targetSize += blockSize;
-		} else if(msecs > SEGMENT_TIME * 4) {
-			targetSize = std::max(blockSize, targetSize / 2);
-		} else if(msecs > SEGMENT_TIME * 1.25) {
-			targetSize = std::max(blockSize, targetSize - blockSize);
-		}
+	if(!BOOLSETTING(SEGMENTED_DL) && !downloads.empty()) {
+		return Segment(0, 0);
 	}
 	
-	// Round off to nearest block size
-	targetSize = ((targetSize + blockSize / 2) / blockSize) * blockSize;
+	int64_t remaining = getSize() - getDownloadedBytes();
+	
+	int64_t targetSize;
+	if(BOOLSETTING(SEGMENTED_DL)) {
+		targetSize = std::max(blockSize, lastSize);
+		if(lastSpeed > 0) {
+			double msecs = 1000 * targetSize / lastSpeed;
+			if(msecs < SEGMENT_TIME / 4) {
+				targetSize *= 2;
+			} else if(msecs < SEGMENT_TIME / 1.25) {
+				targetSize += blockSize;
+			} else if(msecs > SEGMENT_TIME * 4) {
+				targetSize = std::max(blockSize, targetSize / 2);
+			} else if(msecs > SEGMENT_TIME * 1.25) {
+				targetSize = std::max(blockSize, targetSize - blockSize);
+			}
+		}
+		
+		// Round off to nearest block size
+		targetSize = ((targetSize + blockSize / 2) / blockSize) * blockSize;
+	} else {
+		targetSize = remaining;
+	}
 	
 	int64_t start = 0;
 	int64_t curSize = targetSize;

@@ -35,7 +35,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::MAGNET_REGISTER, N_("Register with Windows to handle magnet: URI links") },
 	{ SettingsManager::KEEP_LISTS, N_("Don't delete file lists when exiting") },
 	{ SettingsManager::AUTO_KICK, N_("Automatically disconnect users who leave the hub") },
-	{ SettingsManager::SHOW_PROGRESS_BARS, N_("Show progress bars for transfers") },
+// TODO	{ SettingsManager::SHOW_PROGRESS_BARS, N_("Show progress bars for transfers") },
 	{ SettingsManager::SFV_CHECK, N_("Enable automatic SFV checking") },
 	{ SettingsManager::NO_AWAYMSG_TO_BOTS, N_("Don't send the away message to bots") },
 	{ SettingsManager::ADLS_BREAK_ON_FIRST, N_("Break on first ADLSearch match") },
@@ -48,6 +48,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::SHOW_SHELL_MENU, N_("Show shell menu where possible") },
 	{ SettingsManager::OWNER_DRAWN_MENUS, N_("Use extended menus with icons and titles") },
 	{ SettingsManager::CORAL, N_("Use Coral network when downloading hub lists (improves reliability)") },
+	{ SettingsManager::SEGMENTED_DL, N_("Enable segmented downloads") },
 	{ 0, 0 }
 };
 
