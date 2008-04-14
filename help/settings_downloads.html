@@ -17,17 +17,32 @@ that DC++ will use.</p>
   <dt>Default Download Directory</dt>
   <dd cshelp=IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR>After a download is complete, DC++ tries to move your
 just&nbsp;finished file to this directory. It defaults to the
-"Downloads\" subdirectory under where the DC++ executable is located.</dd>
+"Downloads\" subdirectory under where the DC++ executable is located. The directory will be automatically created if needed.
+<br>Make sure you have enough disk space for your downloads, have write access to the directory and 
+have an appropriate file system if you download large files (note that maximum possible size for a 
+file on a FAT32 volume is 4 GiB).
+<br>If the target volume runs out of space, DC++ will keep your downloaded files in the Unfinished Downloads Directory
+having renamed them to their original filename.
+</dd>
   <dt>Unfinished Downloads Directory</dt>
   <dd cshelp=IDH_SETTINGS_DOWNLOAD_TEMP_DOWNLOAD_DIRECTORY>All incomplete downloads will be stored in this directory.
-If empty, temporary downloads will be stored in the "Incomplete\"
-subdirectory under where the DC++ executable is located. You can
+If you leave it empty, temporary downloads will be stored in the "Incomplete\"
+subdirectory under where the DC++ executable is located. The directory will be automatically created if needed.
+<br>Make sure you have enough disk space, appropriate write access and filesystem for unfinished downloads.
+In case of an error (eg. when the drive that holds your Unfinished Downloads ran out of space) you will
+get 'Not enough space on the disk' message even if your target drive has enough free space for your download!
+<br>You can
 use <span style="font-weight: bold;">%[targetdrive]</span> for optional unfinished directory for target
-drive. If the
-file has been downloaded with a TTH, the incomplete file will
-bear the name &lt;filename&gt;.&lt;ext&gt;.&lt;TTH&gt;.dctmp. If
-the file has no TTH, it will be
-named&lt;filename&gt;.&lt;ext&gt;.dctmp. If <a
+drive. This way you can share the incomplete files among your drives which will result smaller chance of runnig out of disk space.
+This option is also useful if you often download large files to a drive other than where your usual unfinished directory 
+resides. At the end of a successful download moving a large file to its target could be very time & resource consuming, 
+especially when moving files to another partition of a same physical drive.
+<br>
+For example : with %[targetdrive]DCUnfinished\ set, DC++ will use E:\DCUnfinished\ for incomplete files when you download to any target 
+located on drive E: and so on...
+<br>
+If the file has been downloaded the incomplete file will
+bear the name &lt;filename&gt;.&lt;ext&gt;.&lt;TTH&gt;.dctmp. If <a
  href="settings_queue.html#antifrag">Use AntiFragmentation Method
 for Downloads</a> is enabled the files will have ".antifrag" added to
 the end of it's name. As in
@@ -35,13 +50,14 @@ the end of it's name. As in
 </dl>
 </div>
 <h2>Limits</h2>
-<p cshelp=IDH_SETTINGS_DOWNLOAD_LIMITS>For both values listed below, certain conditions can result in the
+<p cshelp=IDH_SETTINGS_DOWNLOAD_LIMITS>These settings are to avoid overloading your internet connection with
+a large number of simulatenous downloads. However, for both values listed below, certain conditions can result in the
 limits not being obeyed.&nbsp;Specifically, up to 3 files that are set
 to the 'highest' priority can be transferred while other downloads are
 going.&nbsp;&nbsp;File lists and small files (64 kibibytes or
 smaller) are queued with 'highest' as their priority. When either
 of the limits are hit, DC++ shows <em>"All download slots taken"</em>
-next to each source in the Transfer View.</p>
+next to each source in the status column of the Connections tab.</p>
 <div style="margin-left: 40px;">
 <dl>
   <dt>Maximum Simultaneous Downloads</dt>
