@@ -79,11 +79,14 @@ typedef RadioButton* RadioButtonPtr;
 class RichTextBox;
 typedef RichTextBox* RichTextBoxPtr;
 
+class Slider;
+typedef Slider* SliderPtr;
+
 class Spinner;
 typedef Spinner* SpinnerPtr;
 
-class Slider;
-typedef Slider* SliderPtr;
+class StatusBar;
+typedef StatusBar* StatusBarPtr;
 
 class Table;
 typedef Table* TablePtr;

@@ -38,20 +38,6 @@
 
 #ifdef __GNUC__
 
-	// Need to tell gcc which version of Windows we're targeting!
-#ifndef _WIN32_WINNT
-	#define _WIN32_WINNT 0x0501
-#endif
-#ifndef _WIN32_IE
-	#define _WIN32_IE 0x0501
-#endif
-#ifndef WINVER
-	#define WINVER 0x501
-#endif
-	// Removing windows.h max and min macro
-	#undef NOMINMAX
-	#define NOMINMAX
-
 	static const dwt::Platform CurrentPlatform = dwt::dwtDesktop;
 
 	#define SMARTWIN_WNDCLASSEX WNDCLASSEX

@@ -36,19 +36,6 @@
 #ifndef DWT_SmartWin_h
 #define DWT_SmartWin_h
 
-#ifdef _MSC_VER
-// We don't want the stupid "pointer trunctation" to 64 bit architecture warning.
-// The warnings aren't justified anyway since they are basically a bug in 7.1
-// release... E.g. the SetWindowLongPtr is defined as SetWindowLong in 32 bits mode
-// but will in 64 bits mode be defined as the 64 bits equivalent version, therefore
-// it will give you a 64 bit compile warning when this file is compiled with
-// warning level 4 (MSVC)
-#pragma warning( disable : 4244 )
-#pragma warning( disable : 4312 )
-#pragma warning( disable : 4311 )
-
-#endif
-
 #include "WindowsHeaders.h"
 
 #include "Anchors.h"
@@ -89,6 +76,7 @@
 #include "widgets/RichTextBox.h"
 #include "widgets/Slider.h"
 #include "widgets/Spinner.h"
+#include "widgets/StatusBar.h"
 #include "widgets/Table.h"
 #include "widgets/TabSheet.h"
 #include "widgets/TabView.h"

@@ -40,47 +40,11 @@
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectText.h"
 #include "Control.h"
 
+#include <vector>
+
 namespace dwt {
-
-/// Policy class for StatusBar with sections instead of one large area where
-/// you can add information
-/** A Status Bar with sections is a normal statusbar except instead of one large area
-  * where you can add text there are several smaller sections which divides the
-  * status bar into smaller areas where you can separate information.
-  */
-class Section
-{
-public:
-	/// Initializes the sections of the StatusBar
-	/** Use this one to set the number of sections and the width of them
-	  */
-	void setSections( const std::vector< unsigned > & width );
-
-	/// Sets the text of the given section number
-	/** Use this one to set the text of a specific section of the StatusBar
-	  */
-	void setText( const SmartUtil::tstring & newText, unsigned partNo );
-};
-
-// Forward declaration
-template< class TypeOfStatusBar >
-class StatusBar;
-
-// Note, this Aspect class indirectly brings in AspectText while the Section one DOES NOT!
-/// Policy class for a StatusBar with no sections.
-/** Policy class for a StatusBar with no sections or rather with _one big_
-  * section which will hold all the text of the Status Bar Control within the same
-  * area! <br>
-  * Use the setText member ( which is included by inheritance to AspectText ) to set
-  * the text of the Status Bar Control!
-  */
-class NoSection :
-	public AspectText< StatusBar<NoSection> >
-{
-};
 
 /// StatusBar class
 /** \ingroup WidgetControls
@@ -96,30 +60,28 @@ class NoSection :
   * instance the security settings of the current page and how far in the download
   * process you are currently etc... <br>
   * Note that there are TWO DIFFERENT status bar controls though, one which does have
-  * "sections" which sub divides the status bar into several smaller sections which
+  * "sections" which sub divide< TypeOfStatusBar >s the status bar into several smaller sections which
   * are independant of eachother and another type which is a "flat strip" containing
   * only one large portion of text. <br>
   * The default one is the flat one, use Section as the last template parameter to
   * use the one with sections!
   */
-template< class TypeOfStatusBar = NoSection >
 class StatusBar :
-	public TypeOfStatusBar,
 	public CommonControl,
 	
 	// Aspects
-	public AspectClickable< StatusBar< TypeOfStatusBar > >,
-	public AspectDblClickable< StatusBar< TypeOfStatusBar > >,
-	public AspectFont< StatusBar< TypeOfStatusBar > >,
-	public AspectPainting< StatusBar< TypeOfStatusBar > >
+	public AspectClickable< StatusBar >,
+	public AspectDblClickable< StatusBar >,
+	public AspectFont< StatusBar >,
+	public AspectPainting< StatusBar >
 {
 	typedef CommonControl BaseType;
 	friend class WidgetCreator< StatusBar >;
-	friend class AspectClickable< StatusBar< TypeOfStatusBar > >;
-	friend class AspectDblClickable< StatusBar< TypeOfStatusBar > >;
+	friend class AspectClickable< StatusBar>;
+	friend class AspectDblClickable< StatusBar >;
 public:
 	/// Class type
-	typedef StatusBar<TypeOfStatusBar> ThisType;
+	typedef StatusBar ThisType;
 
 	/// Object type
 	typedef ThisType* ObjectType;
@@ -148,6 +110,16 @@ public:
 	  */
 	void refresh();
 
+	/// Initializes the sections of the StatusBar
+	/** Use this one to set the number of sections and the width of them
+	  */
+	void setSections( const std::vector< unsigned > & width );
+
+	/// Sets the text of the given section number
+	/** Use this one to set the text of a specific section of the StatusBar
+	  */
+	void setText( const SmartUtil::tstring & newText, unsigned partNo = 0);
+
 	/// Actually creates the StatusBar
 	/** You should call WidgetFactory::createStatusBar if you instantiate class
 	  * directly. <br>
@@ -175,43 +147,17 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class TypeOfStatusBar >
-StatusBar< TypeOfStatusBar >::Seed::Seed(bool sizeGrip) : BaseType::Seed(STATUSCLASSNAME, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS) {
+inline StatusBar::Seed::Seed(bool sizeGrip) : BaseType::Seed(STATUSCLASSNAME, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS) {
 	if(sizeGrip) {
 		style |= SBARS_SIZEGRIP;
 	}
 }
 
-inline void Section::setSections( const std::vector< unsigned > & width )
-{
-	StatusBar< Section > * This
-		= static_cast< StatusBar < Section > * >( this );
-
-	std::vector< unsigned > newVec( width );
-	std::vector< unsigned >::const_iterator origIdx = width.begin();
-	unsigned offset = 0;
-	for ( std::vector< unsigned >::iterator idx = newVec.begin();
-		idx < newVec.end();
-		++idx, ++origIdx )
-	{
-		* idx = ( * origIdx ) + offset;
-		offset += * origIdx;
-	}
-	const unsigned * intArr = & newVec[0];
-	const size_t size = newVec.size();
-	::SendMessage( This->handle(), SB_SETPARTS, static_cast< WPARAM >( size ), reinterpret_cast< LPARAM >( intArr ) );
+inline void StatusBar::setText( const SmartUtil::tstring & newText, unsigned partNo ) {
+	sendMessage(SB_SETTEXT, static_cast< WPARAM >( partNo ), reinterpret_cast< LPARAM >( newText.c_str() ) );
 }
 
-inline void Section::setText( const SmartUtil::tstring & newText, unsigned partNo )
-{
-	StatusBar< Section > * This
-		= static_cast< StatusBar < Section > * >( this );
-	::SendMessage( This->handle(), SB_SETTEXT, static_cast< WPARAM >( partNo ), reinterpret_cast< LPARAM >( newText.c_str() ) );
-}
-
-template< class TypeOfStatusBar >
-void StatusBar< TypeOfStatusBar >::refresh()
-{
+inline void StatusBar::refresh() {
 	// A status bar can't really be resized since its size is controlled by the
 	// parent window. But to not let the status bar "hang" we need to refresh its
 	// size after the main window is being resized.
@@ -224,27 +170,20 @@ void StatusBar< TypeOfStatusBar >::refresh()
 	}
 }
 
-template< class TypeOfStatusBar >
-Message StatusBar< TypeOfStatusBar >::getClickMessage()
-{
+inline Message StatusBar::getClickMessage() {
 	return Message( WM_NOTIFY, NM_CLICK );
 }
 
-template< class TypeOfStatusBar >
-Message StatusBar< TypeOfStatusBar >::getDblClickMessage()
-{
+inline Message StatusBar::getDblClickMessage() {
 	return Message( WM_NOTIFY, NM_DBLCLK );
 }
 
-template< class TypeOfStatusBar >
-StatusBar< TypeOfStatusBar >::StatusBar( dwt::Widget * parent )
+inline StatusBar::StatusBar( Widget * parent )
 	: BaseType( parent )
 {
 }
 
-template< class TypeOfStatusBar >
-void StatusBar< TypeOfStatusBar >::create( const Seed & cs )
-{
+inline void StatusBar::create( const Seed & cs ) {
 	BaseType::create(cs);
 	if(cs.font)
 		setFont( cs.font );

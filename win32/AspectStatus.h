@@ -19,14 +19,13 @@
 #ifndef DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 #define DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 
+#include <dwt/widgets/StatusBar.h>
 #include "WinUtil.h"
 
 template<class WidgetType>
 class AspectStatus {
 	typedef AspectStatus<WidgetType> ThisType;
 protected:
-	typedef dwt::StatusBar<dwt::Section>::ThisType StatusBarSections;
-	typedef StatusBarSections::ObjectType StatusBarSectionsPtr;
 
 	AspectStatus() : status(0) {
 		statusSizes.resize(WidgetType::STATUS_LAST);
@@ -38,7 +37,7 @@ protected:
 	}
 
 	void initStatus(bool sizeGrip = false) {
-		StatusBarSections::Seed cs(sizeGrip);
+		dwt::StatusBar::Seed cs(sizeGrip);
 		cs.font = WinUtil::font;
 		status = static_cast<WidgetType*>(this)->addChild(cs);
 
@@ -86,7 +85,7 @@ protected:
 		::MoveWindow(widget->handle(), p[0].x, p[0].y, p[1].x - p[0].x, p[1].y - p[0].y, TRUE);
 	}
 	
-	StatusBarSectionsPtr status;
+	dwt::StatusBarPtr status;
 
 	std::vector<unsigned> statusSizes;
 

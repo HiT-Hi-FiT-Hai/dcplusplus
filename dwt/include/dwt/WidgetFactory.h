@@ -41,9 +41,7 @@
 #include "widgets/MessageBox.h"
 #include "widgets/LoadDialog.h"
 #include "widgets/SaveDialog.h"
-#include "widgets/StatusBar.h"
 #include "WidgetFactoryPlatformImplementation.h"
-#include "WidgetCreator.h"
 
 namespace dwt {
 
@@ -85,18 +83,6 @@ public:
 	/// MessageBox class and object type.
 	typedef dwt::MessageBox MessageBox;
 
-	/// StatusBar class type.
-	typedef dwt::StatusBar< > StatusBar;
-
-	/// StatusBar object type.
-	typedef typename StatusBar::ObjectType StatusBarPtr;
-
-	/// StatusBarSections class type.
-	typedef dwt::StatusBar< Section > StatusBarSections;
-
-	/// StatusBarSections object type.
-	typedef typename StatusBarSections::ObjectType StatusBarSectionsPtr;
-
 	/// LoadFileDialog class type.
 	typedef dwt::LoadDialog LoadDialog;
 
@@ -137,17 +123,6 @@ public:
 	/** Use this one to construct a ( stack object ) to show a message box
 	  */
 	MessageBox createMessageBox();
-
-	// TODO: Is there any point in attaching a status bar ? ! ?
-	/// Creates a Status Bar and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	StatusBarPtr createStatusBar( const typename StatusBar::Seed & cs = StatusBar::Seed() );
-
-	/// Creates a Status Bar and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	StatusBarSectionsPtr createStatusBarSections( const typename StatusBarSections::Seed & cs = StatusBarSections::Seed() );
 
 protected:
 	// Protected to try to avoid stack creation...
@@ -197,20 +172,6 @@ typename WidgetFactory< ContainerWidgetType >::MessageBox
 WidgetFactory< ContainerWidgetType >::createMessageBox()
 {
 	return MessageBox( this );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::StatusBarPtr
-WidgetFactory< ContainerWidgetType >::createStatusBar( const typename StatusBar::Seed & cs )
-{
-	return WidgetCreator< StatusBar >::create( this, cs );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::StatusBarSectionsPtr
-WidgetFactory< ContainerWidgetType >::createStatusBarSections( const typename StatusBarSections::Seed & cs )
-{
-	return WidgetCreator< StatusBarSections >::create( this, cs );
 }
 
 }

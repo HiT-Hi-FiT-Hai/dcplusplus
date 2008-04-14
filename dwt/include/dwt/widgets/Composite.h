@@ -93,8 +93,12 @@ public:
 	typedef dwt::ProgressBarPtr ProgressBarPtr;
 	typedef dwt::RadioButton RadioButton;
 	typedef dwt::RadioButtonPtr RadioButtonPtr;
+	typedef dwt::Slider Slider;
+	typedef dwt::SliderPtr SliderPtr;
 	typedef dwt::Spinner Spinner;
 	typedef dwt::SpinnerPtr SpinnerPtr;
+	typedef dwt::StatusBar StatusBar;
+	typedef dwt::StatusBarPtr StatusBarPtr;
 	typedef dwt::Table Table;
 	typedef dwt::TablePtr TablePtr;
 	typedef dwt::TabSheet TabSheet;

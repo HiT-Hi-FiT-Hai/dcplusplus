@@ -81,8 +81,6 @@ class TextBoxBase :
 
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 
-protected:
-
 public:
 	/// Sets the current selection of the Edit Control
 	/** Start means the offset of where the current selection shall start, if it is
@@ -90,7 +88,7 @@ public:
 	  * end means where it shall end, if it is omitted it defaults to - 1 or "the
 	  * rest from start".
 	  */
-	void setSelection( long start = 0, long end = - 1 );
+	void setSelection( int start = 0, int end = - 1 );
 
 	/// Returns the current selected text from the text box
 	/** The selected text of the text box is the return value from this.
@@ -111,12 +109,11 @@ public:
 	  */
 	void replaceSelection( const SmartUtil::tstring & txt, bool canUndo = true );
 
-	// TODO: Case sensitivity
 	/// Finds the given text in the text field and returns true if successfully
-	long findText( const SmartUtil::tstring & txt, unsigned offset = 0 ) const;
+	int findText( const SmartUtil::tstring & txt, unsigned offset = 0 ) const;
 
 	/// Returns the position of the caret
-	long getCaretPos();
+	int getCaretPos();
 
 	/// Call this function to scroll the caret into view
 	/** If the caret is not visible within the currently scrolled in area, the Text
@@ -158,12 +155,12 @@ public:
 	/// Set the maximum number of characters that can be entered.
 	/** Although this prevents user from entering more maxChars, Paste can overrun the limit.
 	  */
-	void setTextLimit( DWORD maxChars );
+	void setTextLimit( int maxChars );
 	 
 	/// Returns the maximum number of characters that can be entered.
 	/** Note that the maxChars returned will vary by OS if left unset.
 	  */
-	DWORD getTextLimit() const ;
+	int getTextLimit() const ;
 
 	void onTextChanged( const Dispatcher::F& f );
 	
@@ -187,7 +184,6 @@ protected:
 private:
 	// Contract needed by AspectUpdate Aspect class
 	static Message getUpdateMessage();
-
 
 };
 
@@ -286,7 +282,7 @@ inline Message TextBoxBase::getUpdateMessage() {
 	return Message( WM_COMMAND, MAKEWPARAM(0, EN_UPDATE) );
 }
 
-inline void TextBoxBase::setSelection( long start, long end )
+inline void TextBoxBase::setSelection( int start, int end )
 {
 	this->sendMessage(EM_SETSEL, start, end );
 }
@@ -298,23 +294,23 @@ inline void TextBoxBase::replaceSelection( const SmartUtil::tstring & txt, bool 
 
 inline void TextBoxBase::addText( const SmartUtil::tstring & addtxt )
 {
-	setSelection( ( long ) this->getText().size() );
+	setSelection( length() );
 	replaceSelection( addtxt ); 
 }
 
-inline long TextBoxBase::findText( const SmartUtil::tstring & txt, unsigned offset ) const
+inline int TextBoxBase::findText( const SmartUtil::tstring & txt, unsigned offset ) const
 {
 	SmartUtil::tstring txtOfBox = this->getText();
 	size_t position = txtOfBox.find( txt, offset );
 	if ( position == std::string::npos )
-		return - 1;
-	return static_cast< long >( position );
+		return -1;
+	return static_cast< int >( position );
 }
 
-inline long TextBoxBase::getCaretPos() {
+inline int TextBoxBase::getCaretPos() {
 	DWORD start, end;
 	this->sendMessage(EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
-	return static_cast< long >( end );
+	return static_cast< int >( end );
 }
 
 inline void TextBoxBase::showCaret() {
@@ -341,12 +337,12 @@ inline void TextBoxBase::setBorder( bool value ) {
 	this->Widget::addRemoveStyle( WS_BORDER, value );
 }
 
-inline void TextBoxBase::setTextLimit( DWORD maxChars ) { 
+inline void TextBoxBase::setTextLimit( int maxChars ) { 
 	this->sendMessage(EM_LIMITTEXT, static_cast< WPARAM >(maxChars) ); 
 } 
  
-inline DWORD TextBoxBase::getTextLimit() const { 
-	return static_cast< DWORD >( this->sendMessage(EM_GETLIMITTEXT) );
+inline int TextBoxBase::getTextLimit() const { 
+	return static_cast< int >( this->sendMessage(EM_GETLIMITTEXT) );
 }
 
 inline void TextBoxBase::onTextChanged( const Dispatcher::F& f ) {

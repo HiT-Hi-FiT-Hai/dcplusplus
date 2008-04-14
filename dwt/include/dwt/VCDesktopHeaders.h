@@ -39,15 +39,18 @@
 #ifndef __GNUC__
 #ifndef WINCE
 
-	// Need to tell msvc which version of Windows we're targeting!
-#ifndef _WIN32_WINNT
-	#define _WIN32_WINNT 0x0501
-#endif
-#ifndef _WIN32_IE
-	#define _WIN32_IE 0x0501
-#endif
-#ifndef WINVER
-	#define WINVER 0x501
+
+#ifdef _MSC_VER
+// We don't want the stupid "pointer trunctation" to 64 bit architecture warning.
+// The warnings aren't justified anyway since they are basically a bug in 7.1
+// release... E.g. the SetWindowLongPtr is defined as SetWindowLong in 32 bits mode
+// but will in 64 bits mode be defined as the 64 bits equivalent version, therefore
+// it will give you a 64 bit compile warning when this file is compiled with
+// warning level 4 (MSVC)
+#pragma warning( disable : 4244 )
+#pragma warning( disable : 4312 )
+#pragma warning( disable : 4311 )
+
 #endif
 
 	static const dwt::Platform CurrentPlatform = dwt::dwtDesktop;

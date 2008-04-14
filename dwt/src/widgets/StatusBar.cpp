@@ -3,10 +3,6 @@
 
   Copyright (c) 2007-2008, Jacek Sieka
 
-  SmartWin++
-
-  Copyright (c) 2005 Thomas Hansen
-
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without modification, 
@@ -17,7 +13,7 @@
       * Redistributions in binary form must reproduce the above copyright notice, 
         this list of conditions and the following disclaimer in the documentation 
         and/or other materials provided with the distribution.
-      * Neither the name of the DWT nor SmartWin++ nor the names of its contributors 
+      * Neither the name of the DWT nor the names of its contributors 
         may be used to endorse or promote products derived from this software 
         without specific prior written permission.
 
@@ -33,54 +29,21 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef DWT_WindowsHeaders_h
-#define DWT_WindowsHeaders_h
-
-// This file is supposed to contain (most at least) of the platform specific
-// defines and so on
+#include <dwt/widgets/StatusBar.h>
 
 namespace dwt {
 
-// Enum containing the different platforms we're supposed to support,
-// SmartWinDesktop means BOTH Wine, MingW and VC++. SmartWinCE means Pocket PC or
-// Smart Phone 2003 and onwards!
- enum Platform
-{ dwtDesktop = 0, dwtCE = 1
-};
-
+void StatusBar::setSections( const std::vector< unsigned > & width ) {
+	std::vector< unsigned > newVec( width );
+	std::vector< unsigned >::const_iterator origIdx = width.begin();
+	unsigned offset = 0;
+	for ( std::vector< unsigned >::iterator idx = newVec.begin(); idx != newVec.end(); ++idx, ++origIdx ) {
+		* idx = ( * origIdx ) + offset;
+		offset += * origIdx;
+	}
+	const unsigned * intArr = & newVec[0];
+	const size_t size = newVec.size();
+	sendMessage(SB_SETPARTS, static_cast< WPARAM >( size ), reinterpret_cast< LPARAM >( intArr ) );
 }
 
-#ifndef _WIN32_WINNT
-	#define _WIN32_WINNT 0x0501
-#endif
-#ifndef _WIN32_IE
-	#define _WIN32_IE 0x0501
-#endif
-#ifndef WINVER
-	#define WINVER 0x501
-#endif
-
-// Removing windows.h max and min macro
-#undef NOMINMAX
-#define NOMINMAX
-
-// Including special GCC Stuff
-#ifdef __GNUC__
-#include "GCCHeaders.h"
-#endif //! __GNUC__
-
-// Including special VC Desktop Platform stuff
-#ifndef __GNUC__
-#ifndef WINCE
-#include "VCDesktopHeaders.h"
-#endif
-#endif
-
-// Including special VC Pocket PC Platform stuff
-#ifndef __GNUC__
-#ifdef WINCE
-#include "VCPocketPCHeaders.h"
-#endif
-#endif
-
-#endif // !WindowsHeaders_h
+}
