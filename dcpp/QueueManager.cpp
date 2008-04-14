@@ -120,6 +120,13 @@ void QueueManager::FileQueue::find(QueueItem::List& ql, const TTHValue& tth) {
 	}
 }
 
+bool QueueManager::FileQueue::exists(const TTHValue& tth) const {
+	for(QueueItem::StringMap::const_iterator i = queue.begin(); i != queue.end(); ++i)
+		if(i->second->getTTH() == tth)
+			return true;
+	return false;
+}
+
 static QueueItem* findCandidate(QueueItem* cand, QueueItem::StringIter start, QueueItem::StringIter end, const StringList& recent) {
 	for(QueueItem::StringIter i = start; i != end; ++i) {
 		QueueItem* q = i->second;
@@ -457,14 +464,9 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& roo
 	{
 		Lock l(cs);
 
-		if(BOOLSETTING(DONT_DL_ALREADY_QUEUED) &&  (aFlags & QueueItem::FLAG_USER_LIST)) {
-			// This will be pretty slow on large queues...
-			QueueItem::List ql;
-			fileQueue.find(ql, root);
-			if(!ql.empty()) {
-				throw QueueException(_("This file is already queued"));
-			}
-		}
+		// This will be pretty slow on large queues...
+		if(BOOLSETTING(DONT_DL_ALREADY_QUEUED) && !(aFlags & QueueItem::FLAG_USER_LIST) && fileQueue.exists(root))
+			throw QueueException(_("This file is already queued"));
 
 		QueueItem* q = fileQueue.find(target);
 		if(q == NULL) {
