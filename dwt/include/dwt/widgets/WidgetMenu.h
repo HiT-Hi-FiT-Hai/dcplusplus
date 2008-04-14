@@ -470,13 +470,9 @@ private:
 
 	// its sub menus
 	std::vector< ObjectType > itsChildren;
-	// work around for gcc
-	std::vector< ObjectType > & itsChildrenRef;
 
 	// its item data
 	std::vector < ItemDataWrapper * > itsItemData;
-	// work around for gcc
-	std::vector < ItemDataWrapper * > & itsItemDataRef;
 
 	HMENU itsHandle;
 

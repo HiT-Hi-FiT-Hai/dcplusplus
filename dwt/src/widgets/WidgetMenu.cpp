@@ -60,8 +60,6 @@ font(font_)
 
 WidgetMenu::WidgetMenu( dwt::Widget* parent ) :
 isSysMenu(false),
-itsChildrenRef(itsChildren),
-itsItemDataRef(itsItemData),
 itsParent(parent),
 drawSidebar(false)
 {
@@ -133,7 +131,7 @@ void WidgetMenu::attach(HMENU hMenu, const Seed& cs) {
 				info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 
 				if(::SetMenuItemInfo(itsHandle, i, TRUE, &info))
-					itsItemDataRef.push_back( wrapper );
+					itsItemData.push_back( wrapper );
 				else
 					throw xCeption( _T( "SetMenuItemInfo in WidgetMenu::attach fizzled..." ) );
 			} else
@@ -236,11 +234,9 @@ int WidgetMenu::getItemIndex( unsigned int id )
 
 MenuItemDataPtr WidgetMenu::getData( int itemIndex )
 {
-	size_t i = 0;
-
-	for ( i = 0; i < itsItemDataRef.size(); ++i )
-		if ( itsItemDataRef[i]->index == itemIndex )
-			return itsItemDataRef[i]->data;
+	for(size_t i = 0; i < itsItemData.size(); ++i)
+		if(itsItemData[i]->index == itemIndex)
+			return itsItemData[i]->data;
 
 	return MenuItemDataPtr();
 }
@@ -249,7 +245,7 @@ WidgetMenu::~WidgetMenu()
 {
 	// Destroy this menu
 	::DestroyMenu( handle() );
-	std::for_each( itsItemDataRef.begin(), itsItemDataRef.end(), destroyItemDataWrapper );
+	std::for_each( itsItemData.begin(), itsItemData.end(), destroyItemDataWrapper );
 }
 
 void WidgetMenu::destroyItemDataWrapper( ItemDataWrapper * wrapper )
@@ -386,15 +382,13 @@ void WidgetMenu::setTitle( const SmartUtil::tstring & title, bool drawSidebar /*
 		if ( ( !hasTitle && ::InsertMenuItem( itsHandle, 0, TRUE, & info ) ) ||
 			( hasTitle && ::SetMenuItemInfo( itsHandle, 0, TRUE, & info ) ) )
 		{
-			size_t i = 0;
-
 			// adjust item data wrappers for all existing items
-			for ( i = 0; i < itsItemDataRef.size(); ++i )
-				if ( itsItemDataRef[i] )
-					++itsItemDataRef[i]->index;
+			for(size_t i = 0; i < itsItemData.size(); ++i)
+				if(itsItemData[i])
+					++itsItemData[i]->index;
 
 			// push back title
-			itsItemDataRef.push_back( wrapper );
+			itsItemData.push_back( wrapper );
 		}
 	}
 }
@@ -875,7 +869,7 @@ void WidgetMenu::appendSeparatorItem()
 	}
 
 	if ( ::InsertMenuItem( itsHandle, position, TRUE, & itemInfo ) && ownerDrawn )
-		itsItemDataRef.push_back( wrapper );
+		itsItemData.push_back( wrapper );
 }
 
 void WidgetMenu::removeItem( unsigned itemIndex )
@@ -886,39 +880,33 @@ void WidgetMenu::removeItem( unsigned itemIndex )
 	// try to remove item
 	if ( ::RemoveMenu( itsHandle, itemIndex, MF_BYPOSITION ) )
 	{
-		size_t i = 0;
-
 		if(ownerDrawn) {
 			ItemDataWrapper * wrapper = 0;
 			int itemRemoved = -1;
 
-			for ( i = 0; i < itsItemDataRef.size(); ++i )
-			{
+			for(size_t i = 0; i < itsItemData.size(); ++i) {
 				// get current data wrapper
-				wrapper = itsItemDataRef[i];
+				wrapper = itsItemData[i];
 
 				if ( wrapper->index == int(itemIndex) ) // if found
 				{
 					itemRemoved = int(i);
 					delete wrapper;
-					itsItemDataRef[i] = 0;
+					itsItemData[i] = 0;
 				}
 				else if ( wrapper->index > int(itemIndex) )
 					--wrapper->index; // adjust succeeding item indices
 			}
 
 			if( itemRemoved != -1 )
-				itsItemDataRef.erase( itsItemDataRef.begin() + itemRemoved );
+				itsItemData.erase( itsItemData.begin() + itemRemoved );
 		}
 
-		if ( popup != NULL ) // remove sub menus if any
-		{
-			for ( i = 0; i < itsChildrenRef.size(); ++i )
-			{
-				if ( itsChildrenRef[i]->itsHandle == popup )
-					itsChildrenRef[i].reset();
-			}
-		}
+		// remove sub menus if any
+		if(popup)
+			for(size_t i = 0; i < itsChildren.size(); ++i)
+				if(itsChildren[i]->handle() == popup)
+					itsChildren[i].reset();
 	}
 	else
 		throw xCeption( _T( "Couldn't remove item in removeItem()" ) );
@@ -979,7 +967,7 @@ void WidgetMenu::appendItem(unsigned int id, const SmartUtil::tstring & text, Me
 		( itemExists && ::SetMenuItemInfo( itsHandle, id, FALSE, & info ) ) )
 	{
 		if(ownerDrawn)
-			itsItemDataRef.push_back( wrapper );
+			itsItemData.push_back( wrapper );
 	}
 	else
 		throw xCeption( _T( "Couldn't insert/update item in WidgetMenu::appendItem" ) );
