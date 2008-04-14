@@ -155,9 +155,7 @@ private:
 		Map directories;
 		File::Set files;
 
-		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) :
-		name(aName), parent(aParent), fileTypes(0) {
-		}
+		Directory(const string& aName, Directory* aParent);
 
 		~Directory();
 

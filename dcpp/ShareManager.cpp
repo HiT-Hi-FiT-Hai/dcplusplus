@@ -75,6 +75,13 @@ ShareManager::~ShareManager() {
 	}
 }
 
+ShareManager::Directory::Directory(const string& aName, Directory* aParent) :
+	name(aName), 
+	parent(aParent), 
+	fileTypes(SearchManager::TYPE_DIRECTORY) 
+{
+}
+
 ShareManager::Directory::~Directory() {
 	for(MapIter i = directories.begin(); i != directories.end(); ++i)
 		delete i->second;
@@ -288,13 +295,12 @@ void ShareManager::load(SimpleXML& aXml) {
 
 			// add only unique directories
 			if(!hasVirtual(vName)) {
-				directories[realPath] = new Directory(virtualName, 0);
+				directories[realPath] = new Directory(vName, 0);
 			}
 		}
 		aXml.stepOut();
 	}
 }
-
 
 static const string SDIRECTORY = "Directory";
 static const string SFILE = "File";
@@ -317,7 +323,6 @@ struct ShareLoader : public SimpleXMLReader::CallBack {
 					}
 				} else if(cur) {
 					cur = new ShareManager::Directory(name, cur);
-					cur->addType(SearchManager::TYPE_DIRECTORY); // needed since we match our own name in directory searches
 					cur->getParent()->directories[cur->getName()] = cur;
 				}
 			}
@@ -658,7 +663,6 @@ private:
 
 ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory* aParent) {
 	Directory* dir = new Directory(Util::getLastDir(aName), aParent);
-	dir->addType(SearchManager::TYPE_DIRECTORY); // needed since we match our own name in directory searches
 
 	Directory::File::Set::iterator lastFileIter = dir->files.begin();
 
