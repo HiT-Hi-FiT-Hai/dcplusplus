@@ -303,7 +303,11 @@ void MainWindow::initToolbar() {
 	toolbar->appendItem(image++, T_("Settings"), std::tr1::bind(&MainWindow::handleSettings, this));
 	toolbar->appendItem(image++, T_("Notepad"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_NOTEPAD));
 	toolbar->appendSeparator();
-	toolbar->appendItem(image++, T_("\"What's this?\""), std::tr1::bind(&MainWindow::handleWhatsThis, this));
+	toolbar->appendItem(image++, T_(
+		"\"What's This?\" help button\n\n"
+		"Get help on specific parts of DC++\n\n"
+		"Click this button once and your mouse cursor will change into a help cursor; then click on the control for which you wish to get help for."
+		), std::tr1::bind(&MainWindow::handleWhatsThis, this));
 }
 
 void MainWindow::initStatusBar() {

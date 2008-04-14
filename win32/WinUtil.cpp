@@ -545,8 +545,7 @@ void WinUtil::help(HWND hWnd, unsigned id) {
 
 	if(id >= IDH_CSHELP_BEGIN && id <= IDH_CSHELP_END) {
 		// context-sensitive help; display a tooltip
-		HH_POPUP popup = { 0 };
-		popup.cbStruct = sizeof(HH_POPUP);
+		HH_POPUP popup = { sizeof(HH_POPUP) };
 		popup.idString = id;
 
 		RECT rect;
