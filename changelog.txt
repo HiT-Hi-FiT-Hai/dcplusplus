@@ -31,6 +31,7 @@
 * Fixed downloading multiple file lists with the enter key (poy)
 * Improved transfer speed averaging 
 * [L#212411] Fixed downloading multiple file lists (poy)
+* Added filter already shared from search results (thanks smir)
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)

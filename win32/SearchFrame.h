@@ -171,6 +171,9 @@ private:
 	CheckBoxPtr slots;
 	bool onlyFree;
 
+	CheckBoxPtr filter;
+	bool filterShared;
+
 	LabelPtr hubsLabel;
 	typedef TypedTable<HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
@@ -207,6 +210,7 @@ private:
 
 	void handlePurgeClicked();
 	void handleSlotsClicked();
+	void handleFilterClicked();
 	void handleShowUIClicked();
 	LRESULT handleHubItemChanged(WPARAM wParam, LPARAM lParam);
 	void handleDoubleClick();
