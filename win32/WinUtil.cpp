@@ -61,8 +61,8 @@ DWORD WinUtil::helpCookie = 0;
 const dwt::Button::Seed WinUtil::Seeds::button;
 const ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
 const ComboBox::Seed WinUtil::Seeds::comboBoxEdit;
-const dwt::Table::Seed WinUtil::Seeds::Table;
 const dwt::WidgetMenu::Seed WinUtil::Seeds::menu;
+const dwt::Table::Seed WinUtil::Seeds::Table;
 const TextBox::Seed WinUtil::Seeds::textBox;
 const dwt::Tree::Seed WinUtil::Seeds::treeView;
 
@@ -123,8 +123,8 @@ void WinUtil::init() {
 	dwt::Button::Seed& xbutton = const_cast<dwt::Button::Seed&>(Seeds::button);
 	ComboBox::Seed& xcomboBoxEdit = const_cast<ComboBox::Seed&>(Seeds::comboBoxEdit);
 	ComboBox::Seed& xcomboBoxStatic = const_cast<ComboBox::Seed&>(Seeds::comboBoxStatic);
-	dwt::Table::Seed& xTable = const_cast<dwt::Table::Seed&>(Seeds::Table);
 	dwt::WidgetMenu::Seed& xmenu = const_cast<dwt::WidgetMenu::Seed&>(Seeds::menu);
+	dwt::Table::Seed& xTable = const_cast<dwt::Table::Seed&>(Seeds::Table);
 	TextBox::Seed& xtextBox = const_cast<TextBox::Seed&>(Seeds::textBox);
 	dwt::Tree::Seed& xtreeView =  const_cast<dwt::Tree::Seed&>(Seeds::treeView);
 
@@ -135,16 +135,17 @@ void WinUtil::init() {
 
 	xcomboBoxEdit.style |= CBS_DROPDOWN | CBS_AUTOHSCROLL;
 	xcomboBoxEdit.font = font;
-	
+
+	if(BOOLSETTING(OWNER_DRAWN_MENUS)) {
+		xmenu.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
+		xmenu.font = font;
+	} else
+		xmenu.ownerDrawn = false;
+
 	xTable.style |= WS_HSCROLL | WS_VSCROLL | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 	xTable.exStyle = WS_EX_CLIENTEDGE;
 	xTable.lvStyle = LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER;
 	xTable.font = font;
-
-	if(BOOLSETTING(OWNER_DRAWN_MENUS))
-		xmenu.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
-	else
-		xmenu.ownerDrawn = false;
 
 	xtextBox.exStyle = WS_EX_CLIENTEDGE;
 	xtextBox.font = font;

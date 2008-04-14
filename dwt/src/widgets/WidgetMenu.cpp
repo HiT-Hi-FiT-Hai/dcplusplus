@@ -50,6 +50,14 @@ const int WidgetMenu::separatorHeight = 8;
 const int WidgetMenu::minSysMenuItemWidth = 130;
 Point WidgetMenu::defaultImageSize = Point( 16, 16 );
 
+WidgetMenu::Seed::Seed(bool ownerDrawn_, const MenuColorInfo& colorInfo_, FontPtr font_) :
+popup(true),
+ownerDrawn(ownerDrawn_),
+colorInfo(colorInfo_),
+font(font_)
+{
+}
+
 WidgetMenu::WidgetMenu( dwt::Widget* parent ) :
 isSysMenu(false),
 itsChildrenRef(itsChildren),
@@ -66,11 +74,16 @@ void WidgetMenu::createHelper(const Seed& cs) {
 	itsColorInfo = cs.colorInfo;
 
 	if(ownerDrawn) {
+		if(cs.font)
+			font = cs.font;
+		else
+			font = new Font(DefaultGuiFont);
+
 		{
 			LOGFONT lf;
-			::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
+			::GetObject(font->handle(), sizeof(lf), &lf);
 			lf.lfWeight = FW_BOLD;
-			itsTitleFont = dwt::FontPtr(new dwt::Font(::CreateFontIndirect(&lf), true));
+			itsTitleFont = FontPtr(new Font(::CreateFontIndirect(&lf), true));
 		}
 
 		// set default drawing
@@ -139,7 +152,7 @@ WidgetMenu::ObjectType WidgetMenu::appendPopup( const SmartUtil::tstring & text,
 {
 	// create popup menu pointer
 	ObjectType retVal ( new WidgetMenu(itsParent) );
-	retVal->create( Seed(ownerDrawn, itsColorInfo) );
+	retVal->create( Seed(ownerDrawn, itsColorInfo, font) );
 
 	// init structure for new item
 	MENUITEMINFO info;
@@ -365,8 +378,7 @@ void WidgetMenu::setTitle( const SmartUtil::tstring & title, bool drawSidebar /*
 		info.dwTypeData = const_cast< LPTSTR >( title.c_str() );
 
 		// created info for title item
-		MenuItemDataPtr data( new MenuItemData( itsTitleFont ) );
-		ItemDataWrapper * wrapper = new ItemDataWrapper( this, 0, data, true );
+		ItemDataWrapper * wrapper = new ItemDataWrapper( this, 0, MenuItemDataPtr( new MenuItemData() ), true );
 
 		// set item data
 		info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
@@ -449,13 +461,8 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	// setup buffered canvas
 	BufferedCanvas< FreeCanvas > canvas( reinterpret_cast<HWND>(wrapper->menu->handle()), drawInfo->hDC );
 
-	// this will conain adjusted sidebar width
+	// this will contain adjusted sidebar width
 	int sidebarWidth = 0;
-
-	// this will contain logical information
-	// about title font
-	LOGFONT lf;
-	memset( & lf, 0, sizeof( LOGFONT ) );
 
 	// this will contain adjusted(rotated) title font for sidebar
 	HFONT titleFont = NULL;
@@ -467,7 +474,8 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		FontPtr font = wrapper->menu->itsTitleFont;
 
 		// get logical info for title font
-		::GetObject( font->handle(), sizeof( LOGFONT ), & lf );
+		LOGFONT lf;
+		::GetObject(font->handle(), sizeof(lf), &lf);
 
 		// 90 degree rotation and bold
 		lf.lfOrientation = lf.lfEscapement = 900;
@@ -511,9 +519,11 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		// set title rectangle
 		Rectangle textRectangle( 0, 0, sidebarWidth, rect.bottom - rect.top );
 
-		// draw background
-		Brush brush ( colorInfo.colorStrip );
-		canvas.fillRectangle( textRectangle, brush );
+		{
+			// draw background
+			Brush brush(colorInfo.colorStrip);
+			canvas.fillRectangle(textRectangle, brush);
+		}
 
 		// draw title
 		textRectangle.pos.y += 10;
@@ -530,41 +540,24 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	// destroy title font
 	::DeleteObject( titleFont );
 
-	// set item background
+	bool highlight = (isSelected || isHighlighted) && !isDisabled;
+
 	{
-		Brush brush((wrapper->isMenuTitleItem || isMenuBar) ? colorInfo.colorStrip : colorInfo.colorMenu);
+		// set item background
+		Brush brush(highlight ? colorInfo.colorHighlight : (wrapper->isMenuTitleItem || isMenuBar) ? colorInfo.colorStrip : colorInfo.colorMenu);
 		canvas.fillRectangle(itemRectangle, brush);
 	}
 
-	if ( isMenuBar && isSelected ) // draw selected menu bar item
-	{
-		// TODO: Simulate shadow
-
-		// select pen for drawing broder
-		// and brush for filling item
-		COLORREF colorBorder = 0;
-		Canvas::Selector select_pen(canvas, *PenPtr(new Pen(colorBorder)));
-		canvas.rectangle( itemRectangle );
-	} // end if
-	else if ( ( isSelected || isHighlighted ) && !isDisabled ) // draw selected or highlighted menu item (if not inactive)
-	{
-		// select pen for drawing broder
-		// and brush for filling item
-		Canvas::Selector select_pen(canvas, *PenPtr(new Pen(colorInfo.colorHighlight)));
-		Canvas::Selector select_brush(canvas, *BrushPtr(new Brush(ColorUtilities::lightenColor( colorInfo.colorHighlight, 0.7 ))));
-
-		canvas.rectangle( itemRectangle );
-	} // end if
-	else if ( !isMenuBar && !wrapper->isMenuTitleItem ) // draw strip bar for menu items (except menu title item)
+	if(!highlight && !isMenuBar && !wrapper->isMenuTitleItem) // strip bar (on the left, where bitmaps go)
 	{
 		// create rectangle for strip bar
 		Rectangle stripRectangle ( itemRectangle );
 		stripRectangle.size.x = stripWidth;
 
 		// draw strip bar
-		Brush brush ( colorInfo.colorStrip );
-		canvas.fillRectangle( stripRectangle, brush );
-	} // end if
+		Brush brush(colorInfo.colorStrip);
+		canvas.fillRectangle(stripRectangle, brush);
+	}
 
 	if ( !isMenuBar && info.fType & MFT_SEPARATOR ) // draw separator
 	{
@@ -609,7 +602,10 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		canvas.setTextColor( isGrayed ? ::GetSysColor( COLOR_GRAYTEXT ) : wrapper->isMenuTitleItem ? colorInfo.colorTitleText : data->TextColor );
 
 		// Select item font
-		FontPtr font((static_cast<int>(::GetMenuDefaultItem(wrapper->menu->handle(), TRUE, GMDI_USEDISABLED)) == wrapper->index) ? wrapper->menu->itsTitleFont : data->Font);
+		FontPtr font =
+			(wrapper->isMenuTitleItem || (static_cast<int>(::GetMenuDefaultItem(wrapper->menu->handle(), TRUE, GMDI_USEDISABLED)) == wrapper->index))
+			? wrapper->menu->itsTitleFont
+			: wrapper->menu->font;
 
 		HGDIOBJ oldFont = ::SelectObject( canvas.handle(), font->handle() );
 
@@ -782,7 +778,7 @@ bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	SIZE textSize;
 	memset( & textSize, 0, sizeof( SIZE ) );
 
-	HGDIOBJ oldFont = ::SelectObject( hdc, data->Font->handle() );
+	HGDIOBJ oldFont = ::SelectObject( hdc, wrapper->menu->font->handle() );
 	::GetTextExtentPoint32( hdc, itemText.c_str(), ( int ) itemText.size(), & textSize );
 	::SelectObject( hdc, oldFont );
 

@@ -53,19 +53,14 @@ struct MenuItemData
 	/// Menu item text color
 	COLORREF TextColor;
 
-	/// Menu item font
-	FontPtr Font;
-
 	/// Menu item image
 	BitmapPtr Image;
 
 	/// Creates new menu item with specified data
 	MenuItemData(
-		FontPtr font = FontPtr( new dwt::Font( ( HFONT )::GetStockObject( DEFAULT_GUI_FONT ), false ) ),
 		BitmapPtr image = BitmapPtr( new Bitmap( ( HBITMAP ) NULL ) ), // defaults to empty bitmap
 		COLORREF textColor = ::GetSysColor( COLOR_MENUTEXT ) )
 		: TextColor( textColor ),
-		Font( font ),
 		Image( image )
 	{}
 };
@@ -138,10 +133,11 @@ public:
 	typedef std::tr1::shared_ptr<WidgetMenu> ObjectType;
 
 	struct Seed {
-		Seed(bool ownerDrawn_ = true, const MenuColorInfo& colorInfo_ = MenuColorInfo()) : popup(true), ownerDrawn(ownerDrawn_), colorInfo(colorInfo_) { }
+		Seed(bool ownerDrawn_ = true, const MenuColorInfo& colorInfo_ = MenuColorInfo(), FontPtr font_ = 0);
 		bool popup;
 		bool ownerDrawn;
 		MenuColorInfo colorInfo;
+		FontPtr font;
 	};
 
 	struct IdDispatcher
@@ -490,6 +486,8 @@ private:
 
 	// Contains information about menu colors
 	MenuColorInfo itsColorInfo;
+
+	FontPtr font;
 
 	// Menu title
 	SmartUtil::tstring itsTitle;
