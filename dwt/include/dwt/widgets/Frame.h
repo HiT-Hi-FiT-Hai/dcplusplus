@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Frame_h
-#define Frame_h
+#ifndef DWT_Frame_h
+#define DWT_Frame_h
 
 #include "../resources/Icon.h"
 #include "../aspects/AspectMinMax.h"

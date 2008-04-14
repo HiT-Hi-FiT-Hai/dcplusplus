@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef MDIParent_h
-#define MDIParent_h
+#ifndef DWT_MDIParent_h
+#define DWT_MDIParent_h
 
 #include "Control.h"
 #include "MDIFrame.h"

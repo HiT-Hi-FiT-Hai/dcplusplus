@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ApplicationPlatformCommon_h
-#define ApplicationPlatformCommon_h
+#ifndef DWT_ApplicationPlatformCommon_h
+#define DWT_ApplicationPlatformCommon_h
 
 namespace dwt {
 

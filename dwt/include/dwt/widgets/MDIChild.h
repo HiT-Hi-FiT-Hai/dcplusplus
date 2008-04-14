@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef MDIChild_h
-#define MDIChild_h
+#ifndef DWT_MDIChild_h
+#define DWT_MDIChild_h
 
 #ifndef WINCE
 

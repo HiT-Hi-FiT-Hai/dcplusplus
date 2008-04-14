@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectFont_h
-#define AspectFont_h
+#ifndef DWT_AspectFont_h
+#define DWT_AspectFont_h
 
 #include "../resources/Font.h"
 

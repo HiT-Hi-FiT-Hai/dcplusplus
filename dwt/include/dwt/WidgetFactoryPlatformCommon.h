@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef WidgetFactoryPlatformCommon_h
-#define WidgetFactoryPlatformCommon_h
+#ifndef DWT_WidgetFactoryPlatformCommon_h
+#define DWT_WidgetFactoryPlatformCommon_h
 
 namespace dwt {
 

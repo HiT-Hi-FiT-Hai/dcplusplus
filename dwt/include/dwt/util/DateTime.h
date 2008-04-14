@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef DateTime_H
-#define DateTime_H
+#ifndef DWT_DateTime_H
+#define DWT_DateTime_H
 
 #include <string.h>
 #include "../WindowsHeaders.h"

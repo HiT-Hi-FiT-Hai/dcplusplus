@@ -35,8 +35,8 @@
 
 #include <string>
 
-#ifndef tstring_smartwin_H
-#define tstring_smartwin_H
+#ifndef DWT_tstring_smartwin_H
+#define DWT_tstring_smartwin_H
 
 namespace SmartUtil
 {

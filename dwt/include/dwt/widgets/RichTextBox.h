@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef RichTextBox_h
-#define RichTextBox_h
+#ifndef DWT_RichTextBox_h
+#define DWT_RichTextBox_h
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 

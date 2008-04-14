@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef EVENTS_H_
-#define EVENTS_H_
+#ifndef DWT_EVENTS_H_
+#define DWT_EVENTS_H_
 
 #include "WindowsHeaders.h"
 #include "Point.h"

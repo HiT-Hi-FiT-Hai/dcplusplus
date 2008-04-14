@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef WINDOWCLASS_H_
-#define WINDOWCLASS_H_
+#ifndef DWT_WINDOWCLASS_H_
+#define DWT_WINDOWCLASS_H_
 
 #include "WindowsHeaders.h"
 #include "resources/Icon.h"

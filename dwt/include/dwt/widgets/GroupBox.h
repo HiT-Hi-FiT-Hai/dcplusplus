@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef GroupBox_h
-#define GroupBox_h
+#ifndef DWT_GroupBox_h
+#define DWT_GroupBox_h
 
 #include "Button.h"
 

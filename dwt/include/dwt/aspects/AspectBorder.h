@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectBorder_h
-#define AspectBorder_h
+#ifndef DWT_AspectBorder_h
+#define DWT_AspectBorder_h
 
 namespace dwt {
 

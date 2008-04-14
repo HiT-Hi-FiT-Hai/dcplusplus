@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectDragDrop_h
-#define AspectDragDrop_h
+#ifndef DWT_AspectDragDrop_h
+#define DWT_AspectDragDrop_h
 
 #ifndef WINCE // Not supported on WINCE platform
 

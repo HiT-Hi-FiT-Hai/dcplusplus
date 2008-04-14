@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Font_h
-#define Font_h
+#ifndef DWT_Font_h
+#define DWT_Font_h
 
 #include "../WindowsHeaders.h"
 #include "../util/tstring.h"

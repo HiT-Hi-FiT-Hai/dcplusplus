@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef RESOURCE_H_
-#define RESOURCE_H_
+#ifndef DWT_RESOURCE_H_
+#define DWT_RESOURCE_H_
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>

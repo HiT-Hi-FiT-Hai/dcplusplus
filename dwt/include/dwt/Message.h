@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Message_h
-#define Message_h
+#ifndef DWT_Message_h
+#define DWT_Message_h
 
 #include "WindowsHeaders.h"
 

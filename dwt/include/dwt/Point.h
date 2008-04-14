@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef BasicTypes_h
-#define BasicTypes_h
+#ifndef DWT_BasicTypes_h
+#define DWT_BasicTypes_h
 
 #include "WindowsHeaders.h"
 

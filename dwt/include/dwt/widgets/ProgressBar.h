@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ProgressBar_h
-#define ProgressBar_h
+#ifndef DWT_ProgressBar_h
+#define DWT_ProgressBar_h
 
 #include "../aspects/AspectPainting.h"
 #include "Control.h"

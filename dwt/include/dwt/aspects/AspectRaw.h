@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectRaw_h
-#define AspectRaw_h
+#ifndef DWT_AspectRaw_h
+#define DWT_AspectRaw_h
 
 #include "../Message.h"
 

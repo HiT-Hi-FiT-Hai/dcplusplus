@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef FORWARD_H_
-#define FORWARD_H_
+#ifndef DWT_FORWARD_H_
+#define DWT_FORWARD_H_
 
 namespace dwt {
 

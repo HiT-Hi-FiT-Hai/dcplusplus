@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef TabSheet_h
-#define TabSheet_h
+#ifndef DWT_TabSheet_h
+#define DWT_TabSheet_h
 
 #include "../resources/ImageList.h"
 #include "../Rectangle.h"

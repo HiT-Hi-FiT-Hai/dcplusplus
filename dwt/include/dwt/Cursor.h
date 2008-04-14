@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Cursor_h
-#define Cursor_h
+#ifndef DWT_Cursor_h
+#define DWT_Cursor_h
 
 #include "WindowsHeaders.h"
 

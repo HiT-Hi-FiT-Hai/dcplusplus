@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef WidgetCreator_h
-#define WidgetCreator_h
+#ifndef DWT_WidgetCreator_h
+#define DWT_WidgetCreator_h
 
 #include "Widget.h"
 

@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ACCELERATOR_H_
-#define ACCELERATOR_H_
+#ifndef DWT_ACCELERATOR_H_
+#define DWT_ACCELERATOR_H_
 
 #include "../Application.h"
 #include "Handle.h"

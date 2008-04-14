@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef WIDGETTABVIEW_H_
-#define WIDGETTABVIEW_H_
+#ifndef DWT_WIDGETTABVIEW_H_
+#define DWT_WIDGETTABVIEW_H_
 
 #include "../WindowClass.h"
 #include "../Policies.h"

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef CheckBox_h
-#define CheckBox_h
+#ifndef DWT_CheckBox_h
+#define DWT_CheckBox_h
 
 #include "Button.h"
 

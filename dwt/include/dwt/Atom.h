@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ATOM_H_
-#define ATOM_H_
+#ifndef DWT_ATOM_H_
+#define DWT_ATOM_H_
 
 #include "WindowsHeaders.h"
 

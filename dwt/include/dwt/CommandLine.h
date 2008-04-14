@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef CommandLine_h
-#define CommandLine_h
+#ifndef DWT_CommandLine_h
+#define DWT_CommandLine_h
 
 #include <boost/noncopyable.hpp>
 #include <vector>

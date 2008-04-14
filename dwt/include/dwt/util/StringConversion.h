@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef StringConversion_h
-#define StringConversion_h
+#ifndef DWT_StringConversion_h
+#define DWT_StringConversion_h
 
 #include <string>
 #include <boost/scoped_array.hpp>

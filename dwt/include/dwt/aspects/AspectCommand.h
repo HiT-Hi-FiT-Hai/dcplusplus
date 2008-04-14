@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ASPECTCOMMAND_
-#define ASPECTCOMMAND_
+#ifndef DWT_ASPECTCOMMAND_
+#define DWT_ASPECTCOMMAND_
 
 #include "../Message.h"
 #include "../Dispatchers.h"

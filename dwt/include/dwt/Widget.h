@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Widget_h
-#define Widget_h
+#ifndef DWT_Widget_h
+#define DWT_Widget_h
 
 #include "forward.h"
 #include "Atom.h"

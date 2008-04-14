@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ToolBar_h
-#define ToolBar_h
+#ifndef DWT_ToolBar_h
+#define DWT_ToolBar_h
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 

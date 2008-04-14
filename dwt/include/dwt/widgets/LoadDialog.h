@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef LoadDialog_h
-#define LoadDialog_h
+#ifndef DWT_LoadDialog_h
+#define DWT_LoadDialog_h
 
 #include "../Widget.h"
 #include "../util/tstring.h"

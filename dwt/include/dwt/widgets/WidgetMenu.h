@@ -34,8 +34,8 @@
 */
 
 #ifndef WINCE
-#ifndef WidgetMenu_h
-#define WidgetMenu_h
+#ifndef DWT_WidgetMenu_h
+#define DWT_WidgetMenu_h
 
 #include "../resources/Bitmap.h"
 #include "../resources/Font.h"

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef BRUSH_H_
-#define BRUSH_H_
+#ifndef DWT_BRUSH_H_
+#define DWT_BRUSH_H_
 
 #include "../WindowsHeaders.h"
 #include "Handle.h"

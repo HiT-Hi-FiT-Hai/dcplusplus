@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectEnabled_h
-#define AspectEnabled_h
+#ifndef DWT_AspectEnabled_h
+#define DWT_AspectEnabled_h
 
 #include "../Message.h"
 #include "../Dispatchers.h"

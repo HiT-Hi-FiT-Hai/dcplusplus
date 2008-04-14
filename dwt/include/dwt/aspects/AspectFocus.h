@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectFocus_h
-#define AspectFocus_h
+#ifndef DWT_AspectFocus_h
+#define DWT_AspectFocus_h
 
 #include "../Message.h"
 #include "../Dispatchers.h"

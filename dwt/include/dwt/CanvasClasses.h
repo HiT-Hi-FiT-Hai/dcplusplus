@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef CanvasClasses_h
-#define CanvasClasses_h
+#ifndef DWT_CanvasClasses_h
+#define DWT_CanvasClasses_h
 
 #include "Widget.h"
 #include "resources/Bitmap.h"

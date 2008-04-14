@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef SmartWin_h
-#define SmartWin_h
+#ifndef DWT_SmartWin_h
+#define DWT_SmartWin_h
 
 #ifdef _MSC_VER
 // We don't want the stupid "pointer trunctation" to 64 bit architecture warning.

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectFileFilter_h
-#define AspectFileFilter_h
+#ifndef DWT_AspectFileFilter_h
+#define DWT_AspectFileFilter_h
 
 #include "../WindowsHeaders.h"
 #include "../util/tstring.h"

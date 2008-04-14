@@ -3,8 +3,8 @@
  * Permission to use under the BSD license
  */
 
-#ifndef ANCHORS_H
-#define ANCHORS_H
+#ifndef DWT_ANCHORS_H
+#define DWT_ANCHORS_H
 
 #include "Widget.h"
 #include <stdexcept>

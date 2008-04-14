@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef MessageBox_h
-#define MessageBox_h
+#ifndef DWT_MessageBox_h
+#define DWT_MessageBox_h
 
 #include "../util/tstring.h"
 #include "../Widget.h"

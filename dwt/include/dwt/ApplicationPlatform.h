@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ApplicationPlatform_h
-#define ApplicationPlatform_h
+#ifndef DWT_ApplicationPlatform_h
+#define DWT_ApplicationPlatform_h
 
 #include "ApplicationPlatformCommon.h"
 #include "ApplicationPlatformDesktop.h"

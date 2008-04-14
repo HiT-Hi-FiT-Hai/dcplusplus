@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Policies_h
-#define Policies_h
+#ifndef DWT_Policies_h
+#define DWT_Policies_h
 
 #include "Widget.h"
 

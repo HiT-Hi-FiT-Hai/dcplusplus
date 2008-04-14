@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef CONTAINER_H_
-#define CONTAINER_H_
+#ifndef DWT_CONTAINER_H_
+#define DWT_CONTAINER_H_
 
 #include "Composite.h"
 

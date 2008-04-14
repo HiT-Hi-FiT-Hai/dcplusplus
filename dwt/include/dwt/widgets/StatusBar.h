@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef StatusBar_h
-#define StatusBar_h
+#ifndef DWT_StatusBar_h
+#define DWT_StatusBar_h
 
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"

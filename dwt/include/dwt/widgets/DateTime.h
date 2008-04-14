@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef DateTime_h
-#define DateTime_h
+#ifndef DWT_DateTime_h
+#define DWT_DateTime_h
 
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectFocus.h"

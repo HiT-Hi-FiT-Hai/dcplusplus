@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectPainting_h
-#define AspectPainting_h
+#ifndef DWT_AspectPainting_h
+#define DWT_AspectPainting_h
 
 #include "../CanvasClasses.h"
 

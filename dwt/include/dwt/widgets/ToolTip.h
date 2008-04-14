@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ToolTip_H_
-#define ToolTip_H_
+#ifndef DWT_ToolTip_H_
+#define DWT_ToolTip_H_
 
 #include "../Policies.h"
 #include "../aspects/AspectEnabled.h"

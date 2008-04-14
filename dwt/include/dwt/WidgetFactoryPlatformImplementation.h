@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef WidgetFactoryPlatformImplementation_h
-#define WidgetFactoryPlatformImplementation_h
+#ifndef DWT_WidgetFactoryPlatformImplementation_h
+#define DWT_WidgetFactoryPlatformImplementation_h
 
 #include "WidgetFactoryPlatformCommon.h"
 #include "WidgetFactoryPlatformSmartWinDesktop.h"

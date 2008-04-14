@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ListView_h
-#define ListView_h
+#ifndef DWT_ListView_h
+#define DWT_ListView_h
 
 #include "../Point.h"
 #include "../Rectangle.h"

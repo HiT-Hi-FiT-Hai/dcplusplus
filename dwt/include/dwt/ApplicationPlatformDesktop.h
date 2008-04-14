@@ -34,8 +34,8 @@
 */
 
 #ifndef WINCE
-#ifndef ApplicationPlatformDesktop_h
-#define ApplicationPlatformDesktop_h
+#ifndef DWT_ApplicationPlatformDesktop_h
+#define DWT_ApplicationPlatformDesktop_h
 
 namespace dwt {
 

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectKeyboard_h
-#define AspectKeyboard_h
+#ifndef DWT_AspectKeyboard_h
+#define DWT_AspectKeyboard_h
 
 #include "../Message.h"
 

@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ASPECTDATA_H_
-#define ASPECTDATA_H_
+#ifndef DWT_ASPECTDATA_H_
+#define DWT_ASPECTDATA_H_
 
 /** A Widget that associates some sort of data with each item */
 template<typename WidgetType, typename IndexType>

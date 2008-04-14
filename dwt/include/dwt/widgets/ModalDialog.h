@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ModalDialog_h
-#define ModalDialog_h
+#ifndef DWT_ModalDialog_h
+#define DWT_ModalDialog_h
 
 #include "../aspects/AspectDialog.h"
 #include "Frame.h"

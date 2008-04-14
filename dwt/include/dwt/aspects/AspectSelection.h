@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectSelection_h
-#define AspectSelection_h
+#ifndef DWT_AspectSelection_h
+#define DWT_AspectSelection_h
 
 #include "../Dispatchers.h"
 

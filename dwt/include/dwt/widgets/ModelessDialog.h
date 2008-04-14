@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ModelessDialog_h
-#define ModelessDialog_h
+#ifndef DWT_ModelessDialog_h
+#define DWT_ModelessDialog_h
 
 #include "../aspects/AspectDialog.h"
 #include "Frame.h"

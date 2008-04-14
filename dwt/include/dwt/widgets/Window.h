@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Window_h
-#define Window_h
+#ifndef DWT_Window_h
+#define DWT_Window_h
 
 #include "Frame.h"
 

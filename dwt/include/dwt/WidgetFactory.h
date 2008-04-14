@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef WidgetFactory_h
-#define WidgetFactory_h
+#ifndef DWT_WidgetFactory_h
+#define DWT_WidgetFactory_h
 
 #include "widgets/ColorDialog.h"
 #include "widgets/FolderDialog.h"

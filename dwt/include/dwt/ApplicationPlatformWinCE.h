@@ -34,8 +34,8 @@
 */
 
 #ifdef WINCE
-#ifndef ApplicationPlatformWinCE_h
-#define ApplicationPlatformWinCE_h
+#ifndef DWT_ApplicationPlatformWinCE_h
+#define DWT_ApplicationPlatformWinCE_h
 
 #include "Widget.h"
 

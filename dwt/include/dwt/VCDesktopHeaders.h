@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef VCDesktopHeaders_h
-#define VCDesktopHeaders_h
+#ifndef DWT_VCDesktopHeaders_h
+#define DWT_VCDesktopHeaders_h
 
 #ifndef __GNUC__
 #ifndef WINCE

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Tree_h
-#define Tree_h
+#ifndef DWT_Tree_h
+#define DWT_Tree_h
 
 #include "../Rectangle.h"
 #include "../resources/ImageList.h"

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef xCeptionSmartUtilities_h
-#define xCeptionSmartUtilities_h
+#ifndef DWT_xCeptionSmartUtilities_h
+#define DWT_xCeptionSmartUtilities_h
 
 #include <exception>
 

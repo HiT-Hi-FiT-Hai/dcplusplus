@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef DISPATCHERS_H_
-#define DISPATCHERS_H_
+#ifndef DWT_DISPATCHERS_H_
+#define DWT_DISPATCHERS_H_
 
 #include "WindowsHeaders.h"
 #include <functional>

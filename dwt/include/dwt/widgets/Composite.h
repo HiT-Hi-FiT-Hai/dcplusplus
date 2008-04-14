@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef COMPOSITE_H_
-#define COMPOSITE_H_
+#ifndef DWT_COMPOSITE_H_
+#define DWT_COMPOSITE_H_
 
 #include "../aspects/AspectActivate.h"
 #include "../aspects/AspectCommand.h"

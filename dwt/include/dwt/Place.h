@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef SMARTWIN_Place_h
-#define SMARTWIN_Place_h
+#ifndef DWT_SMARTWIN_Place_h
+#define DWT_SMARTWIN_Place_h
 
 #include "Point.h"
 #include "Rectangle.h"

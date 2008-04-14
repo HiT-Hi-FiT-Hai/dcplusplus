@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef RadioButton_h
-#define RadioButton_h
+#ifndef DWT_RadioButton_h
+#define DWT_RadioButton_h
 
 #include "Button.h"
 

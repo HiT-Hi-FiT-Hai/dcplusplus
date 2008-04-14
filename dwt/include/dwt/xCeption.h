@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef xCeption_h
-#define xCeption_h
+#ifndef DWT_xCeption_h
+#define DWT_xCeption_h
 
 #include "WindowsHeaders.h"
 #include "util/tstring.h"

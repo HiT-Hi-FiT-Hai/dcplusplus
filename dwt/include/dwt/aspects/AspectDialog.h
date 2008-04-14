@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ASPECTDIALOG_H_
-#define ASPECTDIALOG_H_
+#ifndef DWT_ASPECTDIALOG_H_
+#define DWT_ASPECTDIALOG_H_
 
 #include "../util/tstring.h"
 #include "../WidgetCreator.h"

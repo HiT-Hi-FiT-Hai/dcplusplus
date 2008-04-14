@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ImageList_h
-#define ImageList_h
+#ifndef DWT_ImageList_h
+#define DWT_ImageList_h
 
 #include "../WindowsHeaders.h"
 #include "../util/tstring.h"

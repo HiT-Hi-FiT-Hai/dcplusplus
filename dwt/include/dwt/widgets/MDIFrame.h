@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef MDIFrame_h
-#define MDIFrame_h
+#ifndef DWT_MDIFrame_h
+#define DWT_MDIFrame_h
 
 #include "Frame.h"
 

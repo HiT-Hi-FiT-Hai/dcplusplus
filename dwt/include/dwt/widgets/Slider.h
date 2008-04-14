@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Slider_h
-#define Slider_h
+#ifndef DWT_Slider_h
+#define DWT_Slider_h
 
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectPainting.h"

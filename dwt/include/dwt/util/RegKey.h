@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef RegKey_H
-#define RegKey_H
+#ifndef DWT_RegKey_H
+#define DWT_RegKey_H
 
 #include "../WindowsHeaders.h"
 #include "tstring.h"

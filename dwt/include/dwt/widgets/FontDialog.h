@@ -34,8 +34,8 @@
 */
 
 #ifndef WINCE
-#ifndef FontDialog_h
-#define FontDialog_h
+#ifndef DWT_FontDialog_h
+#define DWT_FontDialog_h
 
 #include "../Widget.h"
 

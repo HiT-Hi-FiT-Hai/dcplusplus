@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Threads_h
-#define Threads_h
+#ifndef DWT_Threads_h
+#define DWT_Threads_h
 
 #include "WindowsHeaders.h"
 #include <vector>

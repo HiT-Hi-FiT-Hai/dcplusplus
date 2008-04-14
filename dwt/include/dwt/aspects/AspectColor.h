@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectColor_h
-#define AspectColor_h
+#ifndef DWT_AspectColor_h
+#define DWT_AspectColor_h
 
 #include "../Message.h"
 #include "../resources/Brush.h"

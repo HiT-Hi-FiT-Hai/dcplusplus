@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef LibraryLoader_h
-#define LibraryLoader_h
+#ifndef DWT_LibraryLoader_h
+#define DWT_LibraryLoader_h
 
 #include "WindowsHeaders.h"
 #include "util/tstring.h"

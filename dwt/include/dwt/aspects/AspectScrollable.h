@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectScrollable_h
-#define AspectScrollable_h
+#ifndef DWT_AspectScrollable_h
+#define DWT_AspectScrollable_h
 
 #include "../Dispatchers.h"
 #include "../Message.h"

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectSizable_h
-#define AspectSizable_h
+#ifndef DWT_AspectSizable_h
+#define DWT_AspectSizable_h
 
 #include "../Widget.h"
 #include "../Place.h"

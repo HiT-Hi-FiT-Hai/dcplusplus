@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ASPECTBUTTON_H_
-#define ASPECTBUTTON_H_
+#ifndef DWT_ASPECTBUTTON_H_
+#define DWT_ASPECTBUTTON_H_
 
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Icon_h
-#define Icon_h
+#ifndef DWT_Icon_h
+#define DWT_Icon_h
 
 #include "../WindowsHeaders.h"
 #include "../util/tstring.h"

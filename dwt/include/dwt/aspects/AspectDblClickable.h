@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectDblClickable_h
-#define AspectDblClickable_h
+#ifndef DWT_AspectDblClickable_h
+#define DWT_AspectDblClickable_h
 
 #include "../Dispatchers.h"
 

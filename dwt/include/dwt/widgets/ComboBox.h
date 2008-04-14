@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ComboBox_h
-#define ComboBox_h
+#ifndef DWT_ComboBox_h
+#define DWT_ComboBox_h
 
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"

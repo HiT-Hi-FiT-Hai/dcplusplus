@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef TimeSpan_H
-#define TimeSpan_H
+#ifndef DWT_TimeSpan_H
+#define DWT_TimeSpan_H
 
 namespace SmartUtil
 {

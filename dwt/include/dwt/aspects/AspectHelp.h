@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ASPECTHELP_H_
-#define ASPECTHELP_H_
+#ifndef DWT_ASPECTHELP_H_
+#define DWT_ASPECTHELP_H_
 
 #include "../Message.h"
 #include <functional>

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef PEN_H_
-#define PEN_H_
+#ifndef DWT_PEN_H_
+#define DWT_PEN_H_
 
 #include "../WindowsHeaders.h"
 #include "Handle.h"

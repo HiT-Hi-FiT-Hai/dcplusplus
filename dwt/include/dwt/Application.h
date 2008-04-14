@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Application_h
-#define Application_h
+#ifndef DWT_Application_h
+#define DWT_Application_h
 
 #include "WindowsHeaders.h"
 #include "util/tstring.h"

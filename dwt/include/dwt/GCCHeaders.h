@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef GCCHeaders_h
-#define GCCHeaders_h
+#ifndef DWT_GCCHeaders_h
+#define DWT_GCCHeaders_h
 
 #ifdef __GNUC__
 

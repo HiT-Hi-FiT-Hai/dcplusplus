@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Spinner_h
-#define Spinner_h
+#ifndef DWT_Spinner_h
+#define DWT_Spinner_h
 
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectPainting.h"

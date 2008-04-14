@@ -34,8 +34,8 @@
 */
 
 #ifndef WINCE
-#ifndef WidgetFactoryPlatformSmartWinDesktop_h
-#define WidgetFactoryPlatformSmartWinDesktop_h
+#ifndef DWT_WidgetFactoryPlatformSmartWinDesktop_h
+#define DWT_WidgetFactoryPlatformSmartWinDesktop_h
 
 #include "WidgetFactoryPlatformCommon.h"
 #include "widgets/FontDialog.h"

@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ASPECTCOLLECTION_H_
-#define ASPECTCOLLECTION_H_
+#ifndef DWT_ASPECTCOLLECTION_H_
+#define DWT_ASPECTCOLLECTION_H_
 
 /** A control that holds a collection of items, such as a list or tree */
 template<typename WidgetType, typename IndexType>

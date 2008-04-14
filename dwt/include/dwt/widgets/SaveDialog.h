@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef SaveDialog_h
-#define SaveDialog_h
+#ifndef DWT_SaveDialog_h
+#define DWT_SaveDialog_h
 
 #include "../Widget.h"
 #include "../util/tstring.h"

@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef TextBox_h
-#define TextBox_h
+#ifndef DWT_TextBox_h
+#define DWT_TextBox_h
 
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectFocus.h"

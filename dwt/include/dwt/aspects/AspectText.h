@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectText_h
-#define AspectText_h
+#ifndef DWT_AspectText_h
+#define DWT_AspectText_h
 
 #include "../util/tstring.h"
 #include "../Dispatchers.h"

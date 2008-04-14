@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ColorDialog_h
-#define ColorDialog_h
+#ifndef DWT_ColorDialog_h
+#define DWT_ColorDialog_h
 
 #include "../Widget.h"
 

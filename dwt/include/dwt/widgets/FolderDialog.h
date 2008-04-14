@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef WidgetChooseFolder_h
-#define WidgetChooseFolder_h
+#ifndef DWT_WidgetChooseFolder_h
+#define DWT_WidgetChooseFolder_h
 
 #include "../Widget.h"
 #include "../util/tstring.h"

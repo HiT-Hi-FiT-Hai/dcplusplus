@@ -29,8 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef CONTROL_H_
-#define CONTROL_H_
+#ifndef DWT_CONTROL_H_
+#define DWT_CONTROL_H_
 
 #include "../Policies.h"
 

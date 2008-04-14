@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectMinMax_h
-#define AspectMinMax_h
+#ifndef DWT_AspectMinMax_h
+#define DWT_AspectMinMax_h
 
 #include "../WindowsHeaders.h"
 

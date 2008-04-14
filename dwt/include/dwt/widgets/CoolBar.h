@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef CoolBar_h
-#define CoolBar_h
+#ifndef DWT_CoolBar_h
+#define DWT_CoolBar_h
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 

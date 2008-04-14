@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef WindowsHeaders_h
-#define WindowsHeaders_h
+#ifndef DWT_WindowsHeaders_h
+#define DWT_WindowsHeaders_h
 
 // This file is supposed to contain (most at least) of the platform specific
 // defines and so on

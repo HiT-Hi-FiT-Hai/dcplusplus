@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectMouse_h
-#define AspectMouse_h
+#ifndef DWT_AspectMouse_h
+#define DWT_AspectMouse_h
 
 #include "../Events.h"
 #include "../Message.h"

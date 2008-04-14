@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef TableViewEditBox_h
-#define TableViewEditBox_h
+#ifndef DWT_TableViewEditBox_h
+#define DWT_TableViewEditBox_h
 
 #include "TextBox.h"
 

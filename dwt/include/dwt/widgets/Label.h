@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef Label_h
-#define Label_h
+#ifndef DWT_Label_h
+#define DWT_Label_h
 
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"

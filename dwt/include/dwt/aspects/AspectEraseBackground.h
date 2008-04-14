@@ -33,8 +33,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef AspectEraseBackground_h
-#define AspectEraseBackground_h
+#ifndef DWT_AspectEraseBackground_h
+#define DWT_AspectEraseBackground_h
 
 #include "../Message.h"
 #include "../CanvasClasses.h"
