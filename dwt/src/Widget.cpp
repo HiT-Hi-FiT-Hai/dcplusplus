@@ -48,6 +48,7 @@
 #include <dwt/Widget.h>
 
 #include <dwt/DWTException.h>
+#include <dwt/util/check.h>
 
 namespace dwt {
 
@@ -92,7 +93,12 @@ void Widget::setHandle(HWND hwnd) {
 		throw DWTException("You may not attach to a widget that's already attached");
 	}
 	itsHandle = hwnd;
-	::SetProp(hwnd, propAtom, reinterpret_cast<HANDLE>(this) );
+	dwtassert((::GetWindowLongPtr(hwnd, GWLP_USERDATA) == 0), "Userdata already set");
+	::SetLastError(0);
+	LONG_PTR ret = ::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+	if(ret == 0 && ::GetLastError() != 0) {
+		throw Win32Exception("Error while setting pointer");
+	}
 }
 
 void Widget::addRemoveStyle( DWORD addStyle, bool add )
@@ -142,8 +148,6 @@ void Widget::addRemoveExStyle( DWORD addStyle, bool add )
 			SWP_NOZORDER | SWP_FRAMECHANGED );
 	}
 }
-
-GlobalAtom Widget::propAtom(_T("dwt::Widget*"));
 
 void Widget::addCallback( const Message& msg, const CallbackType& callback ) {
 	itsCallbacks[msg].push_back(callback);
