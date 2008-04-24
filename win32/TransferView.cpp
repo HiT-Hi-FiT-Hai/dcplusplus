@@ -337,7 +337,6 @@ static inline void drawProgress(HDC hdc, const dwt::Rectangle& rcItem, int item,
 	int oldMode = ::SetBkMode(hdc, TRANSPARENT);
 
 	textRect.left += 6;
-	textRect.right -= 6;
 
 	long left = textRect.left;
 
@@ -350,7 +349,7 @@ static inline void drawProgress(HDC hdc, const dwt::Rectangle& rcItem, int item,
 	::ExtTextOut(hdc, left, top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
 
 	textRect.left = textRect.right;
-	textRect.right = rcItem.right() - 6;
+	textRect.right = rcItem.right();
 
 	::SetTextColor(hdc, WinUtil::textColor);
 	::ExtTextOut(hdc, left, top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
@@ -375,32 +374,34 @@ LRESULT TransferView::handleCustomDraw(WPARAM wParam, LPARAM lParam) {
 		if(cd->nmcd.hdr.hwndFrom == connections->handle() && column == CONNECTION_COLUMN_STATUS) {
 			HDC hdc = cd->nmcd.hdc;
 			ConnectionInfo* ci = reinterpret_cast<ConnectionInfo*>(cd->nmcd.lItemlParam);
-			const tstring& text = ci->columns[column];
-
-			RECT r;
-			ListView_GetSubItemRect( connections->handle(), item, column, LVIR_BOUNDS, &r );
-
-			int64_t chunk = ci->chunk == 0 ? 1 : ci->chunk;
-			double pos = static_cast<double>(ci->chunkPos) / chunk;
 			
-			drawProgress(hdc, r, item, column, text, pos, ci->download ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR));
-			
-			return CDRF_SKIPDEFAULT;
-		}
-		if(cd->nmcd.hdr.hwndFrom == downloads->handle() && column == DOWNLOAD_COLUMN_STATUS) {
+			if(ci->status == ConnectionInfo::STATUS_RUNNING && ci->chunk > 0 && ci->chunkPos >= 0) {
+				const tstring& text = ci->columns[column];
+	
+				RECT r;
+				ListView_GetSubItemRect( connections->handle(), item, column, LVIR_BOUNDS, &r );
+	
+				double pos = static_cast<double>(ci->chunkPos) / ci->chunk;
+				
+				drawProgress(hdc, r, item, column, text, pos, ci->download ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR));
+				
+				return CDRF_SKIPDEFAULT;
+			}
+		} else if(cd->nmcd.hdr.hwndFrom == downloads->handle() && column == DOWNLOAD_COLUMN_STATUS) {
 			HDC hdc = cd->nmcd.hdc;
 			DownloadInfo* di = reinterpret_cast<DownloadInfo*>(cd->nmcd.lItemlParam);
-			const tstring& text = di->columns[column];
-
-			RECT r;
-			ListView_GetSubItemRect( downloads->handle(), item, column, LVIR_BOUNDS, &r );
-
-			int64_t size = di->size == 0 ? 1 : di->size;
-			double pos = static_cast<double>(di->done) / size;
-			
-			drawProgress(hdc, r, item, column, text, pos, SETTING(DOWNLOAD_BAR_COLOR));
-			
-			return CDRF_SKIPDEFAULT;
+			if(di->size > 0 && di->done >= 0) {
+				const tstring& text = di->columns[column];
+	
+				RECT r;
+				ListView_GetSubItemRect( downloads->handle(), item, column, LVIR_BOUNDS, &r );
+	
+				double pos = static_cast<double>(di->done) / di->size;
+				
+				drawProgress(hdc, r, item, column, text, pos, SETTING(DOWNLOAD_BAR_COLOR));
+				
+				return CDRF_SKIPDEFAULT;
+			}
 		}
 		// Fall through
 	default:
@@ -536,7 +537,9 @@ TransferView::ConnectionInfo::ConnectionInfo(const UserPtr& u, bool aDownload) :
 	transfered(0),
 	lastTransfered(0),
 	queued(0),
-	speed(0)	
+	speed(0),
+	chunk(0),
+	chunkPos(0)
 {
 	columns[CONNECTION_COLUMN_USER] = WinUtil::getNicks(u);
 	columns[CONNECTION_COLUMN_HUB] = WinUtil::getHubNames(u).first;
@@ -608,6 +611,7 @@ TransferView::DownloadInfo::DownloadInfo(const string& target, int64_t size_, co
 	path(target), 
 	done(QueueManager::getInstance()->getPos(target)), 
 	size(size_), 
+	bps(0),
 	users(1),
 	tth(tth_)
 {
