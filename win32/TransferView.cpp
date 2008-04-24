@@ -365,10 +365,6 @@ static inline void drawProgress(HDC hdc, const dwt::Rectangle& rcItem, int item,
 }
 
 LRESULT TransferView::handleCustomDraw(WPARAM wParam, LPARAM lParam) {
-	if(!BOOLSETTING(SHOW_PROGRESS_BARS)) {
-		return 0;
-	}
-	
 	LPNMLVCUSTOMDRAW cd = (LPNMLVCUSTOMDRAW)lParam;
 	int item = (int)cd->nmcd.dwItemSpec;
 	int column = cd->iSubItem;

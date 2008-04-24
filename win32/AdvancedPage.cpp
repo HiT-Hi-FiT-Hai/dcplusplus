@@ -33,7 +33,6 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::MAGNET_REGISTER, N_("Register with Windows to handle magnet: URI links"), IDH_SETTINGS_ADVANCED_MAGNET_REGISTER },
 	{ SettingsManager::KEEP_LISTS, N_("Don't delete file lists when exiting"), IDH_SETTINGS_ADVANCED_KEEP_LISTS },
 	{ SettingsManager::AUTO_KICK, N_("Automatically disconnect users who leave the hub"), IDH_SETTINGS_ADVANCED_AUTO_KICK },
-// TODO	{ SettingsManager::SHOW_PROGRESS_BARS, N_("Show progress bars for transfers"), IDH_SETTINGS_ADVANCED_SHOW_PROGRESS_BARS },
 	{ SettingsManager::SFV_CHECK, N_("Enable automatic SFV checking"), IDH_SETTINGS_ADVANCED_SFV_CHECK },
 	{ SettingsManager::NO_AWAYMSG_TO_BOTS, N_("Don't send the away message to bots"), IDH_SETTINGS_ADVANCED_NO_AWAYMSG_TO_BOTS },
 	{ SettingsManager::ADLS_BREAK_ON_FIRST, N_("Break on first ADLSearch match"), IDH_SETTINGS_ADVANCED_ADLS_BREAK_ON_FIRST },
