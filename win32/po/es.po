@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-21 14:00+0200\n"
-"PO-Revision-Date: 2008-04-09 05:10+0000\n"
-"Last-Translator: Leonardo Gastón De Luca <Unknown>\n"
+"POT-Creation-Date: 2008-04-23 17:22+0200\n"
+"PO-Revision-Date: 2008-04-21 13:36+0000\n"
+"Last-Translator: Darío Ortega <docorreas+listas@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-04-21 11:52+0000\n"
+"X-Launchpad-Export-Date: 2008-04-23 11:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/AboutDlg.cpp:58
@@ -44,6 +44,12 @@ msgid ""
 "Click this button once and your mouse cursor will change into a help cursor; "
 "then click on the control for which you wish to get help for."
 msgstr ""
+"\"¿Qué es esto?\" El botón ayuda\n"
+"\n"
+"Obtén ayuda de partes específicas de DC++\n"
+"\n"
+"Pincha este botón una vez y el cursor del ratón cambiará al cursor de ayuda; "
+"entonces haz clic sobre el control del que deseas obtener ayuda."
 
 #: win32/MainWindow.cpp:876
 #, boost-format
@@ -60,9 +66,9 @@ msgid "%1% (%2$0.2f)"
 msgstr "%1% (%2$0.2f)"
 
 #: win32/WinUtil.cpp:429
-#, fuzzy, boost-format
+#, boost-format
 msgid "%1% files"
-msgstr "%1% Filtrado"
+msgstr "%1% archivos"
 
 #: win32/HashProgressDlg.cpp:94
 #, boost-format
@@ -304,6 +310,7 @@ msgid ""
 "A virtual directory named %1% already exists, do you wish to merge the "
 "contents?"
 msgstr ""
+"Un directorio virtual llamado %1% ya existe, ¿deseas combinar los contenidos?"
 
 #: win32/MainWindow.cpp:221 win32/MainWindow.cpp:298
 msgid "ADL Search"
@@ -364,7 +371,7 @@ msgstr "Los %1% usuarios están desconectados"
 
 #: win32/WinUtil.cpp:432 win32/WinUtil.cpp:440
 msgid "All files"
-msgstr ""
+msgstr "Todos los archivos"
 
 #: win32/CertificatesPage.cpp:60
 msgid "Allow TLS connections to clients without trusted certificate"
@@ -471,9 +478,9 @@ msgid "Average/s: %1%"
 msgstr "Media/s: %1%"
 
 #: win32/HubFrame.cpp:947
-#, fuzzy, boost-format
+#, boost-format
 msgid "Average: %1%"
-msgstr "Media/s: %1%"
+msgstr "Media: %1%"
 
 #: win32/WinUtil.cpp:282 win32/WinUtil.cpp:292
 msgid "Away mode off"
@@ -518,9 +525,8 @@ msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "ERROR de CRC32 (¿fichero corrupto?) (SFV-Check)"
 
 #: win32/SettingsDialog.cpp:79 win32/CommandDlg.cpp:156
-#, fuzzy
 msgid "Cancel"
-msgstr "&Cambiar"
+msgstr "Cancelar"
 
 #: win32/MainWindow.cpp:245
 msgid "Change Log"
@@ -571,9 +577,8 @@ msgid "Colors"
 msgstr "Colores"
 
 #: win32/SettingsDialog.cpp:101
-#, fuzzy
 msgid "Colors and sounds"
-msgstr "Apariencia\\Colores y Sonidos"
+msgstr "Colores y sonidos"
 
 #: win32/UCPage.cpp:67 win32/CommandDlg.cpp:97
 msgid "Command"
@@ -673,9 +678,8 @@ msgid "Country"
 msgstr "Pais"
 
 #: win32/CommandDlg.cpp:92
-#, fuzzy
 msgid "Create / Modify User Command"
-msgstr "Crear / Modificar Comando"
+msgstr "Crear / Modificar Comandos de Usuario"
 
 #: win32/HashProgressDlg.cpp:43
 msgid "Creating file index..."
@@ -902,7 +906,7 @@ msgstr "Activar transferencias seguras y comprimidas"
 
 #: win32/AdvancedPage.cpp:48
 msgid "Enable segmented downloads"
-msgstr ""
+msgstr "Activar descargas segmentadas"
 
 #: win32/ADLSProperties.cpp:109
 msgid "Enabled"
@@ -956,9 +960,8 @@ msgid "Exit"
 msgstr "Salir"
 
 #: win32/SettingsDialog.cpp:109
-#, fuzzy
 msgid "Experts only"
-msgstr "Avanzado\\Solo Expertos"
+msgstr "Sólo expertos"
 
 #: win32/NetworkPage.cpp:66
 msgid "External / WAN IP"
@@ -1020,9 +1023,8 @@ msgid "Favorite user added"
 msgstr "Usuario añadido a la lista de favoritos"
 
 #: win32/SettingsDialog.cpp:93
-#, fuzzy
 msgid "Favorites"
-msgstr "Hubs Favoritos"
+msgstr "Favoritos"
 
 #: win32/DirectoryListingFrame.cpp:40 win32/SearchFrame.cpp:33
 msgid "File"
@@ -1034,9 +1036,8 @@ msgid "File Hash:"
 msgstr "Hash del archivo:"
 
 #: win32/WinUtil.cpp:439
-#, fuzzy
 msgid "File Lists"
-msgstr "lista de archivos"
+msgstr "Listas de Archivos"
 
 #: win32/QueueFrame.cpp:474
 msgid "File not available"
@@ -1120,9 +1121,8 @@ msgid "Full tree does not match TTH root"
 msgstr "La estructura del árbol TTH no es correcta"
 
 #: win32/CertificatesPage.cpp:46
-#, fuzzy
 msgid "Generate certificates"
-msgstr "Avanzado\\Certeficados de Seguridad"
+msgstr "Generar certificados"
 
 #: win32/MainWindow.cpp:250
 msgid "GeoIP database update"
@@ -1151,9 +1151,8 @@ msgid "HTTP Proxy (for hublist only)"
 msgstr "Dirección HTTP proxy para bajar la lista de hubs"
 
 #: win32/SettingsDialog.cpp:83 win32/CommandDlg.cpp:160
-#, fuzzy
 msgid "Help"
-msgstr "&Ayuda"
+msgstr "Ayuda"
 
 #: win32/MainWindow.cpp:243
 msgid "Help &Contents\tF1"
@@ -1164,9 +1163,8 @@ msgid "Help forum"
 msgstr "Foro de ayuda"
 
 #: win32/SearchFrame.cpp:216
-#, fuzzy
 msgid "Hide files already in share"
-msgstr "No descargar si el archivo ya está compartido"
+msgstr "Ocultar archivos ya compartidos"
 
 #: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:986
 msgid "High"
@@ -1331,9 +1329,8 @@ msgid "KiB/s"
 msgstr "KB/s"
 
 #: win32/AppearancePage.cpp:45
-#, fuzzy
 msgid "Language"
-msgstr "Archivo de idioma"
+msgstr "Idioma"
 
 #: win32/AboutDlg.cpp:64
 msgid "Latest stable version"
@@ -1389,9 +1386,8 @@ msgid "Login"
 msgstr "Usuario"
 
 #: win32/SettingsDialog.cpp:108
-#, fuzzy
 msgid "Logs"
-msgstr "Usuario"
+msgstr "Registros"
 
 #: win32/WinUtil.cpp:390
 msgid "Lookup TTH at Bitzi.com"
@@ -1435,7 +1431,7 @@ msgstr[1] "Encontrados %1%  archivos"
 
 #: win32/ADLSProperties.cpp:78
 msgid "Max FileSize"
-msgstr ""
+msgstr "Tamaño Máximo de archivo"
 
 #: win32/PublicHubsFrame.cpp:57
 msgid "Max Hubs"
@@ -1480,7 +1476,7 @@ msgstr "Mb/s"
 
 #: win32/ADLSProperties.cpp:77
 msgid "Min FileSize"
-msgstr ""
+msgstr "Tamaño Mínimo de archivo"
 
 #: win32/PublicHubsFrame.cpp:55
 msgid "Min Share"
@@ -1620,7 +1616,7 @@ msgstr "Sonido de notificación"
 
 #: win32/SettingsDialog.cpp:75 win32/CommandDlg.cpp:152
 msgid "OK"
-msgstr ""
+msgstr "Aceptar"
 
 #: win32/WinUtil.cpp:351
 msgid "Offline"
@@ -1703,9 +1699,8 @@ msgid "Own certificate file"
 msgstr ""
 
 #: win32/Advanced3Page.cpp:73
-#, fuzzy
 msgid "PID"
-msgstr "CID"
+msgstr "PID"
 
 #: win32/CommandDlg.cpp:115
 msgid "PM"
@@ -1791,9 +1786,8 @@ msgid "Priority"
 msgstr "Prioridad"
 
 #: win32/CertificatesPage.cpp:43
-#, fuzzy
 msgid "Private key file"
-msgstr "Mensaje Privado"
+msgstr "Archivo de clave privada"
 
 #: win32/TabsPage.cpp:34
 msgid "Private message"
@@ -1822,9 +1816,8 @@ msgid "Purge"
 msgstr "Depurar"
 
 #: win32/SettingsDialog.cpp:94
-#, fuzzy
 msgid "Queue"
-msgstr "En cola"
+msgstr "Cola"
 
 #: win32/TransferView.cpp:48
 msgid "Queued"
@@ -2003,9 +1996,8 @@ msgstr[0] "Buscando muy rápido, próxima búsqueda en %1% segundo"
 msgstr[1] "Buscando muy rápido, próxima búsqueda en %1% segundos"
 
 #: win32/SettingsDialog.cpp:111
-#, fuzzy
 msgid "Security Certificates"
-msgstr "Avanzado\\Certeficados de Seguridad"
+msgstr "Certificados de Seguridad"
 
 #: win32/Appearance2Page.cpp:45
 msgid "Select &text style"
@@ -2412,9 +2404,8 @@ msgid "User"
 msgstr "Usuario"
 
 #: win32/SettingsDialog.cpp:110
-#, fuzzy
 msgid "User Commands"
-msgstr "Avanzado\\Comandos"
+msgstr "Comandos de usuario"
 
 #: win32/FavHubsFrame.cpp:37
 msgid "User Description"

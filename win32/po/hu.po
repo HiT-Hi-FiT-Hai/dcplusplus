@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-21 14:00+0200\n"
-"PO-Revision-Date: 2008-04-16 09:17+0000\n"
+"POT-Creation-Date: 2008-04-23 17:22+0200\n"
+"PO-Revision-Date: 2008-04-21 16:20+0000\n"
 "Last-Translator: eMTee <Unknown>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-04-21 11:52+0000\n"
+"X-Launchpad-Export-Date: 2008-04-23 11:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/AboutDlg.cpp:58
@@ -302,6 +302,15 @@ msgstr ""
 "A DC++ kapott egy MAGNET linket, de ez nem tartalmazott olyan érvényes fájl "
 "hash-t ami a Direct Connect hálózatban használható. A DC++ nem hajt végre "
 "semmilyen műveletet."
+
+#: win32/UploadPage.cpp:266
+#, boost-format
+msgid ""
+"A virtual directory named %1% already exists, do you wish to merge the "
+"contents?"
+msgstr ""
+"Egy %1% nevű virtuális könyvtár már létezik, kívánod tartalmát összevonni a "
+"hozzáadottal?"
 
 #: win32/MainWindow.cpp:221 win32/MainWindow.cpp:298
 msgid "ADL Search"
@@ -1115,9 +1124,10 @@ msgstr "Teljes útvonal"
 msgid "Full tree does not match TTH root"
 msgstr "A teljes fa nem megfelelő a TTH gyökérhez"
 
+# Nem fér ki több
 #: win32/CertificatesPage.cpp:46
 msgid "Generate certificates"
-msgstr "Tanúsítványok létrehozása"
+msgstr "Tanúsítványok létreh."
 
 #: win32/MainWindow.cpp:250
 msgid "GeoIP database update"

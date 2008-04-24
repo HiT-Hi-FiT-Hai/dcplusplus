@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-21 14:00+0200\n"
-"PO-Revision-Date: 2008-04-07 13:02+0000\n"
-"Last-Translator: Ionuț Jula <ionutjula@gmail.com>\n"
+"POT-Creation-Date: 2008-04-23 17:22+0200\n"
+"PO-Revision-Date: 2008-04-22 09:13+0000\n"
+"Last-Translator: Adrian Moș <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n == 1 ? 0: (((n % 100 > 19) || ((n % 100 "
 "== 0) && (n != 0))) ? 2: 1));\n"
-"X-Launchpad-Export-Date: 2008-04-21 11:52+0000\n"
+"X-Launchpad-Export-Date: 2008-04-23 11:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/AboutDlg.cpp:58
@@ -44,6 +44,12 @@ msgid ""
 "Click this button once and your mouse cursor will change into a help cursor; "
 "then click on the control for which you wish to get help for."
 msgstr ""
+"Butonul de ajutor \"Ce e aceasta?\"\n"
+"\n"
+"Afișare ajutor pentru părți specifice ale DC++\n"
+"\n"
+"Apăsați acest buton o dată și cursorul mouse-ului se va schimba; după aceea "
+"faceți click pe elementul în legătură cu care doriți ajutor."
 
 #: win32/MainWindow.cpp:876
 #, boost-format
@@ -60,9 +66,9 @@ msgid "%1% (%2$0.2f)"
 msgstr "%1% (%2$0.2f)"
 
 #: win32/WinUtil.cpp:429
-#, fuzzy, boost-format
+#, boost-format
 msgid "%1% files"
-msgstr "%1% filtrat"
+msgstr "%1% fișiere"
 
 #: win32/HashProgressDlg.cpp:94
 #, boost-format
@@ -143,9 +149,8 @@ msgid "&Connect"
 msgstr "&Conectare"
 
 #: win32/UsersFrame.cpp:185
-#, fuzzy
 msgid "&Description"
-msgstr "Descriere"
+msgstr "&Descriere"
 
 #: win32/TransferView.cpp:188
 msgid "&Disconnect"
@@ -305,6 +310,7 @@ msgid ""
 "A virtual directory named %1% already exists, do you wish to merge the "
 "contents?"
 msgstr ""
+"Un subdirector virtual numit %1% există deja, doriți să uniți conținutul?"
 
 #: win32/MainWindow.cpp:221 win32/MainWindow.cpp:298
 msgid "ADL Search"
@@ -364,7 +370,7 @@ msgstr "Toți cei %1% utilizatori offline"
 
 #: win32/WinUtil.cpp:432 win32/WinUtil.cpp:440
 msgid "All files"
-msgstr ""
+msgstr "Toate fișierele"
 
 #: win32/CertificatesPage.cpp:60
 msgid "Allow TLS connections to clients without trusted certificate"
@@ -467,9 +473,9 @@ msgid "Average/s: %1%"
 msgstr "Media/s: %1%"
 
 #: win32/HubFrame.cpp:947
-#, fuzzy, boost-format
+#, boost-format
 msgid "Average: %1%"
-msgstr "Media/s: %1%"
+msgstr "Medie: %1%"
 
 #: win32/WinUtil.cpp:282 win32/WinUtil.cpp:292
 msgid "Away mode off"
@@ -514,9 +520,8 @@ msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "Inconsistență CRC32 (Verificare SFV)"
 
 #: win32/SettingsDialog.cpp:79 win32/CommandDlg.cpp:156
-#, fuzzy
 msgid "Cancel"
-msgstr "&Modifică"
+msgstr "Renunță"
 
 #: win32/MainWindow.cpp:245
 msgid "Change Log"
@@ -567,9 +572,8 @@ msgid "Colors"
 msgstr "Culori"
 
 #: win32/SettingsDialog.cpp:101
-#, fuzzy
 msgid "Colors and sounds"
-msgstr "Aspect\\Culori și sunete"
+msgstr "Culori și sunete"
 
 #: win32/UCPage.cpp:67 win32/CommandDlg.cpp:97
 msgid "Command"
@@ -669,9 +673,8 @@ msgid "Country"
 msgstr "Țara"
 
 #: win32/CommandDlg.cpp:92
-#, fuzzy
 msgid "Create / Modify User Command"
-msgstr "Creează / Modifică Comanda"
+msgstr "Crează / modifică comandă personalizată"
 
 #: win32/HashProgressDlg.cpp:43
 msgid "Creating file index..."
@@ -900,7 +903,7 @@ msgstr "Activează transferurile sigure și comprimate"
 
 #: win32/AdvancedPage.cpp:48
 msgid "Enable segmented downloads"
-msgstr ""
+msgstr "Activează descărcare segmentată"
 
 #: win32/ADLSProperties.cpp:109
 msgid "Enabled"
@@ -931,14 +934,12 @@ msgid "Errors"
 msgstr "Erori"
 
 #: win32/Appearance2Page.cpp:57
-#, fuzzy
 msgid "Every time a main chat message is received"
-msgstr "Emite un sunet enervant când se recepționează un mesaj privat"
+msgstr "De fiecare dată când un mesaj public e recepționat"
 
 #: win32/Appearance2Page.cpp:58
-#, fuzzy
 msgid "Every time a private message is received"
-msgstr "Emite un sunet enervant când se recepționează un mesaj privat"
+msgstr "De fiecare dată când un mesaj privat e recepționat"
 
 #: win32/QueueFrame.cpp:45 win32/DirectoryListingFrame.cpp:42
 #: win32/SearchFrame.cpp:41
@@ -954,9 +955,8 @@ msgid "Exit"
 msgstr "Ieşire"
 
 #: win32/SettingsDialog.cpp:109
-#, fuzzy
 msgid "Experts only"
-msgstr "Avansat\\Pentru experți"
+msgstr "Pentru experți"
 
 #: win32/NetworkPage.cpp:66
 msgid "External / WAN IP"
@@ -1016,9 +1016,8 @@ msgid "Favorite user added"
 msgstr "Utilizator favorit adăugat"
 
 #: win32/SettingsDialog.cpp:93
-#, fuzzy
 msgid "Favorites"
-msgstr "Huburile Favorite"
+msgstr "Favorite"
 
 #: win32/DirectoryListingFrame.cpp:40 win32/SearchFrame.cpp:33
 msgid "File"
@@ -1029,9 +1028,8 @@ msgid "File Hash:"
 msgstr "Index-ul fișierului:"
 
 #: win32/WinUtil.cpp:439
-#, fuzzy
 msgid "File Lists"
-msgstr "listă de fișiere"
+msgstr "Liste de fișiere"
 
 #: win32/QueueFrame.cpp:474
 msgid "File not available"
@@ -1115,9 +1113,8 @@ msgid "Full tree does not match TTH root"
 msgstr "Arborele complet nu se potrivește cu rădacina TTH"
 
 #: win32/CertificatesPage.cpp:46
-#, fuzzy
 msgid "Generate certificates"
-msgstr "Avansat\\Certificate de securitate"
+msgstr "Generează certificate"
 
 #: win32/MainWindow.cpp:250
 msgid "GeoIP database update"
@@ -1146,9 +1143,8 @@ msgid "HTTP Proxy (for hublist only)"
 msgstr "Proxy HTTP (numai pentru lista de huburi)"
 
 #: win32/SettingsDialog.cpp:83 win32/CommandDlg.cpp:160
-#, fuzzy
 msgid "Help"
-msgstr "&Ajutor"
+msgstr "Ajutor"
 
 #: win32/MainWindow.cpp:243
 msgid "Help &Contents\tF1"
@@ -1159,9 +1155,8 @@ msgid "Help forum"
 msgstr "Forumul de Ajutor"
 
 #: win32/SearchFrame.cpp:216
-#, fuzzy
 msgid "Hide files already in share"
-msgstr "Nu descărca fișiere deja partajate"
+msgstr "Ascunde fișierele deja în partaj"
 
 #: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:986
 msgid "High"
@@ -1326,9 +1321,8 @@ msgid "KiB/s"
 msgstr "KiB/s"
 
 #: win32/AppearancePage.cpp:45
-#, fuzzy
 msgid "Language"
-msgstr "Fișierul de limbă"
+msgstr "Limbă"
 
 #: win32/AboutDlg.cpp:64
 msgid "Latest stable version"
@@ -1384,9 +1378,8 @@ msgid "Login"
 msgstr "Autentificare"
 
 #: win32/SettingsDialog.cpp:108
-#, fuzzy
 msgid "Logs"
-msgstr "Autentificare"
+msgstr "Jurnale"
 
 #: win32/WinUtil.cpp:390
 msgid "Lookup TTH at Bitzi.com"
@@ -1611,7 +1604,7 @@ msgstr "Sunet de atenționare"
 
 #: win32/SettingsDialog.cpp:75 win32/CommandDlg.cpp:152
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: win32/WinUtil.cpp:351
 msgid "Offline"
@@ -1691,12 +1684,11 @@ msgstr "Setările Conexiunii de Ieșire"
 
 #: win32/CertificatesPage.cpp:44
 msgid "Own certificate file"
-msgstr ""
+msgstr "Certificat propriu"
 
 #: win32/Advanced3Page.cpp:73
-#, fuzzy
 msgid "PID"
-msgstr "CID"
+msgstr "PID"
 
 #: win32/CommandDlg.cpp:115
 msgid "PM"
@@ -1782,9 +1774,8 @@ msgid "Priority"
 msgstr "Prioritate"
 
 #: win32/CertificatesPage.cpp:43
-#, fuzzy
 msgid "Private key file"
-msgstr "Mesaj Privat"
+msgstr "Cheie privată"
 
 #: win32/TabsPage.cpp:34
 msgid "Private message"
@@ -1813,9 +1804,8 @@ msgid "Purge"
 msgstr "Curăță"
 
 #: win32/SettingsDialog.cpp:94
-#, fuzzy
 msgid "Queue"
-msgstr "În coadă"
+msgstr "Coadă"
 
 #: win32/TransferView.cpp:48
 msgid "Queued"
@@ -1996,9 +1986,8 @@ msgstr[1] "Căutare prea devreme după ultima, următoarea în %1% secunde"
 msgstr[2] "Căutare prea devreme după ultima, următoarea în %1% secunde"
 
 #: win32/SettingsDialog.cpp:111
-#, fuzzy
 msgid "Security Certificates"
-msgstr "Avansat\\Certificate de securitate"
+msgstr "Certificate de securitate"
 
 #: win32/Appearance2Page.cpp:45
 msgid "Select &text style"
@@ -2223,9 +2212,8 @@ msgid "Tab highlight on content change"
 msgstr "Evidențiază tabul cînd i se schimbă conținutul"
 
 #: win32/SettingsDialog.cpp:102
-#, fuzzy
 msgid "Tabs"
-msgstr "Total"
+msgstr "Tab-uri"
 
 #: win32/HubFrame.cpp:40
 msgid "Tag"
@@ -2290,7 +2278,7 @@ msgstr "Transferat (raport)"
 
 #: win32/CertificatesPage.cpp:45
 msgid "Trusted certificates path"
-msgstr ""
+msgstr "Calea spre certificatele de încredere"
 
 #: win32/QueueFrame.cpp:49 win32/DirectoryListingFrame.cpp:41
 #: win32/SearchFrame.cpp:35
@@ -2406,9 +2394,8 @@ msgid "User"
 msgstr "Utilizator"
 
 #: win32/SettingsDialog.cpp:110
-#, fuzzy
 msgid "User Commands"
-msgstr "Avansat\\Comenzi personalizate"
+msgstr "Comenzi personalizate"
 
 #: win32/FavHubsFrame.cpp:37
 msgid "User Description"
@@ -2471,18 +2458,16 @@ msgid "Waiting to retry"
 msgstr "În așteptare pentru reîncercare"
 
 #: win32/Appearance2Page.cpp:59
-#, fuzzy
 msgid "When a private message window is opened"
-msgstr "Emite un sunet enervant când se deschide o fereastră de mesaj privat"
+msgstr "Când o fereastră de mesaj privat se deschide"
 
 #: win32/WindowsPage.cpp:29
 msgid "Window options"
 msgstr "Opțiuni pentru Ferestre"
 
 #: win32/SettingsDialog.cpp:103
-#, fuzzy
 msgid "Windows"
-msgstr "&Fereastră"
+msgstr "Ferestre"
 
 #: win32/Advanced3Page.cpp:75
 msgid "Write buffer size"

@@ -152,7 +152,7 @@ env.Append(SCANNERS=[SWIGScanner])
 # internationalization (ardour.org provided the initial idea)
 #
 
-po_args = ['msgmerge', '-q', '--update', '--backup=none', '$TARGET', '$SOURCE']
+po_args = ['msgmerge', '-q', '--update', '--backup=none', '--no-location', '$TARGET', '$SOURCE']
 po_bld = Builder (action = Action([po_args], 'Updating translation $TARGET from $SOURCES'))
 env.Append(BUILDERS = {'PoBuild' : po_bld})
 

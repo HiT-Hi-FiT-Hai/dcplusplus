@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-21 14:00+0200\n"
-"PO-Revision-Date: 2008-03-21 12:27+0000\n"
+"POT-Creation-Date: 2008-04-23 17:22+0200\n"
+"PO-Revision-Date: 2008-04-21 13:19+0000\n"
 "Last-Translator: maksis <maksis@adrenaline-network.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-04-21 11:52+0000\n"
+"X-Launchpad-Export-Date: 2008-04-23 11:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/AboutDlg.cpp:58
@@ -43,6 +43,13 @@ msgid ""
 "Click this button once and your mouse cursor will change into a help cursor; "
 "then click on the control for which you wish to get help for."
 msgstr ""
+"\"Mikä tämä on?\" -ohjepainike\n"
+"\n"
+"Katso ohjeita haluamistasi DC++:n osista\n"
+"\n"
+"Napasauta tätä painiketta kerran, jolloin hiiren kursori muuttuu "
+"ohjekursoriksi. Napsauta sen jälkeen sitä aluetta ruudulta, josta haluat "
+"nähdä ohjeita."
 
 #: win32/MainWindow.cpp:876
 #, boost-format
@@ -59,9 +66,9 @@ msgid "%1% (%2$0.2f)"
 msgstr "%1% (%2$0.2f)"
 
 #: win32/WinUtil.cpp:429
-#, fuzzy, boost-format
+#, boost-format
 msgid "%1% files"
-msgstr "%1% suodatettu"
+msgstr "%1% tiedostoa"
 
 #: win32/HashProgressDlg.cpp:94
 #, boost-format
@@ -140,9 +147,8 @@ msgid "&Connect"
 msgstr "&Yhdistä"
 
 #: win32/UsersFrame.cpp:185
-#, fuzzy
 msgid "&Description"
-msgstr "Kuvaus"
+msgstr "&Kuvaus"
 
 #: win32/TransferView.cpp:188
 msgid "&Disconnect"
@@ -302,7 +308,7 @@ msgstr ""
 msgid ""
 "A virtual directory named %1% already exists, do you wish to merge the "
 "contents?"
-msgstr ""
+msgstr "Virtuaalikansio %1% on jo olemassa, haluatko yhdistää sisällöt?"
 
 #: win32/MainWindow.cpp:221 win32/MainWindow.cpp:298
 msgid "ADL Search"
@@ -362,7 +368,7 @@ msgstr "Kaikki %1% käyttäjää offline-tilassa"
 
 #: win32/WinUtil.cpp:432 win32/WinUtil.cpp:440
 msgid "All files"
-msgstr ""
+msgstr "Kaikki tiedostot"
 
 #: win32/CertificatesPage.cpp:60
 msgid "Allow TLS connections to clients without trusted certificate"
@@ -466,9 +472,9 @@ msgid "Average/s: %1%"
 msgstr "Keskiarvo/s: %1%"
 
 #: win32/HubFrame.cpp:947
-#, fuzzy, boost-format
+#, boost-format
 msgid "Average: %1%"
-msgstr "Keskiarvo/s: %1%"
+msgstr "Keskiarvo: %1%"
 
 #: win32/WinUtil.cpp:282 win32/WinUtil.cpp:292
 msgid "Away mode off"
@@ -513,9 +519,8 @@ msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32-ristiriita (SFV-tarkastus)"
 
 #: win32/SettingsDialog.cpp:79 win32/CommandDlg.cpp:156
-#, fuzzy
 msgid "Cancel"
-msgstr "&Muuta"
+msgstr "Peruuta"
 
 #: win32/MainWindow.cpp:245
 msgid "Change Log"
@@ -566,9 +571,8 @@ msgid "Colors"
 msgstr "Värit"
 
 #: win32/SettingsDialog.cpp:101
-#, fuzzy
 msgid "Colors and sounds"
-msgstr "Ulkoasu\\Värit ja äänet"
+msgstr "Värit ja äänet"
 
 #: win32/UCPage.cpp:67 win32/CommandDlg.cpp:97
 msgid "Command"
@@ -668,9 +672,8 @@ msgid "Country"
 msgstr "Maa"
 
 #: win32/CommandDlg.cpp:92
-#, fuzzy
 msgid "Create / Modify User Command"
-msgstr "Luo / Muokkaa komento"
+msgstr "Luo / Muokkaa käyttäjäkomentoja"
 
 #: win32/HashProgressDlg.cpp:43
 msgid "Creating file index..."
@@ -898,7 +901,7 @@ msgstr "Käytä suojattua ja pakattua tiedostojen siirtoa"
 
 #: win32/AdvancedPage.cpp:48
 msgid "Enable segmented downloads"
-msgstr ""
+msgstr "Käytä palottain lataamista"
 
 #: win32/ADLSProperties.cpp:109
 msgid "Enabled"
@@ -929,14 +932,12 @@ msgid "Errors"
 msgstr "Virheet"
 
 #: win32/Appearance2Page.cpp:57
-#, fuzzy
 msgid "Every time a main chat message is received"
-msgstr "Anna äänimerkki aina yksityisviesti vastaanotettaessa"
+msgstr "Joka kerta kun main chat -viesti vastaanotetaan"
 
 #: win32/Appearance2Page.cpp:58
-#, fuzzy
 msgid "Every time a private message is received"
-msgstr "Anna äänimerkki aina yksityisviesti vastaanotettaessa"
+msgstr "Joka kerta kun yksityisviesti vastaanotetaan"
 
 #: win32/QueueFrame.cpp:45 win32/DirectoryListingFrame.cpp:42
 #: win32/SearchFrame.cpp:41
@@ -952,9 +953,8 @@ msgid "Exit"
 msgstr "Lopeta"
 
 #: win32/SettingsDialog.cpp:109
-#, fuzzy
 msgid "Experts only"
-msgstr "Lisäasetukset\\Vain edistyneille"
+msgstr "Vain edistyneille"
 
 #: win32/NetworkPage.cpp:66
 msgid "External / WAN IP"
@@ -1014,7 +1014,6 @@ msgid "Favorite user added"
 msgstr "Käyttäjä lisätty suosikkikäyttäjiin"
 
 #: win32/SettingsDialog.cpp:93
-#, fuzzy
 msgid "Favorites"
 msgstr "Suosikit"
 
@@ -1027,9 +1026,8 @@ msgid "File Hash:"
 msgstr "Tiedoston tarkistussumma:"
 
 #: win32/WinUtil.cpp:439
-#, fuzzy
 msgid "File Lists"
-msgstr "tiedostolista"
+msgstr "Tiedostolistat"
 
 #: win32/QueueFrame.cpp:474
 msgid "File not available"
@@ -1115,9 +1113,8 @@ msgid "Full tree does not match TTH root"
 msgstr "Hakemistopolku ei vastaa TTH-tarkistussummaa"
 
 #: win32/CertificatesPage.cpp:46
-#, fuzzy
 msgid "Generate certificates"
-msgstr "Lisäasetukset\\Tietoturvasertif."
+msgstr "Luo sertifikaatit"
 
 # id repeted but different str
 # msgid "Downloads"
@@ -1149,9 +1146,8 @@ msgid "HTTP Proxy (for hublist only)"
 msgstr "HTTP-välityspalvelin (vain hubilistoille)"
 
 #: win32/SettingsDialog.cpp:83 win32/CommandDlg.cpp:160
-#, fuzzy
 msgid "Help"
-msgstr "&Ohje"
+msgstr "Ohje"
 
 #: win32/MainWindow.cpp:243
 msgid "Help &Contents\tF1"
@@ -1162,9 +1158,8 @@ msgid "Help forum"
 msgstr "Tukifoorumi"
 
 #: win32/SearchFrame.cpp:216
-#, fuzzy
 msgid "Hide files already in share"
-msgstr "Älä lataa jaossa jo olevia tiedostoja"
+msgstr "Piilota jaossa jo olevat tiedostot"
 
 #: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:986
 msgid "High"
@@ -1327,9 +1322,8 @@ msgid "KiB/s"
 msgstr "Kt/s"
 
 #: win32/AppearancePage.cpp:45
-#, fuzzy
 msgid "Language"
-msgstr "Kielitiedosto"
+msgstr "Kieli"
 
 #: win32/AboutDlg.cpp:64
 msgid "Latest stable version"
@@ -1385,9 +1379,8 @@ msgid "Login"
 msgstr "Käyttäjätunnus"
 
 #: win32/SettingsDialog.cpp:108
-#, fuzzy
 msgid "Logs"
-msgstr "Käyttäjätunnus"
+msgstr "Lokit"
 
 #: win32/WinUtil.cpp:390
 msgid "Lookup TTH at Bitzi.com"
@@ -1611,7 +1604,7 @@ msgstr "Huomautusääni"
 
 #: win32/SettingsDialog.cpp:75 win32/CommandDlg.cpp:152
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: win32/WinUtil.cpp:351
 msgid "Offline"
@@ -1691,12 +1684,11 @@ msgstr "Lähtevän yhteyden asetukset"
 
 #: win32/CertificatesPage.cpp:44
 msgid "Own certificate file"
-msgstr ""
+msgstr "Oma sertifikaattitiedosto"
 
 #: win32/Advanced3Page.cpp:73
-#, fuzzy
 msgid "PID"
-msgstr "CID"
+msgstr "PID"
 
 #: win32/CommandDlg.cpp:115
 msgid "PM"
@@ -1782,9 +1774,8 @@ msgid "Priority"
 msgstr "Tärkeys"
 
 #: win32/CertificatesPage.cpp:43
-#, fuzzy
 msgid "Private key file"
-msgstr "Yksityisviesti"
+msgstr "Yksityisavaintiedosto"
 
 #: win32/TabsPage.cpp:34
 msgid "Private message"
@@ -1813,9 +1804,8 @@ msgid "Purge"
 msgstr "Puhdista"
 
 #: win32/SettingsDialog.cpp:94
-#, fuzzy
 msgid "Queue"
-msgstr "Jonossa"
+msgstr "Latausjono"
 
 #: win32/TransferView.cpp:48
 msgid "Queued"
@@ -1995,9 +1985,8 @@ msgstr[0] "Haetaan liian nopeasti, seuraava haku %1% sekunnin kuluttua"
 msgstr[1] "Haetaan liian nopeasti, seuraava haku %1% sekunnin kuluttua"
 
 #: win32/SettingsDialog.cpp:111
-#, fuzzy
 msgid "Security Certificates"
-msgstr "Lisäasetukset\\Tietoturvasertif."
+msgstr "Tietoturvasertifikaatit"
 
 #: win32/Appearance2Page.cpp:45
 msgid "Select &text style"
@@ -2223,7 +2212,7 @@ msgstr "Välilehden lihavointi sisällön muuttuessa"
 
 #: win32/SettingsDialog.cpp:102
 msgid "Tabs"
-msgstr ""
+msgstr "Välilehdet"
 
 #: win32/HubFrame.cpp:40
 msgid "Tag"
@@ -2288,7 +2277,7 @@ msgstr "Siirretty (Suhde)"
 
 #: win32/CertificatesPage.cpp:45
 msgid "Trusted certificates path"
-msgstr ""
+msgstr "Luotettavien sertif. kansio"
 
 #: win32/QueueFrame.cpp:49 win32/DirectoryListingFrame.cpp:41
 #: win32/SearchFrame.cpp:35
@@ -2400,9 +2389,8 @@ msgid "User"
 msgstr "Käyttäjä"
 
 #: win32/SettingsDialog.cpp:110
-#, fuzzy
 msgid "User Commands"
-msgstr "Lisäasetukset\\Käyttäjäkomennot"
+msgstr "Käyttäjäkomennot"
 
 #: win32/FavHubsFrame.cpp:37
 msgid "User Description"
@@ -2468,18 +2456,16 @@ msgid "Waiting to retry"
 msgstr "Odotetaan uudelleenyritystä"
 
 #: win32/Appearance2Page.cpp:59
-#, fuzzy
 msgid "When a private message window is opened"
-msgstr "Anna äänimerkki aina kun uusi yksityisviesti-ikkuna avautuu"
+msgstr "Kun yksityisviesti-ikkuna avautuu"
 
 #: win32/WindowsPage.cpp:29
 msgid "Window options"
 msgstr "Ikkuna-asetukset"
 
 #: win32/SettingsDialog.cpp:103
-#, fuzzy
 msgid "Windows"
-msgstr "&Ikkuna"
+msgstr "Ikkunat"
 
 #: win32/Advanced3Page.cpp:75
 msgid "Write buffer size"
