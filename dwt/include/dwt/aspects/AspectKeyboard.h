@@ -37,6 +37,7 @@
 #define DWT_AspectKeyboard_h
 
 #include "../Message.h"
+#include "../Dispatchers.h"
 
 namespace dwt {
 
@@ -52,6 +53,11 @@ public:
 	static bool isShiftPressed() { return isKeyPressed(VK_SHIFT); }
 	static bool isControlPressed() { return isKeyPressed(VK_CONTROL); }
 	static bool isAltPressed() { return isKeyPressed(VK_MENU); }
+
+	/// Checks if Caps Lock is on
+	/** Use this function if you need to determine if Caps Lock is ON
+	  */
+	static bool isCapsLockOn() { return 0x1 == ( 0x1 & ::GetKeyState( VK_CAPITAL ) ); }
 	
 	/// Get ascii character from a Virtual Key
 	/** Use this to convert from the input to the response to onKeyPressed to a
@@ -65,8 +71,8 @@ public:
 		if ( ( vkey >= 'A' ) && ( vkey <= 'Z' ) )
 		{
 			// Left or Right shift key pressed
-			bool shifted = 0x8000 == ( 0x8000 & ::GetKeyState( VK_SHIFT ) );
-			bool caps_locked = 1 & ::GetKeyState( VK_CAPITAL ); // Caps lock toggled on.
+			bool shifted = isShiftPressed();
+			bool caps_locked = isCapsLockOn(); // Caps lock toggled on.
 
 			// The vkey comes as uppercase, if that is desired, leave it.
 			if ( ( shifted || caps_locked ) && shifted != caps_locked )
@@ -92,23 +98,6 @@ public:
 		}
 		return theChar;
 	}
-
-	/// Checks if control is pressed
-	/** Use this function if you need to determine if any of the CTRL keys are pressed.
-	 * @deprecated in favor of isControlPressed
-	  */
-	static bool getControlPressed() { return isControlPressed(); }
-
-	/// Checks if shift is pressed
-	/** Use this function if you need to determine if any of the SHIFT keys are pressed.
-	 * @deprecated in favor of isShiftPressed
-	  */
-	static bool getShiftPressed() { return isShiftPressed(); }
-
-	/// Checks if Caps Lock is on
-	/** Use this function if you need to determine if Caps Lock is ON
-	  */
-	static bool getCapsLockOn() { return 0x1 == ( 0x1 & ::GetKeyState( VK_CAPITAL ) ); }
 };
 
 /// Aspect class used by Widgets that have the possibility of trapping keyboard events.
@@ -119,12 +108,15 @@ template< class WidgetType >
 class AspectKeyboard : public AspectKeyboardBase
 {
 	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	HWND H() { return W().handle(); }
+	
+	typedef Dispatchers::VoidVoid<0, false> FocusDispatcher;
 
-	struct Dispatcher
+	struct KeyDispatcher
 	{
 		typedef std::tr1::function<bool (int)> F;
 
-		Dispatcher(const F& f_) : f(f_) { }
+		KeyDispatcher(const F& f_) : f(f_) { }
 
 		bool operator()(const MSG& msg, LRESULT& ret) {
 			return f(static_cast< int >( msg.wParam ));
@@ -134,6 +126,36 @@ class AspectKeyboard : public AspectKeyboardBase
 	};
 
 public:
+	/// Gives the Widget the keyboard focus
+	/** Use this function if you wish to give the Focus to a specific Widget
+	  */
+	void setFocus();
+
+	/// Retrieves the focus property of the Widget
+	/** Use this function to check if the Widget has focus or not. If the Widget has
+	  * focus this function will return true.
+	  */
+	bool hasFocus() const;
+
+	/// \ingroup EventHandlersAspectAspectFocus
+	/// Sets the event handler for what function to be called when control loses focus.
+	/** This function will be called just after the Widget is losing focus and just
+	  * before the other Widget which is supposed to get focus retrieves it. No
+	  * parameters are passed.
+	  */
+	void onKillFocus(const typename FocusDispatcher::F& f) {
+		W().addCallback(Message( WM_KILLFOCUS ), FocusDispatcher(f));
+	}
+
+	/// \ingroup EventHandlersAspectAspectFocus
+	/// Sets the event handler for what function to be called when control loses focus.
+	/** This function will be called just after the Widget has gained focus. No
+	  * parameters are passed.
+	  */	
+	void onFocus(const typename FocusDispatcher::F& f) {
+		W().addCallback(Message( WM_SETFOCUS ), FocusDispatcher(f));
+	}
+
 	/// \ingroup EventHandlersAspectKeyboard
 	/// Setting the event handler for the "key pressed" event
 	/** If supplied event handler is called when control has the focus and a key is
@@ -150,23 +172,23 @@ public:
 	  * Use virtualKeyToChar to transform virtual key code to a char, though this
 	  * will obviously not work for e.g. arrow keys etc...
 	  */
-	void onKeyDown(const typename Dispatcher::F& f) {
+	void onKeyDown(const typename KeyDispatcher::F& f) {
 		onKey(WM_KEYDOWN, f);
 	}
 
-	void onChar(const typename Dispatcher::F& f) {
+	void onChar(const typename KeyDispatcher::F& f) {
 		onKey(WM_CHAR, f);
 	}
 	
-	void onKeyUp(const typename Dispatcher::F& f) {
+	void onKeyUp(const typename KeyDispatcher::F& f) {
 		onKey(WM_KEYUP, f);
 	}
 
-	void onSysKeyDown(const typename Dispatcher::F& f) {
+	void onSysKeyDown(const typename KeyDispatcher::F& f) {
 		onKey(WM_SYSKEYDOWN, f);
 	}
 
-	void onSysKeyUp(const typename Dispatcher::F& f) {
+	void onSysKeyUp(const typename KeyDispatcher::F& f) {
 		onKey(WM_SYSKEYUP, f);
 	}
 
@@ -174,12 +196,22 @@ protected:
 	virtual ~AspectKeyboard()
 	{}
 	
-	void onKey(UINT msg, const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( msg ), Dispatcher(f)
-		);
+	void onKey(UINT msg, const typename KeyDispatcher::F& f) {
+		W().addCallback(Message( msg ), KeyDispatcher(f));
 	}
 };
+
+template< class WidgetType >
+void AspectKeyboard< WidgetType >::setFocus()
+{
+	::SetFocus( H() );
+}
+
+template< class WidgetType >
+bool AspectKeyboard< WidgetType >::hasFocus() const
+{
+	return ::GetFocus() == H();
+}
 
 }
 

@@ -44,7 +44,7 @@
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSelection.h"
@@ -76,7 +76,7 @@ class Table :
 	public AspectColor<Table>,
 	public AspectData<Table, int>,
 	public AspectDblClickable< Table >,
-	public AspectFocus< Table >,
+	public AspectKeyboard< Table >,
 	public AspectFont< Table >,
 	public AspectScrollable< Table >,
 	public AspectSelection< Table, int >

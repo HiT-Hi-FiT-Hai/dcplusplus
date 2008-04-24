@@ -37,7 +37,7 @@
 #define DWT_DateTime_h
 
 #include "../aspects/AspectClickable.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "Control.h"
@@ -57,7 +57,7 @@ class DateTime :
 	public CommonControl,
 	// Aspects
 	public AspectClickable< DateTime >,
-	public AspectFocus< DateTime >,
+	public AspectKeyboard< DateTime >,
 	public AspectFont< DateTime >,
 	public AspectPainting< DateTime >
 {

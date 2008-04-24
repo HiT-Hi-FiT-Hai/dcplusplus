@@ -39,7 +39,7 @@
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
 #include "../Dispatchers.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../resources/ImageList.h"
 #include "../DWTException.h"
@@ -62,7 +62,7 @@ namespace dwt {
 class ToolBar :
 	public CommonControl,
 	// Aspects
-	public AspectFocus< ToolBar >,
+	public AspectKeyboard< ToolBar >,
 	public AspectFont< ToolBar >
 {
 	typedef CommonControl BaseType;

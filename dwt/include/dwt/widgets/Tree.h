@@ -43,7 +43,7 @@
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectSelection.h"
 #include "Control.h"
@@ -69,7 +69,7 @@ class Tree :
 	public AspectColor<Tree>,
 	public AspectData<Tree, HTREEITEM>,
 	public AspectDblClickable< Tree >,
-	public AspectFocus< Tree >,
+	public AspectKeyboard< Tree >,
 	public AspectFont< Tree >,
 	public AspectSelection< Tree, HTREEITEM >
 {

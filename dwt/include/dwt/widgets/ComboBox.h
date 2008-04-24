@@ -40,7 +40,7 @@
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectSelection.h"
@@ -65,7 +65,7 @@ class ComboBox :
 	public AspectColor< ComboBox >,
 	public AspectColorCtlImpl<ComboBox>,
 	public AspectDblClickable< ComboBox >,
-	public AspectFocus< ComboBox >,
+	public AspectKeyboard< ComboBox >,
 	public AspectFont< ComboBox >,
 	public AspectPainting< ComboBox >,
 	public AspectSelection< ComboBox, int >,

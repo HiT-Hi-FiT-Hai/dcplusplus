@@ -36,7 +36,7 @@
 #include "../aspects/AspectCommand.h"
 #include "../aspects/AspectDragDrop.h"
 #include "../aspects/AspectEraseBackground.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectText.h"
@@ -58,7 +58,7 @@ class Composite :
 	public AspectCommand< Composite< Policy > >,
 	public AspectDragDrop< Composite< Policy > >,
 	public AspectEraseBackground< Composite< Policy > >,
-	public AspectFocus< Composite< Policy > >,
+	public AspectKeyboard< Composite< Policy > >,
 	public AspectFont< Composite< Policy > >,
 	public AspectPainting< Composite< Policy > >,
 	public AspectText< Composite< Policy > >

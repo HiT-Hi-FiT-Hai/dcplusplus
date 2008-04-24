@@ -39,7 +39,6 @@
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectText.h"
@@ -67,7 +66,6 @@ class Label :
 	public AspectColor< Label >,
 	public AspectColorCtlImpl<Label>,
 	public AspectDblClickable< Label >,
-	public AspectFocus< Label >,
 	public AspectFont< Label >,
 	public AspectPainting< Label >,
 	public AspectText< Label >

@@ -40,7 +40,7 @@
 
 #include "../Policies.h"
 #include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSizable.h"
@@ -67,7 +67,7 @@ class CoolBar :
 
 	// Aspects
 	public AspectEnabled< CoolBar >,
-	public AspectFocus< CoolBar >,
+	public AspectKeyboard< CoolBar >,
 	public AspectFont< CoolBar >,
 	public AspectRaw< CoolBar >,
 	private AspectSizable< CoolBar >,

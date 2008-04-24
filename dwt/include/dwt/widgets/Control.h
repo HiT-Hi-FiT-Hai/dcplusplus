@@ -58,7 +58,6 @@ class Control:
 	public AspectContextMenu<Control<Policy> >,
 	public AspectEnabled<Control<Policy> >,
 	public AspectHelp<Control<Policy> >,
-	public AspectKeyboard<Control<Policy> >,
 	public AspectMouse<Control<Policy> >,
 	public AspectRaw<Control<Policy> >,
 	public AspectSizable<Control<Policy> >,
