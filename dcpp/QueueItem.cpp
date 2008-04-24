@@ -98,9 +98,14 @@ Segment QueueItem::getNextSegment(int64_t blockSize, int64_t wantedSize) const {
 	
 	int64_t targetSize;
 	if(BOOLSETTING(SEGMENTED_DL)) {
-		if(wantedSize > blockSize) {
+		double done = static_cast<double>(getDownloadedBytes()) / getSize();
+		
+		// We want smaller blocks at the end of the transfer, squaring gives a nice curve...
+		targetSize = wantedSize * (1. - (done * done));
+		
+		if(targetSize > blockSize) {
 			// Round off to nearest block size
-			targetSize = ((wantedSize + (blockSize / 2)) / blockSize) * blockSize;
+			targetSize = ((targetSize + (blockSize / 2)) / blockSize) * blockSize;
 		} else {
 			targetSize = blockSize;
 		}
