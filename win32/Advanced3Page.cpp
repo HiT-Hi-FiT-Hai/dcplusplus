@@ -28,8 +28,6 @@
 #include <dwt/widgets/Spinner.h>
 
 static const WinUtil::HelpItem helpItems[] = {
-	{ IDC_SETTINGS_ROLLBACK, IDH_SETTINGS_ADVANCED3_ROLLBACK },
-	{ IDC_ROLLBACK, IDH_SETTINGS_ADVANCED3_ROLLBACK },
 	{ IDC_SETTINGS_B, IDH_SETTINGS_ADVANCED3_ROLLBACK },
 	{ IDC_SETTINGS_MAX_HASH_SPEED, IDH_SETTINGS_ADVANCED3_MAX_HASH_SPEED },
 	{ IDC_MAX_HASH_SPEED, IDH_SETTINGS_ADVANCED3_MAX_HASH_SPEED },
@@ -66,7 +64,6 @@ static const WinUtil::HelpItem helpItems[] = {
 };
 
 PropPage::TextItem Advanced3Page::texts[] = {
-	{ IDC_SETTINGS_ROLLBACK, N_("Rollback") },
 	{ IDC_SETTINGS_B, N_("B") },
 	{ IDC_SETTINGS_MAX_HASH_SPEED, N_("Max hash speed") },
 	{ IDC_SETTINGS_MBS, N_("MiB/s") },
@@ -116,7 +113,6 @@ Advanced3Page::Advanced3Page(dwt::Widget* parent) : PropPage(parent) {
 	SpinnerPtr spinner = attachChild<Spinner>(IDC_SEARCH_HISTORY_SPIN);
 	spinner->setRange(0, 100);
 
-	attachChild<TextBox>(IDC_ROLLBACK);
 	attachChild<TextBox>(IDC_MAX_HASH_SPEED);
 	attachChild<TextBox>(IDC_SHOW_LAST_LINES_LOG);
 	attachChild<TextBox>(IDC_SET_MINISLOT_SIZE);

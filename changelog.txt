@@ -39,6 +39,7 @@
 * Anti-frag no longer optional - not using it was broken by segmented downloading
 * [L#215779] Fix a few hub list download issues (thanks emtee)
 * [L#195209] Changed tab order in hub windows (poy)
+* Removed unused rollback option (thanks mikejj)
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)
