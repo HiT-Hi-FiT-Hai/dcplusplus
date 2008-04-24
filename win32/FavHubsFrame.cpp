@@ -165,9 +165,9 @@ void FavHubsFrame::postClosing() {
 
 void FavHubsFrame::handleAdd() {
 	FavoriteHubEntry e;
-	FavHubProperties dlg(this, &e);
 
 	while(true) {
+		FavHubProperties dlg(this, &e);
 		if(dlg.run() == IDOK) {
 			if(FavoriteManager::getInstance()->isFavoriteHub(e.getServer())) {
 				createMessageBox().show(T_("Hub already exists as a favorite"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONEXCLAMATION);
