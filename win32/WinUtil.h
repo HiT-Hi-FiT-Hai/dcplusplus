@@ -62,6 +62,7 @@ public:
 	static MainWindow* mainWindow;
 	//static dwt::TabView* mdiParent;
 	static DWORD helpCookie;
+	static HWND helpPopup;
 	
 	typedef unordered_map<string, int> ImageMap;
 	typedef ImageMap::iterator ImageIter;

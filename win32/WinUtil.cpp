@@ -57,6 +57,7 @@ bool WinUtil::urlDcADCRegistered = false;
 bool WinUtil::urlMagnetRegistered = false;
 WinUtil::ImageMap WinUtil::fileIndexes;
 DWORD WinUtil::helpCookie = 0;
+HWND WinUtil::helpPopup = 0;
 
 const dwt::Button::Seed WinUtil::Seeds::button;
 const ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
@@ -548,6 +549,10 @@ bool WinUtil::getUCParams(dwt::Widget* parent, const UserCommand& uc, StringMap&
 void WinUtil::help(HWND hWnd, unsigned id) {
 	dcdebug("WinUtil::help; hWnd: %p; id: %u\n", hWnd, id);
 
+	// make sure no further help is requested when a help popup is already opened...
+	if(helpPopup && hWnd == helpPopup)
+		return;
+
 	string path = Util::getDataPath() + "DCPlusPlus.chm";
 	if(File::getSize(path) == -1)
 		return;
@@ -568,7 +573,7 @@ void WinUtil::help(HWND hWnd, unsigned id) {
 		popup.rcMargins.right = 5;
 		popup.rcMargins.bottom = 5;
 
-		::HtmlHelp(hWnd, helpFile.c_str(), HH_DISPLAY_TEXT_POPUP, reinterpret_cast<DWORD_PTR>(&popup));
+		helpPopup = ::HtmlHelp(hWnd, helpFile.c_str(), HH_DISPLAY_TEXT_POPUP, reinterpret_cast<DWORD_PTR>(&popup));
 	} else
 		::HtmlHelp(hWnd, helpFile.c_str(), id ? HH_HELP_CONTEXT : HH_DISPLAY_TOC, id);
 }
