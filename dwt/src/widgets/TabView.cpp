@@ -555,6 +555,12 @@ bool TabView::tryFire( const MSG & msg, LRESULT & retVal ) {
 		
 		return true;
 	}
+	
+	if(!handled && msg.message == WM_COMMAND && getActive()) {
+		// Forward commands to the active tab
+		handled = getActive()->tryFire(msg, retVal);
+	}
+
 	return handled;
 }
 
