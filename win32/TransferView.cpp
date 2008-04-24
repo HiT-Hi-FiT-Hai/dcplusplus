@@ -114,6 +114,7 @@ TransferView::TransferView(dwt::Widget* parent, dwt::TabView* mdi_) :
 		connections->onContextMenu(std::tr1::bind(&TransferView::handleConnectionsMenu, this, _1));
 		connections->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
 		connections->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));
+		connections->onRaw(std::tr1::bind(&TransferView::handleCustomDraw, this, _1, _2), dwt::Message(WM_NOTIFY, NM_CUSTOMDRAW));
 	}
 	
 	{
@@ -340,14 +341,19 @@ static inline void drawProgress(HDC hdc, const dwt::Rectangle& rcItem, int item,
 
 	long left = textRect.left;
 
+	// todo use dwt's canvas and put this there
+	TEXTMETRIC tm;
+	::GetTextMetrics(hdc, &tm);
+	long top = textRect.top + (textRect.bottom - textRect.top - tm.tmHeight) / 2;
+
 	::SetTextColor(hdc, RGB(255, 255, 255));
-	::ExtTextOut(hdc, left, textRect.top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
+	::ExtTextOut(hdc, left, top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
 
 	textRect.left = textRect.right;
 	textRect.right = rcItem.right() - 6;
 
 	::SetTextColor(hdc, WinUtil::textColor);
-	::ExtTextOut(hdc, left, textRect.top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
+	::ExtTextOut(hdc, left, top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
 
 	::SetBkMode(hdc, oldMode);
 }
@@ -366,8 +372,22 @@ LRESULT TransferView::handleCustomDraw(WPARAM wParam, LPARAM lParam) {
 
 	case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
 		// Let's draw a box if needed...
-		if(column == DOWNLOAD_COLUMN_STATUS) {
+		if(cd->nmcd.hdr.hwndFrom == connections->handle() && column == CONNECTION_COLUMN_STATUS) {
+			HDC hdc = cd->nmcd.hdc;
+			ConnectionInfo* ci = reinterpret_cast<ConnectionInfo*>(cd->nmcd.lItemlParam);
+			const tstring& text = ci->columns[column];
+
+			RECT r;
+			ListView_GetSubItemRect( connections->handle(), item, column, LVIR_BOUNDS, &r );
+
+			int64_t chunk = ci->chunk == 0 ? 1 : ci->chunk;
+			double pos = static_cast<double>(ci->chunkPos) / chunk;
 			
+			drawProgress(hdc, r, item, column, text, pos, ci->download ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR));
+			
+			return CDRF_SKIPDEFAULT;
+		}
+		if(cd->nmcd.hdr.hwndFrom == downloads->handle() && column == DOWNLOAD_COLUMN_STATUS) {
 			HDC hdc = cd->nmcd.hdc;
 			DownloadInfo* di = reinterpret_cast<DownloadInfo*>(cd->nmcd.lItemlParam);
 			const tstring& text = di->columns[column];
