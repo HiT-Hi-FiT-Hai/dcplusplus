@@ -25,6 +25,10 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Main DC++ window">
+			<param name="Local" value="window_main.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Hub">
 			<param name="Local" value="window_hub.html">
 			</OBJECT>

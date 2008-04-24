@@ -281,33 +281,35 @@ void MainWindow::initToolbar() {
 	}
 	
 	int image = 0;
-	toolbar->appendItem(image++, T_("Public Hubs"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_PUBLIC_HUBS));
+	toolbar->appendItem(image++, T_("Public Hubs"), IDH_TOOLBAR_PUBLIC_HUBS, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_PUBLIC_HUBS));
 	toolbar->appendSeparator();
-	toolbar->appendItem(image++, T_("Reconnect"), std::tr1::bind(&MainWindow::handleForward, this, IDC_RECONNECT));
-	toolbar->appendItem(image++, T_("Follow last redirect"), std::tr1::bind(&MainWindow::handleForward, this, IDC_FOLLOW));
+	toolbar->appendItem(image++, T_("Reconnect"), IDH_TOOLBAR_RECONNECT, std::tr1::bind(&MainWindow::handleForward, this, IDC_RECONNECT));
+	toolbar->appendItem(image++, T_("Follow last redirect"), IDH_TOOLBAR_FOLLOW, std::tr1::bind(&MainWindow::handleForward, this, IDC_FOLLOW));
 	toolbar->appendSeparator();
-	toolbar->appendItem(image++, T_("Favorite Hubs"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FAVORITE_HUBS));
-	toolbar->appendItem(image++, T_("Favorite Users"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FAVUSERS));
+	toolbar->appendItem(image++, T_("Favorite Hubs"), IDH_TOOLBAR_FAVORITE_HUBS, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FAVORITE_HUBS));
+	toolbar->appendItem(image++, T_("Favorite Users"), IDH_TOOLBAR_FAVORITE_USERS, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FAVUSERS));
 	toolbar->appendSeparator();
-	toolbar->appendItem(image++, T_("Download Queue"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_QUEUE));
-	toolbar->appendItem(image++, T_("Finished Downloads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FINISHED_DL));
-	toolbar->appendItem(image++, T_("Waiting Users"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_WAITING_USERS));
-	toolbar->appendItem(image++, T_("Finished Uploads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FINISHED_UL));
+	toolbar->appendItem(image++, T_("Download Queue"), IDH_TOOLBAR_QUEUE, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_QUEUE));
+	toolbar->appendItem(image++, T_("Finished Downloads"), IDH_TOOLBAR_FINISHED_DL, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FINISHED_DL));
+	toolbar->appendItem(image++, T_("Waiting Users"), IDH_TOOLBAR_WAITING_USERS, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_WAITING_USERS));
+	toolbar->appendItem(image++, T_("Finished Uploads"), IDH_TOOLBAR_FINISHED_UL, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FINISHED_UL));
 	toolbar->appendSeparator();
-	toolbar->appendItem(image++, T_("Search"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_SEARCH));
-	toolbar->appendItem(image++, T_("ADL Search"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_ADL_SEARCH));
-	toolbar->appendItem(image++, T_("Search Spy"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_SEARCH_SPY));
+	toolbar->appendItem(image++, T_("Search"), IDH_TOOLBAR_SEARCH, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_SEARCH));
+	toolbar->appendItem(image++, T_("ADL Search"), IDH_TOOLBAR_ADL_SEARCH, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_ADL_SEARCH));
+	toolbar->appendItem(image++, T_("Search Spy"), IDH_TOOLBAR_SEARCH_SPY, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_SEARCH_SPY));
 	toolbar->appendSeparator();
-	toolbar->appendItem(image++, T_("Open file list..."), std::tr1::bind(&MainWindow::handleOpenFileList, this));
+	toolbar->appendItem(image++, T_("Open file list..."), IDH_TOOLBAR_FILE_LIST, std::tr1::bind(&MainWindow::handleOpenFileList, this));
 	toolbar->appendSeparator();
-	toolbar->appendItem(image++, T_("Settings"), std::tr1::bind(&MainWindow::handleSettings, this));
-	toolbar->appendItem(image++, T_("Notepad"), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_NOTEPAD));
+	toolbar->appendItem(image++, T_("Settings"), IDH_TOOLBAR_SETTINGS, std::tr1::bind(&MainWindow::handleSettings, this));
+	toolbar->appendItem(image++, T_("Notepad"), IDH_TOOLBAR_NOTEPAD, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_NOTEPAD));
 	toolbar->appendSeparator();
 	toolbar->appendItem(image++, T_(
 		"\"What's This?\" help button\n\n"
 		"Get help on specific parts of DC++\n\n"
 		"Click this button once and your mouse cursor will change into a help cursor; then click on the control for which you wish to get help for."
-		), std::tr1::bind(&MainWindow::handleWhatsThis, this));
+		), IDH_TOOLBAR_WHATS_THIS, std::tr1::bind(&MainWindow::handleWhatsThis, this));
+
+	toolbar->onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
 }
 
 void MainWindow::initStatusBar() {

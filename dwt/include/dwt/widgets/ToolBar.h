@@ -109,7 +109,7 @@ public:
 	  */
 	void appendSeparator();
 
-	void appendItem(int image, const tstring& toolTip, const Dispatcher::F& f = Dispatcher::F());
+	void appendItem(int image, const tstring& toolTip, DWORD_PTR data = 0, const Dispatcher::F& f = Dispatcher::F());
 	
 	/// Set the image list with the normal button images.
 	/** normalImageList is the image list that contains the images
@@ -156,7 +156,9 @@ public:
 	bool getButtonChecked( unsigned int id );
 
 	int size();
-	
+
+	int hitTest(const ScreenCoordinate& pt);
+
 	/// Actually creates the Toolbar
 	/** You should call WidgetFactory::createToolbar if you instantiate class
 	  * directly. <br>
@@ -174,6 +176,7 @@ protected:
 	{}
 
 	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
+
 private:
 	// Keep references
 	ImageListPtr itsNormalImageList;
@@ -181,6 +184,9 @@ private:
 	ImageListPtr itsDisabledImageList;
 
 	std::vector<Dispatcher::F> commands;
+
+	// AspectHelp
+	void helpImpl(unsigned& id);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,9 +260,7 @@ inline int ToolBar::size( )
 
 inline bool ToolBar::getButtonVisible( unsigned int id )
 {
-	TBBUTTONINFO tb = { sizeof( TBBUTTONINFO ) };
-	tb.dwMask = TBIF_STATE;
-	tb.idCommand = id;
+	TBBUTTONINFO tb = { sizeof(TBBUTTONINFO), TBIF_STATE, id };
 	this->sendMessage(TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );
 	return ( tb.fsState & TBSTATE_HIDDEN ) == 0;
 }
@@ -268,24 +272,14 @@ inline void ToolBar::setButtonEnabled( unsigned id, bool enable )
 
 inline bool ToolBar::getButtonEnabled( unsigned int id )
 {
-	TBBUTTONINFO tb =
-	{0
-	};
-	tb.cbSize = sizeof( TBBUTTONINFO );
-	tb.dwMask = TBIF_STATE;
-	tb.idCommand = id;
+	TBBUTTONINFO tb = { sizeof(TBBUTTONINFO), TBIF_STATE, id };
 	this->sendMessage(TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );
 	return ( tb.fsState & TBSTATE_ENABLED ) == TBSTATE_ENABLED;
 }
 
 inline bool ToolBar::getButtonChecked( unsigned int id )
 {
-	TBBUTTONINFO tb =
-	{0
-	};
-	tb.cbSize = sizeof( TBBUTTONINFO );
-	tb.dwMask = TBIF_STATE;
-	tb.idCommand = id;
+	TBBUTTONINFO tb = { sizeof(TBBUTTONINFO), TBIF_STATE, id };
 	this->sendMessage(TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );
 	return ( tb.fsState & TBSTATE_CHECKED ) == TBSTATE_CHECKED;
 }

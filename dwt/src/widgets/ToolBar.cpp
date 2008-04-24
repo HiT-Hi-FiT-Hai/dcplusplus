@@ -59,7 +59,7 @@ void ToolBar::appendSeparator()
 	}
 }
 
-void ToolBar::appendItem( int image, const tstring& toolTip, const Dispatcher::F& f)
+void ToolBar::appendItem(int image, const tstring& toolTip, DWORD_PTR data, const Dispatcher::F& f)
 {
 	int id = -1;
 	
@@ -81,12 +81,18 @@ void ToolBar::appendItem( int image, const tstring& toolTip, const Dispatcher::F
 	tb.idCommand = id;
 	tb.fsState = TBSTATE_ENABLED;
 	tb.fsStyle = BTNS_AUTOSIZE;
+	tb.dwData = data;
 	tb.iString = reinterpret_cast<INT_PTR>(toolTip.c_str());
 	if ( this->sendMessage(TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( &tb ) ) == FALSE )
 	{
 		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
 		throw x;
 	}
+}
+
+int ToolBar::hitTest(const ScreenCoordinate& pt) {
+	POINT point = ClientCoordinate(pt, this).getPoint();
+	return sendMessage(TB_HITTEST, 0, reinterpret_cast<LPARAM>(&point));
 }
 
 bool ToolBar::tryFire( const MSG & msg, LRESULT & retVal ) {
@@ -98,6 +104,17 @@ bool ToolBar::tryFire( const MSG & msg, LRESULT & retVal ) {
 		}
 	}
 	return PolicyType::tryFire(msg, retVal);
+}
+
+void ToolBar::helpImpl(unsigned& id) {
+	// we have the help id of the whole toolbar; convert to the one of the specific button the user just clicked on
+	int index = hitTest(ScreenCoordinate(Point::fromLParam(::GetMessagePos())));
+	if(index >= 0) {
+		// assume the extra info associated with the button is the help id
+		TBBUTTONINFO tb = { sizeof(TBBUTTONINFO), TBIF_BYINDEX | TBIF_LPARAM };
+		sendMessage(TB_GETBUTTONINFO, index, reinterpret_cast<LPARAM>(&tb));
+		id = tb.lParam;
+	}
 }
 
 }

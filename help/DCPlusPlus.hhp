@@ -38,6 +38,7 @@ non-routable.html
 plusplus_tag.html
 netiquette.html
 credits.html
+window_main.html
 window_hub.html
 window_pm.html
 window_file_list.html
@@ -80,6 +81,7 @@ links.html
 IDH_STARTPAGE=index.html
 IDH_CHANGELOG=changelog.html
 IDH_KEYBOARD=faq_keyboard_commands.html
+IDH_MAIN=window_main.html
 IDH_HUB=window_hub.html
 IDH_PM=window_pm.html
 IDH_FILE_LIST=window_file_list.html
