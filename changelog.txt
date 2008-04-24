@@ -49,6 +49,7 @@
 * Updated several translations, we now have complete (or almost) Brazilian Portuguese, UK English,
   Finnish, French, Hungarian, Italian, Polish, Romanian, Swedish, Norwegian,
   German and Spanish translations
+* [L#210117] View user/hub online/offline status
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)
