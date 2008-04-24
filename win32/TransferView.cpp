@@ -318,7 +318,7 @@ static inline void drawProgress(HDC hdc, const dwt::Rectangle& rcItem, int item,
 
 	::Rectangle(hdc, rc.left(), rc.top(), rc.right(), rc.bottom());
 
-	RECT clipRect = rc;
+	RECT textRect = rc;
 
 	// draw progressbar highlight
 	if(rc.width()>2) {
@@ -333,35 +333,23 @@ static inline void drawProgress(HDC hdc, const dwt::Rectangle& rcItem, int item,
 	::DeleteObject(::SelectObject(hdc, oldpen));
 	::DeleteObject(::SelectObject(hdc, oldbr));
 
-	dwt::Rectangle rcText = rcItem;
-	rcText.pos.x += 6;
-	rcText.size.x -= 6;
-
-	HRGN clipRgn = ::CreateRectRgnIndirect(&clipRect);
-	
-	::SelectClipRgn(hdc, clipRgn);
-	::SetTextColor(hdc, RGB(255, 255, 255));
-	RECT textRect = rcText;
-	
 	int oldMode = ::SetBkMode(hdc, TRANSPARENT);
-	
-	::DrawText(hdc, text.c_str(), text.size(), &textRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
-	
-	clipRect.left = clipRect.right;
-	clipRect.right = rcItem.right();
-	
-	::DeleteObject(clipRgn);
-	clipRgn = ::CreateRectRgnIndirect(&clipRect);
+
+	textRect.left += 6;
+	textRect.right -= 6;
+
+	long left = textRect.left;
+
+	::SetTextColor(hdc, RGB(255, 255, 255));
+	::ExtTextOut(hdc, left, textRect.top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
+
+	textRect.left = textRect.right;
+	textRect.right = rcItem.right() - 6;
+
 	::SetTextColor(hdc, WinUtil::textColor);
-	
-	::SelectClipRgn(hdc, clipRgn);
-	::DrawText(hdc, text.c_str(), text.size(), &textRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+	::ExtTextOut(hdc, left, textRect.top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
 
 	::SetBkMode(hdc, oldMode);
-	::DeleteObject(clipRgn);
-	
-	::SelectClipRgn(hdc, NULL);
-
 }
 
 LRESULT TransferView::handleCustomDraw(WPARAM wParam, LPARAM lParam) {
