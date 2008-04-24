@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-18 22:52+0100\n"
-"PO-Revision-Date: 2008-03-13 23:01+0000\n"
+"POT-Creation-Date: 2008-04-21 14:00+0200\n"
+"PO-Revision-Date: 2008-03-21 12:27+0000\n"
 "Last-Translator: maksis <maksis@adrenaline-network.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
+"X-Launchpad-Export-Date: 2008-04-21 11:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -65,7 +65,7 @@ msgstr ""
 "Tiedostoa %1% ei jaeta; laskettu CRC32 ei vastaa SFV-tiedostossa olevaa "
 "arvoa."
 
-#: dcpp/QueueManager.cpp:325
+#: dcpp/QueueManager.cpp:332
 #, boost-format
 msgid "%1% renamed to %2%"
 msgstr "%1% nimettiin tiedostoksi %2%"
@@ -80,7 +80,7 @@ msgstr "%2% potkaisi käyttäjän %1%: %3%"
 msgid "%1% was kicked: %2%"
 msgstr "%1% potkaistiin: %2%"
 
-#: dcpp/DownloadManager.cpp:530
+#: dcpp/DownloadManager.cpp:535
 #, boost-format
 msgid "%1%: File not available"
 msgstr "%1%: Tiedosto ei saatavilla"
@@ -95,21 +95,21 @@ msgstr "%d t"
 msgid "%s B"
 msgstr "%s t"
 
-#: dcpp/QueueManager.cpp:532
+#: dcpp/QueueManager.cpp:534
 msgid "A file of equal or larger size already exists at the target location"
 msgstr "Kohdehakemistossa on jo samanniminen tai -kokoinen tiedosto"
 
-#: dcpp/QueueManager.cpp:475
+#: dcpp/QueueManager.cpp:477
 msgid "A file with a different size already exists in the queue"
 msgstr "Samanniminen, mutta eri kokoinen tiedosto on jo latausjonossa"
 
-#: dcpp/QueueManager.cpp:478
+#: dcpp/QueueManager.cpp:480
 msgid "A file with different tth root already exists in the queue"
 msgstr ""
 "Samanniminen, mutta eri TTH-tarkistussummalla oleva tiedosto on jo "
 "latausjonossa"
 
-#: dcpp/QueueManager.cpp:442
+#: dcpp/QueueManager.cpp:449
 msgid "A file with the same hash already exists in your share"
 msgstr "Samalla TTH-tarkistussummalla oleva tiedosto jo jaossa"
 
@@ -117,11 +117,11 @@ msgstr "Samalla TTH-tarkistussummalla oleva tiedosto jo jaossa"
 msgid "All download slots taken"
 msgstr "Kaikki latauspaikat käytössä"
 
-#: dcpp/DownloadManager.cpp:376
+#: dcpp/DownloadManager.cpp:381
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32-ristiriita (SFV-tarkastus)"
 
-#: dcpp/DownloadManager.cpp:374
+#: dcpp/DownloadManager.cpp:379
 #, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
 msgstr "CRC32-ristiriita (SFV-tarkastus) (tiedosto: %1%)"
@@ -131,9 +131,8 @@ msgid "Certificate not trusted, unable to connect"
 msgstr "Ei luotettu sertifikaatti, ei voi yhdistää"
 
 #: dcpp/BufferedSocket.cpp:148
-#, fuzzy
 msgid "Connection closed"
-msgstr "Yhteyden aikakatkaisu"
+msgstr "Yhteys suljettu"
 
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
 #: dcpp/BufferedSocket.cpp:131
@@ -145,19 +144,19 @@ msgstr "Yhteyden aikakatkaisu"
 msgid "Could not open target file: %1%"
 msgstr "Kohdetiedostoa ei voitu avata: %1%"
 
-#: dcpp/ShareManager.cpp:418
+#: dcpp/ShareManager.cpp:422
 msgid "Directory already shared"
 msgstr "Kansio on jo jaettu"
 
 #: dcpp/ADLSearch.h:281
 msgid "Discard"
-msgstr ""
+msgstr "Hylkää"
 
 #: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Yhteys katkaistu"
 
-#: dcpp/UploadManager.cpp:450
+#: dcpp/UploadManager.cpp:453
 #, boost-format
 msgid "Disconnected user leaving the hub: %1%"
 msgstr "Katkaistiin yhteys hubista lähtevään käyttäjään: %1%"
@@ -166,7 +165,7 @@ msgstr "Katkaistiin yhteys hubista lähtevään käyttäjään: %1%"
 msgid "Download Queue"
 msgstr "Latausjono"
 
-#: dcpp/ShareManager.cpp:741
+#: dcpp/ShareManager.cpp:802
 #, boost-format
 msgid ""
 "Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched "
@@ -174,7 +173,7 @@ msgid ""
 msgstr ""
 "Tuplatiedostoja ei jaeta: %1%%2% (koko: %3% t) täsmäsi tiedostoon: %4%%5%"
 
-#: dcpp/QueueManager.cpp:545 dcpp/QueueManager.cpp:549
+#: dcpp/QueueManager.cpp:547 dcpp/QueueManager.cpp:551
 #, boost-format
 msgid "Duplicate source: %1%"
 msgstr "Sama lähde: %1%"
@@ -227,16 +226,16 @@ msgstr ""
 "Socks-palvelimelle ei voitu määrittää UDP-ohjausta (tarkista osoite ja "
 "portti)"
 
-#: dcpp/ShareManager.cpp:776
+#: dcpp/ShareManager.cpp:837
 #, boost-format
 msgid "File list refresh failed: %1%"
 msgstr "Tiedostolistan päivitys epäonnistui: %1%"
 
-#: dcpp/ShareManager.cpp:820
+#: dcpp/ShareManager.cpp:882
 msgid "File list refresh finished"
 msgstr "Tiedostolistan päivitys valmis"
 
-#: dcpp/ShareManager.cpp:756
+#: dcpp/ShareManager.cpp:817
 msgid ""
 "File list refresh in progress, please wait for it to finish before trying to "
 "refresh again"
@@ -244,7 +243,7 @@ msgstr ""
 "Tiedostolistan päivitys kesken, odota että se päättyy ennen kuin päivität "
 "uudelleen"
 
-#: dcpp/ShareManager.cpp:798
+#: dcpp/ShareManager.cpp:858
 msgid "File list refresh initiated"
 msgstr "Tiedostolistaa päivitetään..."
 
@@ -262,7 +261,7 @@ msgstr "Tarkistussumman luonti valmis: %1%"
 msgid "Finished hashing: %1% (%2%/s)"
 msgstr "Tarkistussumman luonti valmis: %1% (%2%/s)"
 
-#: dcpp/DownloadManager.cpp:308
+#: dcpp/DownloadManager.cpp:310
 msgid "Full tree does not match TTH root"
 msgstr "Hakemistopolku ei vastaa TTH-tarkistussummaa"
 
@@ -295,7 +294,7 @@ msgstr ""
 msgid "Invalid size"
 msgstr "Virheellinen koko"
 
-#: dcpp/QueueManager.cpp:515 dcpp/QueueManager.cpp:523
+#: dcpp/QueueManager.cpp:517 dcpp/QueueManager.cpp:525
 msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
@@ -315,24 +314,24 @@ msgstr "Kuuntelukahvavirhe (käynnistä %1% uudestaan): %2%"
 msgid "Maximum command length exceeded"
 msgstr "Suurin komennon pituus ylitettiin"
 
-#: dcpp/DownloadManager.cpp:280
+#: dcpp/DownloadManager.cpp:282
 msgid "More data was sent than was expected"
 msgstr "Enemmän dataa lähetettiin kuin odotettiin"
 
-#: dcpp/ShareManager.cpp:403
+#: dcpp/ShareManager.cpp:409
 msgid "No directory specified"
 msgstr "Kansioita ei määritetty"
 
-#: dcpp/DownloadManager.cpp:419
+#: dcpp/DownloadManager.cpp:424
 msgid "No slots available"
 msgstr "Ei vapaita latauspaikkoja"
 
-#: dcpp/AdcHub.cpp:577
+#: dcpp/AdcHub.cpp:573
 #, boost-format
 msgid "Not listening for connections - please restart %1%"
 msgstr "Ei kuunnella yhteyksiä - käynnistä %1% uudestaan"
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
+#: dcpp/Transfer.cpp:81 dcpp/Transfer.cpp:85 dcpp/ClientManager.cpp:115
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
@@ -342,13 +341,13 @@ msgstr "Offline-tilassa"
 msgid "Redirect user(s)"
 msgstr "Uudelleenohjaa käyttäjä(t)"
 
-#: dcpp/ShareManager.cpp:421
+#: dcpp/ShareManager.cpp:425
 msgid "Remove all subdirectories before adding this one"
 msgstr "Poista kaikki alihakemistot ennen tämän lisäämistä"
 
 #: dcpp/BitInputStream.h:40
 msgid "Request to seek beyond the end of data"
-msgstr ""
+msgstr "Pyyntö hakea datan lopun jälkeen"
 
 #: dcpp/DownloadManager.cpp:225
 msgid "Response does not match request"
@@ -375,13 +374,13 @@ msgstr "TLS ei käytössä, sertifikaattitiedostoja ei ole asetettu"
 
 #: dcpp/MerkleCheckOutputStream.h:53 dcpp/MerkleCheckOutputStream.h:113
 msgid "TTH inconsistency"
-msgstr ""
+msgstr "TTH-tarkistussummat eivät täsmää"
 
-#: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
+#: dcpp/QueueManager.cpp:512 dcpp/QueueManager.cpp:521
 msgid "Target filename too long"
 msgstr "Kohdetiedoston nimi on liian pitkä"
 
-#: dcpp/QueueManager.cpp:798
+#: dcpp/QueueManager.cpp:800
 msgid "Target removed"
 msgstr "Kohde poistettu"
 
@@ -398,11 +397,11 @@ msgstr "Socks-palvelin ei voinut avata yhteyttä"
 msgid "The socks server requires authentication"
 msgstr "Socks-palvelin vaatii kirjautumisen"
 
-#: dcpp/ShareManager.cpp:407
+#: dcpp/ShareManager.cpp:413
 msgid "The temporary download directory cannot be shared"
 msgstr "Keskeneräisten tiedostojen kansiota ei voi jakaa"
 
-#: dcpp/QueueManager.cpp:465
+#: dcpp/QueueManager.cpp:469
 msgid "This file is already queued"
 msgstr "Tämä tiedosto on jo latausjonossa"
 
@@ -410,7 +409,7 @@ msgstr "Tämä tiedosto on jo latausjonossa"
 msgid "Unable to create thread"
 msgstr "Säiettä ei voitu luoda"
 
-#: dcpp/QueueManager.cpp:995
+#: dcpp/QueueManager.cpp:1002
 #, boost-format
 msgid "Unable to open filelist: %1%"
 msgstr "Ei pysty avaamaan tiedostolistaa: %1%"
@@ -419,7 +418,7 @@ msgstr "Ei pysty avaamaan tiedostolistaa: %1%"
 msgid "Unable to read hash data file"
 msgstr "Ei pysty lukemaan TTH-tietokantatiedostoa"
 
-#: dcpp/QueueManager.cpp:327
+#: dcpp/QueueManager.cpp:334
 #, boost-format
 msgid "Unable to rename %1%: %2%"
 msgstr "Ei pysty uudelleennimeämään tiedostoa %1%: %2%"
@@ -434,18 +433,14 @@ msgstr "Ei pysty lähettämään tiedostoa %1%: %2%"
 msgid "Unknown error: 0x%1$x"
 msgstr "Tuntematon virhe: 0x%1$x"
 
-#: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468
-msgid "Virtual directory name already exists"
-msgstr "Virtuaalinen kansionimi on jo olemassa"
-
-#: dcpp/QueueManager.cpp:412 dcpp/QueueManager.cpp:436
+#: dcpp/QueueManager.cpp:419 dcpp/QueueManager.cpp:443
 msgid "You're trying to download from yourself!"
 msgstr "Yrität ladata itseltäsi!"
 
-#: dcpp/SettingsManager.cpp:156
+#: dcpp/SettingsManager.cpp:155
 msgid "downloaded from"
 msgstr "ladattu käyttäjältä"
 
-#: dcpp/SettingsManager.cpp:157
+#: dcpp/SettingsManager.cpp:156
 msgid "uploaded to"
 msgstr "lähetetty käyttäjälle"

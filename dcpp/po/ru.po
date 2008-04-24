@@ -1,130 +1,126 @@
-# Russian translations for the DC++ package.
-# Copyright (C) 2008 The translators
-# This file is distributed under the same license as the DC++ package.
-#  <gore-spb@users.sourceforge.net>, 2008.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: dcpp\n"
+"Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-18 22:52+0100\n"
-"PO-Revision-Date: 2008-03-13 23:12+0000\n"
-"Last-Translator: Jacek Sieka <Unknown>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2008-04-21 14:00+0200\n"
+"PO-Revision-Date: 2008-04-10 07:28+0000\n"
+"Last-Translator: Lesha Ogonkov <Unknown>\n"
+"Language-Team: Russian <ru_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
+"X-Launchpad-Export-Date: 2008-04-21 11:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
 #, c-format, boost-format
 msgid "%'lld B"
-msgstr ""
+msgstr "%'lld Б"
 
 #: dcpp/Util.cpp:343
 #, c-format, boost-format
 msgid "%.02f GiB"
-msgstr ""
+msgstr "%.02f ГБ"
 
 #: dcpp/Util.cpp:339
 #, c-format, boost-format
 msgid "%.02f KiB"
-msgstr ""
+msgstr "%.02f КБ"
 
 #: dcpp/Util.cpp:341
 #, c-format, boost-format
 msgid "%.02f MiB"
-msgstr ""
+msgstr "%.02f МБ"
 
 #: dcpp/Util.cpp:347
 #, c-format, boost-format
 msgid "%.02f PiB"
-msgstr ""
+msgstr "%.02f PiB"
 
 #: dcpp/Util.cpp:345
 #, c-format, boost-format
 msgid "%.02f TiB"
-msgstr ""
+msgstr "%.02f ТБ"
 
 #: dcpp/AdcHub.cpp:139
 #, boost-format
 msgid "%1% (%2%) has same CID {%3%} as %4% (%5%), ignoring"
-msgstr ""
+msgstr "%1% (%2%) имеет такой же CID {%3%} as %4% (%5%), игнорирован"
 
 #: dcpp/NmdcHub.cpp:281
 #, boost-format
 msgid "%1% (Nick unknown)"
-msgstr ""
+msgstr "%1% (Ник неизвестен)"
 
 #: dcpp/HashManager.cpp:767
 #, boost-format
 msgid ""
 "%1% not shared; calculated CRC32 does not match the one found in SFV file."
 msgstr ""
+"%1% не расшарен; вычесленная CRC32 не совпадает с обнаруженной в SFV файле."
 
-#: dcpp/QueueManager.cpp:325
+#: dcpp/QueueManager.cpp:332
 #, boost-format
 msgid "%1% renamed to %2%"
-msgstr ""
+msgstr "%1% переименован в %2%"
 
 #: dcpp/AdcHub.cpp:281
 #, boost-format
 msgid "%1% was kicked by %2%: %3%"
-msgstr ""
+msgstr "%1% был kicked %2%: %3%"
 
 #: dcpp/AdcHub.cpp:284
 #, boost-format
 msgid "%1% was kicked: %2%"
-msgstr ""
+msgstr "%1% был kicked: %2%"
 
-#: dcpp/DownloadManager.cpp:530
-#, fuzzy, boost-format
+#: dcpp/DownloadManager.cpp:535
+#, boost-format
 msgid "%1%: File not available"
-msgstr "Файл недоступен"
+msgstr "%1%: Файл недоступен"
 
 #: dcpp/Util.cpp:337
 #, c-format, boost-format
 msgid "%d B"
-msgstr ""
+msgstr "%d Б"
 
 #: dcpp/Util.cpp:377
 #, c-format, boost-format
 msgid "%s B"
-msgstr ""
+msgstr "%s Б"
 
-#: dcpp/QueueManager.cpp:532
+#: dcpp/QueueManager.cpp:534
 msgid "A file of equal or larger size already exists at the target location"
-msgstr "В указанном месте уже существует Файл такого же или большего размера"
+msgstr "В указанном месте уже есть файл такого же или большего размера"
 
-#: dcpp/QueueManager.cpp:475
+#: dcpp/QueueManager.cpp:477
 msgid "A file with a different size already exists in the queue"
-msgstr "Файл другого размера уже есть в очереди"
+msgstr "В очереди уже есть файл другого размера"
 
-#: dcpp/QueueManager.cpp:478
+#: dcpp/QueueManager.cpp:480
 msgid "A file with different tth root already exists in the queue"
-msgstr "Файл с другим TTH уже есть в очереди"
+msgstr "В очереди уже есть файл с другим tth"
 
-#: dcpp/QueueManager.cpp:442
+#: dcpp/QueueManager.cpp:449
 msgid "A file with the same hash already exists in your share"
-msgstr "У вас уже расшарен Файл с таким хэшем"
+msgstr "В очереди уже есть файл с таким же хэшем"
 
 #: dcpp/ConnectionManager.cpp:176
 msgid "All download slots taken"
-msgstr "Все слоты для скачивания заняты"
+msgstr "Все слоты закачки заняты"
 
-#: dcpp/DownloadManager.cpp:376
+#: dcpp/DownloadManager.cpp:381
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32 несоответствие (SFV-проверка)"
 
-#: dcpp/DownloadManager.cpp:374
-#, fuzzy, boost-format
+#: dcpp/DownloadManager.cpp:379
+#, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
-msgstr "CRC32 несоответствие (SFV-проверка)"
+msgstr "CRC32 несоответствие (SFV-проверка) (File: %1%)"
 
 #: dcpp/ConnectionManager.cpp:376
 msgid "Certificate not trusted, unable to connect"
-msgstr "Непроверенный сертификат, невозможно соединиться"
+msgstr "Нет довернного сертификата, невозможно соединиться"
 
 #: dcpp/BufferedSocket.cpp:148
 #, fuzzy
@@ -139,66 +135,68 @@ msgstr "Таймаут соединения"
 #: dcpp/DownloadManager.cpp:232
 #, boost-format
 msgid "Could not open target file: %1%"
-msgstr ""
+msgstr "Невозможно открыть целевой файл: %1%"
 
-#: dcpp/ShareManager.cpp:418
+#: dcpp/ShareManager.cpp:422
 msgid "Directory already shared"
 msgstr "Папка уже расшарена"
 
 #: dcpp/ADLSearch.h:281
 msgid "Discard"
-msgstr ""
+msgstr "Отклонить"
 
 #: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Отключен"
 
-#: dcpp/UploadManager.cpp:450
+#: dcpp/UploadManager.cpp:453
 #, boost-format
 msgid "Disconnected user leaving the hub: %1%"
-msgstr ""
+msgstr "Отключённый пользователь покинул хаб: %1%"
 
 #: dcpp/DCPlusPlus.cpp:107
 msgid "Download Queue"
-msgstr "Очередь закачек"
+msgstr "Очередь закачки"
 
-#: dcpp/ShareManager.cpp:741
+#: dcpp/ShareManager.cpp:802
 #, boost-format
 msgid ""
 "Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched "
 "against: %4%%5%"
 msgstr ""
+"Дубликат файла не будет расшарен: %1%%2% (Размер: %3% Б) Копия совпала с: %4%"
+"%5%"
 
-#: dcpp/QueueManager.cpp:545 dcpp/QueueManager.cpp:549
+#: dcpp/QueueManager.cpp:547 dcpp/QueueManager.cpp:551
 #, boost-format
 msgid "Duplicate source: %1%"
-msgstr ""
+msgstr "Источник дубликата: %1%"
 
 #: dcpp/HashManager.cpp:456
-#, fuzzy, boost-format
+#, boost-format
 msgid "Error creating hash data file: %1%"
-msgstr "Невозможно считать файл хэш данных"
+msgstr "Ошибка создания файла данных хэша: %1%"
 
 #: dcpp/ZUtils.cpp:33 dcpp/ZUtils.cpp:54 dcpp/ZUtils.cpp:76 dcpp/ZUtils.cpp:86
 #: dcpp/BZUtils.cpp:31 dcpp/BZUtils.cpp:52 dcpp/BZUtils.cpp:60
 msgid "Error during compression"
-msgstr "Ошибка при сжатии"
+msgstr "Ошибка при компрессии"
 
 #: dcpp/ZUtils.cpp:100 dcpp/ZUtils.cpp:123 dcpp/BZUtils.cpp:72
 #: dcpp/BZUtils.cpp:94 dcpp/BZUtils.cpp:97 dcpp/CryptoManager.cpp:342
 #: dcpp/CryptoManager.cpp:361 dcpp/CryptoManager.cpp:375
 msgid "Error during decompression"
-msgstr "Ошибка при распаковке"
+msgstr "Ошибка при декомпрессии"
 
 #: dcpp/HashManager.cpp:772
 #, boost-format
 msgid "Error hashing %1%: %2%"
-msgstr ""
+msgstr "Ошибка хэширования %1%: %2%"
 
 #: dcpp/HashManager.cpp:118 dcpp/HashManager.cpp:333
 #, boost-format
 msgid "Error saving hash data: %1%"
-msgstr ""
+msgstr "Ошибка сохранения хэш данных: %1%"
 
 #: dcpp/CryptoManager.cpp:226 dcpp/CryptoManager.cpp:230
 #: dcpp/CryptoManager.cpp:235 dcpp/CryptoManager.cpp:239
@@ -208,36 +206,37 @@ msgstr "Не удалось загрузить файл сертификата"
 #: dcpp/CryptoManager.cpp:244 dcpp/CryptoManager.cpp:248
 #: dcpp/CryptoManager.cpp:253 dcpp/CryptoManager.cpp:257
 msgid "Failed to load private key"
-msgstr "Не удалось загрузить персональный ключ"
+msgstr "Не удалось загрузить ключ"
 
 #: dcpp/AdcHub.cpp:206
 msgid "Failed to negotiate base protocol"
-msgstr ""
+msgstr "Не удалось определить базовый протокол"
 
 #: dcpp/Socket.cpp:408
 msgid ""
 "Failed to set up the socks server for UDP relay (check socks address and "
 "port)"
 msgstr ""
-"Не удалось настроить socks сервер для трансляции UDP (проверьте socks адрес "
-"и порт)"
+"Не удалось настроить socks сервер для UDP (проверьте socks адрес и порт)"
 
-#: dcpp/ShareManager.cpp:776
-#, fuzzy, boost-format
+#: dcpp/ShareManager.cpp:837
+#, boost-format
 msgid "File list refresh failed: %1%"
-msgstr "Обновление списка файлов завершено"
+msgstr "Не удалось обновить список файлов: %1%"
 
-#: dcpp/ShareManager.cpp:820
+#: dcpp/ShareManager.cpp:882
 msgid "File list refresh finished"
 msgstr "Обновление списка файлов завершено"
 
-#: dcpp/ShareManager.cpp:756
+#: dcpp/ShareManager.cpp:817
 msgid ""
 "File list refresh in progress, please wait for it to finish before trying to "
 "refresh again"
-msgstr "Подождите, выполняется обновление списка файлов"
+msgstr ""
+"Выполняется обновления списка файлов, пожалуйста, дождитесь окончания прежде "
+"чем обновлять список вновь"
 
-#: dcpp/ShareManager.cpp:798
+#: dcpp/ShareManager.cpp:858
 msgid "File list refresh initiated"
 msgstr "Запущено обновление списка файлов"
 
@@ -248,20 +247,20 @@ msgstr "Файл недоступен"
 #: dcpp/HashManager.cpp:89
 #, boost-format
 msgid "Finished hashing: %1%"
-msgstr ""
+msgstr "Завершено хэширование: %1%"
 
 #: dcpp/HashManager.cpp:87
 #, boost-format
 msgid "Finished hashing: %1% (%2%/s)"
-msgstr ""
+msgstr "Завершено хэширование: %1% (%2%/с)"
 
-#: dcpp/DownloadManager.cpp:308
+#: dcpp/DownloadManager.cpp:310
 msgid "Full tree does not match TTH root"
-msgstr "Полное дерево не соответствует TTH корню"
+msgstr "Несовпадение TTH"
 
 #: dcpp/CryptoManager.cpp:219
 msgid "Generated new TLS certificate"
-msgstr "Сгенерирован новый TLS сертификат"
+msgstr "Новый TLS сертификат сгенерирован"
 
 #: dcpp/DCPlusPlus.cpp:101
 msgid "Hash database"
@@ -269,60 +268,62 @@ msgstr "Хэш БД"
 
 #: dcpp/HashManager.cpp:677
 msgid "Hash database rebuilt"
-msgstr "Хэш-БД создана вновь"
+msgstr "Хэш БД создана вновь"
 
 #: dcpp/HashManager.cpp:73 dcpp/HashManager.cpp:277
 #, boost-format
 msgid "Hashing failed: %1%"
-msgstr ""
+msgstr "Не удалось хэширование: %1%"
 
 #: dcpp/AdcHub.cpp:212
 msgid ""
 "Hub probably uses an old version of ADC, please encourage the owner to "
 "upgrade"
-msgstr ""
+msgstr "Вероятно хаб использует старую версию ADC"
 
 #: dcpp/DownloadManager.cpp:220
 msgid "Invalid size"
-msgstr "Invalid size"
+msgstr "Неверный размер"
 
-#: dcpp/QueueManager.cpp:515 dcpp/QueueManager.cpp:523
+#: dcpp/QueueManager.cpp:517 dcpp/QueueManager.cpp:525
 msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
-msgstr "Неверный файл (неверная папка, проверьте настройки папки по умолчанию)"
+msgstr ""
+"Неверный целевой файл (отсутствующая папка, проверьте настройки папки "
+"закачек по умолчанию)"
 
 #: dcpp/FavoriteManager.cpp:438
 msgid "Kick user(s)"
-msgstr "Кикнуть пользователя(ей)"
+msgstr "Kick пользователя(ей)"
 
 #: dcpp/ConnectionManager.cpp:230
 #, boost-format
 msgid "Listening socket failed (you need to restart %1%): %2%"
-msgstr ""
+msgstr "Не удалось прослушать socket (требуется перезапуск %1%): %2%"
 
 #: dcpp/BufferedSocket.cpp:237
 msgid "Maximum command length exceeded"
 msgstr "Превышена максимальная длина команды"
 
-#: dcpp/DownloadManager.cpp:280
+#: dcpp/DownloadManager.cpp:282
 msgid "More data was sent than was expected"
-msgstr "Отправлено больше даных чем ожидалось"
+msgstr "Оправлено больше данных, чем ожидалось"
 
-#: dcpp/ShareManager.cpp:403
+#: dcpp/ShareManager.cpp:409
 msgid "No directory specified"
 msgstr "Не указана папка"
 
-#: dcpp/DownloadManager.cpp:419
+#: dcpp/DownloadManager.cpp:424
 msgid "No slots available"
 msgstr "Нет доступных слотов"
 
-#: dcpp/AdcHub.cpp:577
+#: dcpp/AdcHub.cpp:573
 #, boost-format
 msgid "Not listening for connections - please restart %1%"
-msgstr ""
+msgstr "Соединения не прослушиваются - пожалуйста, перезапустите %1%"
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
+#: dcpp/Transfer.cpp:81 dcpp/Transfer.cpp:85 dcpp/ClientManager.cpp:115
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
@@ -330,20 +331,19 @@ msgstr "Оффлайн"
 
 #: dcpp/FavoriteManager.cpp:442
 msgid "Redirect user(s)"
-msgstr "Перенаправить пользователя(ей)"
+msgstr "Перенаправление пользователя(ей)"
 
-#: dcpp/ShareManager.cpp:421
+#: dcpp/ShareManager.cpp:425
 msgid "Remove all subdirectories before adding this one"
-msgstr "Удалить все вложенные папки перед добавлением этой"
+msgstr "Удалите все вложенные папки прежде, чем добавлять эту"
 
 #: dcpp/BitInputStream.h:40
 msgid "Request to seek beyond the end of data"
 msgstr ""
 
 #: dcpp/DownloadManager.cpp:225
-#, fuzzy
 msgid "Response does not match request"
-msgstr "Полное дерево не соответствует TTH корню"
+msgstr "Отклик не соответствует запросу"
 
 #: dcpp/DCPlusPlus.cpp:104
 msgid "Shared Files"
@@ -351,90 +351,90 @@ msgstr "Расшаренные файлы"
 
 #: dcpp/Socket.cpp:269 dcpp/Socket.cpp:273
 msgid "Socks server authentication failed (bad login / password?)"
-msgstr "Неудачная аутентификация socks сервера (неверный логин / пароль?)"
+msgstr "Не прошла аутентификация socks сервера (неверный логин/пароль?)"
 
 #: dcpp/CryptoManager.cpp:221
-#, fuzzy, boost-format
+#, boost-format
 msgid "TLS disabled, failed to generate certificate: %1%"
-msgstr "TLS отключен, файл сертификата не установлен"
+msgstr "TLS запрещён, не удалось сгенерировать сертификат: %1%"
 
 #: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
-msgstr "TLS отключен, файл сертификата не установлен"
+msgstr "TLS запрещён, не установлен файл сертификата"
 
 #: dcpp/MerkleCheckOutputStream.h:53 dcpp/MerkleCheckOutputStream.h:113
+#, fuzzy
 msgid "TTH inconsistency"
-msgstr ""
+msgstr "TTH несовместим"
 
-#: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
+#: dcpp/QueueManager.cpp:512 dcpp/QueueManager.cpp:521
 msgid "Target filename too long"
-msgstr "Слишком длинное имя"
+msgstr "Указанное имя слишком длинное"
 
-#: dcpp/QueueManager.cpp:798
+#: dcpp/QueueManager.cpp:800
 msgid "Target removed"
-msgstr "Объект удален"
+msgstr "Удалено"
 
 #: dcpp/Socket.cpp:255
 msgid "The socks server doesn't support login / password authentication"
-msgstr "Socks сервер не поддерживает аутентификацию по логину / паролю"
+msgstr "Socks сервер не поддерживает аутентификацию логин/пароль"
 
 #: dcpp/Socket.cpp:162 dcpp/Socket.cpp:173 dcpp/Socket.cpp:206
 #: dcpp/Socket.cpp:210 dcpp/Socket.cpp:237 dcpp/Socket.cpp:252
 msgid "The socks server failed establish a connection"
-msgstr "Socks серверу не удалось создать соединение"
+msgstr "Socks серверу не удалось установить соединение"
 
 #: dcpp/Socket.cpp:241
 msgid "The socks server requires authentication"
 msgstr "Socks сервер требует аутентификации"
 
-#: dcpp/ShareManager.cpp:407
+#: dcpp/ShareManager.cpp:413
 msgid "The temporary download directory cannot be shared"
-msgstr "Папка для хранения временных файлов не может быть расшарена"
+msgstr "Временная папка не может быть расшарена"
 
-#: dcpp/QueueManager.cpp:465
+#: dcpp/QueueManager.cpp:469
 msgid "This file is already queued"
-msgstr "Файл уже есть в очереди"
+msgstr "Этот файл уже есть в очереди"
 
 #: dcpp/Thread.cpp:34 dcpp/Thread.cpp:42
 msgid "Unable to create thread"
 msgstr "Невозможно создать поток"
 
-#: dcpp/QueueManager.cpp:995
+#: dcpp/QueueManager.cpp:1002
 #, boost-format
 msgid "Unable to open filelist: %1%"
-msgstr ""
+msgstr "Невозможно открыть список файлов: %1%"
 
 #: dcpp/HashManager.cpp:131
 msgid "Unable to read hash data file"
-msgstr "Невозможно считать файл хэш данных"
+msgstr "Невозможно считать хэш данные файла"
 
-#: dcpp/QueueManager.cpp:327
-#, fuzzy, boost-format
+#: dcpp/QueueManager.cpp:334
+#, boost-format
 msgid "Unable to rename %1%: %2%"
-msgstr "Невозможно создать поток"
+msgstr "Невозможно переименовать %1%: %2%"
 
 #: dcpp/UploadManager.cpp:149
 #, boost-format
 msgid "Unable to send file %1%: %2%"
-msgstr ""
+msgstr "Невозможно передать файл %1%: %2%"
 
 #: dcpp/Socket.cpp:54
 #, c-format, boost-format
 msgid "Unknown error: 0x%1$x"
-msgstr ""
+msgstr "Неизвестная ошибка: 0x%1$x"
 
-#: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468
-msgid "Virtual directory name already exists"
-msgstr "Название уже используется"
-
-#: dcpp/QueueManager.cpp:412 dcpp/QueueManager.cpp:436
+#: dcpp/QueueManager.cpp:419 dcpp/QueueManager.cpp:443
 msgid "You're trying to download from yourself!"
-msgstr "Вы пытаетесь качать с себя."
+msgstr "Вы пытаетесь качать с себя!"
+
+#: dcpp/SettingsManager.cpp:155
+msgid "downloaded from"
+msgstr "закачано с"
 
 #: dcpp/SettingsManager.cpp:156
-msgid "downloaded from"
-msgstr ""
-
-#: dcpp/SettingsManager.cpp:157
 msgid "uploaded to"
-msgstr ""
+msgstr "передано"
+
+#~ msgid "Virtual directory name already exists"
+#~ msgstr "Название папки уже существует"

@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-18 22:52+0100\n"
-"PO-Revision-Date: 2008-03-13 23:13+0000\n"
-"Last-Translator: NGK <ayumi.evolution@gmail.com>\n"
+"POT-Creation-Date: 2008-04-21 14:00+0200\n"
+"PO-Revision-Date: 2008-04-18 18:27+0000\n"
+"Last-Translator: Brandy <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
+"X-Launchpad-Export-Date: 2008-04-21 11:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -55,7 +55,7 @@ msgstr "%1% (%2%) har samma CID {%3%} som %4% (%5%), ignorerar"
 #: dcpp/NmdcHub.cpp:281
 #, boost-format
 msgid "%1% (Nick unknown)"
-msgstr "%1% (Okänt smeknamn)"
+msgstr "%1% (Okänt användarnamn)"
 
 #: dcpp/HashManager.cpp:767
 #, boost-format
@@ -63,7 +63,7 @@ msgid ""
 "%1% not shared; calculated CRC32 does not match the one found in SFV file."
 msgstr "%1% inte utdelad; beräknad CRC32 matchar inte den i SFV-filen."
 
-#: dcpp/QueueManager.cpp:325
+#: dcpp/QueueManager.cpp:332
 #, boost-format
 msgid "%1% renamed to %2%"
 msgstr "%1% omdöpt till %2%"
@@ -78,7 +78,7 @@ msgstr "%1% kickades av %2%: %3%"
 msgid "%1% was kicked: %2%"
 msgstr "%1% kickades: %2%"
 
-#: dcpp/DownloadManager.cpp:530
+#: dcpp/DownloadManager.cpp:535
 #, boost-format
 msgid "%1%: File not available"
 msgstr "%1%: Filen ej tillgänglig"
@@ -93,19 +93,19 @@ msgstr "%d B"
 msgid "%s B"
 msgstr "%s B"
 
-#: dcpp/QueueManager.cpp:532
+#: dcpp/QueueManager.cpp:534
 msgid "A file of equal or larger size already exists at the target location"
 msgstr "En fil med samma eller större storlek finns redan vid destinationen"
 
-#: dcpp/QueueManager.cpp:475
+#: dcpp/QueueManager.cpp:477
 msgid "A file with a different size already exists in the queue"
 msgstr "En fil med annan storlek finns redan i kön"
 
-#: dcpp/QueueManager.cpp:478
+#: dcpp/QueueManager.cpp:480
 msgid "A file with different tth root already exists in the queue"
 msgstr "En fil med annan tth-rot finns redan i kön"
 
-#: dcpp/QueueManager.cpp:442
+#: dcpp/QueueManager.cpp:449
 msgid "A file with the same hash already exists in your share"
 msgstr "Delar redan ut en fil med samma hash"
 
@@ -113,11 +113,11 @@ msgstr "Delar redan ut en fil med samma hash"
 msgid "All download slots taken"
 msgstr "Alla nedladdningsplatser upptagna"
 
-#: dcpp/DownloadManager.cpp:376
+#: dcpp/DownloadManager.cpp:381
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32 stämmer ej (kontrollera SFV)"
 
-#: dcpp/DownloadManager.cpp:374
+#: dcpp/DownloadManager.cpp:379
 #, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
 msgstr "CRC32 stämmer ej (kontrollera SFV) (Fil: %1%)"
@@ -127,9 +127,8 @@ msgid "Certificate not trusted, unable to connect"
 msgstr "Ej pålitligt certifikat, kan ej ansluta"
 
 #: dcpp/BufferedSocket.cpp:148
-#, fuzzy
 msgid "Connection closed"
-msgstr "Inget svar på förbindelsen inom tidsgränsen"
+msgstr "Anslutningen stängd"
 
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
 #: dcpp/BufferedSocket.cpp:131
@@ -141,19 +140,19 @@ msgstr "Inget svar på förbindelsen inom tidsgränsen"
 msgid "Could not open target file: %1%"
 msgstr "Kunde ej öppna målfilen: %1%"
 
-#: dcpp/ShareManager.cpp:418
+#: dcpp/ShareManager.cpp:422
 msgid "Directory already shared"
 msgstr "Katalogen är redan utdelad"
 
 #: dcpp/ADLSearch.h:281
 msgid "Discard"
-msgstr ""
+msgstr "Ignorera"
 
 #: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Frånkopplad"
 
-#: dcpp/UploadManager.cpp:450
+#: dcpp/UploadManager.cpp:453
 #, boost-format
 msgid "Disconnected user leaving the hub: %1%"
 msgstr "Frånkopplad användare lämnar hubben: %1%"
@@ -162,7 +161,7 @@ msgstr "Frånkopplad användare lämnar hubben: %1%"
 msgid "Download Queue"
 msgstr "Nedladdningskö"
 
-#: dcpp/ShareManager.cpp:741
+#: dcpp/ShareManager.cpp:802
 #, boost-format
 msgid ""
 "Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched "
@@ -170,7 +169,7 @@ msgid ""
 msgstr ""
 "Dubblettfil kommer ej delas ut: %1%%2% (Storlek: %3% B) Dubblett av: %4%%5%"
 
-#: dcpp/QueueManager.cpp:545 dcpp/QueueManager.cpp:549
+#: dcpp/QueueManager.cpp:547 dcpp/QueueManager.cpp:551
 #, boost-format
 msgid "Duplicate source: %1%"
 msgstr "Dubblerad källa: %1%"
@@ -223,16 +222,16 @@ msgstr ""
 "Misslyckades att sätta upp UDP-relay hos socks-servern (kontrollera socks-"
 "adress och port)"
 
-#: dcpp/ShareManager.cpp:776
+#: dcpp/ShareManager.cpp:837
 #, boost-format
 msgid "File list refresh failed: %1%"
 msgstr "Misslyckades uppdatera fillistan: %1%"
 
-#: dcpp/ShareManager.cpp:820
+#: dcpp/ShareManager.cpp:882
 msgid "File list refresh finished"
 msgstr "Uppdatering av fillistan klar"
 
-#: dcpp/ShareManager.cpp:756
+#: dcpp/ShareManager.cpp:817
 msgid ""
 "File list refresh in progress, please wait for it to finish before trying to "
 "refresh again"
@@ -240,7 +239,7 @@ msgstr ""
 "Uppdatering av fillistan pågår, var god vänta tills den är klar innan du "
 "försöker uppdatera igen"
 
-#: dcpp/ShareManager.cpp:798
+#: dcpp/ShareManager.cpp:858
 msgid "File list refresh initiated"
 msgstr "Uppdatering av fillistan påbörjad"
 
@@ -258,7 +257,7 @@ msgstr "Hashning färdig: %1%"
 msgid "Finished hashing: %1% (%2%/s)"
 msgstr "Hashning färdig: %1% (%2%/s)"
 
-#: dcpp/DownloadManager.cpp:308
+#: dcpp/DownloadManager.cpp:310
 msgid "Full tree does not match TTH root"
 msgstr "Fullt träd matchar inte TTH-roten"
 
@@ -291,7 +290,7 @@ msgstr ""
 msgid "Invalid size"
 msgstr "Ogiltig storlek"
 
-#: dcpp/QueueManager.cpp:515 dcpp/QueueManager.cpp:523
+#: dcpp/QueueManager.cpp:517 dcpp/QueueManager.cpp:525
 msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
@@ -312,24 +311,24 @@ msgstr "Lyssnadssocket misslyckad (du måste starta om %1%): %2%"
 msgid "Maximum command length exceeded"
 msgstr "Högsta längden på kommando överstigen"
 
-#: dcpp/DownloadManager.cpp:280
+#: dcpp/DownloadManager.cpp:282
 msgid "More data was sent than was expected"
 msgstr "Skickade mer data än vad som förväntades"
 
-#: dcpp/ShareManager.cpp:403
+#: dcpp/ShareManager.cpp:409
 msgid "No directory specified"
 msgstr "Ingen katalog vald"
 
-#: dcpp/DownloadManager.cpp:419
+#: dcpp/DownloadManager.cpp:424
 msgid "No slots available"
 msgstr "Inga platser tillgängliga"
 
-#: dcpp/AdcHub.cpp:577
+#: dcpp/AdcHub.cpp:573
 #, boost-format
 msgid "Not listening for connections - please restart %1%"
 msgstr "Lyssnar inte efter anslutningar - var god starta om %1%"
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
+#: dcpp/Transfer.cpp:81 dcpp/Transfer.cpp:85 dcpp/ClientManager.cpp:115
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
@@ -339,13 +338,13 @@ msgstr "Frånkopplad"
 msgid "Redirect user(s)"
 msgstr "Omdirigera användare"
 
-#: dcpp/ShareManager.cpp:421
+#: dcpp/ShareManager.cpp:425
 msgid "Remove all subdirectories before adding this one"
 msgstr "Ta bort alla underkataloger innan du lägger till denna"
 
 #: dcpp/BitInputStream.h:40
 msgid "Request to seek beyond the end of data"
-msgstr ""
+msgstr "Begäran till att söka efter slutet på data"
 
 #: dcpp/DownloadManager.cpp:225
 msgid "Response does not match request"
@@ -371,13 +370,13 @@ msgstr "TLS avstängd, ingen certifikatsfil bestämd"
 
 #: dcpp/MerkleCheckOutputStream.h:53 dcpp/MerkleCheckOutputStream.h:113
 msgid "TTH inconsistency"
-msgstr ""
+msgstr "TTH inkonsekvens"
 
-#: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
+#: dcpp/QueueManager.cpp:512 dcpp/QueueManager.cpp:521
 msgid "Target filename too long"
 msgstr "Målets filnamn är för långt"
 
-#: dcpp/QueueManager.cpp:798
+#: dcpp/QueueManager.cpp:800
 msgid "Target removed"
 msgstr "Målet borttaget"
 
@@ -394,11 +393,11 @@ msgstr "Socks-servern misslyckades upprätta anslutning"
 msgid "The socks server requires authentication"
 msgstr "Socks-servern kräver verifiering"
 
-#: dcpp/ShareManager.cpp:407
+#: dcpp/ShareManager.cpp:413
 msgid "The temporary download directory cannot be shared"
 msgstr "Den tillfälliga nedladdningskatalogen kan ej delas ut"
 
-#: dcpp/QueueManager.cpp:465
+#: dcpp/QueueManager.cpp:469
 msgid "This file is already queued"
 msgstr "Filen finns redan i kön"
 
@@ -406,7 +405,7 @@ msgstr "Filen finns redan i kön"
 msgid "Unable to create thread"
 msgstr "Kan ej skapa tråd"
 
-#: dcpp/QueueManager.cpp:995
+#: dcpp/QueueManager.cpp:1002
 #, boost-format
 msgid "Unable to open filelist: %1%"
 msgstr "Kan ej öppna fillista: %1%"
@@ -415,7 +414,7 @@ msgstr "Kan ej öppna fillista: %1%"
 msgid "Unable to read hash data file"
 msgstr "Kan ej läsa hashdatafilen"
 
-#: dcpp/QueueManager.cpp:327
+#: dcpp/QueueManager.cpp:334
 #, boost-format
 msgid "Unable to rename %1%: %2%"
 msgstr "Kan ej döpa om %1%: %2%"
@@ -430,21 +429,20 @@ msgstr "Kan ej skicka fil %1%: %2%"
 msgid "Unknown error: 0x%1$x"
 msgstr "Okänt fel: 0x%1$x"
 
-#: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468
-msgid "Virtual directory name already exists"
-msgstr "Virtuellt katalogsnamn finns redan"
-
-#: dcpp/QueueManager.cpp:412 dcpp/QueueManager.cpp:436
+#: dcpp/QueueManager.cpp:419 dcpp/QueueManager.cpp:443
 msgid "You're trying to download from yourself!"
 msgstr "Du försöker ladda ner från dig själv!"
 
-#: dcpp/SettingsManager.cpp:156
+#: dcpp/SettingsManager.cpp:155
 msgid "downloaded from"
 msgstr "nedladdad från"
 
-#: dcpp/SettingsManager.cpp:157
+#: dcpp/SettingsManager.cpp:156
 msgid "uploaded to"
 msgstr "uppladdad till"
 
 #~ msgid "Unknown error: 0x%1%"
 #~ msgstr "Okänt fel: 0x%1%"
+
+#~ msgid "Virtual directory name already exists"
+#~ msgstr "Virtuellt katalogsnamn finns redan"

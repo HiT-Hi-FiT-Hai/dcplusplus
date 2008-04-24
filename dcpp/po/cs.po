@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-18 22:52+0100\n"
+"POT-Creation-Date: 2008-04-21 14:00+0200\n"
 "PO-Revision-Date: 2008-03-13 23:00+0000\n"
 "Last-Translator: marek.tomass <marek.tomass@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
+"X-Launchpad-Export-Date: 2008-04-21 11:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -63,7 +63,7 @@ msgid ""
 "%1% not shared; calculated CRC32 does not match the one found in SFV file."
 msgstr ""
 
-#: dcpp/QueueManager.cpp:325
+#: dcpp/QueueManager.cpp:332
 #, boost-format
 msgid "%1% renamed to %2%"
 msgstr "%1% přejmenovat na %2%"
@@ -78,7 +78,7 @@ msgstr ""
 msgid "%1% was kicked: %2%"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:530
+#: dcpp/DownloadManager.cpp:535
 #, boost-format
 msgid "%1%: File not available"
 msgstr "%1%: Soubor není dostupný"
@@ -86,29 +86,27 @@ msgstr "%1%: Soubor není dostupný"
 #: dcpp/Util.cpp:337
 #, c-format, boost-format
 msgid "%d B"
-msgstr ""
-"Copy text   \t\r\n"
-"%d B"
+msgstr "%d B"
 
 #: dcpp/Util.cpp:377
 #, c-format, boost-format
 msgid "%s B"
 msgstr "%s B"
 
-#: dcpp/QueueManager.cpp:532
+#: dcpp/QueueManager.cpp:534
 msgid "A file of equal or larger size already exists at the target location"
 msgstr ""
 "Soubor se stejnou nebo vetsi velikosti je uz na miste kam chcete stahovat"
 
-#: dcpp/QueueManager.cpp:475
+#: dcpp/QueueManager.cpp:477
 msgid "A file with a different size already exists in the queue"
 msgstr "Stejny soubor z jinou velkosti je uz ve fronte"
 
-#: dcpp/QueueManager.cpp:478
+#: dcpp/QueueManager.cpp:480
 msgid "A file with different tth root already exists in the queue"
 msgstr "Stejny soubor s jinym  tth indexom (tth root) je uz ve fronte"
 
-#: dcpp/QueueManager.cpp:442
+#: dcpp/QueueManager.cpp:449
 msgid "A file with the same hash already exists in your share"
 msgstr "Soubor se stejnym hashem uz sdilite"
 
@@ -116,11 +114,11 @@ msgstr "Soubor se stejnym hashem uz sdilite"
 msgid "All download slots taken"
 msgstr "Vsechny upload sloty obsazene"
 
-#: dcpp/DownloadManager.cpp:376
+#: dcpp/DownloadManager.cpp:381
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32 nesuhlasi (SFV kontrola)"
 
-#: dcpp/DownloadManager.cpp:374
+#: dcpp/DownloadManager.cpp:379
 #, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
 msgstr ""
@@ -144,7 +142,7 @@ msgstr "Cas pro pripojeni vyprsel"
 msgid "Could not open target file: %1%"
 msgstr ""
 
-#: dcpp/ShareManager.cpp:418
+#: dcpp/ShareManager.cpp:422
 msgid "Directory already shared"
 msgstr "Slozka je uz sdilena"
 
@@ -156,7 +154,7 @@ msgstr ""
 msgid "Disconnected"
 msgstr "Odpojeny"
 
-#: dcpp/UploadManager.cpp:450
+#: dcpp/UploadManager.cpp:453
 #, boost-format
 msgid "Disconnected user leaving the hub: %1%"
 msgstr ""
@@ -165,14 +163,14 @@ msgstr ""
 msgid "Download Queue"
 msgstr "Fronta souboru k stahnuti"
 
-#: dcpp/ShareManager.cpp:741
+#: dcpp/ShareManager.cpp:802
 #, boost-format
 msgid ""
 "Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched "
 "against: %4%%5%"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:545 dcpp/QueueManager.cpp:549
+#: dcpp/QueueManager.cpp:547 dcpp/QueueManager.cpp:551
 #, boost-format
 msgid "Duplicate source: %1%"
 msgstr ""
@@ -225,22 +223,22 @@ msgstr ""
 "Nespravne nastaveni Socket Serveru pro zaisteni UDP (otevrte adresu Socket "
 "Serveru a port)"
 
-#: dcpp/ShareManager.cpp:776
+#: dcpp/ShareManager.cpp:837
 #, boost-format
 msgid "File list refresh failed: %1%"
 msgstr ""
 
-#: dcpp/ShareManager.cpp:820
+#: dcpp/ShareManager.cpp:882
 msgid "File list refresh finished"
 msgstr "Dokonceni obnoveni seznamu souboru"
 
-#: dcpp/ShareManager.cpp:756
+#: dcpp/ShareManager.cpp:817
 msgid ""
 "File list refresh in progress, please wait for it to finish before trying to "
 "refresh again"
 msgstr "Cekejte prosim, az sa dokonci obnova seznamu souboru"
 
-#: dcpp/ShareManager.cpp:798
+#: dcpp/ShareManager.cpp:858
 msgid "File list refresh initiated"
 msgstr "Zahajeni obnoveni seznamu souboru"
 
@@ -258,7 +256,7 @@ msgstr ""
 msgid "Finished hashing: %1% (%2%/s)"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:308
+#: dcpp/DownloadManager.cpp:310
 msgid "Full tree does not match TTH root"
 msgstr "Stahnuty strom neodpoveda porovnavanemu TTH zakladu (TTH root)"
 
@@ -289,7 +287,7 @@ msgstr ""
 msgid "Invalid size"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:515 dcpp/QueueManager.cpp:523
+#: dcpp/QueueManager.cpp:517 dcpp/QueueManager.cpp:525
 msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
@@ -310,24 +308,24 @@ msgstr ""
 msgid "Maximum command length exceeded"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:280
+#: dcpp/DownloadManager.cpp:282
 msgid "More data was sent than was expected"
 msgstr "Bylo odoslane vic dat nez bylo ocekavane"
 
-#: dcpp/ShareManager.cpp:403
+#: dcpp/ShareManager.cpp:409
 msgid "No directory specified"
 msgstr "Nebyla zvolena slozka"
 
-#: dcpp/DownloadManager.cpp:419
+#: dcpp/DownloadManager.cpp:424
 msgid "No slots available"
 msgstr "Nejsou volne zadne sloty"
 
-#: dcpp/AdcHub.cpp:577
+#: dcpp/AdcHub.cpp:573
 #, boost-format
 msgid "Not listening for connections - please restart %1%"
 msgstr ""
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
+#: dcpp/Transfer.cpp:81 dcpp/Transfer.cpp:85 dcpp/ClientManager.cpp:115
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
@@ -337,7 +335,7 @@ msgstr "Nepripojen"
 msgid "Redirect user(s)"
 msgstr "Presmerovat uzivatele"
 
-#: dcpp/ShareManager.cpp:421
+#: dcpp/ShareManager.cpp:425
 msgid "Remove all subdirectories before adding this one"
 msgstr "Odeberte vsecky podslozky, nez pridate tuto"
 
@@ -370,11 +368,11 @@ msgstr ""
 msgid "TTH inconsistency"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
+#: dcpp/QueueManager.cpp:512 dcpp/QueueManager.cpp:521
 msgid "Target filename too long"
 msgstr "Cilove jmeno souboru je prilis dlouhe"
 
-#: dcpp/QueueManager.cpp:798
+#: dcpp/QueueManager.cpp:800
 msgid "Target removed"
 msgstr ""
 
@@ -391,11 +389,11 @@ msgstr "Socket Server nedokazal nadvazat spojeni"
 msgid "The socks server requires authentication"
 msgstr "Socket Server vyzaduje autorizaci"
 
-#: dcpp/ShareManager.cpp:407
+#: dcpp/ShareManager.cpp:413
 msgid "The temporary download directory cannot be shared"
 msgstr "Neni mozne sdilet slozku pro nedotahnute soubory"
 
-#: dcpp/QueueManager.cpp:465
+#: dcpp/QueueManager.cpp:469
 msgid "This file is already queued"
 msgstr ""
 
@@ -403,7 +401,7 @@ msgstr ""
 msgid "Unable to create thread"
 msgstr "Nepodarilo se vytvorit pripojeni"
 
-#: dcpp/QueueManager.cpp:995
+#: dcpp/QueueManager.cpp:1002
 #, boost-format
 msgid "Unable to open filelist: %1%"
 msgstr ""
@@ -412,7 +410,7 @@ msgstr ""
 msgid "Unable to read hash data file"
 msgstr "Neni mozne cist data na hashovani"
 
-#: dcpp/QueueManager.cpp:327
+#: dcpp/QueueManager.cpp:334
 #, boost-format
 msgid "Unable to rename %1%: %2%"
 msgstr ""
@@ -427,18 +425,17 @@ msgstr ""
 msgid "Unknown error: 0x%1$x"
 msgstr ""
 
-#: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468
-msgid "Virtual directory name already exists"
-msgstr "Virtualni slozka s tymto nazvem uz existuje"
-
-#: dcpp/QueueManager.cpp:412 dcpp/QueueManager.cpp:436
+#: dcpp/QueueManager.cpp:419 dcpp/QueueManager.cpp:443
 msgid "You're trying to download from yourself!"
 msgstr "Snazite se stahovat od sebe!"
 
-#: dcpp/SettingsManager.cpp:156
+#: dcpp/SettingsManager.cpp:155
 msgid "downloaded from"
 msgstr ""
 
-#: dcpp/SettingsManager.cpp:157
+#: dcpp/SettingsManager.cpp:156
 msgid "uploaded to"
 msgstr ""
+
+#~ msgid "Virtual directory name already exists"
+#~ msgstr "Virtualni slozka s tymto nazvem uz existuje"
