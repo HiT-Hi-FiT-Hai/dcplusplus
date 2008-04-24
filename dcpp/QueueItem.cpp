@@ -84,10 +84,8 @@ const string& QueueItem::getTempTarget() {
 	return tempTarget;
 }
 
-// # ms we should aim for per segment
-static const int64_t SEGMENT_TIME = 60*1000;
 
-Segment QueueItem::getNextSegment(int64_t blockSize, double lastSpeed, int64_t lastSize) const {
+Segment QueueItem::getNextSegment(int64_t blockSize, int64_t wantedSize) const {
 	if(getSize() == -1 || blockSize == 0) {
 		return Segment(0, -1);
 	}
@@ -100,22 +98,12 @@ Segment QueueItem::getNextSegment(int64_t blockSize, double lastSpeed, int64_t l
 	
 	int64_t targetSize;
 	if(BOOLSETTING(SEGMENTED_DL)) {
-		targetSize = std::max(blockSize, lastSize);
-		if(lastSpeed > 0) {
-			double msecs = 1000 * targetSize / lastSpeed;
-			if(msecs < SEGMENT_TIME / 4) {
-				targetSize *= 2;
-			} else if(msecs < SEGMENT_TIME / 1.25) {
-				targetSize += blockSize;
-			} else if(msecs > SEGMENT_TIME * 4) {
-				targetSize = std::max(blockSize, targetSize / 2);
-			} else if(msecs > SEGMENT_TIME * 1.25) {
-				targetSize = std::max(blockSize, targetSize - blockSize);
-			}
+		if(wantedSize > blockSize) {
+			// Round off to nearest block size
+			targetSize = ((wantedSize + (blockSize / 2)) / blockSize) * blockSize;
+		} else {
+			targetSize = blockSize;
 		}
-		
-		// Round off to nearest block size
-		targetSize = ((targetSize + blockSize / 2) / blockSize) * blockSize;
 	} else {
 		targetSize = remaining;
 	}

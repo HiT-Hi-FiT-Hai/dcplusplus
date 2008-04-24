@@ -39,6 +39,8 @@ Transfer::Transfer(UserConnection& conn, const string& path_, const TTHValue& tt
 void Transfer::tick() {
 	Lock l(cs);
 	
+	uint64_t t = GET_TICK();
+	
 	if(samples.size() >= 1) {
 		int64_t tdiff = samples.back().first - samples.front().first;
 		if((tdiff / 1000) > MIN_SECS) {
@@ -46,9 +48,18 @@ void Transfer::tick() {
 				samples.pop_front();
 			}
 		}
+		
 	}
 	
-	samples.push_back(std::make_pair(GET_TICK(), pos));
+	if(samples.size() > 1) {
+		if(samples.back().second == pos) {
+			// Position hasn't changed, just update the time
+			samples.back().first = t;
+			return;
+		}
+	}
+
+	samples.push_back(std::make_pair(t, pos));
 }
 
 double Transfer::getAverageSpeed() const {

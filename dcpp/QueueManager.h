@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(QUEUE_MANAGER_H)
-#define QUEUE_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_QUEUE_MANAGER_H
+#define DCPLUSPLUS_DCPP_QUEUE_MANAGER_H
 
 #include "TimerManager.h"
 
@@ -178,7 +178,7 @@ private:
 	public:
 		void add(QueueItem* qi);
 		void add(QueueItem* qi, const UserPtr& aUser);
-		QueueItem* getNext(const UserPtr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST, double lastSpeed = 0, int64_t lastSize = 0);
+		QueueItem* getNext(const UserPtr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST, int64_t wantedSize = 0);
 		QueueItem* getRunning(const UserPtr& aUser);
 		void addDownload(QueueItem* qi, Download* d);
 		void removeDownload(QueueItem* qi, const UserPtr& d);

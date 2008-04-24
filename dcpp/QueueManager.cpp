@@ -192,7 +192,7 @@ void QueueManager::UserQueue::add(QueueItem* qi, const UserPtr& aUser) {
 	}
 }
 
-QueueItem* QueueManager::UserQueue::getNext(const UserPtr& aUser, QueueItem::Priority minPrio, double lastSpeed, int64_t lastSize) {
+QueueItem* QueueManager::UserQueue::getNext(const UserPtr& aUser, QueueItem::Priority minPrio, int64_t wantedSize) {
 	int p = QueueItem::LAST - 1;
 
 	do {
@@ -213,7 +213,7 @@ QueueItem* QueueManager::UserQueue::getNext(const UserPtr& aUser, QueueItem::Pri
 					int64_t blockSize = HashManager::getInstance()->getBlockSize(qi->getTTH());
 					if(blockSize == 0)
 						blockSize = qi->getSize();
-					if(qi->getNextSegment(blockSize, lastSpeed, lastSize).getSize() == 0) {
+					if(qi->getNextSegment(blockSize, wantedSize).getSize() == 0) {
 						dcdebug("No segment for %s in %s, block " I64_FMT "\n", aUser->getCID().toBase32().c_str(), qi->getTarget().c_str(), blockSize);
 						continue;
 					}
@@ -736,7 +736,7 @@ Download* QueueManager::getDownload(UserConnection& aSource, bool supportsTrees)
 		return new Download(aSource, pi->second);
 	}
 
-	QueueItem* q = userQueue.getNext(aUser);
+	QueueItem* q = userQueue.getNext(aUser, QueueItem::LOWEST, aSource.getChunkSize());
 
 	if(!q) {
 		dcdebug("none\n");

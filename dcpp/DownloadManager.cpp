@@ -327,9 +327,7 @@ void DownloadManager::endData(UserConnection* aSource) {
 		}
 		
 		aSource->setSpeed(d->getAverageSpeed());
-		if(aSource->getChunkSize() < d->getSize()) {
-			aSource->setChunkSize(d->getSize());
-		}
+		aSource->updateChunkSize(d->getTigerTree().getBlockSize(), d->getSize(), GET_TICK() - d->getStart());
 		
 		dcdebug("Download finished: %s, size " I64_FMT ", downloaded " I64_FMT "\n", d->getPath().c_str(), d->getSize(), d->getPos());
 

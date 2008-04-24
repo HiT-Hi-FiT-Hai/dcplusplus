@@ -46,7 +46,7 @@ Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) thro
 	if(qi.getSize() != -1) {
 		if(HashManager::getInstance()->getTree(getTTH(), getTigerTree())) {
 			setTreeValid(true);
-			setSegment(qi.getNextSegment(getTigerTree().getBlockSize(), conn.getSpeed(), conn.getChunkSize()));
+			setSegment(qi.getNextSegment(getTigerTree().getBlockSize(), conn.getChunkSize()));
 		} else if(supportsTrees && !qi.getSource(conn.getUser())->isSet(QueueItem::Source::FLAG_NO_TREE) && qi.getSize() > HashManager::MIN_BLOCK_SIZE) {
 			// Get the tree unless the file is small (for small files, we'd probably only get the root anyway)
 			setType(TYPE_TREE);
@@ -56,7 +56,7 @@ Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) thro
 			// Use the root as tree to get some sort of validation at least...
 			getTigerTree() = TigerTree(qi.getSize(), qi.getSize(), getTTH());
 			setTreeValid(true);
-			setSegment(qi.getNextSegment(getTigerTree().getBlockSize(), 0, 0));
+			setSegment(qi.getNextSegment(getTigerTree().getBlockSize(), 0));
 		}
 		
 		if(getType() == TYPE_FILE) {

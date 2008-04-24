@@ -162,14 +162,17 @@ public:
 	// Ignore any other ADC commands for now
 	template<typename T> void handle(T , const AdcCommand& ) { }
 
+	int64_t getChunkSize() const { return chunkSize; }
+	void updateChunkSize(int64_t leafSize, int64_t lastChunk, uint64_t ticks);
+	
 	GETSET(string, hubUrl, HubUrl);
 	GETSET(string, token, Token);
 	GETSET(string, encoding, Encoding);
 	GETSET(States, state, State);
 	GETSET(uint64_t, lastActivity, LastActivity);
 	GETSET(double, speed, Speed);
-	GETSET(int64_t, chunkSize, ChunkSize);
 private:
+	int64_t chunkSize;
 	BufferedSocket* socket;
 	bool secure;
 	UserPtr user;

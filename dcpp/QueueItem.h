@@ -155,7 +155,7 @@ public:
 	DownloadList& getDownloads() { return downloads; }
 	
 	/** Next segment that is not done and not being downloaded, zero-sized segment returned if there is none is found */
-	Segment getNextSegment(int64_t blockSize, double lastSpeed, int64_t lastSize) const;
+	Segment getNextSegment(int64_t blockSize, int64_t wantedSize) const;
 	
 	void addSegment(const Segment& segment);
 	
