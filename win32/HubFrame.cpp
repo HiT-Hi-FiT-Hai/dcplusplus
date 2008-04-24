@@ -68,7 +68,7 @@ void HubFrame::openWindow(dwt::TabView* mdiParent, const string& url) {
 }
 
 HubFrame::HubFrame(dwt::TabView* mdiParent, const string& url_) : 
-	BaseType(mdiParent, Text::toT(url_), IDH_HUB, IDR_HUB),
+	BaseType(mdiParent, Text::toT(url_), IDH_HUB, IDR_HUB_OFF),
 	chat(0),
 	message(0),
 	filter(0),
