@@ -294,6 +294,9 @@ void ShareManager::load(SimpleXML& aXml) {
 			const string& virtualName = aXml.getChildAttrib("Virtual");
 			string vName = validateVirtual(virtualName.empty() ? Util::getLastDir(realPath) : virtualName);
 			shares.insert(std::make_pair(realPath, vName));
+			if(getByVirtual(vName) == directories.end()) {
+				directories.push_back(new Directory(vName, 0));
+			}
 		}
 		aXml.stepOut();
 	}
@@ -378,7 +381,9 @@ bool ShareManager::loadCache() throw() {
 		SimpleXMLReader(&loader).fromXML(txt);
 
 		for(DirList::const_iterator i = directories.begin(); i != directories.end(); ++i) {
-			updateIndices(**i);
+			Directory* d = *i;
+			updateIndices(*d);
+			dcdebug("Loaded %s in %ul files and %ul dirs from cached %s\n", Util::formatBytes(d->size).c_str(), d->files.size(), d->directories.size(), d->getName().c_str());
 		}
 
 		return true;

@@ -254,7 +254,7 @@ void QueueManager::UserQueue::setPriority(QueueItem* qi, QueueItem::Priority p) 
 
 int64_t QueueManager::UserQueue::getQueued(const UserPtr& aUser) const {
 	int64_t total = 0;
-	for(size_t i = 0; i < QueueItem::LAST; ++i) {
+	for(size_t i = QueueItem::LOWEST; i < QueueItem::LAST; ++i) {
 		const QueueItem::UserListMap& ulm = userQueue[i];
 		QueueItem::UserListMap::const_iterator iulm = ulm.find(aUser);
 		if(iulm == ulm.end()) {

@@ -41,6 +41,7 @@
 * [L#195209] Changed tab order in hub windows (poy)
 * Removed unused rollback option (thanks mikejj)
 * Fixed PM history not showing the last line (poy)
+* Queued field in connections no longer counts paused items
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)
