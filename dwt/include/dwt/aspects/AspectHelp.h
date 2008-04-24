@@ -40,28 +40,32 @@ namespace dwt {
 template<typename WidgetType>
 class AspectHelp {
 	WidgetType& W() { return *static_cast<WidgetType*>(this); }
-	HWND H() { return W().handle(); }
+	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
+
+	HWND H() const { return W().handle(); }
 
 	struct Dispatcher {
 		typedef std::tr1::function<void (HWND, unsigned)> F;
 
-		Dispatcher(const F& f_, WidgetType* widget_) : f(f_), widget(widget_) { }
+		Dispatcher(const F& f_) : f(f_) { }
 
 		bool operator()(const MSG& msg, LRESULT& ret) {
 			LPHELPINFO lphi = reinterpret_cast<LPHELPINFO>(msg.lParam);
 			if(lphi->iContextType != HELPINFO_WINDOW)
 				return false;
 
+			HWND hWnd = reinterpret_cast<HWND>(lphi->hItemHandle);
 			unsigned id = lphi->dwContextId;
-			widget->helpImpl(id);
-			f(reinterpret_cast<HWND>(lphi->hItemHandle), id);
+			WidgetType* w = hwnd_cast<WidgetType*>(hWnd);
+			if(w)
+				w->helpImpl(id);
+			f(hWnd, id);
 
 			ret = TRUE;
 			return true;
 		}
 
 		F f;
-		WidgetType* widget;
 	};
 
 public:
@@ -74,7 +78,7 @@ public:
 	}
 
 	void onHelp(const typename Dispatcher::F& f) {
-		W().addCallback(Message(WM_HELP), Dispatcher(f, &W()));
+		W().addCallback(Message(WM_HELP), Dispatcher(f));
 	}
 
 private:
