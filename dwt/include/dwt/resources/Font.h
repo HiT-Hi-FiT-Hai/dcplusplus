@@ -38,7 +38,6 @@
 
 #include "../WindowsHeaders.h"
 #include "../tstring.h"
-#include "../xCeption.h"
 #include "Handle.h"
 
 namespace dwt {

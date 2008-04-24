@@ -54,8 +54,7 @@ void ToolBar::appendSeparator()
 	tb.fsStyle = BTNS_SEP;
 	if ( this->sendMessage(TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( &tb ) ) == FALSE )
 	{
-		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
-		throw x;
+		throw Win32Exception("Error while trying to add a button to toolbar...");
 	}
 }
 
@@ -85,8 +84,7 @@ void ToolBar::appendItem(int image, const tstring& toolTip, DWORD_PTR data, cons
 	tb.iString = reinterpret_cast<INT_PTR>(toolTip.c_str());
 	if ( this->sendMessage(TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( &tb ) ) == FALSE )
 	{
-		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
-		throw x;
+		throw Win32Exception( "Error while trying to add a button to toolbar...");
 	}
 }
 

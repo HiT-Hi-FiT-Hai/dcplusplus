@@ -37,6 +37,7 @@
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectVisible.h"
+#include "../util/check.h"
 
 namespace dwt {
 
@@ -115,7 +116,7 @@ inline ToolTip::ToolTip( Widget * parent )
 	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a ToolTip without a parent..." ) );
+	dwtassert( parent, _T( "Can't have a ToolTip without a parent..." ) );
 }
 
 inline void ToolTip::setMaxTipWidth(int width) {

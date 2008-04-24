@@ -47,7 +47,7 @@
 
 #include <dwt/Widget.h>
 
-#include <dwt/xCeption.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
@@ -58,10 +58,10 @@ Widget::~Widget() {
 // Subclasses a dialog item inside a dialog, usually used in combination with Dialog resources.
 void Widget::attach( unsigned id ) {
 	if ( !itsParent )
-		throw xCeption( _T( "Can't attach a Widget without a parent..." ) );
+		throw DWTException("Can't attach a Widget without a parent...");
 	HWND hWnd = ::GetDlgItem( itsParent->handle(), id );
 	if ( !hWnd )
-		throw xCeption( _T( "GetDlgItem failed." ) );
+		throw Win32Exception("GetDlgItem failed.");
 	setHandle(hWnd);
 }
 
@@ -82,14 +82,14 @@ HWND Widget::create( const Seed & cs ) {
 	);
 	if (!hWnd) {
 		// The most common error is to forget WS_CHILD in the styles
-		throw xCeption( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
+		throw Win32Exception( "CreateWindowEx in Widget::create fizzled ...");
 	}
 	return hWnd;
 }
 
 void Widget::setHandle(HWND hwnd) {
 	if(itsHandle) {
-		throw xCeption(_T("You may not attach to a widget that's already attached"));
+		throw DWTException("You may not attach to a widget that's already attached");
 	}
 	itsHandle = hwnd;
 	::SetProp(hwnd, propAtom, reinterpret_cast<HANDLE>(this) );

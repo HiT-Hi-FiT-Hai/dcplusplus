@@ -371,7 +371,7 @@ inline TextBoxBase::TextBoxBase( Widget * parent )
 	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
+	dwtassert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
 inline TextBox::TextBox( Widget * parent )

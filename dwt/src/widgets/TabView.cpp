@@ -35,6 +35,7 @@
 #include <dwt/widgets/ToolTip.h>
 #include <dwt/WidgetCreator.h>
 #include <dwt/util/StringUtils.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
@@ -128,10 +129,8 @@ void TabView::add(Container* w, const IconPtr& icon) {
 	}
 	
 	int newIdx = TabCtrl_InsertItem( handle(), tabs, &item );
-	if ( newIdx == - 1 )
-	{
-		xCeption x( _T( "Error while trying to add page into Tab Sheet" ) );
-		throw x;
+	if ( newIdx == - 1 ) {
+		throw Win32Exception("Error while trying to add page into Tab Sheet");
 	}
 
 	viewOrder.push_front(w);
@@ -512,7 +511,7 @@ tstring TabView::getText(unsigned idx) const
 	item.pszText = buffer;
 	if ( !TabCtrl_GetItem( this->handle(), idx, & item ) )
 	{
-		throw xCeption( _T( "Couldn't retrieve text in TabView::getText." ) );
+		throw Win32Exception("Couldn't retrieve text in TabView::getText.");
 	}
 	return buffer;
 }

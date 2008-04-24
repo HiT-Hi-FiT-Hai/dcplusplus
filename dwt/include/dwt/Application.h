@@ -60,7 +60,6 @@ namespace dwt {
 
 // Forward declaration of friends
 class Widget;
-class xCeption;
 
 namespace Policies {
 class ModelessDialog;
@@ -150,11 +149,6 @@ public:
 	/** Used after the message loop completes in WinMain.
 	  */
 	static void checkCorruptOrMemleak( bool & corruptMemMemLeak );
-
-	/// Shows the xCeption.
-	/** Used if an exception occurs in the message loop in WinMain.
-	  */
-	static unsigned int reportErr( xCeption & err, bool corruptMemMemLeak );
 
 	/// Returns the command line object
 	/** The command line object contains the parameters given to the process during

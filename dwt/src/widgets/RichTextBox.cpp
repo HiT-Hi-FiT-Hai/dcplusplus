@@ -49,7 +49,7 @@ void RichTextBox::create( const Seed & cs )
 	// Need to load up RichEdit library!
 	static LibraryLoader richEditLibrary( _T( "riched20.dll" ) );
 
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
+	dwtassert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create( cs );
 	if(cs.font)
 		setFont( cs.font );

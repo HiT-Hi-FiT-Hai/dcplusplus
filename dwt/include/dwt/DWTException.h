@@ -3,6 +3,10 @@
 
   Copyright (c) 2007-2008, Jacek Sieka
 
+  SmartWin++
+
+  Copyright (c) 2005 Thomas Hansen
+
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without modification, 
@@ -13,7 +17,7 @@
       * Redistributions in binary form must reproduce the above copyright notice, 
         this list of conditions and the following disclaimer in the documentation 
         and/or other materials provided with the distribution.
-      * Neither the name of the DWT nor the names of its contributors 
+      * Neither the name of the DWT nor SmartWin++ nor the names of its contributors 
         may be used to endorse or promote products derived from this software 
         without specific prior written permission.
 
@@ -29,36 +33,55 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <dwt/widgets/ToolTip.h>
+#ifndef DWT_EXCEPTION_H
+#define DWT_EXCEPTION_H
+
+#include "WindowsHeaders.h"
+
+#include <string>
+#include <stdexcept>
 
 namespace dwt {
 
-ToolTip::Seed::Seed() : 
-	BaseType::Seed(TOOLTIPS_CLASS, WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX, WS_EX_TRANSPARENT)
-{
-}
-
-void ToolTip::create( const Seed & cs ) {
-	dwtassert((cs.style & WS_POPUP) == WS_POPUP, _T("Widget must have WS_POPUP style"));
-
-	BaseType::create(cs);
-}
-
-void ToolTip::relayEvent(const MSG& msg) {
-	if(msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST)
-		sendMessage(TTM_RELAYEVENT, 0, reinterpret_cast<LPARAM>(&msg));
-}
-
-void ToolTip::setTool(Widget* widget, const Dispatcher::F& f) {
-	onGetTip(f);
+/// Exception class used in SmartWin
+/** All exceptions thrown by SmartWin will be either of this class or derived from
+  * this class. <br>
+  * You should derive from this class yourself if you throw exceptions inside your
+  * event handlers. <br>
+  * Otherwise SmartWin may not be able to respond correctly to the Exception.
+  */
+class DWTException : public std::runtime_error {
+public:
 	
-	TOOLINFO ti = { sizeof(TOOLINFO) };
-	ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
-	ti.hwnd = getParent()->handle();
-	ti.uId = reinterpret_cast<UINT_PTR>(widget->handle());
-	ti.lpszText = LPSTR_TEXTCALLBACK;
-	sendMessage(TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&ti));
+	DWTException( const std::string& err ) : std::runtime_error(err) {
+		
+	}
+
+	virtual ~DWTException() throw() {
+	};
+
+private:
+};
+
+/// Utility class for handling win32 errors - don't use it directly...
+class Win32Exception : public DWTException {
+public:
+	Win32Exception() : DWTException(translateLastError()), code(::GetLastError()) {
+		
+	}
 	
-}
+	Win32Exception(const std::string& msg) : DWTException(msg + " (" + translateLastError() + ")"), code(::GetLastError()) {
+		
+	}
+	
+	DWORD getCode() { return code; }
+	
+private:
+	DWORD code;
+	
+	static std::string translateLastError();
+};
 
 }
+
+#endif

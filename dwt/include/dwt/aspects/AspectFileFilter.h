@@ -38,7 +38,7 @@
 
 #include "../WindowsHeaders.h"
 #include "../tstring.h"
-#include "../xCeption.h"
+#include "../util/check.h"
 
 namespace dwt {
 
@@ -75,10 +75,9 @@ public:
 	  * filter used when first showing the dialog.
 	  */
 	WidgetType& setActiveFilter( unsigned filterNo ) {
-		if ( filterNo >= itsFilter.size() )
-		{
-			xCeption x( _T( "Tried to set active filter to more than number of filters in filter..." ) );
-			throw x;
+		if ( filterNo >= itsFilter.size() ) {
+			dwtDebugFail( "Tried to set active filter to more than number of filters in filter..." );
+			return W();
 		}
 		itsActiveFilter = filterNo;
 		return W();

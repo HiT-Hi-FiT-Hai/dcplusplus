@@ -86,7 +86,6 @@ public:
 	/// Object type
 	typedef ThisType* ObjectType;
 	
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
@@ -129,9 +128,8 @@ public:
 	void create( const Seed & cs = Seed() );
 
 protected:
-	/// Constructor Taking pointer to parent
-	explicit ComboBox( Widget * parent );
-
+	ComboBox(Widget* parent);
+	
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
 	virtual ~ComboBox()
@@ -200,8 +198,7 @@ inline int ComboBox::addValue( const tstring & val )
 	int newIdx = ComboBox_AddString( handle(), ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )
 	{
-		xCeption x( _T( "Error while trying to add string into ComboBox" ) );
-		throw x;
+		dwtWin32DebugFail("Error while trying to add string into ComboBox");
 	}
 	return newIdx;
 }
@@ -211,8 +208,7 @@ inline int ComboBox::insertValue( int pos, const tstring & val )
 	int newIdx = ComboBox_InsertString( handle(), pos, ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )
 	{
-		xCeption x( _T( "Error while trying to insert string into ComboBox" ) );
-		throw x;
+		dwtWin32DebugFail("Error while trying to insert string into ComboBox");
 	}
 	return newIdx;
 }
@@ -221,9 +217,9 @@ inline size_t ComboBox::sizeImpl() const {
 	return static_cast<size_t>(ComboBox_GetCount( handle() )); // Number of items present.
 }
 
-inline ComboBox::ComboBox( Widget * parent )
-	: BaseType( parent )
-{
+
+inline ComboBox::ComboBox( Widget* parent ) : BaseType(parent) {
+
 }
 
 }

@@ -30,6 +30,7 @@
 */
 
 #include <dwt/widgets/ModelessDialog.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
@@ -42,7 +43,7 @@ void ModelessDialog::createDialog( unsigned resourceId )
 		reinterpret_cast< LPARAM >( static_cast< Widget * >( this ) ) );
 
 	if ( !wnd ) {
-		throw xCeption( _T( "CreateDialogParam failed." ) );
+		throw Win32Exception( "CreateDialogParam failed.");
 	}
 }
 

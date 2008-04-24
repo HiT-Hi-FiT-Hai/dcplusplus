@@ -34,6 +34,8 @@
 #include <dwt/resources/Pen.h>
 #include <dwt/CanvasClasses.h>
 #include <dwt/LibraryLoader.h>
+#include <dwt/util/check.h>
+#include <dwt/DWTException.h>
 
 #include <boost/scoped_array.hpp>
 
@@ -51,7 +53,7 @@ Table::Seed::Seed() :
 
 void Table::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
+	dwtassert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create(cs);
 
 	if(cs.font)
@@ -165,8 +167,10 @@ void Table::createColumns( const std::vector< tstring > & colNames )
 		++idx, ++x )
 	{
 		lvColumn.pszText = const_cast < TCHAR * >( idx->c_str() );
-		bool ret = ListView_InsertColumn( this->handle(), x, & lvColumn ) != - 1;
-		assert(ret);
+		if ( ListView_InsertColumn( this->handle(), x, & lvColumn ) == - 1 )
+		{
+			throw Win32Exception("Error while trying to create Columns in list view" );
+		}
 	}
 }
 
@@ -184,15 +188,17 @@ int Table::insert(const std::vector< tstring > & row, LPARAM lPar, int index, in
 	lvi.pszText = const_cast < TCHAR * >(row[0].c_str() );
 	lvi.lParam = lPar;
 	lvi.iItem = index;
-	bool ret = ListView_InsertItem( this->handle(), & lvi ) != - 1;
-	assert(ret);
+	if ( ListView_InsertItem( this->handle(), & lvi ) == - 1) {
+		throw Win32Exception ( "Error while trying to insert row in Table");
+	}
 	lvi.mask = LVIF_TEXT;
 	lvi.iSubItem = 1;
 	for (std::vector< tstring >::const_iterator idx = row.begin() + 1; idx != row.end(); ++idx ) {
 		lvi.pszText = const_cast < TCHAR * >(idx->c_str() );
 		lvi.cchTextMax = static_cast< int >(idx->size() );
-		ret = ListView_SetItem( this->handle(), & lvi );
-		assert(ret);
+		if ( !ListView_SetItem( this->handle(), & lvi )) {
+			throw Win32Exception("Error while trying to insert row in Table");
+		}
 		lvi.iSubItem++;
 	}
 	return index;
@@ -302,12 +308,14 @@ void Table::setDataImpl(int idx, LPARAM data) {
 	ListView_SetItem(handle(), &item);
 }
 
-bool Table::setIcon( unsigned row, int newIconIndex ) {
+void Table::setIcon( unsigned row, int newIconIndex ) {
 	LVITEM it = { LVIF_IMAGE };
 	it.iItem = row;
 	it.iImage = newIconIndex;
 	//Set item
-	return ListView_SetItem( this->handle(), &it);
+	if(ListView_SetItem( this->handle(), &it) != TRUE) {
+		dwtWin32DebugFail("Something went wrong while trying to change the selected item of the Table");
+	}
 }
 
 void Table::setNormalImageList( ImageListPtr imageList ) {
@@ -328,8 +336,7 @@ void Table::setStateImageList( ImageListPtr imageList ) {
 void Table::setView( int view ) {
 	if ( ( view & LVS_TYPEMASK ) != view )
 	{
-		xCeption x( _T( "Invalid View type" ) );
-		throw x;
+		dwtWin32DebugFail("Invalid View type");
 	}
 	//little hack because there is no way to do this with Widget::addRemoveStyle
 	int newStyle = GetWindowLong( this->handle(), GWL_STYLE );
@@ -339,11 +346,14 @@ void Table::setView( int view ) {
 	}
 }
 
-bool Table::redraw( int firstRow, int lastRow ) {
+void Table::redraw( int firstRow, int lastRow ) {
 	if(lastRow == -1) {
 		lastRow = size();
 	}
-	return ListView_RedrawItems( this->handle(), firstRow, lastRow );
+	if( ListView_RedrawItems( this->handle(), firstRow, lastRow ) == FALSE )
+	{
+		dwtWin32DebugFail("Error while redrawing items in Table");
+	}
 }
 
 template<typename T>

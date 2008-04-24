@@ -148,7 +148,7 @@ inline MDIParent::MDIParent( Widget * parent )
 	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a MDIParent without a parent..." ) );
+	dwtassert( parent, _T( "Can't have a MDIParent without a parent..." ) );
 }
 
 // end namespace dwt

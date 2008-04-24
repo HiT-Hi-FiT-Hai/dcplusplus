@@ -13,7 +13,7 @@
       * Redistributions in binary form must reproduce the above copyright notice, 
         this list of conditions and the following disclaimer in the documentation 
         and/or other materials provided with the distribution.
-      * Neither the name of the DWT nor the names of its contributors 
+      * Neither the name of the DWT nor SmartWin++ nor the names of its contributors 
         may be used to endorse or promote products derived from this software 
         without specific prior written permission.
 
@@ -29,36 +29,40 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <dwt/widgets/ToolTip.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
-ToolTip::Seed::Seed() : 
-	BaseType::Seed(TOOLTIPS_CLASS, WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX, WS_EX_TRANSPARENT)
-{
-}
-
-void ToolTip::create( const Seed & cs ) {
-	dwtassert((cs.style & WS_POPUP) == WS_POPUP, _T("Widget must have WS_POPUP style"));
-
-	BaseType::create(cs);
-}
-
-void ToolTip::relayEvent(const MSG& msg) {
-	if(msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST)
-		sendMessage(TTM_RELAYEVENT, 0, reinterpret_cast<LPARAM>(&msg));
-}
-
-void ToolTip::setTool(Widget* widget, const Dispatcher::F& f) {
-	onGetTip(f);
+std::string Win32Exception::translateLastError() {
+	DWORD code = ::GetLastError();
 	
-	TOOLINFO ti = { sizeof(TOOLINFO) };
-	ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
-	ti.hwnd = getParent()->handle();
-	ti.uId = reinterpret_cast<UINT_PTR>(widget->handle());
-	ti.lpszText = LPSTR_TEXTCALLBACK;
-	sendMessage(TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&ti));
+	LPSTR lpMsgBuf = 0;
+	DWORD chars = FormatMessageA(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		code,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+		(LPSTR) &lpMsgBuf,
+		0,
+		NULL
+		);
 	
+	if(chars == 0) {
+		::LocalFree( lpMsgBuf );
+		return std::string();
+	}
+	std::string tmp(lpMsgBuf, chars);
+	// Free the buffer.
+	::LocalFree( lpMsgBuf );
+	std::string::size_type i = 0;
+
+	while( (i = tmp.find_first_of("\r\n", i)) != std::string::npos) {
+		tmp.erase(i, 1);
+	}
+	return tmp;
+
 }
 
 }

@@ -39,6 +39,10 @@
 
 #include <dwt/resources/Brush.h>
 #include <dwt/resources/Pen.h>
+#include <dwt/DWTException.h>
+#include <dwt/util/check.h>
+
+#include <boost/scoped_array.hpp>
 
 namespace dwt {
 
@@ -63,7 +67,7 @@ isSysMenu(false),
 itsParent(parent),
 drawSidebar(false)
 {
-	xAssert(itsParent != NULL, _T("A Menu must have a parent"));
+	dwtassert(itsParent != NULL, _T("A Menu must have a parent"));
 }
 
 void Menu::createHelper(const Seed& cs) {
@@ -97,10 +101,8 @@ void Menu::create(const Seed& cs) {
 		itsHandle = ::CreatePopupMenu();
 	else
 		itsHandle = ::CreateMenu();
-	if ( !itsHandle )
-	{
-		xCeption x( _T( "CreateMenu in Menu::create fizzled..." ) );
-		throw x;
+	if ( !itsHandle ) {
+		throw DWTException("CreateMenu in Menu::create fizzled...");
 	}
 }
 
@@ -120,26 +122,29 @@ void Menu::attach(HMENU hMenu, const Seed& cs) {
 			// set flags
 			info.fMask = MIIM_FTYPE | MIIM_DATA;
 
-			BOOL ret = ::GetMenuItemInfo(itsHandle, i, TRUE, &info);
-			assert(ret);
+			if(::GetMenuItemInfo(itsHandle, i, TRUE, &info)) {
+				info.fMask |= MIIM_DATA;
+				info.fType |= MFT_OWNERDRAW;
 
-			info.fMask |= MIIM_DATA;
-			info.fType |= MFT_OWNERDRAW;
+				// create item data wrapper
+				ItemDataWrapper * wrapper = new ItemDataWrapper( this, i );
+				info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 
-			// create item data wrapper
-			ItemDataWrapper * wrapper = new ItemDataWrapper( this, i );
-			info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
-
-			ret = ::SetMenuItemInfo(itsHandle, i, TRUE, &info);
-			assert(ret);
-
-			itsItemData.push_back( wrapper );
+				if(::SetMenuItemInfo(itsHandle, i, TRUE, &info)) {
+					itsItemData.push_back( wrapper );
+				} else {
+					throw Win32Exception("SetMenuItemInfo in Menu::attach fizzled...");
+				}
+			} else {
+				throw Win32Exception("GetMenuItemInfo in Menu::attach fizzled...");
+			}
 		}
 	}
 }
 
-bool Menu::setMenu() {
-	return ::SetMenu( itsParent->handle(), itsHandle );
+void Menu::setMenu() {
+	if ( ::SetMenu( itsParent->handle(), itsHandle ) == FALSE )
+		throw DWTException("SetMenu in Menu::setMenu fizzled...");
 }
 
 Menu::ObjectType Menu::appendPopup( const tstring & text )
@@ -255,9 +260,12 @@ void Menu::checkItem( unsigned id, bool value )
 	::CheckMenuItem( handle(), id, value ? MF_CHECKED : MF_UNCHECKED );
 }
 
-bool Menu::setItemEnabled( unsigned id, bool byPosition, bool value )
+void Menu::setItemEnabled( unsigned id, bool byPosition, bool value )
 {
-	return ::EnableMenuItem( handle(), id, (byPosition ? MF_BYPOSITION : MF_BYCOMMAND) | (value ? MF_ENABLED : MF_GRAYED) ) != - 1;
+	if ( ::EnableMenuItem( handle(), id, (byPosition ? MF_BYPOSITION : MF_BYCOMMAND) | (value ? MF_ENABLED : MF_GRAYED) ) == - 1 )
+	{
+		dwtWin32DebugFail("Couldn't enable/disable the menu item, item doesn't exist" );
+	}
 }
 
 UINT Menu::getMenuState( UINT id, bool byPosition )
@@ -285,9 +293,9 @@ bool Menu::isEnabled( UINT id, bool byPosition )
 	return !(getMenuState(id, byPosition) & (MF_DISABLED | MF_GRAYED)); 
 }
 
-bool Menu::setDefaultItem( UINT id, bool byPosition )
+void Menu::setDefaultItem( UINT id, bool byPosition )
 {
-	return ::SetMenuDefaultItem(handle(), id, byPosition);
+	::SetMenuDefaultItem(handle(), id, byPosition);
 }
 
 tstring Menu::getText( unsigned id, bool byPosition )
@@ -297,17 +305,17 @@ tstring Menu::getText( unsigned id, bool byPosition )
 	// set flag
 	mi.fMask = MIIM_STRING;
 
-	BOOL ret = ::GetMenuItemInfo( itsHandle, id, byPosition, & mi );
-	assert(ret);
+	if ( ::GetMenuItemInfo( itsHandle, id, byPosition, & mi ) == FALSE )
+		throw Win32Exception( "Couldn't get item info in Menu::getText" );
 
 	boost::scoped_array< TCHAR > buffer( new TCHAR[++mi.cch] );
 	mi.dwTypeData = buffer.get();
-	ret = ::GetMenuItemInfo( itsHandle, id, byPosition, & mi );
-	assert(ret);
+	if ( ::GetMenuItemInfo( itsHandle, id, byPosition, & mi ) == FALSE )
+		throw Win32Exception( "Couldn't get item info in Menu::getText" );
 	return mi.dwTypeData;
 }
 
-bool Menu::setText( unsigned id, const tstring& text )
+void Menu::setText( unsigned id, const tstring& text )
 {
 	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
 
@@ -315,7 +323,8 @@ bool Menu::setText( unsigned id, const tstring& text )
 	mi.fMask = MIIM_STRING;
 	mi.dwTypeData = (TCHAR*) text.c_str();
 
-	return ::SetMenuItemInfo( itsHandle, id, FALSE, & mi );
+	if ( ::SetMenuItemInfo( itsHandle, id, FALSE, & mi ) == FALSE )
+		dwtWin32DebugFail("Couldn't set item info in Menu::setText");
 }
 
 void Menu::setTitle( const tstring & title, bool drawSidebar /* = false */)
@@ -368,7 +377,7 @@ bool Menu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 
 	// get item data wrapper
 	ItemDataWrapper * wrapper = reinterpret_cast< ItemDataWrapper * >( drawInfo->itemData );
-	assert(wrapper);
+	dwtassert( wrapper != 0, "Unsupported menu item in drawItem()" );
 
 	// if processing menu bar
 	const bool isMenuBar = ::GetMenu( wrapper->menu->getParent()->handle() ) == wrapper->menu->handle();
@@ -379,11 +388,11 @@ bool Menu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	// set flags
 	info.fMask = MIIM_CHECKMARKS | MIIM_FTYPE | MIIM_DATA | MIIM_STATE | MIIM_STRING;
 
-	BOOL ret = ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info );
-	assert(ret);
+	if ( ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info ) == FALSE )
+		throw DWTException ( "Couldn't get menu item info in drawItem()" );
 
 	// check if item is owner drawn
-	assert(info.fType & MFT_OWNERDRAW);
+	dwtassert( ( info.fType & MFT_OWNERDRAW ) != 0, _T( "Not a owner - drawn item in drawItem()" ) );
 
 	// get state info
 	bool isGrayed = ( drawInfo->itemState & ODS_GRAYED ) == ODS_GRAYED;
@@ -695,7 +704,7 @@ bool Menu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 
 	// get item data wrapper
 	ItemDataWrapper * wrapper = reinterpret_cast< ItemDataWrapper * >( measureInfo->itemData );
-	assert(wrapper);
+	dwtassert( wrapper != 0, "Unsupported menu item type in measureItem()");
 
 	// this will contain item size
 	UINT & itemWidth = measureInfo->itemWidth;
@@ -708,11 +717,11 @@ bool Menu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	info.fMask = MIIM_FTYPE | MIIM_DATA | MIIM_CHECKMARKS | MIIM_STRING;
 
 	// try to get item info
-	BOOL ret = ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info );
-	assert(ret);
+	if ( ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info ) == FALSE )
+		throw DWTException ( "Couldn't get item info in measureItem()" );
 
 	// check if item is owner drawn
-	assert(info.fType & MFT_OWNERDRAW);
+	dwtassert( ( info.fType & MFT_OWNERDRAW ) != 0, _T( "Not owner - drawn item encountered in measureItem()" ) );
 
 	// check if separator
 	if ( info.fType & MFT_SEPARATOR )
@@ -844,36 +853,38 @@ void Menu::removeItem( unsigned itemIndex )
 	HMENU popup = ::GetSubMenu( itsHandle, itemIndex );
 
 	// try to remove item
-	BOOL ret = ::RemoveMenu( itsHandle, itemIndex, MF_BYPOSITION );
-	assert(ret);
+	if ( ::RemoveMenu( itsHandle, itemIndex, MF_BYPOSITION ) )
+	{
+		if(ownerDrawn) {
+			ItemDataWrapper * wrapper = 0;
+			int itemRemoved = -1;
 
-	if(ownerDrawn) {
-		ItemDataWrapper * wrapper = 0;
-		int itemRemoved = -1;
+			for(size_t i = 0; i < itsItemData.size(); ++i) {
+				// get current data wrapper
+				wrapper = itsItemData[i];
 
-		for(size_t i = 0; i < itsItemData.size(); ++i) {
-			// get current data wrapper
-			wrapper = itsItemData[i];
-
-			if ( wrapper->index == int(itemIndex) ) // if found
-			{
-				itemRemoved = int(i);
-				delete wrapper;
-				itsItemData[i] = 0;
+				if ( wrapper->index == int(itemIndex) ) // if found
+				{
+					itemRemoved = int(i);
+					delete wrapper;
+					itsItemData[i] = 0;
+				}
+				else if ( wrapper->index > int(itemIndex) )
+					--wrapper->index; // adjust succeeding item indices
 			}
-			else if ( wrapper->index > int(itemIndex) )
-				--wrapper->index; // adjust succeeding item indices
+
+			if( itemRemoved != -1 )
+				itsItemData.erase( itsItemData.begin() + itemRemoved );
 		}
 
-		if( itemRemoved != -1 )
-			itsItemData.erase( itsItemData.begin() + itemRemoved );
+		// remove sub menus if any
+		if(popup)
+			for(size_t i = 0; i < itsChildren.size(); ++i)
+				if(itsChildren[i]->handle() == popup)
+					itsChildren[i].reset();
+	} else {
+		dwtWin32DebugFail("Couldn't remove item in removeItem()");
 	}
-
-	// remove sub menus if any
-	if(popup)
-		for(size_t i = 0; i < itsChildren.size(); ++i)
-			if(itsChildren[i]->handle() == popup)
-				itsChildren[i].reset();
 }
 
 void Menu::removeAllItems()
@@ -885,12 +896,15 @@ void Menu::removeAllItems()
 	}
 }
 
-int Menu::getCount() const
-{
-	return ::GetMenuItemCount( itsHandle );
+int Menu::getCount() const {
+	int count = ::GetMenuItemCount( itsHandle );
+	
+	dwtassert(count != -1, "Couldn't get item count in getCount");
+
+	return count;
 }
 
-bool Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
+void Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
 {
 	// init structure for new item
 	MENUITEMINFO info = { sizeof(MENUITEMINFO) };
@@ -899,7 +913,7 @@ bool Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
 	info.fMask = MIIM_DATA | MIIM_FTYPE | MIIM_CHECKMARKS | MIIM_ID | MIIM_STRING;
 
 	// set fields
-	xAssert( !isSysMenu || id < SC_SIZE, _T( "Can't add sysmenu item with that high value, value can not be higher then SC_SIZE - 1" ) );
+	dwtassert( !isSysMenu || id < SC_SIZE, "Can't add sysmenu item with that high value, value can not be higher then SC_SIZE - 1");
 	info.wID = id;
 
 	// set text
@@ -927,9 +941,9 @@ bool Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
 	{
 		if(ownerDrawn)
 			itsItemData.push_back( wrapper );
-		return true;
+	} else {
+		throw DWTException("Couldn't insert/update item in Menu::appendItem");
 	}
-	return false;
 }
 
 unsigned Menu::trackPopupMenu( const ScreenCoordinate& sc, unsigned flags )

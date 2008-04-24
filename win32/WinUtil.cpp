@@ -40,6 +40,8 @@
 #include "SearchFrame.h"
 #include "MainWindow.h"
 
+#include <dwt/DWTException.h>
+
 tstring WinUtil::tth;
 dwt::BrushPtr WinUtil::bgBrush;
 COLORREF WinUtil::textColor = 0;
@@ -376,7 +378,7 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 
 			fileIndexes[x] = fileImageCount++;
 			return fileImageCount - 1;
-		} catch(const dwt::xCeption&) {
+		} catch(const dwt::DWTException&) {
 			return 2;
 		}
 	} else {

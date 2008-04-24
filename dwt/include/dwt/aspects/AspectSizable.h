@@ -38,7 +38,7 @@
 
 #include "../Widget.h"
 #include "../Place.h"
-#include "../xCeption.h"
+#include "../util/check.h"
 #include "../Dispatchers.h"
 #include "../Events.h"
 
@@ -250,37 +250,20 @@ protected:
 	virtual ~AspectSizable() { }
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template< class WidgetType >
-void AspectSizable< WidgetType >::setBounds( const Rectangle & rect, bool updateWindow )
-{
-	if ( ::MoveWindow( H(),
-		rect.x(), rect.y(), rect.width(), rect.height(), updateWindow ? TRUE : FALSE ) == 0 )
-	{
-		xCeption err( _T( "Couldn't reposition windows" ) );
-		throw err;
-	}
+void AspectSizable< WidgetType >::setBounds( const Rectangle & rect, bool updateWindow) {
+	setBounds(rect.x(), rect.y(), rect.width(), rect.height(), updateWindow);
 }
 
 template< class WidgetType >
-void AspectSizable< WidgetType >::setBounds( const Point & newPos, const Point & newSize, bool updateWindow )
-{
-	if ( ::MoveWindow( H(), newPos.x, newPos.y, newSize.x, newSize.y, updateWindow ? TRUE : FALSE ) == 0 )
-	{
-		xCeption err( _T( "Couldn't reposition windows" ) );
-		throw err;
-	}
+void AspectSizable< WidgetType >::setBounds( const Point & newPos, const Point & newSize, bool updateWindow ) {
+	setBounds(newPos.x, newPos.y, newSize.x, newSize.y, updateWindow);
 }
 
 template< class WidgetType >
-void AspectSizable< WidgetType >::setBounds( int x, int y, int width, int height, bool updateWindow )
-{
-	if ( ::MoveWindow( H(), x, y, width, height, updateWindow ? TRUE : FALSE ) == 0 )
-	{
-		xCeption err( _T( "Couldn't reposition windows" ) );
-		throw err;
+void AspectSizable< WidgetType >::setBounds( int x, int y, int width, int height, bool updateWindow ) {
+	if ( ::MoveWindow( H(), x, y, width, height, updateWindow ? TRUE : FALSE ) == 0 ) {
+		dwtDebugFail("Couldn't reposition windows");
 	}
 }
 

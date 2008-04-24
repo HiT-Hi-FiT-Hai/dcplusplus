@@ -30,6 +30,7 @@
 */
 
 #include <dwt/widgets/MDIChild.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
@@ -51,18 +52,17 @@ void MDIChild::createMDIChild( const Seed& cs ) {
 		getParent()->handle(),
 		::GetModuleHandle(NULL),
 		reinterpret_cast< LPARAM >( static_cast< Widget * >( this ) ) );
-	
+
+	if (wnd == NULL) {
+		throw Win32Exception("CreateMDIWindow failed");
+	}
+
 	if(active) {
 		getParent()->sendMessage(WM_MDIACTIVATE, (WPARAM)active);
 	}
 	
 	getParent()->sendMessage(WM_SETREDRAW, TRUE);
 	redraw();
-	if ( !wnd )
-	{
-		xCeption x( _T( "CreateWindowEx in MDIChild::createMDIChild fizzled..." ) );
-		throw x;
-	}
 }
 
 bool MDIChild::tryFire(const MSG& msg, LRESULT& retVal) {

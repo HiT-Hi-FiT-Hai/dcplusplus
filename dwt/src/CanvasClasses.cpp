@@ -30,7 +30,7 @@
 */
 
 #include <dwt/CanvasClasses.h>
-#include <dwt/xCeption.h>
+#include <dwt/util/check.h>
 #include <dwt/resources/Brush.h>
 
 namespace dwt {
@@ -47,10 +47,8 @@ int Canvas::getDeviceCaps( int nIndex )
 
 void Canvas::moveTo( int x, int y )
 {
-	if ( !::MoveToEx( itsHdc, x, y, 0 ) )
-	{
-		xCeption x( _T( "Error in CanvasClasses moveTo" ) );
-		throw x;
+	if ( !::MoveToEx( itsHdc, x, y, 0 ) ) {
+		dwtWin32DebugFail("Error in CanvasClasses moveTo");
 	}
 }
 
@@ -61,15 +59,12 @@ void Canvas::moveTo( const Point & coord )
 
 void Canvas::lineTo( int x, int y )
 {
-	if ( !::LineTo( itsHdc, x, y ) )
-	{
-		xCeption x( _T( "Error in CanvasClasses lineTo" ) );
-		throw x;
+	if ( !::LineTo( itsHdc, x, y ) ) {
+		dwtWin32DebugFail("Error in CanvasClasses lineTo");
 	}
 }
 
-void Canvas::lineTo( const Point & coord )
-{
+void Canvas::lineTo( const Point & coord ) {
 	lineTo( coord.x, coord.y );
 }
 
@@ -98,37 +93,29 @@ void Canvas::line( const dwt::Rectangle & rect )
 
 void Canvas::polygon( const Point points[], unsigned count )
 {
-	if ( !::Polygon( itsHdc, reinterpret_cast< POINT * >( const_cast < Point * >( & points[0] ) ), count ) )
-	{
-		xCeption x( _T( "Error in CanvasClasses polygon" ) );
-		throw x;
+	if ( !::Polygon( itsHdc, reinterpret_cast< POINT * >( const_cast < Point * >( & points[0] ) ), count ) ) {
+		dwtWin32DebugFail("Error in CanvasClasses polygon");
 	}
 }
 
 void Canvas::polygon( POINT points[], unsigned count )
 {
-	if ( !::Polygon( itsHdc, points, count ) )
-	{
-		xCeption x( _T( "Error in CanvasClasses polygon" ) );
-		throw x;
+	if ( !::Polygon( itsHdc, points, count ) ) {
+		dwtWin32DebugFail("Error in CanvasClasses polygon" );
 	}
 }
 
 void Canvas::ellipse( int left, int top, int right, int bottom )
 {
-	if ( ! ::Ellipse( itsHdc, left, top, right, bottom ) )
-	{
-		xCeption x( _T( "Error in CanvasClasses ellipse" ) );
-		throw x;
+	if ( ! ::Ellipse( itsHdc, left, top, right, bottom ) ) {
+		dwtWin32DebugFail("Error in CanvasClasses ellipse");
 	}
 }
 
 void Canvas::rectangle( int left, int top, int right, int bottom )
 {
-	if ( ! ::Rectangle( itsHdc, left, top, right, bottom ) )
-	{
-		xCeption x( _T( "Error in CanvasClasses Rectangle" ) );
-		throw x;
+	if ( ! ::Rectangle( itsHdc, left, top, right, bottom ) ) {
+		dwtWin32DebugFail("Error in CanvasClasses Rectangle");
 	}
 }
 
@@ -142,10 +129,8 @@ void Canvas::rectangle( const dwt::Rectangle & rect )
 
 void Canvas::ellipse( const dwt::Rectangle & rect )
 {
-	if ( ! ::Ellipse( itsHdc, rect.left(), rect.top(), rect.right(), rect.bottom() ) )
-					{
-		xCeption x( _T( "Error in CanvasClasses ellipse" ) );
-		throw x;
+	if ( ! ::Ellipse( itsHdc, rect.left(), rect.top(), rect.right(), rect.bottom() ) ) {
+		dwtWin32DebugFail("Error in CanvasClasses ellipse");
 	}
 }
 
@@ -195,18 +180,15 @@ int Canvas::drawText( const tstring & text, const dwt::Rectangle & rect, unsigne
 	int retVal = ::DrawText( itsHdc, text.c_str(), ( int ) text.length(), & rc, format );
 	if ( 0 == retVal )
 	{
-		xCeption x( _T( "Error while trying to draw text to canvas" ) );
-		throw x;
+		dwtWin32DebugFail("Error while trying to draw text to canvas");
 	}
 	return retVal;
 }
 
 void Canvas::extTextOut( const tstring & text, unsigned x, unsigned y )
 {
-	if ( 0 == ::ExtTextOut( itsHdc, x, y, 0, NULL, text.c_str(), ( unsigned ) text.length(), 0 ) )
-	{
-		xCeption xc( _T( "Error while trying to do TextOut operation" ) );
-		throw xc;
+	if ( 0 == ::ExtTextOut( itsHdc, x, y, 0, NULL, text.c_str(), ( unsigned ) text.length(), 0 ) ) {
+		dwtWin32DebugFail("Error while trying to do TextOut operation");
 	}
 }
 

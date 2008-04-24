@@ -35,8 +35,7 @@
 
 #include <dwt/Application.h>
 #include <dwt/tstring.h>
-#include <dwt/xCeption.h>
-
+#include <dwt/DWTException.h>
 
 extern int SmartWinMain( dwt::Application & app );
 
@@ -99,35 +98,6 @@ void Application::checkCorruptOrMemleak( bool & corruptMemMemLeak )
 #endif
 #endif
 #endif
-}
-
-unsigned int Application::reportErr( xCeption & err, bool corruptMemMemLeak )
-{
-	unsigned int retVal;
-
-	if ( corruptMemMemLeak )
-		retVal = 0xdeadbeef;
-	else
-		retVal = err.getErrorCode();
-
-#ifdef _MSC_VER
-#ifndef WINCE
-#ifdef _DEBUG
-	_RPT0( _CRT_WARN, "\r\n" );
-	_RPT0( _CRT_WARN, "*** ERROR ***\r\n" );
-	_RPT0( _CRT_WARN, err.what() );
-	_RPT0( _CRT_WARN, "\r\n" );
-	if ( ! corruptMemMemLeak )
-	{
-		_RPT0( _CRT_WARN, err.whatWndMsg() );
-		_RPT0( _CRT_WARN, "\r\n" );
-	}
-	_RPT0( _CRT_WARN, "*** END OF ERROR ***" );
-	_RPT0( _CRT_WARN, "\r\n" );
-#endif
-#endif
-#endif
-	return retVal;
 }
 
 Application::Application( int nCmdShow )
@@ -307,11 +277,11 @@ int Application::run()
 		}
 		else if ( dwWaitResult < WAIT_ABANDONED_0 + itsVHEvents.size() )
 		{
-			throw xCeption( _T( "Application::run : Encountered an abandoned wait mutex object ") );
+			throw Win32Exception("Mutex abandoned");
 		}
 		else if ( dwWaitResult != WAIT_TIMEOUT )
 		{
-			throw xCeption( _T( "Application::run : MsgWaitForMultipleObjects() failed!" ) );
+			throw Win32Exception("Application::run : MsgWaitForMultipleObjects() failed!" );
 		}
 	}
 	return static_cast< int >( msg.wParam );
@@ -353,14 +323,12 @@ int PASCAL WinMain
 	bool corruptMemMemLeak = false;
 	
 	dwt::Application::init( nCmdShow );
-	try {
-		retVal = SmartWinMain( dwt::Application::instance() ); // Call library user's startup function.
-		dwt::Application::uninit();
+	
+	retVal = SmartWinMain( dwt::Application::instance() ); // Call library user's startup function.
 
-		dwt::Application::checkCorruptOrMemleak( corruptMemMemLeak );
-	} catch ( dwt::xCeption & err ) {
-		retVal = dwt::Application::reportErr( err, corruptMemMemLeak );
-	}
+	dwt::Application::uninit();
+	dwt::Application::checkCorruptOrMemleak( corruptMemMemLeak );
+
 	return retVal;
 }
 

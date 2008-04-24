@@ -240,7 +240,7 @@ inline DateTime::DateTime( Widget* parent )
 	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a TextBox without a parent..." ) );
+	dwtassert( parent, _T( "Can't have a TextBox without a parent..." ) );
 }
 
 inline void DateTime::setBackgroundColor( COLORREF color )

@@ -161,12 +161,9 @@ inline void StatusBar::refresh() {
 	// A status bar can't really be resized since its size is controlled by the
 	// parent window. But to not let the status bar "hang" we need to refresh its
 	// size after the main window is being resized.
-	dwt::Rectangle rect;
-	if ( ::MoveWindow( this->handle(),
-		rect.x(), rect.y(), rect.width(), rect.height(), TRUE ) == 0 )
+	if ( ::MoveWindow( this->handle(), 0, 0, 0, 0, TRUE ) == 0 )
 	{
-		xCeption err( _T( "Couldn't reposition windows" ) );
-		throw err;
+		dwtWin32DebugFail("Couldn't reposition windows");
 	}
 }
 

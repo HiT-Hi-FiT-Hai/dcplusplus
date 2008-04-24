@@ -42,6 +42,7 @@
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../resources/ImageList.h"
+#include "../DWTException.h"
 #include "Control.h"
 
 #include <vector>
@@ -203,8 +204,7 @@ inline void ToolBar::setButtonSize( unsigned int width, unsigned int height )
 	if ( this->sendMessage(TB_SETBUTTONSIZE, 0, static_cast< LPARAM >( MAKELONG( width, height ) ) ) != TRUE ||
 		this->sendMessage(TB_SETBITMAPSIZE, 0, static_cast< LPARAM >( MAKELONG( width, height ) ) ) != TRUE )
 	{
-		xCeption x( _T( "Error while trying to set toolbar button size..." ) );
-		throw x;
+		throw Win32Exception( "Error while trying to set toolbar button size...");
 	}
 }
 

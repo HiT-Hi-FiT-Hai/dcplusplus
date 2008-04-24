@@ -30,6 +30,7 @@
 */
 
 #include <dwt/widgets/CoolBar.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
@@ -61,7 +62,7 @@ void CoolBar::addChild( Widget * child,
 	rbBand.fStyle = 0; //RBBS_GRIPPERALWAYS;
 	if ( sendMessage( RB_INSERTBAND, ( WPARAM ) - 1, ( LPARAM ) & rbBand ) == 0 )
 	{
-		throw xCeption( _T( "There was a problem when trying to insert a band into your Coolbar object!" ) );
+		throw DWTException( "There was a problem when trying to insert a band into your Coolbar object!");
 	}
 }
 

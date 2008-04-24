@@ -34,6 +34,8 @@
 */
 
 #include <dwt/LibraryLoader.h>
+#include <dwt/util/check.h>
+#include <dwt/util/StringConversion.h>
 
 namespace dwt {
 
@@ -58,15 +60,14 @@ void LibraryLoader::load( const tstring & libraryName )
 {
 	// VERY important we DON'T increase refcount or anything like that
 	if ( itsHMod != NULL ) {
-		xCeption x( _T( "Already called load on LibraryLoader object" ) );
-		throw x;
+		dwtWin32DebugFail("Already called load on LibraryLoader object");
 	}
 
 	// Loading library
 	itsHMod = ::LoadLibrary( libraryName.c_str() );
 
 	// TODO: Rewrite xAssert to get support for submitting tstrings (could show library name)
-	xAssert( itsHMod != 0, _T( "Error while trying to load library or dll!" ) );
+	dwtassert( itsHMod != 0, _T( "Error while trying to load library or dll!" ) );
 }
 
 // Get procedure address from loaded library by name

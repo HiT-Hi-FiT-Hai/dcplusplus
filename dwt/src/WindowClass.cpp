@@ -30,7 +30,7 @@
 */
 
 #include <dwt/WindowClass.h>
-#include <dwt/xCeption.h>
+#include <dwt/DWTException.h>
 #include <dwt/Widget.h>
 
 #include <typeinfo>
@@ -54,8 +54,7 @@ WindowClass::WindowClass(const tstring& className, WNDPROC wndProc, LPCTSTR menu
 	atom = ::RegisterClassEx(&wc);
 	if ( 0 == atom )
 	{
-		xCeption x( _T( "Could not register class " ) + className );
-		throw x;
+		throw Win32Exception("Could not register class");
 	}
 }
 

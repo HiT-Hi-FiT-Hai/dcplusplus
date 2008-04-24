@@ -38,6 +38,7 @@
 
 #include "WindowsHeaders.h"
 #include "tstring.h"
+#include "DWTException.h"
 
 namespace dwt {
 
@@ -123,24 +124,17 @@ public:
 	void setClipBoardData( const tstring & str, const Widget * owner )
 	{
 		if ( !::OpenClipboard( owner->handle() ) )
-			throw dwt::xCeption( _T( "Couldn't open the clipboard" ) );
-		try
-		{
-			::EmptyClipboard();
-			HGLOBAL handle = ::GlobalAlloc( GMEM_MOVEABLE, sizeof( TCHAR ) * str.size() + 1 );
-			if ( 0 == handle )
-				throw dwt::xCeption( _T( "Couldn't allocate memory to hold clipboard data" ) );
-			TCHAR * buffer = reinterpret_cast< TCHAR * >( GlobalLock( handle ) );
-			memcpy( buffer, str.c_str(), sizeof( TCHAR ) * str.size() );
-			GlobalUnlock( handle );
-			SetClipboardData( CF_TEXT, handle );
-			CloseClipboard();
-		}
-		catch ( ... )
-		{
-			::CloseClipboard();
-			throw;
-		}
+			throw Win32Excepction( "Couldn't open the clipboard" );
+
+		::EmptyClipboard();
+		HGLOBAL handle = ::GlobalAlloc( GMEM_MOVEABLE, sizeof( TCHAR ) * str.size() + 1 );
+		if ( 0 == handle )
+			throw Win32Exception( "Couldn't allocate memory to hold clipboard data" );
+		TCHAR * buffer = reinterpret_cast< TCHAR * >( GlobalLock( handle ) );
+		memcpy( buffer, str.c_str(), sizeof( TCHAR ) * str.size() );
+		GlobalUnlock( handle );
+		SetClipboardData( CF_TEXT, handle );
+		CloseClipboard();
 	}
 
 	/// Retrieves clipboard data from the clipboard (assumes clipboard format is string)

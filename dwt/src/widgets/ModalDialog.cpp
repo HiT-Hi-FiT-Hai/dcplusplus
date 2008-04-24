@@ -30,6 +30,7 @@
 */
 
 #include <dwt/widgets/ModalDialog.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
@@ -41,7 +42,7 @@ int ModalDialog::createDialog( unsigned resourceId )
 		this->getParent() ? this->getParent()->handle() : 0, (DLGPROC)&ThisType::wndProc,
 		reinterpret_cast< LPARAM >(static_cast< Widget * >( this ))	);
 	if ( retv == - 1 ) {
-		throw xCeption( _T( "Couldn't create modal dialog" ) );
+		throw Win32Exception("Couldn't create modal dialog");
 	}
 	return static_cast< int >( retv );
 }

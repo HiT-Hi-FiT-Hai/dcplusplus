@@ -137,8 +137,6 @@ int SmartWinMain(dwt::Application& app) {
 		//WinUtil::mdiParent = wnd->getMDIParent();
 		splash->close();
 		ret = app.run();
-	} catch(const dwt::xCeption& e) {
-		printf("Exception: %s\n Additional info: %s\n", e.what(), e.whatWndMsg());
 	} catch(const std::exception& e) {
 		printf("Exception: %s\n", e.what());
 	} catch(...) {

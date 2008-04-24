@@ -152,8 +152,7 @@ inline int Spinner::getValue()
 	LRESULT retVal = ::SendMessage( this->handle(), UDM_GETPOS, 0, 0 );
 	if ( HIWORD( retVal ) != 0 )
 	{
-		xCeption err( _T( " Something went wrong while trying to retrieve value if Spinner" ) );
-		throw err;
+		dwtWin32DebugFail(" Something went wrong while trying to retrieve value if Spinner");
 	}
 	return LOWORD( retVal );
 #else
