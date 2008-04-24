@@ -111,8 +111,8 @@ public:
 		this->sendMessage(WM_MDIICONARRANGE);
 	}
 	
-	HWND getActive() {
-		return reinterpret_cast<HWND>(this->sendMessage(WM_MDIGETACTIVE));
+	Widget* getActive() {
+		return hwnd_cast<Widget*>(reinterpret_cast<HWND>(this->sendMessage(WM_MDIGETACTIVE)));
 	}
 	
 	bool isActiveMaximized() {

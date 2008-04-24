@@ -85,6 +85,8 @@ public:
 	void create( const Seed& cs = Seed() );
 
 	MDIParent* getMDIParent() { return mdi; }
+	
+	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 protected:
 	// Protected since this Widget we HAVE to inherit from
 	explicit MDIFrame( Widget * parent = 0 );

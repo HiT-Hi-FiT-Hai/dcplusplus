@@ -75,7 +75,7 @@ bool MDIChild::tryFire(const MSG& msg, LRESULT& retVal) {
 
 		    if(msg.message == WM_SIZE) // client area
 		    {
-			    if((msg.wParam == SIZE_MAXIMIZED || msg.wParam == SIZE_RESTORED) && getParent()->getActive() == handle()) // active and maximized
+			    if((msg.wParam == SIZE_MAXIMIZED || msg.wParam == SIZE_RESTORED) && getParent()->getActive() == this) // active and maximized
 			    	return BaseType::tryFire(msg, retVal);
 
 			    sendMessage(WM_SETREDRAW, FALSE);
@@ -89,8 +89,8 @@ bool MDIChild::tryFire(const MSG& msg, LRESULT& retVal) {
 }
 
 void MDIChild::activate() {
-	HWND prev = getParent()->getActive();
-	if(prev == handle())
+	Widget* prev = getParent()->getActive();
+	if(prev == this)
 		return;
 	
 	if(::IsIconic(handle())) {

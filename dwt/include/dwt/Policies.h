@@ -308,8 +308,7 @@ class MDIFrame : public Normal {
 protected:
 	MDIFrame(Widget* parent) : Normal(parent) { }
 	
-	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
-	{
+	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar ) {
 		WidgetType* This = static_cast<WidgetType*>(this);
 		if(This->getMDIParent()) {
 			return ::DefFrameProc( hWnd, This->getMDIParent()->handle(), msg, wPar, lPar );
@@ -317,17 +316,6 @@ protected:
 		return Normal::returnUnhandled(hWnd, msg, wPar, lPar);
 	}
 	
-	virtual bool tryFire(const MSG& msg, LRESULT& retVal) {
-		bool handled = Normal::tryFire(msg, retVal);
-		WidgetType* This = static_cast<WidgetType*>(this);
-		if(!handled && msg.message == WM_COMMAND && This->getMDIParent()) {
-			Widget* active = hwnd_cast<Widget*>(This->getMDIParent()->getActive());
-			if(active) {
-				handled = active->tryFire(msg, retVal);
-			}
-		}
-		return handled;
-	}
 };
 #endif //! WINCE
 

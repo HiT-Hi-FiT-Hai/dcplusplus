@@ -73,7 +73,7 @@ public:
 	/** Use this function to check if the Widget is active or not. <br>
 	  * If the Widget is active this function will return true.
 	  */
-	bool getActive() const;
+	bool isActive() const;
 
 	/// \ingroup EventHandlersAspectActivate
 	/// Setting the member event handler for the "activated" event
@@ -101,7 +101,7 @@ void AspectActivate< WidgetType >::setActive()
 }
 
 template< class WidgetType >
-bool AspectActivate< WidgetType >::getActive() const
+bool AspectActivate< WidgetType >::isActive() const
 {
 	return ::GetActiveWindow() == H();
 }
