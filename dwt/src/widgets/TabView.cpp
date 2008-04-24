@@ -156,28 +156,36 @@ Container* TabView::getActive() {
 }
 
 void TabView::remove(Container* w) {
-	if(viewOrder.size() > 1 && viewOrder.back() == w) {
-		setActive(*(--(--viewOrder.end())));
+	int i = findTab(w);
+	if(i == -1) {
+		return;
 	}
 	
-	Container* cur = getTabInfo(getSelected())->w;
+	int cur = getSelected();
+	
+	if(viewOrder.size() > 1 && i == cur) {
+		next();
+	}
 	
 	viewOrder.remove(w);
 
 	if(w == dragging)
 		dragging = 0;
 
-	int i = findTab(w);
-	if(i != -1) {
-		delete getTabInfo(i);
-		erase(i);
-		layout();
+	delete getTabInfo(i);
+	erase(i);
+	
+	if(size() == 0) {
+		active = -1;
+		if(titleChangedFunction)
+			titleChangedFunction(tstring());
+	} else {
+		if(i < cur) {
+			active--;
+		}
 	}
-	active = findTab(cur);
 
-	// when no tab is opened
-	if(titleChangedFunction && (active == -1))
-		titleChangedFunction(tstring());
+	layout();
 }
 
 tstring TabView::getTabText(Container* w) {

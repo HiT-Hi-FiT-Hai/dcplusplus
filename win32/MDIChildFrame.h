@@ -45,8 +45,7 @@ protected:
 		reallyClose(false)
 	{
 		typename ThisType::Seed cs;
-		if(!activate)
-			cs.style &= ~WS_VISIBLE;
+		cs.style &= ~WS_VISIBLE;
 		cs.caption = title;
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.icon = icon;
@@ -57,6 +56,11 @@ protected:
 			setHelpId(helpId);
 
 		tabView->add(this, icon);
+		
+		if(activate) {
+			tabView->setActive(this);
+		}
+
 		this->onTabContextMenu(std::tr1::bind(&ThisType::handleContextMenu, this, _1));
 
 		onClosing(std::tr1::bind(&ThisType::handleClosing, this));
@@ -65,6 +69,7 @@ protected:
 		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
 		onCommand(std::tr1::bind(&ThisType::close, this, true), IDC_CLOSE_WINDOW);
 		addDlgCodeMessage(this);
+		
 	}
 	
 	virtual ~MDIChildFrame() {
@@ -195,6 +200,10 @@ private:
 	bool handleClosing() {
 		if(reallyClose) {
 			static_cast<T*>(this)->postClosing();
+			if(getParent()->getActive() == this) {
+				// Prevent flicker by selecting the next tab - WM_DESTROY would already be too late
+				getParent()->next();
+			}
 			return true;
 		} else if(static_cast<T*>(this)->preClosing()) {
 			reallyClose = true;
