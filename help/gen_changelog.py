@@ -9,12 +9,12 @@ filehtml = "changelog.html"
 fp_txt = open(filetext,'r')
 fp_html = open(filehtml,'w')
 
-start_head = """<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
-<html>
+start_head = """<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
+<html xmlns=\"http://www.w3.org/1999/xhtml\">
 <head>
-  <meta content=\"en-us\" http-equiv=\"Content-Language\">
-  <meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">
-  <link href=\"office11.css\" rel=\"stylesheet\" type=\"text/css\">
+  <meta content=\"en-us\" http-equiv=\"Content-Language\"/>
+  <meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\"/>
+  <link href=\"office11.css\" rel=\"stylesheet\" type=\"text/css\"/>
   <title>Changelog</title>
   <style type=\"text/css\">
     li { margin-left: auto; margin: 0em 0em 0em 0em; }

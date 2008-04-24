@@ -1,23 +1,23 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Connections settings</title>
   <meta http-equiv="content-type" content="text/html; charset=us-ascii">
-  <link type="text/css" rel="stylesheet" href="office11.css">
+<link type="text/css" rel="stylesheet" href="office11.css"/>
 </head>
 <body>
 <h1><a name="connection"></a>Connection Settings</h1>
 This page has options on it that will let you properly configure DC++'s
 options for incoming and outgoing connections. Your incoming connection
-type must be properly chosen for downloading to work.<br>
+type must be properly chosen for downloading to work.<br/>
 <h2>Incoming connection settings</h2>
 <dl style="margin-left: 40px;">
   <dt>Direct Connection</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_DIRECT>Select this mode if your computer is hooked directly to the
+  <dd cshelp="IDH_SETTINGS_NETWORK_DIRECT">Select this mode if your computer is hooked directly to the
 internet. Do <span style="text-decoration: underline;">not</span>
 select this mode if you have a router (firewall) or a software firewall.</dd>
   <dt>Firewall with UPnP</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_FIREWALL_UPNP>Select this mode if you are
+  <dd cshelp="IDH_SETTINGS_NETWORK_FIREWALL_UPNP">Select this mode if you are
 behind a firewall that supports
 the UPnP standard for program auto-configuration. DC++ will
 automatically open the ports it needs and obtain your external IP
@@ -28,13 +28,13 @@ support. There is a <a href="faq_upnp.html">guide
 to configuring UPnP</a>.</dd>
   <dt>Firewall with manual port
 forwarding</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_FIREWALL_NAT>Select this mode if you are behind a firewall (router), and will
+  <dd cshelp="IDH_SETTINGS_NETWORK_FIREWALL_NAT">Select this mode if you are behind a firewall (router), and will
 set up the TCP and UDP port forwarding on your own. You <span style="text-decoration: underline;">will</span> need to specify the
 external IP address of your router using the setting below if you want
 downloads to work properly. Use <a href="faq_activemode.html">this
 guide</a> to set up active mode.</dd>
   <dt>Firewall (passive, last resort)</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_FIREWALL_PASSIVE>Select this mode if none of the previous options apply. In this
+  <dd cshelp="IDH_SETTINGS_NETWORK_FIREWALL_PASSIVE">Select this mode if none of the previous options apply. In this
 mode, DC++ will not try to make inbound connections, only outbound
 ones. This mode carries some limitations:</dd>
 </dl>
@@ -45,33 +45,33 @@ ones. This mode carries some limitations:</dd>
 <h3 style="margin-left: 40px;">Options</h3>
 <dl style="margin-left: 80px;">
   <dt>TCP Port</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_PORT_TCP>This is the port that DC++ listens on for incoming client
+  <dd cshelp="IDH_SETTINGS_NETWORK_PORT_TCP">This is the port that DC++ listens on for incoming client
 connections. If this setting is blank, DC++ will use a random port
 between 1025 and 32000.</dd>
   <dt>UDP Port</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_PORT_UDP>This is the port that DC++ listens on for incoming search
+  <dd cshelp="IDH_SETTINGS_NETWORK_PORT_UDP">This is the port that DC++ listens on for incoming search
 results. If this setting is blank, DC++ will use a random port between
 1025 and 32000.</dd>
   <dt>TLS Port</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_PORT_TLS>This is the port that DC++ listens on for <a href="settings_certs.html">TLS</a> connections.
+  <dd cshelp="IDH_SETTINGS_NETWORK_PORT_TLS">This is the port that DC++ listens on for <a href="settings_certs.html">TLS</a> connections.
  If this setting is blank, DC++ will use a random port between
 1025 and 32000.</dd>
   <dt>External / WAN IP</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_EXTERNAL_IP>If you're directly connected to the internet, DC++ will tell remote users to connect to your local IP.
+  <dd cshelp="IDH_SETTINGS_NETWORK_EXTERNAL_IP">If you're directly connected to the internet, DC++ will tell remote users to connect to your local IP.
 Fill in this box <span style="font-weight: bold;">only</span> if you need to override the auto-detection.
 Ordinarily, only users behind a home router (NAT device) will need to fill in this box. If you put a DNS name
 here, DC++ will try to resolve it into an IP address before use.</dd>
   <dt>Don't allow hub/UPnP to override</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_OVERRIDE>Enable this to always use the IP address in "External / WAN IP",
+  <dd cshelp="IDH_SETTINGS_NETWORK_OVERRIDE">Enable this to always use the IP address in "External / WAN IP",
 and not let either UPnP or connected hubs change it.</dd>
 </dl>
 <h2>Outgoing connection settings</h2>
 <dl style="margin-left: 40px;">
   <dt>Direct connection</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_DIRECT_OUT>Select this mode if you can make unrestricted outbound
+  <dd cshelp="IDH_SETTINGS_NETWORK_DIRECT_OUT">Select this mode if you can make unrestricted outbound
 connections. This includes connecting to any IP address on any port.</dd>
   <dt>SOCKS5</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_SOCKS5>Select this mode if you want to make outbound connections through
+  <dd cshelp="IDH_SETTINGS_NETWORK_SOCKS5">Select this mode if you want to make outbound connections through
 a SOCKS proxy. The caveats for Firewall (passive) mode also apply here.
 SOCKS5 proxies are <span style="text-decoration: underline;">not</span>
 the same as HTTP proxies. DC++'s SOCKS5 support does <span style="text-decoration: underline;">not</span> include GSSAPI.</dd>
@@ -79,15 +79,15 @@ the same as HTTP proxies. DC++'s SOCKS5 support does <span style="text-decoratio
 <h3 style="margin-left: 40px;">Options</h3>
 <dl style="margin-left: 80px;">
   <dt>Socks IP</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_SOCKS_SERVER>This is the IP, not host name, of your SOCKS5 server.</dd>
+  <dd cshelp="IDH_SETTINGS_NETWORK_SOCKS_SERVER">This is the IP, not host name, of your SOCKS5 server.</dd>
   <dt>Port</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_SOCKS_PORT>The port that your SOCKS5 server runs on. The default is 1080.</dd>
+  <dd cshelp="IDH_SETTINGS_NETWORK_SOCKS_PORT">The port that your SOCKS5 server runs on. The default is 1080.</dd>
   <dt>Login</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_SOCKS_USER>Login name for the SOCKS5 proxy; may be required.</dd>
+  <dd cshelp="IDH_SETTINGS_NETWORK_SOCKS_USER">Login name for the SOCKS5 proxy; may be required.</dd>
   <dt>Password</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_SOCKS_PASSWORD>Password for the SOCKS5 proxy; may be required.</dd>
+  <dd cshelp="IDH_SETTINGS_NETWORK_SOCKS_PASSWORD">Password for the SOCKS5 proxy; may be required.</dd>
   <dt>Use SOCKS5 server to resolve host names</dt>
-  <dd cshelp=IDH_SETTINGS_NETWORK_SOCKS_RESOLVE>Enable this to use the SOCKS5 proxy, instead of the local name
+  <dd cshelp="IDH_SETTINGS_NETWORK_SOCKS_RESOLVE">Enable this to use the SOCKS5 proxy, instead of the local name
 server, to resolve host names into IP addresses.</dd>
 </dl>
 </body>

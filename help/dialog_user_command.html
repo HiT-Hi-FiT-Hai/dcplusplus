@@ -1,7 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+<meta content="text/html; charset=us-ascii" http-equiv="content-type"/>
   <link href="office11.css" rel="stylesheet" type="text/css">
   <title>User Command</title>
 </head>
@@ -10,49 +10,49 @@
 <h2>Command Types:</h2>
 <dl style="margin-left: 40px;">
   <dt>Separator</dt>
-  <dd cshelp=IDH_USER_COMMAND_SEPARATOR>Adds a separator to the menu</dd>
+  <dd cshelp="IDH_USER_COMMAND_SEPARATOR">Adds a separator to the menu</dd>
   <dt>Raw</dt>
-  <dd cshelp=IDH_USER_COMMAND_RAW>Sends raw command to the hub (experts only, end it with '|' in NMDC hubs and '\n' in ADC hubs!)</dd>
+  <dd cshelp="IDH_USER_COMMAND_RAW">Sends raw command to the hub (experts only, end it with '|' in NMDC hubs and '\n' in ADC hubs!)</dd>
   <dt>Chat</dt>
-  <dd cshelp=IDH_USER_COMMAND_CHAT>Sends command as if you were typing it in the chat</dd>
+  <dd cshelp="IDH_USER_COMMAND_CHAT">Sends command as if you were typing it in the chat</dd>
   <dt>PM</dt>
-  <dd cshelp=IDH_USER_COMMAND_PM>Sends command as if you sent it by PM</dd>
+  <dd cshelp="IDH_USER_COMMAND_PM">Sends command as if you sent it by PM</dd>
 </dl>
 <h2>Context</h2>
-<span cshelp=IDH_USER_COMMAND_CONTEXT>
-Contexts determine where the command is shown.<br>
+<span cshelp="IDH_USER_COMMAND_CONTEXT">
+Contexts determine where the command is shown.<br/>
 </span>
 <dl style="margin-left: 40px;">
   <dt>Hub Menu</dt>
-  <dd cshelp=IDH_USER_COMMAND_HUB_MENU>Hub tab (at the bottom of the screen) right-click menu</dd>
+  <dd cshelp="IDH_USER_COMMAND_HUB_MENU">Hub tab (at the bottom of the screen) right-click menu</dd>
   <dt>Chat Menu </dt>
-  <dd cshelp=IDH_USER_COMMAND_USER_MENU>User right-click menu in chat and PM tab menu</dd>
+  <dd cshelp="IDH_USER_COMMAND_USER_MENU">User right-click menu in chat and PM tab menu</dd>
   <dt>Search Menu</dt>
-  <dd cshelp=IDH_USER_COMMAND_SEARCH_MENU>Search right-click menu </dd>
+  <dd cshelp="IDH_USER_COMMAND_SEARCH_MENU">Search right-click menu </dd>
   <dt>File list Menu</dt>
-  <dd cshelp=IDH_USER_COMMAND_FILELIST_MENU>File list right-click menu</dd>
+  <dd cshelp="IDH_USER_COMMAND_FILELIST_MENU">File list right-click menu</dd>
 </dl>
 <h2>Parameters</h2>
 <dl style="margin-left: 40px;">
   <dt>Name</dt>
-  <dd cshelp=IDH_USER_COMMAND_NAME>Name (use '\' to create submenus)</dd>
+  <dd cshelp="IDH_USER_COMMAND_NAME">Name (use '\' to create submenus)</dd>
   <dt>Command</dt>
-  <dd cshelp=IDH_USER_COMMAND_COMMAND>Command text (may contain any of the variables listed below). Use Ctrl + Enter to create a new line.</dd>
+  <dd cshelp="IDH_USER_COMMAND_COMMAND">Command text (may contain any of the variables listed below). Use Ctrl + Enter to create a new line.</dd>
   <dt>Hub </dt>
-  <dd cshelp=IDH_USER_COMMAND_HUB>Hub ip as typed when connecting (empty = all NMDC hubs, "op" = NMDC hubs
+  <dd cshelp="IDH_USER_COMMAND_HUB">Hub ip as typed when connecting (empty = all NMDC hubs, "op" = NMDC hubs
 where you're an operator, "adc://" = all ADC hubs, "adc://op" = ADC hubs where you're an operator, 
 "adcs://" = all <a href="settings_certs.html">TLS</a> enabled hubs)</dd>
   <dt>To</dt>
-  <dd cshelp=IDH_USER_COMMAND_NICK>Private Message recipient</dd>
+  <dd cshelp="IDH_USER_COMMAND_NICK">Private Message recipient</dd>
   <dt>Send Once Per Nick</dt>
-  <dd cshelp=IDH_USER_COMMAND_ONCE>Send only once per user from search frame, regardless of how many
+  <dd cshelp="IDH_USER_COMMAND_ONCE">Send only once per user from search frame, regardless of how many
 files you've selected from that user</dd>
 </dl>
 <h2>Variables</h2>
 In the parameters, you can use %[<span style="font-weight: bold;">xxx</span>]
 variables and <a href="settings_logs.html#timeformat">date/time
 specifiers</a> (%Y, %m, ...). The following variables are also
-available:<br>
+available:<br/>
 <ul style="margin-left: 40px;">
   <li>%[fileFN]: Filename (search, file list, and&nbsp;transfer view contexts only)</li>
   <li>%[fileSIsize]: File size (search, file list contexts only)</li>
@@ -62,7 +62,7 @@ available:<br>
   <li>%[type]: "File" or "Directory" (directory context only)</li>
   <li>%[line:<span style="font-style: italic;">reason</span>]: Opens up a window asking for "<span style="font-style: italic;">reason</span>"</li>
 </ul>
-In addition to these variables, all of the ADC INF flags are available, with the following prefixes: <span style="font-weight: bold;">my</span>, <span style="font-weight: bold;">user</span>, and <span style="font-weight: bold;">hub</span>. &nbsp;Some may <span style="text-decoration: underline;">not</span> be available on NMDC hubs. &nbsp;Many&nbsp; useful ones are enumerated below:<br>
+In addition to these variables, all of the ADC INF flags are available, with the following prefixes: <span style="font-weight: bold;">my</span>, <span style="font-weight: bold;">user</span>, and <span style="font-weight: bold;">hub</span>. &nbsp;Some may <span style="text-decoration: underline;">not</span> be available on NMDC hubs. &nbsp;Many&nbsp; useful ones are enumerated below:<br/>
 <div style="margin-left: 40px;">
 <ul>
   <li>%[myNI]: Your&nbsp;nick</li>
