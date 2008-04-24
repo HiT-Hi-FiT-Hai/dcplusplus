@@ -67,7 +67,7 @@ CertificatesPage::CertificatesPage(dwt::Widget* parent) : PropPage(parent) {
 
 	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
-	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
+	PropPage::read(handle(), items);
 
 	privateKeyFile = attachChild<TextBox>(IDC_TLS_PRIVATE_KEY_FILE);
 	attachChild<Button>(IDC_BROWSE_PRIVATE_KEY)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowsePrivateKeyClicked, this));
@@ -79,13 +79,17 @@ CertificatesPage::CertificatesPage(dwt::Widget* parent) : PropPage(parent) {
 	attachChild<Button>(IDC_BROWSE_TRUSTED_PATH)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseTrustedPathClicked, this));
 
 	attachChild<Button>(IDC_GENERATE_CERTS)->onClicked(std::tr1::bind(&CertificatesPage::handleGenerateCertsClicked, this));
+
+	attachChild(options, IDC_TLS_OPTIONS);
+	PropPage::read(listItems, options);
 }
 
 CertificatesPage::~CertificatesPage() {
 }
 
 void CertificatesPage::write() {
-	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
+	PropPage::write(handle(), items);
+	PropPage::write(listItems, options);
 }
 
 void CertificatesPage::handleBrowsePrivateKeyClicked() {

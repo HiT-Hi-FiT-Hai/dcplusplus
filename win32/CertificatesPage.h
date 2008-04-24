@@ -37,6 +37,7 @@ private:
 	TextBoxPtr privateKeyFile;
 	TextBoxPtr certificateFile;
 	TextBoxPtr trustedCertificatesPath;
+	TablePtr options;
 
 	void handleBrowsePrivateKeyClicked();
 	void handleBrowseCertificateClicked();

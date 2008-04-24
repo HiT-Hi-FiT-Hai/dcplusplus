@@ -119,8 +119,10 @@ QueuePage::QueuePage(dwt::Widget* parent) : PropPage(parent) {
 
 	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
-	PropPage::read(handle(), items, 0, 0);
-	PropPage::read(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_OTHER_QUEUE_OPTIONS));
+	PropPage::read(handle(), items);
+
+	attachChild(otherOptions, IDC_OTHER_QUEUE_OPTIONS);
+	PropPage::read(optionItems, otherOptions);
 
 	attachChild<TextBox>(IDC_PRIO_HIGHEST_SIZE);
 	attachChild<TextBox>(IDC_PRIO_NORMAL_SIZE);
@@ -138,8 +140,8 @@ QueuePage::~QueuePage() {
 }
 
 void QueuePage::write() {
-	PropPage::write(handle(), items, 0, 0);
-	PropPage::write(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_OTHER_QUEUE_OPTIONS));
+	PropPage::write(handle(), items);
+	PropPage::write(optionItems, otherOptions);
 
 	SettingsManager* settings = SettingsManager::getInstance();
 	if(SETTING(AUTODROP_INTERVAL) < 1)

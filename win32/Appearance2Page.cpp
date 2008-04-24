@@ -80,7 +80,7 @@ Appearance2Page::Appearance2Page(dwt::Widget* parent) : PropPage(parent), oldSel
 	example->setFont(font);
 
 	attachChild(sounds, IDC_SOUNDS);
-	PropPage::initList(sounds->handle());
+	PropPage::initList(sounds);
 
 	{
 		ButtonPtr button = attachChild<Button>(IDC_SELWINCOLOR);

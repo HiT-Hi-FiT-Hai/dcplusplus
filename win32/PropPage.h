@@ -42,6 +42,7 @@ public:
 	struct ListItem {
 		int setting;
 		const char* desc;
+		unsigned helpId;
 	};
 
 	struct TextItem {
@@ -50,9 +51,11 @@ public:
 	};
 
 protected:
-	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
-	void initList(HWND list);
-	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
+	void read(HWND page, const Item* items);
+	void read(const ListItem* listItems, TablePtr list);
+	void initList(TablePtr list);
+	void write(HWND page, const Item* items);
+	void write(const ListItem* listItems, TablePtr list);
 	void translate(HWND page, TextItem* items);
 };
 

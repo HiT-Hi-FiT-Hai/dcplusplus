@@ -65,34 +65,37 @@ LogPage::LogPage(dwt::Widget* parent) : PropPage(parent), oldSelection(-1) {
 
 	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
-	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_LOG_OPTIONS));
+	PropPage::read(handle(), items);
+
+	attachChild(options, IDC_LOG_OPTIONS);
+	PropPage::read(listItems, options);
 
 	for(int i = 0; i < LogManager::LAST; ++i) {
 		TStringPair pair;
 		pair.first = Text::toT(LogManager::getInstance()->getSetting(i, LogManager::FILE));
 		pair.second = Text::toT(LogManager::getInstance()->getSetting(i, LogManager::FORMAT));
-		options.push_back(pair);
+		logOptions.push_back(pair);
 	}
 
 	attachChild<TextBox>(IDC_LOG_DIRECTORY);
 
 	attachChild<Button>(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
 
-	attachChild(logOptions, IDC_LOG_OPTIONS);
-	logOptions->onSelectionChanged(std::tr1::bind(&LogPage::handleSelectionChanged, this));
-
 	logFormat = attachChild<TextBox>(IDC_LOG_FORMAT);
 	logFormat->setEnabled(false);
 
 	logFile = attachChild<TextBox>(IDC_LOG_FILE);
 	logFile->setEnabled(false);
+
+	options->onSelectionChanged(std::tr1::bind(&LogPage::handleSelectionChanged, this));
 }
 
 LogPage::~LogPage() {
 }
 
 void LogPage::write() {
-	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_LOG_OPTIONS));
+	PropPage::write(handle(), items);
+	PropPage::write(listItems, options);
 
 	const string& s = SETTING(LOG_DIRECTORY);
 	if(s.length() > 0 && s[s.length() - 1] != '\\') {
@@ -105,12 +108,12 @@ void LogPage::write() {
 	getValues();
 
 	for(int i = 0; i < LogManager::LAST; ++i) {
-		string tmp = Text::fromT(options[i].first);
+		string tmp = Text::fromT(logOptions[i].first);
 		if(Util::stricmp(Util::getFileExt(tmp), ".log") != 0)
 			tmp += ".log";
 
 		LogManager::getInstance()->saveSetting(i, LogManager::FILE, tmp);
-		LogManager::getInstance()->saveSetting(i, LogManager::FORMAT, Text::fromT(options[i].second));
+		LogManager::getInstance()->saveSetting(i, LogManager::FORMAT, Text::fromT(logOptions[i].second));
 	}
 }
 
@@ -124,15 +127,15 @@ void LogPage::handleBrowseClicked() {
 void LogPage::handleSelectionChanged() {
 	getValues();
 
-	int sel = logOptions->getSelected();
+	int sel = options->getSelected();
 
 	if(sel >= 0 && sel < LogManager::LAST) {
-		bool checkState = logOptions->isChecked(sel);
+		bool checkState = options->isChecked(sel);
 		logFormat->setEnabled(checkState);
 		logFile->setEnabled(checkState);
 
-		logFile->setText(options[sel].first);
-		logFormat->setText(options[sel].second);
+		logFile->setText(logOptions[sel].first);
+		logFormat->setText(logOptions[sel].second);
 
 		//save the old selection so we know where to save the values
 		oldSelection = sel;
@@ -147,7 +150,7 @@ void LogPage::handleSelectionChanged() {
 
 void LogPage::getValues() {
 	if(oldSelection >= 0) {
-		options[oldSelection].first = logFile->getText();
-		options[oldSelection].second = logFormat->getText();
+		logOptions[oldSelection].first = logFile->getText();
+		logOptions[oldSelection].second = logFormat->getText();
 	}
 }

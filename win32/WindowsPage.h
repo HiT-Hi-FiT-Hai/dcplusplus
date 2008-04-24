@@ -32,10 +32,13 @@ public:
 
 private:
 	static TextItem textItem[];
-	static Item items[];
-	static ListItem listItems[];
+	static ListItem autoOpenItems[];
 	static ListItem optionItems[];
 	static ListItem confirmItems[];
+
+	TablePtr autoOpen;
+	TablePtr options;
+	TablePtr confirm;
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_WINDOWS_PAGE_H)

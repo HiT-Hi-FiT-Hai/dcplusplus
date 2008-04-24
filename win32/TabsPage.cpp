@@ -24,10 +24,6 @@
 
 #include <dcpp/SettingsManager.h>
 
-PropPage::Item TabsPage::items[] = {
-	{ 0, 0, PropPage::T_END }
-};
-
 PropPage::TextItem TabsPage::texts[] = {
 	{ IDC_SETTINGS_BOLD_CONTENTS, N_("Tab highlight on content change") },
 	{ 0, 0 }
@@ -50,12 +46,14 @@ TabsPage::TabsPage(dwt::Widget* parent) : PropPage(parent) {
 	setHelpId(IDH_TABSPAGE);
 
 	PropPage::translate(handle(), texts);
-	PropPage::read(handle(), items, listItems,::GetDlgItem(handle(), IDC_BOLD_BOOLEANS));
+
+	attachChild(options, IDC_BOLD_BOOLEANS);
+	PropPage::read(listItems, options);
 }
 
 TabsPage::~TabsPage() {
 }
 
 void TabsPage::write() {
-	PropPage::write(handle(), items, listItems,::GetDlgItem(handle(), IDC_BOLD_BOOLEANS));
+	PropPage::write(listItems, options);
 }

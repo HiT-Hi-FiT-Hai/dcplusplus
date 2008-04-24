@@ -30,8 +30,9 @@ public:
 	virtual void write();
 
 private:
-	static Item items[];
 	static ListItem listItems[];
+
+	TablePtr options;
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_ADVANCED_PAGE_H)

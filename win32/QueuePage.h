@@ -34,6 +34,8 @@ private:
 	static Item items[];
 	static TextItem texts[];
 	static ListItem optionItems[];
+
+	TablePtr otherOptions;
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_QUEUE_PAGE_H)

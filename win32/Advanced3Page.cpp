@@ -108,7 +108,7 @@ Advanced3Page::Advanced3Page(dwt::Widget* parent) : PropPage(parent) {
 
 	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
-	PropPage::read(handle(), items, 0, 0);
+	PropPage::read(handle(), items);
 
 	SpinnerPtr spinner = attachChild<Spinner>(IDC_SEARCH_HISTORY_SPIN);
 	spinner->setRange(0, 100);
@@ -131,7 +131,7 @@ Advanced3Page::~Advanced3Page() {
 }
 
 void Advanced3Page::write() {
-	PropPage::write(handle(), items, 0, 0);
+	PropPage::write(handle(), items);
 
 	SettingsManager* settings = SettingsManager::getInstance();
 	if(SETTING(SET_MINISLOT_SIZE) < 64)

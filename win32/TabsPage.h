@@ -32,8 +32,9 @@ public:
 
 private:
 	static TextItem texts[];
-	static Item items[];
 	static ListItem listItems[];
+
+	TablePtr options;
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_TABS_PAGE_H)

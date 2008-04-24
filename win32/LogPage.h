@@ -35,7 +35,7 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
-	TablePtr logOptions;
+	TablePtr options;
 	TextBoxPtr logFormat;
 	TextBoxPtr logFile;
 
@@ -44,7 +44,7 @@ private:
 	//store all log options here so we can discard them
 	//if the user cancels the dialog.
 	//.first is filename and .second is format
-	TStringPairList options;
+	TStringPairList logOptions;
 
 	void handleBrowseClicked();
 	void handleSelectionChanged();

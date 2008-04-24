@@ -31,13 +31,9 @@ PropPage::PropPage(dwt::Widget* parent) : WidgetFactory<dwt::ModelessDialog>(par
 PropPage::~PropPage() {
 }
 
-void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL */, HWND list /* = 0 */)
-{
-	dcassert(page != NULL);
-
+void PropPage::read(HWND page, const Item* items) {
+	dcassert(page && items);
 	SettingsManager* settings = SettingsManager::getInstance();
-	
-	bool const useDef = true;
 	for(Item const* i = items; i->type != T_END; i++)
 	{
 		switch(i->type)
@@ -45,56 +41,47 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 		case T_STR:
 			if(!settings->isDefault(i->setting)) {
 				::SetDlgItemText(page, i->itemID,
-					Text::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
+					Text::toT(settings->get((SettingsManager::StrSetting)i->setting, true)).c_str());
 			}
 			break;
 		case T_INT:
 			if(!settings->isDefault(i->setting)) {
 				::SetDlgItemInt(page, i->itemID,
-					settings->get((SettingsManager::IntSetting)i->setting, useDef), FALSE);
+					settings->get((SettingsManager::IntSetting)i->setting, true), FALSE);
 			}
 			break;
 		case T_BOOL:
-			if(settings->getBool((SettingsManager::IntSetting)i->setting, useDef))
+			if(settings->getBool((SettingsManager::IntSetting)i->setting, true))
 				::CheckDlgButton(page, i->itemID, BST_CHECKED);
 			else
 				::CheckDlgButton(page, i->itemID, BST_UNCHECKED);
 		}
 	}
-
-	if(listItems != NULL) {
-		initList(list);
-
-		LVITEM lvi = { LVIF_TEXT };
-		for(int i = 0; listItems[i].setting != 0; i++) {
-			tstring str = T_(listItems[i].desc);
-			lvi.iItem = i;
-			lvi.pszText = const_cast<TCHAR*>(str.c_str());
-			ListView_InsertItem(list, &lvi);
-			ListView_SetCheckState(list, i, settings->getBool(SettingsManager::IntSetting(listItems[i].setting), true));
-		}
-
-		ListView_SetColumnWidth(list, 0, LVSCW_AUTOSIZE);
-	}
 }
 
-void PropPage::initList(HWND list) {
-	ListView_SetExtendedListViewStyle(list, LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
-
-	RECT rc;
-	::GetClientRect(list, &rc);
-	LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH };
-	lv.fmt = LVCFMT_LEFT;
-	lv.cx = rc.right - rc.left;
-	ListView_InsertColumn(list, 0, &lv);
-}
-
-void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL */, HWND list /* = NULL */)
-{
-	dcassert(page != NULL);
-	
+void PropPage::read(const ListItem* listItems, TablePtr list) {
+	dcassert(listItems && list);
+	initList(list);
 	SettingsManager* settings = SettingsManager::getInstance();
+	for(size_t i = 0; listItems[i].setting != 0; ++i) {
+		TStringList row;
+		row.push_back(T_(listItems[i].desc));
+		list->setChecked(list->insert(row), settings->getBool(SettingsManager::IntSetting(listItems[i].setting), true));
+	}
+	list->setColumnWidth(0, LVSCW_AUTOSIZE);
+}
 
+void PropPage::initList(TablePtr list) {
+	list->setTableStyle(LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
+
+	TStringList dummy;
+	dummy.push_back(Util::emptyStringT);
+	list->createColumns(dummy);
+}
+
+void PropPage::write(HWND page, const Item* items) {
+	dcassert(page && items);
+	SettingsManager* settings = SettingsManager::getInstance();
 	tstring buf;
 	for(Item const* i = items; i->type != T_END; i++)
 	{
@@ -124,10 +111,13 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 			}
 		}
 	}
+}
 
-	if(listItems)
-		for(size_t i = 0; listItems[i].setting != 0; ++i)
-			settings->set(SettingsManager::IntSetting(listItems[i].setting), ListView_GetCheckState(list, i) > 0);
+void PropPage::write(const ListItem* listItems, TablePtr list) {
+	dcassert(listItems && list);
+	SettingsManager* settings = SettingsManager::getInstance();
+	for(size_t i = 0; listItems[i].setting != 0; ++i)
+		settings->set(SettingsManager::IntSetting(listItems[i].setting), list->isChecked(i));
 }
 
 void PropPage::translate(HWND page, TextItem* items) {

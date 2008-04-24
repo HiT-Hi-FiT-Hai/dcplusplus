@@ -74,9 +74,12 @@ AppearancePage::AppearancePage(dwt::Widget* parent) : PropPage(parent), language
 
 	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
-	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
+	PropPage::read(handle(), items);
 
-	languages = attachChild<ComboBox>(IDC_LANGUAGE);
+	attachChild(options, IDC_APPEARANCE_BOOLEANS);
+	PropPage::read(listItems, options);
+
+	attachChild(languages, IDC_LANGUAGE);
 
 	StringList dirs = File::findFiles(Util::getLocalePath(), "*");
 
@@ -119,7 +122,8 @@ AppearancePage::~AppearancePage() {
 
 void AppearancePage::write()
 {
-	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
+	PropPage::write(handle(), items);
+	PropPage::write(listItems, options);
 
 	tstring lang = languages->getText();
 	

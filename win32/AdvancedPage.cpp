@@ -24,8 +24,6 @@
 
 #include <dcpp/SettingsManager.h>
 
-PropPage::Item AdvancedPage::items[] = { { 0, 0, PropPage::T_END } };
-
 AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::AUTO_AWAY, N_("Auto-away on minimize (and back on restore)") },
 	{ SettingsManager::AUTO_FOLLOW, N_("Automatically follow redirects") },
@@ -56,12 +54,13 @@ AdvancedPage::AdvancedPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_ADVANCEDPAGE);
 	setHelpId(IDH_ADVANCEDPAGE);
 
-	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_ADVANCED_BOOLEANS));
+	attachChild(options, IDC_ADVANCED_BOOLEANS);
+	PropPage::read(listItems, options);
 }
 
 AdvancedPage::~AdvancedPage() {
 }
 
 void AdvancedPage::write() {
-	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_ADVANCED_BOOLEANS));
+	PropPage::write(listItems, options);
 }

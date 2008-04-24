@@ -24,8 +24,6 @@
 
 #include <dcpp/SettingsManager.h>
 
-PropPage::Item WindowsPage::items[] = { { 0, 0, PropPage::T_END } };
-
 PropPage::TextItem WindowsPage::textItem[] = {
 	{ IDC_SETTINGS_AUTO_OPEN, N_("Auto-open at startup") },
 	{ IDC_SETTINGS_WINDOWS_OPTIONS, N_("Window options") },
@@ -33,7 +31,7 @@ PropPage::TextItem WindowsPage::textItem[] = {
 	{ 0, 0 }
 };
 
-WindowsPage::ListItem WindowsPage::listItems[] = {
+WindowsPage::ListItem WindowsPage::autoOpenItems[] = {
 	{ SettingsManager::OPEN_SYSTEM_LOG, N_("System Log") },
 	{ SettingsManager::OPEN_FAVORITE_USERS, N_("Favorite Users") },
 	{ SettingsManager::OPEN_QUEUE, N_("Download Queue") },
@@ -74,16 +72,22 @@ WindowsPage::WindowsPage(dwt::Widget* parent) : PropPage(parent) {
 	setHelpId(IDH_WINDOWSPAGE);
 
 	PropPage::translate(handle(), textItem);
-	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_WINDOWS_STARTUP));
-	PropPage::read(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_WINDOWS_OPTIONS));
-	PropPage::read(handle(), items, confirmItems, ::GetDlgItem(handle(), IDC_CONFIRM_OPTIONS));
+
+	attachChild(autoOpen, IDC_WINDOWS_STARTUP);
+	PropPage::read(autoOpenItems, autoOpen);
+
+	attachChild(options, IDC_WINDOWS_OPTIONS);
+	PropPage::read(optionItems, options);
+
+	attachChild(confirm, IDC_CONFIRM_OPTIONS);
+	PropPage::read(confirmItems, confirm);
 }
 
 WindowsPage::~WindowsPage() {
 }
 
 void WindowsPage::write() {
-	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_WINDOWS_STARTUP));
-	PropPage::write(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_WINDOWS_OPTIONS));
-	PropPage::write(handle(), items, confirmItems, ::GetDlgItem(handle(), IDC_CONFIRM_OPTIONS));
+	PropPage::write(autoOpenItems, autoOpen);
+	PropPage::write(optionItems, options);
+	PropPage::write(confirmItems, confirm);
 }
