@@ -35,6 +35,8 @@
 
 #include <dwt/Application.h>
 #include <dwt/tstring.h>
+#include <dwt/xCeption.h>
+
 
 extern int SmartWinMain( dwt::Application & app );
 

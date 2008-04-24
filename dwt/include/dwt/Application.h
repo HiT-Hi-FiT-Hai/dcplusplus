@@ -40,7 +40,6 @@
 #include "tstring.h"
 #include "CommandLine.h"
 #include "ApplicationPlatform.h"
-#include "xCeption.h"
 #include <vector>
 #include <list>
 #include <functional>
@@ -61,6 +60,7 @@ namespace dwt {
 
 // Forward declaration of friends
 class Widget;
+class xCeption;
 
 namespace Policies {
 class ModelessDialog;
