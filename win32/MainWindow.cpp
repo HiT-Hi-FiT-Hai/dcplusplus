@@ -171,7 +171,7 @@ void MainWindow::initWindow() {
 	cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 	create(cs);
 	
-	setHelpId(IDH_STARTPAGE);
+	setHelpId(IDH_MAIN);
 
 	paned = addChild(WidgetHPaned::Seed(0.7));
 }
