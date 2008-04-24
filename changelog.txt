@@ -46,6 +46,9 @@
 * Fix a crash when adding a favorite hub that already existed
 * Renamed smartwin to dwt since by now it's very different from its roots
 * Added some menu icons (poy)
+* Updated several translations, we now have complete (or almost) Brazilian Portuguese, UK English,
+  Finnish, French, Hungarian, Italian, Polish, Romanian, Swedish, Norwegian,
+  German and Spanish translations
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)
