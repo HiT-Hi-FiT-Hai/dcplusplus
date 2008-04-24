@@ -364,7 +364,7 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 }
 
 bool PrivateFrame::handleTabContextMenu(const dwt::ScreenCoordinate& pt) {
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 
 	menu->setTitle(getParent()->getTabText(this));
 	

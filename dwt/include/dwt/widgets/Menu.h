@@ -113,6 +113,8 @@ public:
 	typedef std::tr1::shared_ptr<Menu> ObjectType;
 
 	struct Seed {
+		typedef ThisType WidgetType;
+		
 		Seed(bool ownerDrawn_ = true, const MenuColorInfo& colorInfo_ = MenuColorInfo(), FontPtr font_ = 0);
 		bool popup;
 		bool ownerDrawn;
@@ -264,7 +266,7 @@ public:
 	template<typename DispatcherType>
 	void appendItem(unsigned int id, const tstring & text, const typename DispatcherType::F& f, BitmapPtr image = BitmapPtr()) {
 		appendItem(id, text, image);
-		callbacks.insert(std::make_pair(id, DispatcherType(f)));
+		itsParent->setCallback(Message(WM_COMMAND, id), DispatcherType(f));
 	}
 
 	void appendItem(unsigned int id, const tstring & text, const IdDispatcher::F& f, BitmapPtr image = BitmapPtr()) {
@@ -462,12 +464,7 @@ private:
 	// if true title is drawn as sidebar
 	bool drawSidebar;
 
-	typedef std::tr1::unordered_map<unsigned, Widget::CallbackType> CallbackMap;
-	CallbackMap callbacks;
-
 	void createHelper(const Seed& cs);
-
-	void addCommands();
 
 	// Returns item index in the menu item list
 	// If no item with specified id is found, - 1 is returned

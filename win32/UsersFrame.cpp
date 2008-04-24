@@ -179,7 +179,7 @@ bool UsersFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 			pt = users->getContextMenuPos();
 		}
 
-		MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr menu = addChild(WinUtil::Seeds::menu);
 		appendUserItems(getParent(), menu);
 		menu->appendSeparatorItem();
 		menu->appendItem(IDC_EDIT, T_("&Description"), std::tr1::bind(&UsersFrame::handleDescription, this));

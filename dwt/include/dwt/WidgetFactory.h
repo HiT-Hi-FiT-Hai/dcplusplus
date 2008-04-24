@@ -66,7 +66,7 @@ namespace dwt {
   * delete <br>
   * this is with purpose to make the library easier to use and more transparent for
   * C#, Java and newbie developers. <br>
-  * Some functions returns stack objects, e.g. createMenu which returns a
+  * Some functions returns stack objects, e.g. addChild which returns a
   * std::tr1::shared_ptr and createMessageBox which returns a stack object, these also
   * should just get to "live their own life" and should not be tampered with in any
   * "memory ways".

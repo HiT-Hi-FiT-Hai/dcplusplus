@@ -940,7 +940,7 @@ const string& QueueFrame::getDir(HTREEITEM item) {
 }
 
 QueueFrame::MenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 
 	WinUtil::addHashItems(menu, qii->getTTH(), Text::toT(Util::getFileName(qii->getTarget())));
 	menu->appendItem(IDC_MOVE, T_("&Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
@@ -957,7 +957,7 @@ QueueFrame::MenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
 }
 
 QueueFrame::MenuPtr QueueFrame::makeMultiMenu() {
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 
 	addPriorityMenu(menu);
 	
@@ -968,7 +968,7 @@ QueueFrame::MenuPtr QueueFrame::makeMultiMenu() {
 }
 
 QueueFrame::MenuPtr QueueFrame::makeDirMenu() {
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 
 	addPriorityMenu(menu);
 	menu->appendItem(IDC_MOVE, T_("&Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));

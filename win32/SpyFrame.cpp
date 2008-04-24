@@ -179,7 +179,7 @@ bool SpyFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 			pt = searches->getContextMenuPos();
 		}
 
-		MenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr contextMenu = addChild(WinUtil::Seeds::menu);
 		contextMenu->appendItem<Menu::SimpleDispatcher>(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this, searches->getText(searches->getSelected(), COLUMN_STRING)), dwt::BitmapPtr(new dwt::Bitmap(IDB_SEARCH)));
 
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);

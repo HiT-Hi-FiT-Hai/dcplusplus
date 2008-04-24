@@ -182,7 +182,7 @@ void MainWindow::initMenu() {
 	{
 		Menu::Seed cs = WinUtil::Seeds::menu;
 		cs.popup = false;
-		mainMenu = createMenu(cs);
+		mainMenu = addChild(cs);
 	}
 
 	{
@@ -1001,7 +1001,7 @@ LRESULT MainWindow::handleTrayIcon(LPARAM lParam)
 		handleRestore();
 	} else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU) {
 		dwt::ScreenCoordinate pt;
-		MenuPtr trayMenu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr trayMenu = addChild(WinUtil::Seeds::menu);
 		trayMenu->appendItem(IDC_TRAY_SHOW, T_("Show"), std::tr1::bind(&MainWindow::handleRestore, this));
 		trayMenu->appendItem(IDC_TRAY_QUIT, T_("Exit"), std::tr1::bind(&MainWindow::close, this, true));
 		trayMenu->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"));

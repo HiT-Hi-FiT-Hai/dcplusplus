@@ -53,12 +53,6 @@ class WidgetFactoryPlatformImplementation< ContainerWidgetType,  dwtDesktop >
 	: public ContainerWidgetType
 {
 public:
-	/// Menu class type.
-	typedef dwt::Menu Menu;
-
-	/// Menu object type.
-	typedef typename Menu::ObjectType MenuPtr;
-
 	/// ChooseFont class and object type.
 	typedef dwt::FontDialog FontDialog;
 
@@ -75,21 +69,6 @@ public:
 	  */
 	FontDialog createFontDialog() {
 		return FontDialog( this );
-	}
-
-	/// Creates a Menu
-	/** The returned object is of type std::tr1::shared_ptr< Menu >, but
-	  * you should use the typedef MenuPtr and not <br>
-	  * the shared_ptr itself since this may change in future releases.
-	  */
-	MenuPtr createMenu(const typename Menu::Seed& cs = Menu::Seed())
-	{
-		return WidgetCreator< Menu >::create( this, cs );
-	}
-
-	MenuPtr attachMenu(HMENU hMenu, const typename Menu::Seed& cs = Menu::Seed())
-	{
-		return WidgetCreator< Menu >::attach( this, cs, hMenu );
 	}
 };
 

@@ -279,7 +279,7 @@ bool FavHubsFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 		pt = hubs->getContextMenuPos();
 	}
 
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 	menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&FavHubsFrame::openSelected, this));
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_ADD, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));

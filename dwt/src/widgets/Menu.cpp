@@ -139,7 +139,6 @@ void Menu::attach(HMENU hMenu, const Seed& cs) {
 }
 
 void Menu::setMenu() {
-	addCommands();
 	if ( ::SetMenu( itsParent->handle(), itsHandle ) == FALSE )
 		throw xCeption( _T( "SetMenu in Menu::setMenu fizzled..." ) );
 }
@@ -206,15 +205,6 @@ Menu::ObjectType Menu::getSystemMenu()
 	return sysMenu;
 }
 #endif
-
-void Menu::addCommands() {
-	for(CallbackMap::iterator i = callbacks.begin(); i != callbacks.end(); ++i) {
-		itsParent->setCallback(Message(WM_COMMAND, i->first), i->second);
-	}
-	for(std::vector< ObjectType >::iterator i = itsChildren.begin(); i != itsChildren.end(); ++i) {
-		(*i)->addCommands();
-	}
-}
 
 int Menu::getItemIndex( unsigned int id )
 {
@@ -955,8 +945,6 @@ void Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
 
 unsigned Menu::trackPopupMenu( const ScreenCoordinate& sc, unsigned flags )
 {
-	addCommands();
-
 	long x = sc.getPoint().x, y = sc.getPoint().y;
 
 	if ( x == - 1 && y == - 1 )
