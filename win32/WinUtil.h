@@ -25,7 +25,6 @@
 #include <dcpp/MerkleTree.h>
 #include "WidgetFactory.h"
 
-#ifdef PORT_ME
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
 // article on WTL OfficeXP Menus
 typedef DWORD HLSCOLOR;
@@ -38,8 +37,6 @@ HLSCOLOR RGB2HLS (COLORREF rgb);
 COLORREF HLS2RGB (HLSCOLOR hls);
 
 COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S);
-
-#endif
 
 class MainWindow;
 

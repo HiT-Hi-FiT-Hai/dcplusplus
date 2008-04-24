@@ -296,9 +296,7 @@ private:
 	void onTransferComplete(Transfer* aTransfer, bool isDownload);
 	void starting(UpdateInfo* ui, Transfer* t);
 	
-#ifdef PORT_ME
-	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
-#endif
+	LRESULT handleCustomDraw(WPARAM wParam, LPARAM lParam);
 };
 
 #endif // !defined(TRANSFER_VIEW_H)

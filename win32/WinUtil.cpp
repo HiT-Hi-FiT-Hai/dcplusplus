@@ -596,6 +596,19 @@ bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
 #define COMPILE_MULTIMON_STUBS 1
 #include <MultiMon.h>
 
+void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {
+	StringTokenizer<string> t(tokens, _T(','));
+	StringList& l = t.getTokens();
+	if(maxItems == -1)
+		maxItems = l.size();
+
+	int k = 0;
+	for(StringList::const_iterator i = l.begin(); i != l.end() && k < maxItems; ++i, ++k) {
+		array[k] = Util::toInt(*i);
+	}
+}
+#endif
+
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));
 	unsigned char maxval = max(GetRValue(rgb), max(GetGValue(rgb), GetBValue(rgb)));
@@ -621,7 +634,7 @@ HLSCOLOR RGB2HLS (COLORREF rgb) {
 	return HLS ((hue*255)/360, luminance*255, saturation*255);
 }
 
-static BYTE _ToRGB (float rm1, float rm2, float rh) {
+static inline BYTE _ToRGB (float rm1, float rm2, float rh) {
 	if		(rh > 360.0f) rh -= 360.0f;
 	else if (rh <   0.0f) rh += 360.0f;
 
@@ -670,19 +683,6 @@ COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S) {
 	}
 	return HLS2RGB (HLS(h, l, s));
 }
-
-void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {
-	StringTokenizer<string> t(tokens, _T(','));
-	StringList& l = t.getTokens();
-	if(maxItems == -1)
-		maxItems = l.size();
-
-	int k = 0;
-	for(StringList::const_iterator i = l.begin(); i != l.end() && k < maxItems; ++i, ++k) {
-		array[k] = Util::toInt(*i);
-	}
-}
-#endif
 
 void WinUtil::registerDchubHandler() {
 	HKEY hk;
