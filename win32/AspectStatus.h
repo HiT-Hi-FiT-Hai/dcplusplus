@@ -42,7 +42,7 @@ protected:
 		status = static_cast<WidgetType*>(this)->addChild(cs);
 
 		statusTip = static_cast<WidgetType*>(this)->addChild(dwt::ToolTip::Seed());
-		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));
+		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this, _1));
 	}
 	
 	void setStatus(int s, const tstring& text) {
@@ -75,7 +75,6 @@ protected:
 		statusSizes[WidgetType::STATUS_STATUS] = sz.x - std::accumulate(statusSizes.begin(), statusSizes.end(), 0); 
 
 		status->setSections(statusSizes);
-		statusTip->setMaxTipWidth(statusSizes[WidgetType::STATUS_STATUS]);
 	}
 	
 	void mapWidget(int s, dwt::Widget* widget) {
@@ -93,7 +92,6 @@ private:
 	dwt::Application::FilterIter filterIter;
 	dwt::ToolTipPtr statusTip;
 	TStringList lastLines;
-	tstring tip;
 	
 	enum { MAX_LINES = 10 };
 
@@ -102,7 +100,8 @@ private:
 		return false;
 	}
 
-	const tstring& handleToolTip() {
+	void handleToolTip(tstring& tip) {
+		statusTip->setMaxTipWidth(statusSizes[WidgetType::STATUS_STATUS]);
 		tip.clear();
 		for(size_t i = 0; i < lastLines.size(); ++i) {
 			if(i > 0) {
@@ -110,7 +109,6 @@ private:
 			}
 			tip += lastLines[i];
 		}
-		return tip;
 	}
 };
 

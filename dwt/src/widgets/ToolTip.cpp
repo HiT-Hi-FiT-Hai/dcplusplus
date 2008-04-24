@@ -51,9 +51,7 @@ void ToolTip::relayEvent(const MSG& msg) {
 }
 
 void ToolTip::setTool(Widget* widget, const Dispatcher::F& f) {
-	addCallback(
-		Message(WM_NOTIFY, TTN_GETDISPINFO), Dispatcher(f)
-	);
+	onGetTip(f);
 	
 	TOOLINFO ti = { sizeof(TOOLINFO) };
 	ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;

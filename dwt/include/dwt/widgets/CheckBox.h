@@ -101,7 +101,7 @@ protected:
 
 inline void CheckBox::setChecked( bool value )
 {
-	this->sendMessage(BM_SETCHECK, static_cast< WPARAM >( value ? BST_CHECKED : BST_UNCHECKED ) );
+	this->sendMessage(BM_SETCHECK, value ? BST_CHECKED : BST_UNCHECKED);
 }
 
 inline bool CheckBox::getChecked()

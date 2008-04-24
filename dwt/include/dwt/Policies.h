@@ -255,9 +255,6 @@ private:
 
 #ifndef WINCE // MDI Widgets doesn't exist on CE
 /// Aspect classes for a MDI Child Container Widget
-/** Used as the third template argument to WidgetFactory if you're creating an MDI
-  * Child Container Widget
-  */
 class MDIChild
 	: public Widget
 {

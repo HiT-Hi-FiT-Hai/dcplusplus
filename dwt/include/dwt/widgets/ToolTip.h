@@ -52,16 +52,19 @@ class ToolTip :
 	typedef MessageMap< Policies::Subclassed > BaseType;
 	friend class WidgetCreator< ToolTip >;
 
-	struct Dispatcher
-	{
-		typedef std::tr1::function<const tstring& ()> F;
+	struct Dispatcher {
+		typedef std::tr1::function<void (tstring&)> F;
 
 		Dispatcher(const F& f_) : f(f_) { }
 
 		bool operator()(const MSG& msg, LRESULT& ret) {
 			LPNMTTDISPINFO ttdi = reinterpret_cast< LPNMTTDISPINFO >( msg.lParam );
-			ttdi->lpszText = const_cast<LPTSTR>(f().c_str());
-			return 0;
+			ToolTip* tip = hwnd_cast<ToolTip*>(ttdi->hdr.hwndFrom);
+			if(tip) {
+				f(tip->text);
+				ttdi->lpszText = const_cast<LPTSTR>(tip->text.c_str());
+			}
+			return true;
 		}
 
 		F f;
@@ -72,7 +75,7 @@ public:
 	typedef ToolTip ThisType;
 
 	/// Object type
-	typedef ThisType * ObjectType;
+	typedef ThisType* ObjectType;
 
 	struct Seed : public BaseType::Seed {
 		typedef ThisType WidgetType;
@@ -86,6 +89,8 @@ public:
 	void setTool(Widget* widget, const Dispatcher::F& callback);
 	
 	void setMaxTipWidth(int width);
+	
+	void onGetTip(const Dispatcher::F& f);
 
 	/// Actually creates the Toolbar
 	/** You should call WidgetFactory::createToolbar if you instantiate class
@@ -102,6 +107,8 @@ protected:
 	// is supposed to do so when parent is killed...
 	virtual ~ToolTip()
 	{}
+	
+	tstring text;
 };
 
 inline ToolTip::ToolTip( Widget * parent )
@@ -113,6 +120,10 @@ inline ToolTip::ToolTip( Widget * parent )
 
 inline void ToolTip::setMaxTipWidth(int width) {
 	sendMessage(TTM_SETMAXTIPWIDTH, 0, static_cast<LPARAM>(width));
+}
+
+inline void ToolTip::onGetTip(const Dispatcher::F& f) {
+	setCallback(Message(WM_NOTIFY, TTN_GETDISPINFO), Dispatcher(f));
 }
 
 }

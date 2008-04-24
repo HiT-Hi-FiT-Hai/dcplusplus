@@ -51,6 +51,9 @@ template< class WidgetType >
 class AspectActivate
 {
 	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
+	
+	HWND H() const { return W().handle(); }
 
 	static bool isActive(const MSG& msg) { 
 		return LOWORD( msg.wParam ) == WA_ACTIVE || LOWORD( msg.wParam ) == WA_CLICKACTIVE;
@@ -94,13 +97,13 @@ protected:
 template< class WidgetType >
 void AspectActivate< WidgetType >::setActive()
 {
-	::SetActiveWindow( static_cast< WidgetType * >( this )->handle() );
+	::SetActiveWindow( H() );
 }
 
 template< class WidgetType >
 bool AspectActivate< WidgetType >::getActive() const
 {
-	return ::GetActiveWindow() == static_cast< const WidgetType * >( this )->handle();
+	return ::GetActiveWindow() == H();
 }
 
 }

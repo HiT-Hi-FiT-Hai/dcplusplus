@@ -52,6 +52,11 @@ namespace dwt {
 template< class WidgetType >
 class AspectDragDrop
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
+
+	HWND H() const { return W().handle(); }
+
 	struct Dispatcher {
 		typedef std::tr1::function<void (std::vector< tstring>, Point )> F;
 
@@ -99,9 +104,7 @@ public:
 	  * }
 	  */
 	void onDragDrop(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_DROPFILES ), Dispatcher(f)
-		);
+		W().addCallback(Message( WM_DROPFILES ), Dispatcher(f));
 	}
 	/// Setup Drag & Drop for this dialog 
 	/** This setup the ability to receive an WM_DROPFILES msg if you drop a file on dialog 
@@ -117,7 +120,7 @@ protected:
 template< class WidgetType >
 void AspectDragDrop< WidgetType >::setDragAcceptFiles(bool accept)
 {
-	DragAcceptFiles(static_cast< WidgetType * >( this )->handle(),accept); 
+	DragAcceptFiles(H(), accept); 
 }
 
 }
