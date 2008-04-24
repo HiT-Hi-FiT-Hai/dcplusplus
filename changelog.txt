@@ -42,6 +42,9 @@
 * Removed unused rollback option (thanks mikejj)
 * Fixed PM history not showing the last line (poy)
 * Queued field in connections no longer counts paused items
+* [L#185722] Fix missing progress bars (no longer optional)
+* Fix a crash when adding a favorite hub that already existed
+* Renamed smartwin to dwt since by now it's very different from its roots
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)

@@ -505,7 +505,7 @@ void ShareManager::removeDirectory(const string& realPath) {
 		return;
 	}
 	
-	const std::string& vName = i->second;
+	std::string vName = i->second;
 	for(DirList::iterator j = directories.begin(); j != directories.end(); ) {
 		if(Util::stricmp((*j)->getName(), vName) == 0) {
 			delete *j;
@@ -516,6 +516,15 @@ void ShareManager::removeDirectory(const string& realPath) {
 	}
 	
 	shares.erase(i);
+	
+	// Readd all directories with the same vName
+	for(i = shares.begin(); i != shares.end(); ++i) {
+		if(Util::stricmp(i->second, vName) == 0) {
+			Directory* dp = buildTree(i->first, 0);
+			dp->setName(i->second);
+			merge(dp);
+		}
+	}
 
 	rebuildIndices();
 	setDirty();
