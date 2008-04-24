@@ -48,6 +48,7 @@
 #define IDB_HUB			172
 #define IDB_DCPP		173
 #define IDB_HELP		174
+#define IDB_OPEN_DL_DIR		175
 
 #define IDD_ABOUTBOX 				200
 #define IDD_ADLS_PROPERTIES			201

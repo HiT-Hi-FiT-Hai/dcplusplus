@@ -197,7 +197,7 @@ void MainWindow::initMenu() {
 		file->appendItem(IDC_OPEN_OWN_LIST, T_("Open own list"), std::tr1::bind(&MainWindow::handleOpenOwnList, this));
 		file->appendItem(IDC_MATCH_ALL, T_("Match downloaded lists"), std::tr1::bind(&MainWindow::handleMatchAll, this));
 		file->appendItem(IDC_REFRESH_FILE_LIST, T_("Refresh file list\tCtrl+E"), std::tr1::bind(&MainWindow::handleRefreshFileList, this));
-		file->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"), std::tr1::bind(&MainWindow::handleOpenDownloadsDir, this));
+		file->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"), std::tr1::bind(&MainWindow::handleOpenDownloadsDir, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_OPEN_DL_DIR)));
 		file->appendSeparatorItem();
 
 		file->appendItem(IDC_SETTINGS, T_("Settings..."), std::tr1::bind(&MainWindow::handleSettings, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_SETTINGS)));
@@ -1004,10 +1004,10 @@ LRESULT MainWindow::handleTrayIcon(LPARAM lParam)
 	} else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU) {
 		dwt::ScreenCoordinate pt;
 		MenuPtr trayMenu = addChild(WinUtil::Seeds::menu);
-		trayMenu->appendItem(IDC_TRAY_SHOW, T_("Show"), std::tr1::bind(&MainWindow::handleRestore, this));
-		trayMenu->appendItem(IDC_TRAY_QUIT, T_("Exit"), std::tr1::bind(&MainWindow::close, this, true));
-		trayMenu->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"));
-		trayMenu->appendItem(IDC_SETTINGS, T_("Settings..."));
+		trayMenu->appendItem(IDC_TRAY_SHOW, T_("Show"), std::tr1::bind(&MainWindow::handleRestore, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_DCPP)));
+		trayMenu->appendItem(IDC_TRAY_QUIT, T_("Exit"), std::tr1::bind(&MainWindow::close, this, true), dwt::BitmapPtr(new dwt::Bitmap(IDB_EXIT)));
+		trayMenu->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"), dwt::BitmapPtr(new dwt::Bitmap(IDB_OPEN_DL_DIR)));
+		trayMenu->appendItem(IDC_SETTINGS, T_("Settings..."), dwt::BitmapPtr(new dwt::Bitmap(IDB_SETTINGS)));
 		trayMenu->setDefaultItem(0,TRUE);
 		::GetCursorPos(&pt.getPoint());
 		::SetForegroundWindow(handle());
