@@ -101,12 +101,18 @@ QueueFrame::QueueFrame(dwt::TabView* mdiParent) :
 		CheckBox::Seed cs(_T("+/-"));
 		cs.style &= ~WS_TABSTOP;
 		showTree = addChild(cs);
+		showTree->setHelpId(IDH_QUEUE_SHOW_TREE);
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
 		showTree->onClicked(std::tr1::bind(&QueueFrame::handleShowTreeClicked, this));
 	}
 	
 	initStatus();
 	statusSizes[STATUS_SHOW_TREE] = 16;
+
+	setStatusHelpId(STATUS_PARTIAL_COUNT, IDH_QUEUE_PARTIAL_COUNT);
+	setStatusHelpId(STATUS_PARTIAL_BYTES, IDH_QUEUE_PARTIAL_BYTES);
+	setStatusHelpId(STATUS_TOTAL_COUNT, IDH_QUEUE_TOTAL_COUNT);
+	setStatusHelpId(STATUS_TOTAL_BYTES, IDH_QUEUE_TOTAL_BYTES);
 
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();

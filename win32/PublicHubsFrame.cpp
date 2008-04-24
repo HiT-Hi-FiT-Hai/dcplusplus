@@ -175,6 +175,10 @@ PublicHubsFrame::PublicHubsFrame(dwt::TabView* mdiParent) :
 
 	initStatus();
 
+	setStatusHelpId(STATUS_STATUS, IDH_PUBLIC_HUBS_STATUS);
+	setStatusHelpId(STATUS_HUBS, IDH_PUBLIC_HUBS_HUBS);
+	setStatusHelpId(STATUS_USERS, IDH_PUBLIC_HUBS_USERS);
+
 	FavoriteManager::getInstance()->addListener(this);
 
 	entries	 = FavoriteManager::getInstance()->getPublicHubs();

@@ -19,15 +19,21 @@
 #ifndef DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 #define DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 
+#include <boost/lambda/lambda.hpp>
 #include <dwt/widgets/StatusBar.h>
 #include "WinUtil.h"
 
 template<class WidgetType>
 class AspectStatus {
 	typedef AspectStatus<WidgetType> ThisType;
-protected:
 
-	AspectStatus() : status(0) {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
+
+	HWND H() const { return W().handle(); }
+
+protected:
+	AspectStatus() : status(0), tip(0) {
 		statusSizes.resize(WidgetType::STATUS_LAST);
 		filterIter = dwt::Application::instance().addFilter(std::tr1::bind(&ThisType::filter, this, _1));
 	}
@@ -39,10 +45,11 @@ protected:
 	void initStatus(bool sizeGrip = false) {
 		dwt::StatusBar::Seed cs(sizeGrip);
 		cs.font = WinUtil::font;
-		status = static_cast<WidgetType*>(this)->addChild(cs);
+		status = W().addChild(cs);
+		status->onHelp(std::tr1::bind(&ThisType::handleHelp, this, _1, _2));
 
-		statusTip = static_cast<WidgetType*>(this)->addChild(dwt::ToolTip::Seed());
-		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this, _1));
+		tip = W().addChild(dwt::ToolTip::Seed());
+		tip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this, _1));
 	}
 	
 	void setStatus(int s, const tstring& text) {
@@ -61,7 +68,11 @@ protected:
 		}
 		status->setText(text, s);
 	}
-	
+
+	void setStatusHelpId(int s, unsigned id) {
+		helpIds[s] = id;
+	}
+
 	void layoutStatus(dwt::Rectangle& r) {
 		status->refresh();
 
@@ -76,12 +87,13 @@ protected:
 
 		status->setSections(statusSizes);
 	}
-	
-	void mapWidget(int s, dwt::Widget* widget) {
+
+	template<typename A>
+	void mapWidget(int s, dwt::AspectSizable<A>* widget) {
 		POINT p[2];
-		::SendMessage(status->handle(), SB_GETRECT, s, reinterpret_cast<LPARAM>(p));
-		::MapWindowPoints(status->handle(), static_cast<WidgetType*>(this)->handle(), (POINT*)p, 2);
-		::MoveWindow(widget->handle(), p[0].x, p[0].y, p[1].x - p[0].x, p[1].y - p[0].y, TRUE);
+		status->sendMessage(SB_GETRECT, s, reinterpret_cast<LPARAM>(p));
+		::MapWindowPoints(status->handle(), H(), (POINT*)p, 2);
+		widget->setBounds(p[0].x, p[0].y, p[1].x - p[0].x, p[1].y - p[0].y);
 	}
 	
 	dwt::StatusBarPtr status;
@@ -90,24 +102,44 @@ protected:
 
 private:
 	dwt::Application::FilterIter filterIter;
-	dwt::ToolTipPtr statusTip;
+	dwt::ToolTipPtr tip;
 	TStringList lastLines;
-	
+
 	enum { MAX_LINES = 10 };
 
+	typedef std::tr1::unordered_map<int, unsigned> HelpIdsMap;
+	HelpIdsMap helpIds;
+
 	bool filter(const MSG& msg) {
-		statusTip->relayEvent(msg);
+		tip->relayEvent(msg);
 		return false;
 	}
 
-	void handleToolTip(tstring& tip) {
-		statusTip->setMaxTipWidth(statusSizes[WidgetType::STATUS_STATUS]);
-		tip.clear();
+	void handleHelp(HWND hWnd, unsigned id) {
+		if(!dwt::AspectKeyboardBase::isKeyPressed(VK_F1)) {
+			// we have the help id of the whole status bar; convert to the one of the specific part the user just clicked on
+			dwt::Point pt = dwt::Point::fromLParam(::GetMessagePos());
+			RECT rect = status->getBounds(false);
+			if(::PtInRect(&rect, pt)) {
+				unsigned x = dwt::ClientCoordinate(dwt::ScreenCoordinate(pt), status).x();
+				unsigned total = 0;
+				boost::lambda::var_type<unsigned>::type v(boost::lambda::var(total));
+				HelpIdsMap::const_iterator i = helpIds.find(find_if(statusSizes.begin(), statusSizes.end(), (v += boost::lambda::_1, v > x)) - statusSizes.begin());
+				if(i != helpIds.end())
+					id = i->second;
+			}
+		}
+		WinUtil::help(hWnd, id);
+	}
+
+	void handleToolTip(tstring& text) {
+		tip->setMaxTipWidth(statusSizes[WidgetType::STATUS_STATUS]);
+		text.clear();
 		for(size_t i = 0; i < lastLines.size(); ++i) {
 			if(i > 0) {
-				tip += _T("\r\n");
+				text += _T("\r\n");
 			}
-			tip += lastLines[i];
+			text += lastLines[i];
 		}
 	}
 };

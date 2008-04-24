@@ -54,5 +54,22 @@ DC++ uses <a href="http://www.coralcdn.org">The Coral Content Distribution Netwo
 <img title="External Link" src="external.png" border="0" height="10" width="10" alt="External Link">
 to get hublists by default. This improves reliability and makes it possible to download hublists even when the original hublist server is out of service.
 </span>
+<h2>Status bar</h2>
+<dl style="margin-left: 40px;">
+<dt>Messages part (left)</dt>
+<dd cshelp=IDH_PUBLIC_HUBS_STATUS>
+Shows status messages about the loading of public hub lists;
+<ul>
+<li>&quot;downloading&quot;: hub list is currently being downloaded from the server, this may take a while;</li>
+<li>&quot;downloaded&quot;: hub list has been successfully downloaded from the server, and is currently being displayed; you're looking at a fresh version of the hub list;</li>
+<li>&quot;loaded from chache&quot;: a previously saved hub list has been successfully loaded from your DC++ cache directory, and is currently being displayed; that version might be out-dated, if you want to refresh it, click on the &quot;Refresh&quot; button;</li>
+<li>error messages may also appear in this area: when a hub list download has failed, DC++ will automatically switch to the next hub list.</li>
+</ul>
+</dd>
+<dt>Hubs</dt>
+<dd cshelp=IDH_PUBLIC_HUBS_HUBS>The total number of individual hubs in the current hub list.</dd>
+<dt>Users</dt>
+<dd cshelp=IDH_PUBLIC_HUBS_USERS>Sum of the users numbers of every hubs in the current hub list.</dd>
+</dl>
 </body>
 </html>

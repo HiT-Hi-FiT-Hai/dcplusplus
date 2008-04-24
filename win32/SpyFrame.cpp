@@ -71,6 +71,11 @@ SpyFrame::SpyFrame(dwt::TabView* mdiParent) :
 	initStatus();
 	statusSizes[STATUS_IGNORE_TTH] = 150; ///@todo get real checkbox + text width
 
+	setStatusHelpId(STATUS_TOTAL, IDH_SPY_TOTAL);
+	setStatusHelpId(STATUS_AVG_PER_SECOND, IDH_SPY_AVG_PER_SECOND);
+	setStatusHelpId(STATUS_HITS, IDH_SPY_HITS);
+	setStatusHelpId(STATUS_HIT_RATIO, IDH_SPY_HIT_RATIO);
+
 	layout();
 
 	onSpeaker(std::tr1::bind(&SpyFrame::handleSpeaker, this, _1, _2)) ;

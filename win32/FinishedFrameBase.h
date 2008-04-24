@@ -75,6 +75,10 @@ protected:
 
 		this->initStatus();
 
+		setStatusHelpId(STATUS_COUNT, in_UL ? IDH_FINISHED_UL_COUNT : IDH_FINISHED_DL_COUNT);
+		setStatusHelpId(STATUS_BYTES, in_UL ? IDH_FINISHED_UL_BYTES : IDH_FINISHED_DL_BYTES);
+		setStatusHelpId(STATUS_SPEED, in_UL ? IDH_FINISHED_UL_SPEED : IDH_FINISHED_DL_SPEED);
+
 		layout();
 
 		onSpeaker(std::tr1::bind(&ThisType::handleSpeaker, this, _1, _2));
