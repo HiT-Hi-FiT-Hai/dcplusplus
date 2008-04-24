@@ -46,7 +46,7 @@ namespace dwt {
 class AspectKeyboardBase {
 public:
 	static bool isKeyPressed(int vkey) {
-		return (::GetKeyState(vkey) & 0x8000) == 0x8000;
+		return ::GetKeyState(vkey) < 0;
 	}
 	
 	static bool isShiftPressed() { return isKeyPressed(VK_SHIFT); }
