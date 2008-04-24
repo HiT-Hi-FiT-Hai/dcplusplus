@@ -28,7 +28,6 @@
 #include <dwt/widgets/Spinner.h>
 
 static const WinUtil::HelpItem helpItems[] = {
-	{ IDC_SETTINGS_B, IDH_SETTINGS_ADVANCED3_ROLLBACK },
 	{ IDC_SETTINGS_MAX_HASH_SPEED, IDH_SETTINGS_ADVANCED3_MAX_HASH_SPEED },
 	{ IDC_MAX_HASH_SPEED, IDH_SETTINGS_ADVANCED3_MAX_HASH_SPEED },
 	{ IDC_SETTINGS_MBS, IDH_SETTINGS_ADVANCED3_MAX_HASH_SPEED },
@@ -64,7 +63,6 @@ static const WinUtil::HelpItem helpItems[] = {
 };
 
 PropPage::TextItem Advanced3Page::texts[] = {
-	{ IDC_SETTINGS_B, N_("B") },
 	{ IDC_SETTINGS_MAX_HASH_SPEED, N_("Max hash speed") },
 	{ IDC_SETTINGS_MBS, N_("MiB/s") },
 	{ IDC_SETTINGS_PM_HISTORY, N_("PM history") },

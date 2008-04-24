@@ -28,25 +28,21 @@ having renamed them to their original filename.
   <dd cshelp=IDH_SETTINGS_DOWNLOAD_TEMP_DOWNLOAD_DIRECTORY>All incomplete downloads will be stored in this directory.
 If you leave it empty, temporary downloads will be stored in the "Incomplete\"
 subdirectory under where the DC++ executable is located. The directory will be automatically created if needed.
-<br>Make sure you have enough disk space, appropriate write access and filesystem for unfinished downloads.
-In case of an error (eg. when the drive that holds your Unfinished Downloads ran out of space) you will
+<br>Make sure you have enough disk space, appropriate write access and filesystem for unfinished downloads. From version 0.706 DC++ always use antifragmentation method for downloads so it will try to reserve the full space needed for a file
+when starting the download. In case of an error (eg. when the drive that holds your Unfinished Downloads ran out of space) you will
 get 'Not enough space on the disk' message even if your target drive has enough free space for your download!
 <br>You can
 use <span style="font-weight: bold;">%[targetdrive]</span> for optional unfinished directory for target
-drive. This way you can share the incomplete files among your drives which will result smaller chance of runnig out of disk space.
+drive. This way you can share the incomplete files among your drives which will result a smaller chance of runnig out of disk space.
 This option is also useful if you often download large files to a drive other than where your usual unfinished directory 
-resides. At the end of a successful download moving a large file to its target could be very time & resource consuming, 
+resides. At the end of a successful download moving a large file to its target could be very time and resource consuming, 
 especially when moving files to another partition of a same physical drive.
 <br>
 For example : with %[targetdrive]DCUnfinished\ set, DC++ will use E:\DCUnfinished\ for incomplete files when you download to any target 
 located on drive E: and so on...
 <br>
 If the file has been downloaded the incomplete file will
-bear the name &lt;filename&gt;.&lt;ext&gt;.&lt;TTH&gt;.dctmp. If <a
- href="settings_queue.html#antifrag">Use AntiFragmentation Method
-for Downloads</a> is enabled the files will have ".antifrag" added to
-the end of it's name. As in
-&lt;filename&gt;.&lt;ext&gt;.&lt;TTH&gt;.dctmp.antifrag. </dd>
+bear the name &lt;filename&gt;.&lt;ext&gt;.&lt;TTH&gt;.dctmp.antifrag. </dd>
 </dl>
 </div>
 <h2>Limits</h2>
