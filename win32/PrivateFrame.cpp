@@ -194,7 +194,7 @@ void PrivateFrame::readLog() {
 	try {
 		File f(path, File::READ, File::OPEN);
 		if(f.getSize() > 32*1024) {
-			f.setEndPos(32*1024);
+			f.setEndPos(- 32*1024 + 1);
 		}
 
 		lines = StringTokenizer<string>(f.read(32*1024), "\r\n").getTokens();
