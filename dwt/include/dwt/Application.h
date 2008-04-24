@@ -43,9 +43,8 @@
 #include "xCeption.h"
 #include <vector>
 #include <list>
-#include <map>
+#include <functional>
 #include <boost/noncopyable.hpp>
-#include "Message.h"
 
 #ifdef _MSC_VER
 #ifndef WINCE
@@ -106,11 +105,6 @@ public:
 	  */
 	static Application & instance();
 
-	/// Returns the HINSTANCE to the process
-	/** Returns the handle to the process.
-	  */
-	HINSTANCE getAppHandle();
-
 	/// Returns the path to the process
 	/** NOTE! <br>
 	  * This function returns the PATH to the application WITHOUT the process image
@@ -147,7 +141,7 @@ public:
 	/// The initialization that must be done first.
 	/** Used internally by the WinMain function, and externally for DLL initialization.
 	  */
-	static void init( HINSTANCE hInstance, int nCmdShow );
+	static void init( int nCmdShow );
 	
 	/// Shut down operations
 	static void uninit();
@@ -201,9 +195,6 @@ private:
 	// The "one and only" object of type Application...
 	static Application * itsInstance;
 
-	// The global HINSTANCE given in the WinMain function
-	const HINSTANCE itsHInstance;
-
 	int itsCmdShow;
 	
 	// Command line parameters
@@ -219,7 +210,7 @@ private:
 	FilterList filters;
 	
 	// Private Constructor to ensure Singleton Implementation
-	Application( HINSTANCE hInst, int nCmdShow );
+	Application( int nCmdShow );
 };
 
 }

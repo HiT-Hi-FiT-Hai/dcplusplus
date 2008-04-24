@@ -31,8 +31,6 @@
 
 #include <dwt/widgets/MDIChild.h>
 
-#include <dwt/Application.h>
-
 namespace dwt {
 
 MDIChild::Seed::Seed(const tstring& caption) :
@@ -51,7 +49,7 @@ void MDIChild::createMDIChild( const Seed& cs ) {
 		cs.style,
 		cs.location.x(), cs.location.y(), cs.location.width(), cs.location.height(),
 		getParent()->handle(),
-		Application::instance().getAppHandle(),
+		::GetModuleHandle(NULL),
 		reinterpret_cast< LPARAM >( static_cast< Widget * >( this ) ) );
 	
 	if(active) {

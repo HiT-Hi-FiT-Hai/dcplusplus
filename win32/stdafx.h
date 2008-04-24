@@ -28,6 +28,7 @@
 #include <libintl.h>
 
 #include <dwt/WidgetFactory.h>
+#include <dwt/Application.h>
 #include <dwt/resources/Accelerator.h>
 #include <dwt/resources/Pen.h>
 #include <dwt/widgets/Button.h>

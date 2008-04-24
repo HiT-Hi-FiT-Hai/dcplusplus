@@ -215,6 +215,7 @@ void WidgetPaned< horizontal >::resizeChildren( )
 	::MoveWindow(children.second->handle(), right.x(), right.y(), right.width(), right.height(), TRUE);
 
 	this->setBounds(rcSplit);
+	this->redraw(rcSplit);
 }
 
 #endif

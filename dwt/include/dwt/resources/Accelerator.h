@@ -32,7 +32,6 @@
 #ifndef DWT_ACCELERATOR_H_
 #define DWT_ACCELERATOR_H_
 
-#include "../Application.h"
 #include "Handle.h"
 #include <boost/intrusive_ptr.hpp>
 
@@ -54,7 +53,7 @@ private:
 typedef boost::intrusive_ptr< Accelerator > AcceleratorPtr;
 
 inline Accelerator::Accelerator(Widget* widget_, unsigned id) : 
-	ResourceType(::LoadAccelerators(Application::instance().getAppHandle(), MAKEINTRESOURCE(id))),
+	ResourceType(::LoadAccelerators(::GetModuleHandle(NULL), MAKEINTRESOURCE(id))),
 	widget(widget_)
 {
 	

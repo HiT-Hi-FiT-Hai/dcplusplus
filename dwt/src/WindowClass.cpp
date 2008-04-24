@@ -30,7 +30,6 @@
 */
 
 #include <dwt/WindowClass.h>
-#include <dwt/Application.h>
 #include <dwt/xCeption.h>
 #include <dwt/Widget.h>
 
@@ -49,7 +48,7 @@ WindowClass::WindowClass(const tstring& className, WNDPROC wndProc, LPCTSTR menu
 	wc.hIcon = icon ? icon->handle() : NULL;
 	wc.hIconSm = smallIcon ? icon->handle() : NULL;
 	wc.hCursor = cursor;
-	wc.hInstance = Application::instance().getAppHandle();
+	wc.hInstance = ::GetModuleHandle(NULL);
 	wc.lpszClassName = className.c_str();
 	
 	atom = ::RegisterClassEx(&wc);
@@ -62,7 +61,7 @@ WindowClass::WindowClass(const tstring& className, WNDPROC wndProc, LPCTSTR menu
 
 WindowClass::~WindowClass() {
 	if(atom != 0) {
-		::UnregisterClass(getClassName(), Application::instance().getAppHandle());
+		::UnregisterClass(getClassName(), ::GetModuleHandle(NULL));
 	}
 }
 

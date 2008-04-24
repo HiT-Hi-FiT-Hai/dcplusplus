@@ -30,7 +30,6 @@
 */
 
 #include <dwt/widgets/ModalDialog.h>
-#include <dwt/Application.h>
 
 namespace dwt {
 
@@ -38,16 +37,10 @@ int ModalDialog::createDialog( unsigned resourceId )
 {
 	// this will not return until the dialog is closed by calling endDialog() with
 	// a retv
-	//
-	INT_PTR retv = ::DialogBoxParam
-		( ( Application::instance().getAppHandle() )
-		, ( MAKEINTRESOURCE( resourceId ) )
-		, ( this->getParent() ? this->getParent()->handle() : 0 )
-		, ( (DLGPROC)&ThisType::wndProc )
-		, ( reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) ) )
-		);
-	if ( retv == - 1 )
-	{
+	INT_PTR retv = ::DialogBoxParam(::GetModuleHandle(NULL), MAKEINTRESOURCE( resourceId ),
+		this->getParent() ? this->getParent()->handle() : 0, (DLGPROC)&ThisType::wndProc,
+		reinterpret_cast< LPARAM >(static_cast< Widget * >( this ))	);
+	if ( retv == - 1 ) {
 		throw xCeption( _T( "Couldn't create modal dialog" ) );
 	}
 	return static_cast< int >( retv );
@@ -64,8 +57,7 @@ int ModalDialog::createDialog()
 	// a retv
 	//
 	INT_PTR retv = ::DialogBoxIndirectParam
-		( Application::instance().getAppHandle() // HINSTANCE hInstance
-		, ( DLGTEMPLATE * ) dlg_menu_winclass_title // LPCDLGTEMPLATE hDialogTemplate
+		( ::GetModuleHandle(NULL), ( DLGTEMPLATE * ) dlg_menu_winclass_title
 		, this->getParent() ? this->getParent()->handle() : 0 // HWND hWndParent
 		, (DLGPROC)&ThisType::wndProc // DLGPROC lpDialogFunc
 		, reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) )

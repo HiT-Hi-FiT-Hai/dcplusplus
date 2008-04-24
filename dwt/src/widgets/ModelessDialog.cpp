@@ -31,13 +31,11 @@
 
 #include <dwt/widgets/ModelessDialog.h>
 
-#include <dwt/Application.h>
-
 namespace dwt {
 
 void ModelessDialog::createDialog( unsigned resourceId )
 {
-	HWND wnd = ::CreateDialogParam( Application::instance().getAppHandle(),
+	HWND wnd = ::CreateDialogParam( ::GetModuleHandle(NULL),
 		MAKEINTRESOURCE( resourceId ),
 		( this->getParent() ? this->getParent()->handle() : 0 ),
 		( (DLGPROC)&ThisType::wndProc ),

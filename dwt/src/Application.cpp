@@ -59,9 +59,9 @@ HANDLE Application::itsMutex = 0;
 /** Initializes the runtime for SmartWin++
 	Typically only called by WinMain or DllMain.
   */
-void Application::init( HINSTANCE hInstance, int nCmdShow )
+void Application::init( int nCmdShow )
 {
-	itsInstance = new Application( hInstance, nCmdShow );
+	itsInstance = new Application(nCmdShow );
 
 #ifndef WINCE
 	BOOL enable;
@@ -128,13 +128,8 @@ unsigned int Application::reportErr( xCeption & err, bool corruptMemMemLeak )
 	return retVal;
 }
 
-HINSTANCE Application::getAppHandle()
-{
-	return itsHInstance;
-}
-
-Application::Application( HINSTANCE hInst, int nCmdShow )
-	: itsHInstance( hInst ), itsCmdShow(nCmdShow)
+Application::Application( int nCmdShow )
+	:  itsCmdShow(nCmdShow)
 {
 }
 
@@ -208,7 +203,7 @@ Application & Application::instance()
 {
 	if ( 0 == itsInstance )
 	{
-		init( ::GetModuleHandle( NULL ), 0 );
+		init(0);
 	}
 	return * itsInstance;
 }
@@ -355,7 +350,7 @@ int PASCAL WinMain
 	unsigned int retVal = 0;
 	bool corruptMemMemLeak = false;
 	
-	dwt::Application::init( hInstance, nCmdShow );
+	dwt::Application::init( nCmdShow );
 	try {
 		retVal = SmartWinMain( dwt::Application::instance() ); // Call library user's startup function.
 		dwt::Application::uninit();

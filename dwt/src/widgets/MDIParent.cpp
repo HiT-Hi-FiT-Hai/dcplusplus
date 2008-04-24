@@ -30,7 +30,6 @@
 */
 
 #include <dwt/widgets/MDIParent.h>
-#include <dwt/Application.h>
 
 namespace dwt {
 
@@ -54,7 +53,7 @@ void MDIParent::create( const Seed & cs )
 		cs.location.x(), cs.location.y(), cs.location.width(), cs.location.height(),
 		this->getParent() ? this->getParent()->handle() : 0,
 		NULL,
-		Application::instance().getAppHandle(),
+		::GetModuleHandle(NULL),
 		reinterpret_cast< LPVOID >( &ccs ) );
 	if ( !wnd )
 	{

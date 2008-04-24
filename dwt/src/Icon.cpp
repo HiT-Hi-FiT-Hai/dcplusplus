@@ -34,7 +34,6 @@
 */
 
 #include <dwt/resources/Icon.h>
-#include <dwt/Application.h>
 
 namespace dwt {
 
@@ -43,14 +42,14 @@ Icon::Icon( HICON icon, bool own )
 {}
 
 Icon::Icon( unsigned resourceId )
-	: ResourceType(::LoadIcon( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) ) )
+	: ResourceType(::LoadIcon(::GetModuleHandle(NULL), MAKEINTRESOURCE( resourceId ) ) )
 {}
 
 Icon::Icon( const tstring & filePath )
 #ifdef WINCE
-	: itsIcon( ::LoadIcon( Application::instance().getAppHandle(), filePath.c_str() ) )
+	: itsIcon( ::LoadIcon(::GetModuleHandle(NULL), filePath.c_str() ) )
 #else
-	: ResourceType( (HICON)::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE ) )
+	: ResourceType( (HICON)::LoadImage(::GetModuleHandle(NULL), filePath.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE ) )
 #endif
 {}
 

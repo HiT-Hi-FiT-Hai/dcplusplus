@@ -38,10 +38,9 @@
 
 #include "WindowsHeaders.h"
 #include "tstring.h"
-#include "Threads.h"
 #include "xCeption.h"
-#include <map>
-#include <utility>
+
+#include <boost/noncopyable.hpp>
 
 namespace dwt {
 
@@ -67,8 +66,7 @@ namespace dwt {
   * EXACT SAME arguments! <br>
   * See example usage in RichTextBox.h
   */
-class LibraryLoader
-{
+class LibraryLoader : private boost::noncopyable {
 public:
 	/// Constructor loading the given library
 	/** Constructor loading the given library unless library is loaded from before.
@@ -93,8 +91,6 @@ public:
 	  * tstring argument which automatically loads library!
 	  */
 	void load( const tstring & libraryName );
-
-
 
 	/// Get procedure address from loaded library by name
 	/** Allows you get a procedure address from the dll.
@@ -122,13 +118,7 @@ public:
 	static DWORD getCommonControlsVersion();
 
 private:
-	LibraryLoader( const LibraryLoader & ); // DENY COPY
-	LibraryLoader & operator =( const LibraryLoader & ); // DENY ASSIGNMENT
-	tstring itsLibraryName;
 	HMODULE itsHMod;
-	static Utilities::CriticalSection itsCs;
-	static std::map< tstring, std::pair< int, HMODULE > > itsLibrariesLoaded;
-	bool hasCalledLoad;
 };
 
 }

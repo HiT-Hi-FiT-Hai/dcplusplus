@@ -44,7 +44,7 @@
 
 #include <memory>
 #include <vector>
-#include <map>
+#include <tr1/unordered_map>
 
 namespace dwt {
 
@@ -462,7 +462,7 @@ private:
 	// if true title is drawn as sidebar
 	bool drawSidebar;
 
-	typedef std::map<unsigned, Widget::CallbackType> CallbackMap;
+	typedef std::tr1::unordered_map<unsigned, Widget::CallbackType> CallbackMap;
 	CallbackMap callbacks;
 
 	void createHelper(const Seed& cs);

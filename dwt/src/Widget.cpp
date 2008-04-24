@@ -47,8 +47,6 @@
 
 #include <dwt/Widget.h>
 
-#include <dwt/Threads.h>
-#include <dwt/Application.h>
 #include <dwt/xCeption.h>
 
 namespace dwt {
@@ -79,7 +77,7 @@ HWND Widget::create( const Seed & cs ) {
 		cs.location.x(), cs.location.y(), cs.location.width(), cs.location.height(),
 		itsParent ? itsParent->handle() : 0,
 		cs.menuHandle,
-		Application::instance().getAppHandle(),
+		::GetModuleHandle(NULL),
 		reinterpret_cast< LPVOID >( this ) 
 	);
 	if (!hWnd) {

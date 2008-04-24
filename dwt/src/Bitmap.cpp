@@ -35,7 +35,6 @@
 
 #include <dwt/resources/Bitmap.h>
 #include <dwt/Point.h>
-#include <dwt/Application.h>
 
 namespace dwt {
 
@@ -44,14 +43,14 @@ Bitmap::Bitmap( HBITMAP bitmap, bool own )
 {}
 
 Bitmap::Bitmap( unsigned resourceId, unsigned flags )
-	: ResourceType( ( HBITMAP )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION ) )
+	: ResourceType( ( HBITMAP )::LoadImage( ::GetModuleHandle(NULL), MAKEINTRESOURCE( resourceId ), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION ) )
 {}
 
 Bitmap::Bitmap( const tstring & filePath, unsigned flags )
 #ifdef WINCE
 	: itsBitmap( ::SHLoadImageFile( filePath.c_str() ) )
 #else
-	: ResourceType( ( HBITMAP )::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_BITMAP, 0, 0, flags | LR_LOADFROMFILE ) )
+	: ResourceType( ( HBITMAP )::LoadImage( ::GetModuleHandle(NULL), filePath.c_str(), IMAGE_BITMAP, 0, 0, flags | LR_LOADFROMFILE ) )
 #endif
 {}
 

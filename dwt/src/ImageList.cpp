@@ -34,7 +34,6 @@
 */
 
 #include <dwt/resources/ImageList.h>
-#include <dwt/Application.h>
 #include <dwt/xCeption.h>
 
 namespace dwt {

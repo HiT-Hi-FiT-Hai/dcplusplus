@@ -33,103 +33,69 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <dwt/WindowsHeaders.h>
 #include <dwt/LibraryLoader.h>
-#include <utility>
 
 namespace dwt {
 
-// Static members definitions!
-Utilities::CriticalSection LibraryLoader::itsCs;
-std::map< tstring, std::pair< int, HMODULE > > LibraryLoader::itsLibrariesLoaded;
-
-LibraryLoader::~LibraryLoader()
+LibraryLoader::LibraryLoader( const tstring & libraryName ) : 
+	itsHMod(NULL)
 {
-	// Need a lock here since we're accessing the shared static version of its map!
-	Utilities::ThreadLock lock( LibraryLoader::itsCs );
+	load(libraryName);
+}
 
-	if ( !hasCalledLoad )
-		return;
+LibraryLoader::LibraryLoader() : 
+	itsHMod(NULL)
+{
+}
 
-	// Decreasing reference count
-	LibraryLoader::itsLibrariesLoaded[itsLibraryName].first -= 1;
-
-	// Checking to see if last instance and if so freeing library and removing map entry
-	if ( 0 == LibraryLoader::itsLibrariesLoaded[itsLibraryName].first )
-	{
-		::FreeLibrary( LibraryLoader::itsLibrariesLoaded[itsLibraryName].second );
-		LibraryLoader::itsLibrariesLoaded.erase( itsLibraryName );
+LibraryLoader::~LibraryLoader() {
+	if(itsHMod != NULL) {
+		::FreeLibrary(itsHMod);
 	}
 }
 
 void LibraryLoader::load( const tstring & libraryName )
 {
-	// Need a lock here since we're accessing the shared static version of its map!
-	Utilities::ThreadLock lock( LibraryLoader::itsCs );
-
 	// VERY important we DON'T increase refcount or anything like that
-	if ( hasCalledLoad )
-	{
+	if ( itsHMod != NULL ) {
 		xCeption x( _T( "Already called load on LibraryLoader object" ) );
 		throw x;
 	}
 
-	itsLibraryName = libraryName;
+	// Loading library
+	itsHMod = ::LoadLibrary( libraryName.c_str() );
 
-	hasCalledLoad = true;
-
-	std::map< tstring, std::pair< int, HMODULE > >::const_iterator exists = LibraryLoader::itsLibrariesLoaded.find( libraryName );
-	if ( LibraryLoader::itsLibrariesLoaded.end() == exists )
-	{
-		// Loading library
-		itsHMod = ::LoadLibrary( libraryName.c_str() );
-
-		// TODO: Rewrite xAssert to get support for submitting tstrings (could show library name)
-		xAssert( itsHMod != 0, _T( "Error while trying to load library or dll!" ) );
-
-		// SUCCESS!
-		itsLibrariesLoaded[libraryName].second = itsHMod;
-		itsLibrariesLoaded[libraryName].first = 1;
-	}
-	else
-	{
-		itsLibrariesLoaded[libraryName].first += 1;
-	}
-}
-
-LibraryLoader::LibraryLoader( const tstring & libraryName )
-	: itsLibraryName( libraryName ),
-	hasCalledLoad( false )
-{
-	load( libraryName );
-}
-
-LibraryLoader::LibraryLoader()
-	: hasCalledLoad( false )
-{
+	// TODO: Rewrite xAssert to get support for submitting tstrings (could show library name)
+	xAssert( itsHMod != 0, _T( "Error while trying to load library or dll!" ) );
 }
 
 // Get procedure address from loaded library by name
-FARPROC LibraryLoader::getProcAddress( const tstring & procedureName )
-{
+FARPROC LibraryLoader::getProcAddress( const tstring & procedureName ) {
 	return ::GetProcAddress( itsHMod, util::AsciiGuaranteed::doConvert( procedureName, util::ConversionCodepage::ANSI ).c_str() );
 }
 
 // Get procedure address from loaded library by ordinal value
-FARPROC LibraryLoader::getProcAddress( long procedureOrdinal )
-{
+FARPROC LibraryLoader::getProcAddress( long procedureOrdinal ) {
 	return ::GetProcAddress( itsHMod, (LPCSTR)0 + procedureOrdinal );
 }
 
 DWORD LibraryLoader::getCommonControlsVersion() {
-	LibraryLoader lib(_T("comctl32.dll"));
-	DLLGETVERSIONPROC pDllGetVersion = (DLLGETVERSIONPROC)lib.getProcAddress(_T("DllGetVersion"));
-	if(pDllGetVersion) {
-		DLLVERSIONINFO dvi = { sizeof(dvi) };
-		if(SUCCEEDED((*pDllGetVersion)(&dvi)))
-			return PACK_COMCTL_VERSION(dvi.dwMajorVersion, dvi.dwMinorVersion);
+	static DWORD version = 0;
+	if(version == 0) {
+		try {
+			LibraryLoader lib(_T("comctl32.dll"));
+			DLLGETVERSIONPROC pDllGetVersion = (DLLGETVERSIONPROC)lib.getProcAddress(_T("DllGetVersion"));
+			if(pDllGetVersion) {
+				DLLVERSIONINFO dvi = { sizeof(dvi) };
+				if(SUCCEEDED((*pDllGetVersion)(&dvi))) {
+					version = PACK_COMCTL_VERSION(dvi.dwMajorVersion, dvi.dwMinorVersion);
+				}
+			}
+		} catch(...) {
+			// Ignore loading exceptions...
+		}
 	}
-	return 0;
+	return version;
 }
 
 }
