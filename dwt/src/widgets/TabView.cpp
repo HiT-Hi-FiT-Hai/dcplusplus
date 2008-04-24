@@ -112,7 +112,7 @@ void TabView::create(const Seed & cs) {
 	}
 }
 
-void TabView::add(Container* w, const IconPtr& icon) {
+void TabView::add(ContainerPtr w, const IconPtr& icon) {
 	int image = addIcon(icon);
 	size_t tabs = size();
 	TabInfo* ti = new TabInfo(w);
@@ -149,12 +149,12 @@ void TabView::add(Container* w, const IconPtr& icon) {
 	w->onTextChanging(std::tr1::bind(&TabView::handleTextChanging, this, w, _1));
 }
 
-Container* TabView::getActive() {
+ContainerPtr TabView::getActive() {
 	TabInfo* ti = getTabInfo(getSelected());
 	return ti ? ti->w : 0;
 }
 
-void TabView::remove(Container* w) {
+void TabView::remove(ContainerPtr w) {
 	int i = findTab(w);
 	if(i == -1) {
 		return;
@@ -187,14 +187,26 @@ void TabView::remove(Container* w) {
 	layout();
 }
 
-tstring TabView::getTabText(Container* w) {
+void TabView::setTabIcon(ContainerPtr w, const IconPtr& icon) {
+	int i = findTab(w);
+	if(i != -1) {
+		int image = addIcon(icon);
+		if(image != -1) {
+			TCITEM item = { TCIF_IMAGE };
+			item.iImage = image;
+			TabCtrl_SetItem(this->handle(), i, &item);
+		}
+	}
+}
+
+tstring TabView::getTabText(ContainerPtr w) {
 	int i = findTab(w);
 	if(i != -1)
 		return getText(i);
 	return tstring();
 }
 
-void TabView::onTabContextMenu(Container* w, const ContextMenuFunction& f) {
+void TabView::onTabContextMenu(ContainerPtr w, const ContextMenuFunction& f) {
 	TabInfo* ti = getTabInfo(w);
 	if(ti) {
 		ti->handleContextMenu = f;
@@ -209,7 +221,7 @@ void TabView::setActive(int i) {
 	handleTabSelected();
 }
 
-void TabView::swapWidgets(Container* oldW, Container* newW) {
+void TabView::swapWidgets(ContainerPtr oldW, ContainerPtr newW) {
 	newW->setBounds(clientSize, false);
 	newW->setVisible(true);
 	if(oldW) {
@@ -244,14 +256,14 @@ void TabView::handleTabSelected() {
 		titleChangedFunction(ti->w->getText());
 }
 
-void TabView::mark(Container* w) {
+void TabView::mark(ContainerPtr w) {
 	int i = findTab(w);
 	if(i != -1 && i != getSelected()) {
 		TabCtrl_HighlightItem(handle(), i, TRUE);
 	}
 }
 
-int TabView::findTab(Container* w) {
+int TabView::findTab(ContainerPtr w) {
 	for(size_t i = 0; i < size(); ++i) {
 		if(getTabInfo(i)->w == w) {
 			return static_cast<int>(i);
@@ -260,7 +272,7 @@ int TabView::findTab(Container* w) {
 	return -1;
 }
 
-TabView::TabInfo* TabView::getTabInfo(Container* w) {
+TabView::TabInfo* TabView::getTabInfo(ContainerPtr w) {
 	return getTabInfo(findTab(w));
 }
 
@@ -273,7 +285,7 @@ TabView::TabInfo* TabView::getTabInfo(int i) {
 	return 0;
 }
 
-bool TabView::handleTextChanging(Container* w, const tstring& newText) {
+bool TabView::handleTextChanging(ContainerPtr w, const tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
 		setText(i, formatTitle(newText));
@@ -310,7 +322,7 @@ void TabView::next(bool reverse) {
 	if(viewOrder.size() < 2) {
 		return;
 	}
-	Container* wnd = getActive();
+	ContainerPtr wnd = getActive();
 	if(!wnd) {
 		return;
 	}
@@ -345,7 +357,7 @@ void TabView::next(bool reverse) {
 	return;
 }
 
-void TabView::setTop(Container* wnd) {
+void TabView::setTop(ContainerPtr wnd) {
 	WindowIter i = std::find(viewOrder.begin(), viewOrder.end(), wnd);
 	if(i != viewOrder.end() && i != --viewOrder.end()) {
 		viewOrder.erase(i);

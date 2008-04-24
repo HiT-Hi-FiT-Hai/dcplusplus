@@ -22,6 +22,8 @@
 #define IDR_NET_STATS				114
 #define IDR_WAITING_USERS			115
 #define IDR_MAGNET					116
+#define IDR_HUB_OFF					117
+#define IDR_PRIVATE_OFF					118
 
 #define IDB_ADL_SEARCH		150
 #define IDB_ARROWS		151

@@ -38,12 +38,14 @@ public:
 	typedef MDIChildFrame<T> ThisType;
 protected:
 
-	MDIChildFrame(dwt::TabView* tabView, const tstring& title, unsigned helpId = 0, dwt::IconPtr icon = dwt::IconPtr(), bool activate = true) :
+	MDIChildFrame(dwt::TabView* tabView, const tstring& title, unsigned helpId = 0, unsigned resourceId = 0, bool activate = true) :
 		BaseType(tabView),
 		lastFocus(NULL),
 		alwaysSameFocus(false),
 		reallyClose(false)
 	{
+		dwt::IconPtr icon = resourceId ? dwt::IconPtr(new dwt::Icon(resourceId)) : dwt::IconPtr();
+
 		typename ThisType::Seed cs;
 		cs.style &= ~WS_VISIBLE;
 		cs.caption = title;
@@ -126,7 +128,11 @@ protected:
 	dwt::TabView* getParent() {
 		return static_cast<dwt::TabView*>(BaseType::getParent());
 	}
-	
+
+	void setIcon(unsigned resourceId) {
+		getParent()->setTabIcon(this, dwt::IconPtr(new dwt::Icon(resourceId)));
+	}
+
 private:
 	HWND lastFocus; // last focused widget
 	bool alwaysSameFocus; // always focus the same widget

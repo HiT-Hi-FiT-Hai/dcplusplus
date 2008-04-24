@@ -68,7 +68,7 @@ void HubFrame::openWindow(dwt::TabView* mdiParent, const string& url) {
 }
 
 HubFrame::HubFrame(dwt::TabView* mdiParent, const string& url_) : 
-	BaseType(mdiParent, Text::toT(url_), IDH_HUB, dwt::IconPtr(new dwt::Icon(IDR_HUB))),
+	BaseType(mdiParent, Text::toT(url_), IDH_HUB, IDR_HUB),
 	chat(0),
 	message(0),
 	filter(0),
@@ -500,14 +500,10 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			}
 		} else if(i->first == CONNECTED) {
 			addStatus(T_("Connected"));
-#ifdef PORT_ME
-			setTabColor(GREEN);
-#endif
+			setIcon(IDR_HUB);
 		} else if(i->first == DISCONNECTED) {
 			clearUserList();
-#ifdef PORT_ME
-			setTabColor(RED);
-#endif
+			setIcon(IDR_HUB_OFF);
 		} else if(i->first == ADD_CHAT_LINE) {
 			addChat(Text::toT(static_cast<StringTask*>(i->second)->str));
 		} else if(i->first == ADD_STATUS_LINE) {

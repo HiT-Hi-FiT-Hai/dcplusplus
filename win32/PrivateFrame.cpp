@@ -81,7 +81,7 @@ void PrivateFrame::closeAllOffline() {
 }
 
 PrivateFrame::PrivateFrame(dwt::TabView* mdiParent, const UserPtr& replyTo_, bool activate) : 
-	BaseType(mdiParent, _T(""), IDH_PM, dwt::IconPtr(new dwt::Icon(IDR_PRIVATE)), activate),
+	BaseType(mdiParent, _T(""), IDH_PM, IDR_PRIVATE, activate),
 	chat(0),
 	message(0),
 	replyTo(replyTo_)
@@ -236,14 +236,8 @@ void PrivateFrame::layout() {
 
 void PrivateFrame::updateTitle() {
 	pair<tstring, bool> hubs = WinUtil::getHubNames(replyTo);
-#ifdef PORT_ME
-	if(hubs.second) {
-		setTabColor(RGB(0, 255, 255));
-	} else {
-		setTabColor(RGB(255, 0, 0));
-	}
-#endif 
 	setText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first));
+	setIcon(hubs.second ? IDR_PRIVATE : IDR_PRIVATE_OFF);
 }
 
 bool PrivateFrame::handleChar(int c) {

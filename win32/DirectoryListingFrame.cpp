@@ -106,7 +106,7 @@ void DirectoryListingFrame::openWindow(dwt::TabView* mdiParent, const UserPtr& a
 }
 
 DirectoryListingFrame::DirectoryListingFrame(dwt::TabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
-	BaseType(mdiParent, _T(""), IDH_FILE_LIST, dwt::IconPtr(new dwt::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
+	BaseType(mdiParent, _T(""), IDH_FILE_LIST, IDR_DIRECTORY, !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),
 	paned(0),

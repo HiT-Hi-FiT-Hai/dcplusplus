@@ -84,7 +84,7 @@ public:
 		Seed(bool toggleActive_ = false);
 	};
 
-	void add(ContainerPtr w, const IconPtr& icon);
+	void add(ContainerPtr w, const IconPtr& icon = IconPtr());
 
 	void mark(ContainerPtr w);
 	
@@ -94,6 +94,8 @@ public:
 	
 	ContainerPtr getActive();
 	void setActive(ContainerPtr w) { setActive(findTab(w)); }
+
+	void setTabIcon(ContainerPtr w, const IconPtr& icon);
 
 	tstring getTabText(ContainerPtr w);
 

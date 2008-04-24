@@ -88,13 +88,13 @@ TransferView::TransferView(dwt::Widget* parent, dwt::TabView* mdi_) :
 		cs.location = tabs->getClientSize();
 		connectionsWindow = dwt::WidgetCreator<Container>::create(tabs, cs);
 		connectionsWindow->setHelpId(IDH_CONNECTIONS);
-		tabs->add(connectionsWindow, dwt::IconPtr());
+		tabs->add(connectionsWindow);
 
 		cs.style &= ~WS_VISIBLE;
 		cs.caption = T_("Downloads");
 		downloadsWindow = dwt::WidgetCreator<Container>::create(tabs, cs);
 		downloadsWindow->setHelpId(IDH_DOWNLOADS);
-		tabs->add(downloadsWindow, dwt::IconPtr());
+		tabs->add(downloadsWindow);
 	}
 	
 	{

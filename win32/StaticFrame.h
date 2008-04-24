@@ -27,8 +27,8 @@ template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
 
-	StaticFrame(dwt::TabView* mdiClient, const tstring& title, unsigned helpId, int icon) : 
-		MDIChildFrame<T>(mdiClient, title, helpId, dwt::IconPtr(new dwt::Icon(icon))) 
+	StaticFrame(dwt::TabView* mdiClient, const tstring& title, unsigned helpId, unsigned resourceId) : 
+		MDIChildFrame<T>(mdiClient, title, helpId, resourceId) 
 	{ 
 	}
 
