@@ -475,5 +475,9 @@ void Table::createArrows() {
 	}
 }
 
+int Table::hitTest(const ScreenCoordinate& pt) {
+	LVHITTESTINFO lvi = { ClientCoordinate(pt, this).getPoint() };
+	return ListView_HitTest(handle(), &lvi);
+}
 
 }

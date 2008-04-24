@@ -532,7 +532,6 @@ const ImageListPtr& TabView::getImageList() const {
 
 int TabView::hitTest(const ScreenCoordinate& pt) {
 	TCHITTESTINFO tci = { ClientCoordinate(pt, this).getPoint() };
-		
 	return TabCtrl_HitTest(handle(), &tci);
 }
 

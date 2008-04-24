@@ -61,17 +61,24 @@ void PropPage::read(HWND page, const Item* items) {
 
 void PropPage::read(const ListItem* listItems, TablePtr list) {
 	dcassert(listItems && list);
+
 	initList(list);
+
 	SettingsManager* settings = SettingsManager::getInstance();
 	for(size_t i = 0; listItems[i].setting != 0; ++i) {
 		TStringList row;
 		row.push_back(T_(listItems[i].desc));
 		list->setChecked(list->insert(row), settings->getBool(SettingsManager::IntSetting(listItems[i].setting), true));
 	}
+
 	list->setColumnWidth(0, LVSCW_AUTOSIZE);
+
+	list->onHelp(std::tr1::bind(&PropPage::handleListHelp, this, _1, _2, listItems, list));
 }
 
 void PropPage::initList(TablePtr list) {
+	dcassert(list);
+
 	list->setTableStyle(LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 
 	TStringList dummy;
@@ -121,7 +128,16 @@ void PropPage::write(const ListItem* listItems, TablePtr list) {
 }
 
 void PropPage::translate(HWND page, TextItem* items) {
+	dcassert(page && items);
 	if(items)
 		for(size_t i = 0; items[i].itemID != 0; ++i)
 			::SetDlgItemText(page, items[i].itemID, CT_(items[i].stringToTranslate));
+}
+
+void PropPage::handleListHelp(HWND hWnd, unsigned id, const ListItem* listItems, TablePtr list) {
+	// we have the help id of the whole list-view; convert to the one of the specific option the user just clicked on
+	int item = list->hitTest(dwt::ScreenCoordinate(dwt::Point::fromLParam(::GetMessagePos())));
+	if(item >= 0 && item < sizeof(*listItems) / sizeof(ListItem) && listItems[item].helpId)
+		id = listItems[item].helpId;
+	WinUtil::help(hWnd, id);
 }

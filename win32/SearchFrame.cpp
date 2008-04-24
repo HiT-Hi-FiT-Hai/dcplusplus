@@ -211,16 +211,12 @@ SearchFrame::SearchFrame(dwt::TabView* mdiParent, const tstring& initialString_,
 		slots = addChild(cs);
 		slots->setHelpId(IDH_SEARCH_SLOTS);
 		slots->setChecked(onlyFree);
-
 		slots->onClicked(std::tr1::bind(&SearchFrame::handleSlotsClicked, this)) ;
-	}
 
-	{
-		CheckBox::Seed cs(T_("Hide files already in share"));
+		cs.caption = T_("Hide files already in share");
 		filter = addChild(cs);
 		filter->setHelpId(IDH_SEARCH_SHARE);
 		filter->setChecked(filterShared);
-
 		filter->onClicked(std::tr1::bind(&SearchFrame::handleFilterClicked, this)) ;
 	}
 

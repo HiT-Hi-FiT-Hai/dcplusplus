@@ -448,7 +448,9 @@ public:
 	ScreenCoordinate getContextMenuPos();
 	
 	void ensureVisible(int i, bool partial = false);
-	
+
+	int hitTest(const ScreenCoordinate& pt);
+
 	/// Actually creates the Data Grid Control
 	/** You should call WidgetFactory::createTable if you instantiate class
 	  * directly. <br>

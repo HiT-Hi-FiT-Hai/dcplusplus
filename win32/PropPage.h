@@ -57,6 +57,9 @@ protected:
 	void write(HWND page, const Item* items);
 	void write(const ListItem* listItems, TablePtr list);
 	void translate(HWND page, TextItem* items);
+
+private:
+	void handleListHelp(HWND hWnd, unsigned id, const ListItem* listItems, TablePtr list);
 };
 
 #endif // !defined(PROP_PAGE_H)
