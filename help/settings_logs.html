@@ -14,21 +14,21 @@
   <span style="font-weight: bold;">Default:</span> The "Logs" subdirectory under where you've installed
 the application.</dd>
   <dt>Log Main Chat</dt>
-  <dd>Enables logging of the main chat of any hubs you're in.</dd>
+  <dd cshelp=IDH_SETTINGS_LOG_MAIN_CHAT>Enables logging of the main chat of any hubs you're in.</dd>
   <dt>Main Chat Log Format </dt>
   <dd>%[message] - Main chat message<span style="font-weight: bold;"></span></dd>
   <dd><span style="font-weight: bold;">Default format:</span> [%Y-%m-%d %H:%M] %[message] </dd>
   <dt>Log Private Chat</dt>
-  <dd>Enables&nbsp;logging of Private Messages. </dd>
+  <dd cshelp=IDH_SETTINGS_LOG_PRIVATE_CHAT>Enables&nbsp;logging of Private Messages. </dd>
   <dt>Private Chat Log Format </dt>
   <dd>%[message] - Private chat message<span style="font-weight: bold;"></span></dd>
   <dd><span style="font-weight: bold;">Default format:</span> [%Y-%m-%d %H:%M] %[message] </dd>
   <dt>Log Downloads</dt>
-  <dd>Enables logging of completed downloads. File list downloads may not be logged if you've
+  <dd cshelp=IDH_SETTINGS_LOG_DOWNLOADS>Enables logging of completed downloads. File list downloads may not be logged if you've
 <a href="#filelist">disabled them</a>.
   </dd>
   <dt>Log Uploads</dt>
-  <dd>Enables&nbsp;logging of completed uploads.&nbsp;
+  <dd cshelp=IDH_SETTINGS_LOG_UPLOADS>Enables&nbsp;logging of completed uploads.&nbsp;
 File list uploads may not be logged if you've
 <a href="#filelist">disabled them</a>.</dd>
   <dt>Download and Upload Log Format </dt>
@@ -53,12 +53,8 @@ Only for Upload log: %[source] - Local path for the upload.</dd>
   <dd><b>Default download log format:</b> %Y-%m-%d %H:%M: %[target] downloaded from %[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time]<br>
     <b>Default upload log format:</b> %Y-%m-%d %H:%M: %[source] uploaded to %[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time]<br>
   </dd>
-  <dt><a name="filelist"></a>Log Filelist transfers</dt>
-  <dd>Add successful file list transfers to your upload and
-download logs. Otherwise only transferred files are logged. File list transfers do not appear in the <a href="window_finished_downloads.html">Finished downloads</a> and <a href="window_finished_downloads.html">Finished uploads</a> windows if this option is disabled. <em>Disabled
-by default.</em></dd>
   <dt><a name="system"></a>Log System Messages</dt>
-  <dd>Enables&nbsp;logging of system-level messages. Examples of
+  <dd cshelp=IDH_SETTINGS_LOG_SYSTEM>Enables&nbsp;logging of system-level messages. Examples of
 such messages are: notifications of files that have finished hashing,
 share refreshes, discovery of duplicate files, and disconnections of
 users who leave the hub (if <a href="settings_advanced.html#disconnect">enabled</a>).</dd>
@@ -66,13 +62,17 @@ users who leave the hub (if <a href="settings_advanced.html#disconnect">enabled<
   <dd>%[message] - System log&nbsp;message<span style="font-weight: bold;"></span></dd>
   <dd><span style="font-weight: bold;">Default: </span>[%Y-%m-%d %H:%M] %[message]</dd>
   <dt>Log Status Messages</dt>
-  <dd>Enables the logging of status messages. Examples of such messages
+  <dd cshelp=IDH_SETTINGS_LOG_STATUS_MESSAGES>Enables the logging of status messages. Examples of such messages
 are: Connected to (and disconnected from ) hub, kicked, and banned
 messages. In short all messages that would appear below the chat input
 in the hub windows.</dd>
   <dt>Hub Status Log Format</dt>
   <dd>%[message] - Hub status&nbsp;message</dd>
   <dd><span style="font-weight: bold;">Default: </span>[%Y-%m-%d %H:%M] %[message]</dd>
+  <dt><a name="filelist"></a>Log Filelist transfers</dt>
+  <dd cshelp=IDH_SETTINGS_LOG_FILELIST_TRANSFERS>Add successful file list transfers to your upload and
+download logs. Otherwise only transferred files are logged. File list transfers do not appear in the <a href="window_finished_downloads.html">Finished downloads</a> and <a href="window_finished_downloads.html">Finished uploads</a> windows if this option is disabled. <em>Disabled
+by default.</em></dd>
   <dt><a name="timeformat"></a>General Time Format Variables</dt>
   <dd>The following time variables can be used in any of the log
 formats.</dd>

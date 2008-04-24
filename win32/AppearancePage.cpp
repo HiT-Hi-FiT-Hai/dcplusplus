@@ -54,17 +54,17 @@ PropPage::Item AppearancePage::items[] = {
 };
 
 PropPage::ListItem AppearancePage::listItems[] = {
-	{ SettingsManager::ALT_SORT_ORDER, N_("Sort all downloads first") },
-	{ SettingsManager::FILTER_MESSAGES, N_("Filter kick messages") },
-	{ SettingsManager::MINIMIZE_TRAY, N_("Minimize to tray") },
-	{ SettingsManager::TIME_STAMPS, N_("Show timestamps in chat by default") },
-	{ SettingsManager::STATUS_IN_CHAT, N_("View status messages in main chat") },
-	{ SettingsManager::SHOW_JOINS, N_("Show joins / parts in chat by default") },
-	{ SettingsManager::FAV_SHOW_JOINS, N_("Only show joins / parts for favorite users") },
-	{ SettingsManager::SORT_FAVUSERS_FIRST, N_("Sort favorite users first") },
-	{ SettingsManager::USE_SYSTEM_ICONS, N_("Use system icons when browsing files (slows browsing down a bit)") },
-	{ SettingsManager::USE_OEM_MONOFONT, N_("Use OEM monospaced font for viewing text files") },
-	{ SettingsManager::GET_USER_COUNTRY, N_("Guess user country from IP") },
+	{ SettingsManager::ALT_SORT_ORDER, N_("Sort all downloads first"), IDH_SETTINGS_APPEARANCE_ALT_SORT_ORDER },
+	{ SettingsManager::FILTER_MESSAGES, N_("Filter kick messages"), IDH_SETTINGS_APPEARANCE_FILTER_MESSAGES },
+	{ SettingsManager::MINIMIZE_TRAY, N_("Minimize to tray"), IDH_SETTINGS_APPEARANCE_MINIMIZE_TRAY },
+	{ SettingsManager::TIME_STAMPS, N_("Show timestamps in chat by default"), IDH_SETTINGS_APPEARANCE_TIME_STAMPS },
+	{ SettingsManager::STATUS_IN_CHAT, N_("View status messages in main chat"), IDH_SETTINGS_APPEARANCE_STATUS_IN_CHAT },
+	{ SettingsManager::SHOW_JOINS, N_("Show joins / parts in chat by default"), IDH_SETTINGS_APPEARANCE_SHOW_JOINS },
+	{ SettingsManager::FAV_SHOW_JOINS, N_("Only show joins / parts for favorite users"), IDH_SETTINGS_APPEARANCE_FAV_SHOW_JOINS },
+	{ SettingsManager::SORT_FAVUSERS_FIRST, N_("Sort favorite users first"), IDH_SETTINGS_APPEARANCE_SORT_FAVUSERS_FIRST },
+	{ SettingsManager::USE_SYSTEM_ICONS, N_("Use system icons when browsing files (slows browsing down a bit)"), IDH_SETTINGS_APPEARANCE_USE_SYSTEM_ICONS },
+	{ SettingsManager::USE_OEM_MONOFONT, N_("Use OEM monospaced font for viewing text files"), IDH_SETTINGS_APPEARANCE_USE_OEM_MONOFONT },
+	{ SettingsManager::GET_USER_COUNTRY, N_("Guess user country from IP"), IDH_SETTINGS_APPEARANCE_GET_USER_COUNTRY },
 	{ 0, 0 }
 };
 

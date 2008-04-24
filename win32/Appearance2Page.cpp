@@ -54,9 +54,9 @@ PropPage::TextItem Appearance2Page::texts[] = {
 };
 
 Appearance2Page::SoundOption Appearance2Page::soundOptions[] = {
-	{ N_("Every time a main chat message is received"), SettingsManager::SOUND_MAIN_CHAT, Util::emptyStringT },
-	{ N_("Every time a private message is received"), SettingsManager::SOUND_PM, Util::emptyStringT },
-	{ N_("When a private message window is opened"), SettingsManager::SOUND_PM_WINDOW, Util::emptyStringT },
+	{ N_("Every time a main chat message is received"), SettingsManager::SOUND_MAIN_CHAT, Util::emptyStringT, IDH_SETTINGS_APPEARANCE2_SOUND_MAIN_CHAT },
+	{ N_("Every time a private message is received"), SettingsManager::SOUND_PM, Util::emptyStringT, IDH_SETTINGS_APPEARANCE2_SOUND_PM },
+	{ N_("When a private message window is opened"), SettingsManager::SOUND_PM_WINDOW, Util::emptyStringT, IDH_SETTINGS_APPEARANCE2_SOUND_PM_WINDOW },
 	{ 0, 0, Util::emptyStringT }
 };
 
@@ -112,8 +112,12 @@ Appearance2Page::Appearance2Page(dwt::Widget* parent) : PropPage(parent), oldSel
 		row.push_back(T_(soundOptions[i].text));
 		sounds->setChecked(sounds->insert(row), !soundOptions[i].file.empty());
 	}
+
 	sounds->setColumnWidth(0, LVSCW_AUTOSIZE);
+
 	saveSoundOptions();
+
+	sounds->onHelp(std::tr1::bind(&Appearance2Page::handleSoundsHelp, this, _1, _2));
 	sounds->onSelectionChanged(std::tr1::bind(&Appearance2Page::handleSelectionChanged, this));
 }
 
@@ -168,6 +172,14 @@ void Appearance2Page::handleDLClicked() {
 	if(createColorDialog().open(colorParams)) {
 		downBar = colorParams.getColor();
 	}
+}
+
+void Appearance2Page::handleSoundsHelp(HWND hWnd, unsigned id) {
+	// same as PropPage::handleListHelp
+	int item = sounds->hitTest(dwt::ScreenCoordinate(dwt::Point::fromLParam(::GetMessagePos())));
+	if(item >= 0 && soundOptions[item].helpId)
+		id = soundOptions[item].helpId;
+	WinUtil::help(hWnd, id);
 }
 
 void Appearance2Page::handleSelectionChanged() {

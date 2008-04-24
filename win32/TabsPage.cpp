@@ -30,14 +30,14 @@ PropPage::TextItem TabsPage::texts[] = {
 };
 
 PropPage::ListItem TabsPage::listItems[] = {
-	{ SettingsManager::BOLD_HUB, N_("Hub") },
-	{ SettingsManager::BOLD_PM, N_("Private message") },
-	{ SettingsManager::BOLD_SEARCH, N_("Search") },
-	{ SettingsManager::BOLD_SYSTEM_LOG, N_("System Log") },
-	{ SettingsManager::BOLD_QUEUE, N_("Download Queue") },
-	{ SettingsManager::BOLD_FINISHED_DOWNLOADS, N_("Finished Downloads") },
-	{ SettingsManager::BOLD_WAITING_USERS, N_("Waiting Users") },
-	{ SettingsManager::BOLD_FINISHED_UPLOADS, N_("Finished Uploads") },
+	{ SettingsManager::BOLD_HUB, N_("Hub"), IDH_SETTINGS_TABS_BOLD_HUB },
+	{ SettingsManager::BOLD_PM, N_("Private message"), IDH_SETTINGS_TABS_BOLD_PM },
+	{ SettingsManager::BOLD_SEARCH, N_("Search"), IDH_SETTINGS_TABS_BOLD_SEARCH },
+	{ SettingsManager::BOLD_SYSTEM_LOG, N_("System Log"), IDH_SETTINGS_TABS_BOLD_SYSTEM_LOG },
+	{ SettingsManager::BOLD_QUEUE, N_("Download Queue"), IDH_SETTINGS_TABS_BOLD_QUEUE },
+	{ SettingsManager::BOLD_FINISHED_DOWNLOADS, N_("Finished Downloads"), IDH_SETTINGS_TABS_BOLD_FINISHED_DOWNLOADS },
+	{ SettingsManager::BOLD_WAITING_USERS, N_("Waiting Users"), IDH_SETTINGS_TABS_BOLD_WAITING_USERS },
+	{ SettingsManager::BOLD_FINISHED_UPLOADS, N_("Finished Uploads"), IDH_SETTINGS_TABS_BOLD_FINISHED_UPLOADS },
 	{ 0, 0 }
 };
 

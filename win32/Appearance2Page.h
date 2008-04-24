@@ -36,6 +36,7 @@ private:
 		const char* text;
 		int setting;
 		tstring file;
+		unsigned helpId;
 	};
 	static SoundOption soundOptions[];
 
@@ -54,6 +55,7 @@ private:
 	void handleTextClicked();
 	void handleULClicked();
 	void handleDLClicked();
+	void handleSoundsHelp(HWND hWnd, unsigned id);
 	void handleSelectionChanged();
 	void handleBrowseClicked();
 

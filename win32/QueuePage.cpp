@@ -101,15 +101,15 @@ PropPage::Item QueuePage::items[] = {
 };
 
 PropPage::ListItem QueuePage::optionItems[] = {
-	{ SettingsManager::PRIO_LOWEST, N_("Set lowest prio for newly added files larger than Low prio size") },
-	{ SettingsManager::AUTODROP_ALL, N_("Autodrop slow sources for all queue items (except filelists)") },
-	{ SettingsManager::AUTODROP_FILELISTS, N_("Remove slow filelists") },
-	{ SettingsManager::AUTODROP_DISCONNECT, N_("Don't remove the source when autodropping, only disconnect") },
-	{ SettingsManager::AUTO_SEARCH, N_("Automatically search for alternative download locations") },
-	{ SettingsManager::AUTO_SEARCH_AUTO_MATCH, N_("Automatically match queue for auto search hits") },
-	{ SettingsManager::SKIP_ZERO_BYTE, N_("Skip zero-byte files") },
-	{ SettingsManager::DONT_DL_ALREADY_SHARED, N_("Don't download files already in share") },
-	{ SettingsManager::DONT_DL_ALREADY_QUEUED, N_("Don't download files already in the queue") },
+	{ SettingsManager::PRIO_LOWEST, N_("Set lowest prio for newly added files larger than Low prio size"), IDH_SETTINGS_QUEUE_PRIO_LOWEST },
+	{ SettingsManager::AUTODROP_ALL, N_("Autodrop slow sources for all queue items (except filelists)"), IDH_SETTINGS_QUEUE_AUTODROP_ALL },
+	{ SettingsManager::AUTODROP_FILELISTS, N_("Remove slow filelists"), IDH_SETTINGS_QUEUE_AUTODROP_FILELISTS },
+	{ SettingsManager::AUTODROP_DISCONNECT, N_("Don't remove the source when autodropping, only disconnect"), IDH_SETTINGS_QUEUE_AUTODROP_DISCONNECT },
+	{ SettingsManager::AUTO_SEARCH, N_("Automatically search for alternative download locations"), IDH_SETTINGS_QUEUE_AUTO_SEARCH },
+	{ SettingsManager::AUTO_SEARCH_AUTO_MATCH, N_("Automatically match queue for auto search hits"), IDH_SETTINGS_QUEUE_AUTO_SEARCH_AUTO_MATCH },
+	{ SettingsManager::SKIP_ZERO_BYTE, N_("Skip zero-byte files"), IDH_SETTINGS_QUEUE_SKIP_ZERO_BYTE },
+	{ SettingsManager::DONT_DL_ALREADY_SHARED, N_("Don't download files already in share"), IDH_SETTINGS_QUEUE_DONT_DL_ALREADY_SHARED },
+	{ SettingsManager::DONT_DL_ALREADY_QUEUED, N_("Don't download files already in the queue"), IDH_SETTINGS_QUEUE_DONT_DL_ALREADY_QUEUED },
 	{ 0, 0 }
 };
 

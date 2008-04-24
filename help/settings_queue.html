@@ -67,32 +67,38 @@ because of their current inactivity. (default: 10 s) </dd>
 </dl>
 </div>
 <h2>Other queue options</h2>
-To enable autodrop, turn on either "Autodrop slow sources for all queue
-items" or "Remove slow file lists" (or both of them).
 <div style="margin-left: 40px;">
 <dl>
   <dt>Set lowest prio for newly added files larger than Low prio size</dt>
-  <dd>With this enabled, files that are larger than Low prio max size
+  <dd cshelp=IDH_SETTINGS_QUEUE_PRIO_LOWEST>With this enabled, files that are larger than Low prio max size
 are set to Lowest as priority. If disabled, the files will be set to
 Normal as priority. </dd>
   <dt>Autodrop slow sources for all queued items (except file lists)</dt>
-  <dd>This option removes the slow sources for all queue items (except
-file lists).</dd>
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTODROP_ALL>
+This option removes the slow sources for all queue items (except
+file lists).<br>
+To enable autodrop, turn on either "Autodrop slow sources for all queue
+items" or "Remove slow file lists" (or both of them).
+</dd>
   <dt>Remove slow filelists</dt>
-  <dd>With this option enabled, DC++ will delete a file list whose speed
-was recognized as too slow. </dd>
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTODROP_FILELISTS>
+With this option enabled, DC++ will delete a file list whose speed
+was recognized as too slow.<br>
+To enable autodrop, turn on either "Autodrop slow sources for all queue
+items" or "Remove slow file lists" (or both of them).
+</dd>
   <dt>Don't remove the source when autodropping, only disconnect</dt>
-  <dd>With this option enabled, sources will only be disconnected but
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTODROP_DISCONNECT>With this option enabled, sources will only be disconnected but
 not removed from the queue.</dd>
   <dt><a name="autosearchdl"></a>Automatically Search for Alternative Download Locations</dt>
-  <dd>Every few minutes, the client will search for files in your
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTO_SEARCH>Every few minutes, the client will search for files in your
 Download Queue to find more download locations (more users/sources). If
 the download was started with a TTH root hash available, the autosearch
 will find exact matches by searching via hash. Otherwise, the
 autosearch will try to find matches by searching with a slightly
 modified version of the filename.</dd>
   <dt>Automatically Match Queue for Auto Search Hits</dt>
-  <dd>Enable to automatically download a user's list and match them as
+  <dd cshelp=IDH_SETTINGS_QUEUE_AUTO_SEARCH_AUTO_MATCH>Enable to automatically download a user's list and match them as
 sources for files in your Download Queue when they've been discovered
 as a source for one of the files you're downloading. If you download
 files in sets, that user is probably a source for many more files
@@ -101,15 +107,15 @@ The drawbacks are that it might add slower sources, possibly increasing
 the time needed to complete a download, and that you'll download a lot
 of file lists.</span></dd>
   <dt>Skip Zero-Byte Files</dt>
-  <dd>When this option is enabled, any zero byte files you try to
+  <dd cshelp=IDH_SETTINGS_QUEUE_SKIP_ZERO_BYTE>When this option is enabled, any zero byte files you try to
 download will be silently skipped. Sometimes empty files contain
 information through their naming. However every file, even an empty
 one, will consume some drive space.</dd>
   <dt>Don't download files already in share</dt>
-  <dd>This option will stop you from downloading files which already
+  <dd cshelp=IDH_SETTINGS_QUEUE_DONT_DL_ALREADY_SHARED>This option will stop you from downloading files which already
 exist in one of your shared directories.</dd>
   <dt>Don't download files already in queue</dt>
-  <dd>This option will stop you from downloading files which already
+  <dd cshelp=IDH_SETTINGS_QUEUE_DONT_DL_ALREADY_QUEUED>This option will stop you from downloading files which already
 exist in your queue.</dd>
 </dl>
 </div>

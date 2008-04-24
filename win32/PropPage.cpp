@@ -137,7 +137,7 @@ void PropPage::translate(HWND page, TextItem* items) {
 void PropPage::handleListHelp(HWND hWnd, unsigned id, const ListItem* listItems, TablePtr list) {
 	// we have the help id of the whole list-view; convert to the one of the specific option the user just clicked on
 	int item = list->hitTest(dwt::ScreenCoordinate(dwt::Point::fromLParam(::GetMessagePos())));
-	if(item >= 0 && item < sizeof(*listItems) / sizeof(ListItem) && listItems[item].helpId)
+	if(item >= 0 && listItems[item].helpId)
 		id = listItems[item].helpId;
 	WinUtil::help(hWnd, id);
 }
