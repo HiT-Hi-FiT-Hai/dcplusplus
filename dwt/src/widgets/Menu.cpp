@@ -120,27 +120,26 @@ void Menu::attach(HMENU hMenu, const Seed& cs) {
 			// set flags
 			info.fMask = MIIM_FTYPE | MIIM_DATA;
 
-			if(::GetMenuItemInfo(itsHandle, i, TRUE, &info)) {
-				info.fMask |= MIIM_DATA;
-				info.fType |= MFT_OWNERDRAW;
+			BOOL ret = ::GetMenuItemInfo(itsHandle, i, TRUE, &info);
+			assert(ret);
 
-				// create item data wrapper
-				ItemDataWrapper * wrapper = new ItemDataWrapper( this, i );
-				info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
+			info.fMask |= MIIM_DATA;
+			info.fType |= MFT_OWNERDRAW;
 
-				if(::SetMenuItemInfo(itsHandle, i, TRUE, &info))
-					itsItemData.push_back( wrapper );
-				else
-					throw xCeption( _T( "SetMenuItemInfo in Menu::attach fizzled..." ) );
-			} else
-				throw xCeption( _T( "GetMenuItemInfo in Menu::attach fizzled..." ) );
+			// create item data wrapper
+			ItemDataWrapper * wrapper = new ItemDataWrapper( this, i );
+			info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
+
+			ret = ::SetMenuItemInfo(itsHandle, i, TRUE, &info);
+			assert(ret);
+
+			itsItemData.push_back( wrapper );
 		}
 	}
 }
 
-void Menu::setMenu() {
-	if ( ::SetMenu( itsParent->handle(), itsHandle ) == FALSE )
-		throw xCeption( _T( "SetMenu in Menu::setMenu fizzled..." ) );
+bool Menu::setMenu() {
+	return ::SetMenu( itsParent->handle(), itsHandle );
 }
 
 Menu::ObjectType Menu::appendPopup( const tstring & text )
@@ -256,13 +255,9 @@ void Menu::checkItem( unsigned id, bool value )
 	::CheckMenuItem( handle(), id, value ? MF_CHECKED : MF_UNCHECKED );
 }
 
-void Menu::setItemEnabled( unsigned id, bool byPosition, bool value )
+bool Menu::setItemEnabled( unsigned id, bool byPosition, bool value )
 {
-	if ( ::EnableMenuItem( handle(), id, (byPosition ? MF_BYPOSITION : MF_BYCOMMAND) | (value ? MF_ENABLED : MF_GRAYED) ) == - 1 )
-	{
-		xCeption x( _T( "Couldn't enable/disable the menu item, item doesn't exist" ) );
-		throw x;
-	}
+	return ::EnableMenuItem( handle(), id, (byPosition ? MF_BYPOSITION : MF_BYCOMMAND) | (value ? MF_ENABLED : MF_GRAYED) ) != - 1;
 }
 
 UINT Menu::getMenuState( UINT id, bool byPosition )
@@ -290,9 +285,9 @@ bool Menu::isEnabled( UINT id, bool byPosition )
 	return !(getMenuState(id, byPosition) & (MF_DISABLED | MF_GRAYED)); 
 }
 
-void Menu::setDefaultItem( UINT id, bool byPosition )
+bool Menu::setDefaultItem( UINT id, bool byPosition )
 {
-	::SetMenuDefaultItem(handle(), id, byPosition);
+	return ::SetMenuDefaultItem(handle(), id, byPosition);
 }
 
 tstring Menu::getText( unsigned id, bool byPosition )
@@ -302,17 +297,17 @@ tstring Menu::getText( unsigned id, bool byPosition )
 	// set flag
 	mi.fMask = MIIM_STRING;
 
-	if ( ::GetMenuItemInfo( itsHandle, id, byPosition, & mi ) == FALSE )
-		throw xCeption( _T( "Couldn't get item info in Menu::getText" ) );
+	BOOL ret = ::GetMenuItemInfo( itsHandle, id, byPosition, & mi );
+	assert(ret);
 
 	boost::scoped_array< TCHAR > buffer( new TCHAR[++mi.cch] );
 	mi.dwTypeData = buffer.get();
-	if ( ::GetMenuItemInfo( itsHandle, id, byPosition, & mi ) == FALSE )
-		throw xCeption( _T( "Couldn't get item info in Menu::getText" ) );
+	ret = ::GetMenuItemInfo( itsHandle, id, byPosition, & mi );
+	assert(ret);
 	return mi.dwTypeData;
 }
 
-void Menu::setText( unsigned id, const tstring& text )
+bool Menu::setText( unsigned id, const tstring& text )
 {
 	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
 
@@ -320,8 +315,7 @@ void Menu::setText( unsigned id, const tstring& text )
 	mi.fMask = MIIM_STRING;
 	mi.dwTypeData = (TCHAR*) text.c_str();
 
-	if ( ::SetMenuItemInfo( itsHandle, id, FALSE, & mi ) == FALSE )
-		throw xCeption( _T( "Couldn't set item info in Menu::setText" ) );
+	return ::SetMenuItemInfo( itsHandle, id, FALSE, & mi );
 }
 
 void Menu::setTitle( const tstring & title, bool drawSidebar /* = false */)
@@ -374,7 +368,7 @@ bool Menu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 
 	// get item data wrapper
 	ItemDataWrapper * wrapper = reinterpret_cast< ItemDataWrapper * >( drawInfo->itemData );
-	xAssert( wrapper != 0, _T( "Unsupported menu item in drawItem()" ) );
+	assert(wrapper);
 
 	// if processing menu bar
 	const bool isMenuBar = ::GetMenu( wrapper->menu->getParent()->handle() ) == wrapper->menu->handle();
@@ -385,11 +379,11 @@ bool Menu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	// set flags
 	info.fMask = MIIM_CHECKMARKS | MIIM_FTYPE | MIIM_DATA | MIIM_STATE | MIIM_STRING;
 
-	if ( ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info ) == FALSE )
-		throw xCeption ( _T( "Couldn't get menu item info in drawItem()" ) );
+	BOOL ret = ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info );
+	assert(ret);
 
 	// check if item is owner drawn
-	xAssert( ( info.fType & MFT_OWNERDRAW ) != 0, _T( "Not a owner - drawn item in drawItem()" ) );
+	assert(info.fType & MFT_OWNERDRAW);
 
 	// get state info
 	bool isGrayed = ( drawInfo->itemState & ODS_GRAYED ) == ODS_GRAYED;
@@ -701,7 +695,7 @@ bool Menu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 
 	// get item data wrapper
 	ItemDataWrapper * wrapper = reinterpret_cast< ItemDataWrapper * >( measureInfo->itemData );
-	xAssert( wrapper != 0, _T( "Unsupported menu item type in measureItem()" ) );
+	assert(wrapper);
 
 	// this will contain item size
 	UINT & itemWidth = measureInfo->itemWidth;
@@ -714,11 +708,11 @@ bool Menu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	info.fMask = MIIM_FTYPE | MIIM_DATA | MIIM_CHECKMARKS | MIIM_STRING;
 
 	// try to get item info
-	if ( ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info ) == FALSE )
-		throw xCeption ( _T( "Couldn't get item info in measureItem()" ) );
+	BOOL ret = ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info );
+	assert(ret);
 
 	// check if item is owner drawn
-	xAssert( ( info.fType & MFT_OWNERDRAW ) != 0, _T( "Not owner - drawn item encountered in measureItem()" ) );
+	assert(info.fType & MFT_OWNERDRAW);
 
 	// check if separator
 	if ( info.fType & MFT_SEPARATOR )
@@ -850,38 +844,36 @@ void Menu::removeItem( unsigned itemIndex )
 	HMENU popup = ::GetSubMenu( itsHandle, itemIndex );
 
 	// try to remove item
-	if ( ::RemoveMenu( itsHandle, itemIndex, MF_BYPOSITION ) )
-	{
-		if(ownerDrawn) {
-			ItemDataWrapper * wrapper = 0;
-			int itemRemoved = -1;
+	BOOL ret = ::RemoveMenu( itsHandle, itemIndex, MF_BYPOSITION );
+	assert(ret);
 
-			for(size_t i = 0; i < itsItemData.size(); ++i) {
-				// get current data wrapper
-				wrapper = itsItemData[i];
+	if(ownerDrawn) {
+		ItemDataWrapper * wrapper = 0;
+		int itemRemoved = -1;
 
-				if ( wrapper->index == int(itemIndex) ) // if found
-				{
-					itemRemoved = int(i);
-					delete wrapper;
-					itsItemData[i] = 0;
-				}
-				else if ( wrapper->index > int(itemIndex) )
-					--wrapper->index; // adjust succeeding item indices
+		for(size_t i = 0; i < itsItemData.size(); ++i) {
+			// get current data wrapper
+			wrapper = itsItemData[i];
+
+			if ( wrapper->index == int(itemIndex) ) // if found
+			{
+				itemRemoved = int(i);
+				delete wrapper;
+				itsItemData[i] = 0;
 			}
-
-			if( itemRemoved != -1 )
-				itsItemData.erase( itsItemData.begin() + itemRemoved );
+			else if ( wrapper->index > int(itemIndex) )
+				--wrapper->index; // adjust succeeding item indices
 		}
 
-		// remove sub menus if any
-		if(popup)
-			for(size_t i = 0; i < itsChildren.size(); ++i)
-				if(itsChildren[i]->handle() == popup)
-					itsChildren[i].reset();
+		if( itemRemoved != -1 )
+			itsItemData.erase( itsItemData.begin() + itemRemoved );
 	}
-	else
-		throw xCeption( _T( "Couldn't remove item in removeItem()" ) );
+
+	// remove sub menus if any
+	if(popup)
+		for(size_t i = 0; i < itsChildren.size(); ++i)
+			if(itsChildren[i]->handle() == popup)
+				itsChildren[i].reset();
 }
 
 void Menu::removeAllItems()
@@ -895,13 +887,10 @@ void Menu::removeAllItems()
 
 int Menu::getCount() const
 {
-	int count = ::GetMenuItemCount( itsHandle );
-	if( count == -1 )
-		throw xCeption( _T( "Couldn't get item count in getCount()" ) );
-	return count;
+	return ::GetMenuItemCount( itsHandle );
 }
 
-void Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
+bool Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
 {
 	// init structure for new item
 	MENUITEMINFO info = { sizeof(MENUITEMINFO) };
@@ -938,9 +927,9 @@ void Menu::appendItem(unsigned int id, const tstring & text, BitmapPtr image)
 	{
 		if(ownerDrawn)
 			itsItemData.push_back( wrapper );
+		return true;
 	}
-	else
-		throw xCeption( _T( "Couldn't insert/update item in Menu::appendItem" ) );
+	return false;
 }
 
 unsigned Menu::trackPopupMenu( const ScreenCoordinate& sc, unsigned flags )

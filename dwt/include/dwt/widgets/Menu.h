@@ -39,8 +39,8 @@
 
 #include "../resources/Bitmap.h"
 #include "../resources/Font.h"
-#include "../Dispatchers.h"
 #include "../CanvasClasses.h"
+#include "../Dispatchers.h"
 
 #include <memory>
 #include <vector>
@@ -186,7 +186,7 @@ public:
 
 	void attach(HMENU hMenu, const Seed& cs);
 
-	void setMenu();
+	bool setMenu();
 
 	/// Appends a popup to the menu
 	/** Everything you "append" to a menu is added sequentially to the menu <br>
@@ -261,16 +261,16 @@ public:
 	* this number should be unique across the application.
 	*/
 
-	void appendItem(unsigned int id, const tstring & text, BitmapPtr image = BitmapPtr());
+	bool appendItem(unsigned int id, const tstring & text, BitmapPtr image = BitmapPtr());
 
 	template<typename DispatcherType>
-	void appendItem(unsigned int id, const tstring & text, const typename DispatcherType::F& f, BitmapPtr image = BitmapPtr()) {
-		appendItem(id, text, image);
+	bool appendItem(unsigned int id, const tstring & text, const typename DispatcherType::F& f, BitmapPtr image = BitmapPtr()) {
 		itsParent->setCallback(Message(WM_COMMAND, id), DispatcherType(f));
+		return appendItem(id, text, image);
 	}
 
-	void appendItem(unsigned int id, const tstring & text, const IdDispatcher::F& f, BitmapPtr image = BitmapPtr()) {
-		appendItem<IdDispatcher>(id, text, f, image);
+	bool appendItem(unsigned int id, const tstring & text, const IdDispatcher::F& f, BitmapPtr image = BitmapPtr()) {
+		return appendItem<IdDispatcher>(id, text, f, image);
 	}
 
 	/// Removes specified item from this menu
@@ -350,7 +350,7 @@ public:
 	  * parameter. <br>
 	  * If the "value" parameter is true the item becomes enabled, otherwise disabled       
 	  */
-	void setItemEnabled( unsigned id, bool byPosition = false, bool value = true );
+	bool setItemEnabled( unsigned id, bool byPosition = false, bool value = true );
 
 	UINT getMenuState(UINT id, bool byPosition = false);
 
@@ -363,7 +363,7 @@ public:
 	/// Return true if the menu item is enabled (not grey and not disabled)
 	bool isEnabled(UINT id, bool byPosition = false);
 
-	void setDefaultItem(UINT id, bool byPosition = false);
+	bool setDefaultItem(UINT id, bool byPosition = false);
 
 	/// Returns true if menu is "system menu" (icon in top left of window)
 	bool isSystemMenu()
@@ -381,7 +381,7 @@ public:
 	/** Which menu item you wish to set the text is defined by the "id"
 	  * parameter of the function.
 	  */
-	void setText( unsigned id, const tstring& text );
+	bool setText( unsigned id, const tstring& text );
 
 	ObjectType getChild(UINT position);
 

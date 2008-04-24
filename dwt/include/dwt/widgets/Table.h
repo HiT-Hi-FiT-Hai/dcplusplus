@@ -231,7 +231,7 @@ public:
 	/// Change the current icon of an item
 	/** Sets a new icon for a given item
 	  */
-	void setIcon( unsigned row, int newIconIndex );
+	bool setIcon( unsigned row, int newIconIndex );
 
 	/// Returns a boolean indicating if the Grid is in "read only" mode or not
 	/** If the return value is true the Grid is in "read only" mode and cannot be
@@ -302,7 +302,7 @@ public:
 	  * width of the list which is quite useful to make the Data Grid fill its whole
 	  * client area.
 	  */
-	void setColumnWidth( unsigned columnNo, int width );
+	bool setColumnWidth( unsigned columnNo, int width );
 
 	/// Returns the checked state of the given row
 	/** A list view can have checkboxes in each row, if the checkbox for the given
@@ -433,7 +433,7 @@ public:
 	/// Force redraw of a range of items.
 	/** You may want to call invalidateWidget after the this call to force repaint.
 	  */
-	void redraw( int firstRow = 0, int lastRow = -1 );
+	bool redraw( int firstRow = 0, int lastRow = -1 );
 
 	void setTableStyle(int style);
 	
@@ -737,12 +737,8 @@ inline void Table::eraseColumn( unsigned columnNo ) {
 	ListView_DeleteColumn( this->handle(), columnNo );
 }
 
-inline void Table::setColumnWidth( unsigned columnNo, int width ) {
-	if ( ListView_SetColumnWidth( this->handle(), columnNo, width ) == FALSE )
-	{
-		xCeption x( _T( "Couldn't resize columns of Table" ) );
-		throw x;
-	}
+inline bool Table::setColumnWidth( unsigned columnNo, int width ) {
+	return ListView_SetColumnWidth( this->handle(), columnNo, width );
 }
 
 inline void Table::clearImpl() {

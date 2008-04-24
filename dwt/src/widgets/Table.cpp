@@ -165,11 +165,8 @@ void Table::createColumns( const std::vector< tstring > & colNames )
 		++idx, ++x )
 	{
 		lvColumn.pszText = const_cast < TCHAR * >( idx->c_str() );
-		if ( ListView_InsertColumn( this->handle(), x, & lvColumn ) == - 1 )
-		{
-			xCeption x( _T( "Error while trying to create Columns in list view" ) );
-			throw x;
-		}
+		bool ret = ListView_InsertColumn( this->handle(), x, & lvColumn ) != - 1;
+		assert(ret);
 	}
 }
 
@@ -187,19 +184,15 @@ int Table::insert(const std::vector< tstring > & row, LPARAM lPar, int index, in
 	lvi.pszText = const_cast < TCHAR * >(row[0].c_str() );
 	lvi.lParam = lPar;
 	lvi.iItem = index;
-	if ( ListView_InsertItem( this->handle(), & lvi ) == - 1) {
-		xCeption x( _T( "Error while trying to insert row in Table" ));
-		throw x;
-	}
+	bool ret = ListView_InsertItem( this->handle(), & lvi ) != - 1;
+	assert(ret);
 	lvi.mask = LVIF_TEXT;
 	lvi.iSubItem = 1;
 	for (std::vector< tstring >::const_iterator idx = row.begin() + 1; idx != row.end(); ++idx ) {
 		lvi.pszText = const_cast < TCHAR * >(idx->c_str() );
 		lvi.cchTextMax = static_cast< int >(idx->size() );
-		if ( !ListView_SetItem( this->handle(), & lvi )) {
-			xCeption x( _T( "Error while trying to insert row in Table" ));
-			throw x;
-		}
+		ret = ListView_SetItem( this->handle(), & lvi );
+		assert(ret);
 		lvi.iSubItem++;
 	}
 	return index;
@@ -309,15 +302,12 @@ void Table::setDataImpl(int idx, LPARAM data) {
 	ListView_SetItem(handle(), &item);
 }
 
-void Table::setIcon( unsigned row, int newIconIndex ) {
+bool Table::setIcon( unsigned row, int newIconIndex ) {
 	LVITEM it = { LVIF_IMAGE };
 	it.iItem = row;
 	it.iImage = newIconIndex;
 	//Set item
-	if(ListView_SetItem( this->handle(), &it) != TRUE) {
-		xCeption err( _T( "Something went wrong while trying to change the selected item of the Table" ) );
-		throw err;
-	}
+	return ListView_SetItem( this->handle(), &it);
 }
 
 void Table::setNormalImageList( ImageListPtr imageList ) {
@@ -349,14 +339,11 @@ void Table::setView( int view ) {
 	}
 }
 
-void Table::redraw( int firstRow, int lastRow ) {
+bool Table::redraw( int firstRow, int lastRow ) {
 	if(lastRow == -1) {
 		lastRow = size();
 	}
-	if( ListView_RedrawItems( this->handle(), firstRow, lastRow ) == FALSE )
-	{
-		throw xCeption( _T( "Error while redrawing items in Table" ) );
-	}
+	return ListView_RedrawItems( this->handle(), firstRow, lastRow );
 }
 
 template<typename T>
