@@ -40,7 +40,6 @@
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectText.h"
-#include "../WindowClass.h"
 #include "Control.h"
 
 #include <list>
@@ -125,8 +124,6 @@ private:
 		ContainerPtr w;
 		ContextMenuFunction handleContextMenu;
 	};
-	
-	static WindowClass windowClass;
 	
 	ToolTipPtr tip;
 

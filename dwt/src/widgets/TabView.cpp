@@ -38,8 +38,6 @@
 
 namespace dwt {
 
-WindowClass TabView::windowClass(_T("TabView"), &TabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
-
 TabView::Seed::Seed(bool toggleActive_) :
 	BaseType::Seed(WC_TABCONTROL, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE |
 		 TCS_HOTTRACK | TCS_MULTILINE | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER),
@@ -108,10 +106,8 @@ void TabView::create(const Seed & cs) {
 
 	if(cs.style & TCS_TOOLTIPS) {
 		tip = WidgetCreator<ToolTip>::attach(this, TabCtrl_GetToolTips(handle())); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
-		if(tip) {
-			tip->addRemoveStyle(TTS_NOPREFIX, true);
-			tip->onRaw(std::tr1::bind(&TabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
-		}
+		tip->addRemoveStyle(TTS_NOPREFIX, true);
+		tip->onRaw(std::tr1::bind(&TabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
 	}
 }
 
@@ -207,19 +203,13 @@ void TabView::setActive(int i) {
 }
 
 void TabView::swapWidgets(Container* oldW, Container* newW) {
-	sendMessage(WM_SETREDRAW, FALSE);
-
+	newW->setBounds(clientSize, false);
+	newW->setVisible(true);
 	if(oldW) {
 		oldW->sendMessage(WM_ACTIVATE, WA_INACTIVE, reinterpret_cast<LPARAM>(newW->handle()));
 		oldW->setVisible(false);
 	}
-	
-	newW->setVisible(true);
-	newW->setBounds(clientSize, false);
 	newW->sendMessage(WM_ACTIVATE, WA_ACTIVE, oldW ? reinterpret_cast<LPARAM>(oldW->handle()) : 0);
-
-	sendMessage(WM_SETREDRAW, TRUE);
-	::RedrawWindow(handle(), NULL, NULL, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
 
 void TabView::handleTabSelected() {
