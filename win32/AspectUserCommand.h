@@ -31,18 +31,16 @@ public:
 
 	typedef AspectUserCommand<T> ThisType;
 
-	template<typename MenuTypePtr>
-	void prepareMenu(MenuTypePtr menu, int ctx, const string& hubUrl) {
+	void prepareMenu(dwt::MenuPtr menu, int ctx, const string& hubUrl) {
 		prepareMenu(menu, ctx, StringList(1, hubUrl));
 	}
 
-	template<typename MenuTypePtr>
-	void prepareMenu(MenuTypePtr menu, int ctx, const StringList& hubs) {
+	void prepareMenu(dwt::MenuPtr menu, int ctx, const StringList& hubs) {
 		userCommands = FavoriteManager::getInstance()->getUserCommands(ctx, hubs);
 		
 		if(!userCommands.empty()) {
 			menu->appendSeparatorItem();
-			MenuTypePtr cur = menu;
+			dwt::MenuPtr cur = menu;
 			for(size_t n = 0; n < userCommands.size(); ++n) {
 				
 				UserCommand* uc = &userCommands[n];

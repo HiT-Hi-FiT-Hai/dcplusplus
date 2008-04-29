@@ -82,14 +82,10 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
-	class SearchInfo : public UserInfoBase {
+	class SearchInfo {
 	public:
-		SearchInfo(const SearchResultPtr& aSR) : UserInfoBase(aSR->getUser()), sr(aSR) {
-			update();
-		}
-		~SearchInfo() {
-			
-		}
+		SearchInfo(const SearchResultPtr& aSR);
+		~SearchInfo() {	}
 
 		void getList();
 		void browseList();
@@ -128,7 +124,7 @@ private:
 
 		void update();
 
-		SearchResultPtr sr;
+		SearchResultList srs;
 
 		tstring columns[COLUMN_LAST];
 	};
