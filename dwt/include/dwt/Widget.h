@@ -37,6 +37,7 @@
 #define DWT_Widget_h
 
 #include "forward.h"
+#include "Atom.h"
 #include "Rectangle.h"
 #include "Message.h"
 #include "tstring.h"
@@ -194,6 +195,9 @@ private:
 	Widget * itsParent;
 	HWND itsHandle;
 
+	/// The atom with which the pointer to the Widget is registered on the HWND
+	static GlobalAtom propAtom;
+
 };
 
 inline Widget::Widget( Widget * parent ) : itsParent(parent), itsHandle(NULL) {
@@ -226,7 +230,7 @@ inline Widget::CallbackCollectionType& Widget::getCallbacks() {
 
 template<typename T>
 T hwnd_cast(HWND hwnd) {
-	Widget* w = reinterpret_cast<Widget*>(::GetWindowLongPtr(hwnd, GWLP_USERDATA));
+	Widget* w = reinterpret_cast<Widget*>(::GetProp(hwnd, Widget::propAtom));
 	return dynamic_cast<T>(w);
 }
 

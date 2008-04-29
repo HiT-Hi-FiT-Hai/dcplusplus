@@ -1,4 +1,6 @@
-﻿-- 0.706 2008-04-24 --
+* Fixed crash when pressing F1 twice
+
+-- 0.706 2008-04-24 --
 * [L#202563] Fixed some missing translations
 * Use setenv on unix (thanks yakov suraev)
 * Fixed out of focus window when restoring from icon (poy)
