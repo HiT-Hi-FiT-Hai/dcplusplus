@@ -1066,12 +1066,14 @@ static void eachUser(const UserList& list, const UserFunction& f) {
 	}
 }
 
-static void addUsers(bool addSub, dwt::MenuPtr menu, const tstring& text, int id, const UserList& users, const UserFunction& f) {
+static void addUsers(bool addSub, dwt::MenuPtr menu, const tstring& text, int id, 
+	const UserList& users, const UserFunction& f, const dwt::BitmapPtr& bitmap = dwt::BitmapPtr()) 
+{
 	if(users.empty())
 		return;
 	
 	if(addSub) {
-		menu = menu->appendPopup(text);
+		menu = menu->appendPopup(text, bitmap);
 	}
 	
 	if(users.size() > 1) {
@@ -1084,7 +1086,11 @@ static void addUsers(bool addSub, dwt::MenuPtr menu, const tstring& text, int id
 				std::tr1::bind(&eachUser, UserList(1, users[i]), f), dwt::BitmapPtr());
 		}
 	} else {
-		menu->appendItem(id, addSub ? WinUtil::getNicks(users[0]) : text, std::tr1::bind(&eachUser, users, f), dwt::BitmapPtr());
+		if(addSub) {
+			menu->appendItem(id, WinUtil::getNicks(users[0]), std::tr1::bind(&eachUser, users, f), dwt::BitmapPtr());
+		} else {
+			menu->appendItem(id, text, std::tr1::bind(&eachUser, users, f), bitmap);
+		}
 	}
 }
 
@@ -1124,7 +1130,7 @@ void WinUtil::addUserItems(dwt::MenuPtr menu, const UserList& users, dwt::TabVie
 		std::tr1::bind(&PrivateFrame::openWindow, parent, _1, tstring()));
 
 	addUsers(addSub, menu, T_("Add To &Favorites"), IDC_ADD_TO_FAVORITES, filter(users, &isFav),
-		std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), _1));
+		std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_USERS)));
 	
 	addUsers(addSub, menu, T_("Grant &extra slot"), IDC_GRANTSLOT, users,
 		std::tr1::bind(&UploadManager::reserveSlot, UploadManager::getInstance(), _1));

@@ -147,7 +147,7 @@ void Menu::setMenu() {
 		throw DWTException("SetMenu in Menu::setMenu fizzled...");
 }
 
-Menu::ObjectType Menu::appendPopup( const tstring & text )
+Menu::ObjectType Menu::appendPopup( const tstring & text, const BitmapPtr& image )
 {
 	// create popup menu pointer
 	ObjectType retVal ( new Menu(itsParent) );
@@ -175,7 +175,7 @@ Menu::ObjectType Menu::appendPopup( const tstring & text )
 		info.fType = MFT_OWNERDRAW;
 
 		// create item data
-		wrapper = new ItemDataWrapper( this, position );
+		wrapper = new ItemDataWrapper( this, position, false, image );
 		info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 	}
 
