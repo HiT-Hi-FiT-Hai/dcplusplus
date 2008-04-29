@@ -39,6 +39,7 @@
 #include "../tstring.h"
 #include "../Dispatchers.h"
 #include "../Message.h"
+#include "../util/win32/ApiHelpers.h"
 
 namespace dwt {
 
@@ -53,6 +54,8 @@ class AspectText
 {
 	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
+
+	HWND H() const { return W().handle(); }
 
 	static tstring getText(const MSG& msg) { 
 		return tstring( reinterpret_cast< TCHAR * >( msg.lParam ) );
@@ -98,18 +101,13 @@ void AspectText< WidgetType >::setText( const tstring & txt ) {
 
 template< class WidgetType >
 size_t AspectText< WidgetType >::length( ) const {
-	return W().sendMessage(WM_GETTEXTLENGTH);
+	return util::win32::getWindowTextLength(H());
 }
 
 template< class WidgetType >
 tstring AspectText< WidgetType >::getText() const
 {
-	size_t textLength = length();
-	if ( textLength == 0 )
-		return _T( "" );
-	tstring retVal(textLength + 1, 0);
-	retVal.resize(W().sendMessage(WM_GETTEXT, static_cast<WPARAM>(textLength + 1), reinterpret_cast<LPARAM>(&retVal[0])));
-	return retVal;
+	return util::win32::getWindowText(H());
 }
 
 }

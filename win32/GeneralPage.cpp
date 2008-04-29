@@ -79,7 +79,7 @@ GeneralPage::GeneralPage(dwt::Widget* parent) : PropPage(parent), nick(0) {
 
 	nick = attachChild<TextBox>(IDC_NICK);
 	nick->setTextLimit(35);
-	nick->onTextChanged(std::tr1::bind(&GeneralPage::handleNickTextChanged, this));
+	nick->onUpdated(std::tr1::bind(&GeneralPage::handleNickTextChanged, this));
 
 	attachChild<TextBox>(IDC_EMAIL);
 

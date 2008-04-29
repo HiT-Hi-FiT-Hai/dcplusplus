@@ -91,12 +91,12 @@ bool FavHubProperties::handleInitDialog() {
 	nick = attachChild<TextBox>(IDC_HUBNICK);
 	nick->setTextLimit(35);
 	nick->setText(Text::toT(entry->getNick(false)));
-	nick->onTextChanged(std::tr1::bind(&FavHubProperties::handleTextChanged, this, nick));
+	nick->onUpdated(std::tr1::bind(&FavHubProperties::handleTextChanged, this, nick));
 
 	password = attachChild<TextBox>(IDC_HUBPASS);
 	password->setPassword();
 	password->setText(Text::toT(entry->getPassword()));
-	password->onTextChanged(std::tr1::bind(&FavHubProperties::handleTextChanged, this, password));
+	password->onUpdated(std::tr1::bind(&FavHubProperties::handleTextChanged, this, password));
 
 	userDescription = attachChild<TextBox>(IDC_HUBUSERDESCR);
 	userDescription->setTextLimit(35);

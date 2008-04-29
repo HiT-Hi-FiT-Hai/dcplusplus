@@ -79,8 +79,6 @@ class TextBoxBase :
 	friend class WidgetCreator< TextBoxBase >;
 	friend class AspectUpdate<TextBoxBase>;
 
-	typedef Dispatchers::VoidVoid<> Dispatcher;
-
 public:
 	/// Sets the current selection of the Edit Control
 	/** Start means the offset of where the current selection shall start, if it is
@@ -162,8 +160,6 @@ public:
 	  */
 	int getTextLimit() const ;
 
-	void onTextChanged( const Dispatcher::F& f );
-	
 	int lineIndex(int l = -1);
 	
 	int lineFromChar(int c = -1);
@@ -343,12 +339,6 @@ inline void TextBoxBase::setTextLimit( int maxChars ) {
  
 inline int TextBoxBase::getTextLimit() const { 
 	return static_cast< int >( this->sendMessage(EM_GETLIMITTEXT) );
-}
-
-inline void TextBoxBase::onTextChanged( const Dispatcher::F& f ) {
-	this->addCallback(
-		Message( WM_COMMAND, MAKEWPARAM(0, EN_CHANGE) ), Dispatcher(f)
-	);
 }
 
 inline int TextBoxBase::lineFromChar( int c ) {

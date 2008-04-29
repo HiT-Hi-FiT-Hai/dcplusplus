@@ -130,12 +130,12 @@ bool CommandDlg::handleInitDialog() {
 	nameBox = attachChild<TextBox>(IDC_NAME);
 
 	commandBox = attachChild<TextBox>(IDC_COMMAND);
-	commandBox->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
+	commandBox->onUpdated(std::tr1::bind(&CommandDlg::updateCommand, this));
 
 	hubBox = attachChild<TextBox>(IDC_HUB);
 
 	nick = attachChild<TextBox>(IDC_NICK);
-	nick->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
+	nick->onUpdated(std::tr1::bind(&CommandDlg::updateCommand, this));
 
 	once = attachChild<CheckBox>(IDC_SETTINGS_ONCE);
 	once->setText(T_("Send once per nick"));

@@ -3,10 +3,6 @@
 
   Copyright (c) 2007-2008, Jacek Sieka
 
-  SmartWin++
-
-  Copyright (c) 2005 Thomas Hansen
-
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without modification, 
@@ -33,39 +29,22 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef DWT_AspectUpdate_h
-#define DWT_AspectUpdate_h
+#include "../../tstring.h"
 
-#include "../Dispatchers.h"
+// This file contains various win32 api helpers / converters used to c++-ify win32 some
+// It is considered internal to dwt and should not be used by others...
 
-namespace dwt {
+namespace dwt { namespace util { namespace win32 {
+	
+inline size_t getWindowTextLength(HWND hWnd) { return static_cast<size_t>(::SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0)); }
 
-/// Aspect class used by Widgets that have the possibility of Updating their text property
-/** \ingroup AspectClasses
-  * E.g. the TextBox have an Update Aspect to it therefore TextBox
-  * realize the AspectUpdate through inheritance. When a Widget realizes the Update
-  * Aspect it normally means that when the "value" part of the Widget changes, like
-  * for instance when a TextBox changes the text value the update event fill be
-  * raised.
-  */
-template< class WidgetType >
-class AspectUpdate
-{
-	WidgetType& W() { return *static_cast<WidgetType*>(this); }
-	typedef Dispatchers::VoidVoid<> Dispatcher;
-public:
-	/// \ingroup EventHandlersAspectUpdate
-	/// Sets the event handler for the Updated event.
-	/** When the Widget value/text is being updated this event will be raised.
-	  */
-	void onUpdated(const Dispatcher::F& f) {
-		W().addCallback(WidgetType::getUpdateMessage(), Dispatcher(f));
-	}
-
-protected:
-	virtual ~AspectUpdate() { }
-};
-
+inline tstring getWindowText(HWND hWnd) { 
+	size_t textLength = getWindowTextLength(hWnd);
+	if (textLength == 0)
+		return tstring();
+	tstring retVal(textLength + 1, 0);
+	retVal.resize(::SendMessage(hWnd, WM_GETTEXT, static_cast<WPARAM>(textLength + 1), reinterpret_cast<LPARAM>(&retVal[0])));
+	return retVal;
 }
 
-#endif
+} } }
