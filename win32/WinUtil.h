@@ -189,6 +189,8 @@ public:
 		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
 		return Text::fromT(tstring(buf, x));
 	}
+	
+	static void addUserItems(dwt::MenuPtr menu, const UserList& users, dwt::TabViewPtr parent, const string& dir);
 
 #ifdef PORT_ME
 	static int getTextWidth(const tstring& str, HWND hWnd) {

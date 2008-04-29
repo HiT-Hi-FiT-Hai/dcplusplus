@@ -792,6 +792,17 @@ void SearchFrame::handleRemove() {
 	}
 }
 
+struct UserCollector {
+	template<typename T>
+	void operator()(T* si) {
+		for(SearchResultList::const_iterator i = si->srs.begin(), iend = si->srs.end(); i != iend; ++i) {
+			const SearchResultPtr& sr = *i;
+			users.push_back(sr->getUser());
+		}
+	}
+	UserList users;
+};
+
 SearchFrame::MenuPtr SearchFrame::makeMenu() {
 	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 
@@ -809,7 +820,10 @@ SearchFrame::MenuPtr SearchFrame::makeMenu() {
 		WinUtil::addHashItems(menu, TTHValue(Text::fromT(checkTTH.tth)), si->getText(COLUMN_FILENAME));
 	}
 	menu->appendSeparatorItem();
-//	appendUserItems(getParent(), menu);
+	
+	UserCollector users = results->forEachSelectedT(UserCollector());
+	WinUtil::addUserItems(menu, users.users, getParent(), "");
+	
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&SearchFrame::handleRemove, this));
 	prepareMenu(menu, UserCommand::CONTEXT_SEARCH, checkTTH.hubs);

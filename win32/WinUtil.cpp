@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #include "stdafx.h"
 
 #include "WinUtil.h"
@@ -33,12 +32,14 @@
 #include <dcpp/version.h>
 #include <dcpp/File.h>
 #include <dcpp/UserCommand.h>
+#include <dcpp/UploadManager.h>
 
 #include "LineDlg.h"
 #include "MagnetDlg.h"
 #include "HubFrame.h"
 #include "SearchFrame.h"
 #include "MainWindow.h"
+#include "PrivateFrame.h"
 
 #include <dwt/DWTException.h>
 
@@ -1042,6 +1043,77 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 		}
 	}
 }
+
+// This is a hack - in gcc 4.2.3 at least, since UserPtr is in the boost namespace (boost::intrusive_ptr), 
+// std::tr1::bind has problem choosing the correct ref - std::ref or boost::ref so we bring it out of boost
+// using this holder as workaround
+struct X {
+	X(const UserPtr& user_) : user(user_) { }
+	operator UserPtr() const { return user; }
+	
+	UserPtr user;
+};
+
+typedef std::tr1::function<void (const X&)> UserFunction;
+
+static void eachUser(const UserList& list, const UserFunction& f) {
+	for(UserList::const_iterator i = list.begin(), iend = list.end(); i != iend; ++i) {
+		try {
+			f(X(*i));
+		} catch(const Exception& e) {
+			LogManager::getInstance()->message(e.getError());
+		}
+	}
+}
+
+static void addUsers(bool addSub, dwt::MenuPtr menu, const tstring& text, int id, const UserList& users, const UserFunction& f) {
+	
+	if(addSub) {
+		menu = menu->appendPopup(text);
+	}
+	if(users.size() > 1) {
+		menu->appendItem(id, T_("All"), std::tr1::bind(&eachUser, users, f), dwt::BitmapPtr());
+		
+		for(size_t i = 0, iend = users.size(); i < iend; ++i) {
+			menu->appendItem(id + i + 1, WinUtil::getNicks(users[i]), 
+				std::tr1::bind(&eachUser, UserList(1, users[i]), f), dwt::BitmapPtr());
+		}
+	} else {
+		menu->appendItem(id, text, std::tr1::bind(&eachUser, users, f), dwt::BitmapPtr());
+	}
+}
+
+void WinUtil::addUserItems(dwt::MenuPtr menu, const UserList& users, dwt::TabViewPtr parent, const std::string& dir) {
+	bool addSub = users.size() > 1;
+	
+	QueueManager* qm = QueueManager::getInstance();
+	
+	addUsers(addSub, menu, T_("&Get file list"), IDC_GETLIST, users, 
+		std::tr1::bind(&QueueManager::addList, qm, _1, QueueItem::FLAG_CLIENT_VIEW, dir));
+	
+	addUsers(addSub, menu, T_("&Browse file list"), IDC_BROWSELIST, users, 
+		std::tr1::bind(&QueueManager::addPfs, qm, _1, dir));
+	
+	addUsers(addSub, menu, T_("&Match queue"), IDC_MATCH_QUEUE, users,
+		std::tr1::bind(&QueueManager::addList, qm, _1, QueueItem::FLAG_MATCH_QUEUE, std::string()));
+	
+	addUsers(addSub, menu, T_("&Send private message"), IDC_PRIVATEMESSAGE, users,
+		std::tr1::bind(&PrivateFrame::openWindow, parent, _1, tstring()));
+
+	addUsers(addSub, menu, T_("Add To &Favorites"), IDC_ADD_TO_FAVORITES, users,
+		std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), _1));
+	
+	addUsers(addSub, menu, T_("Grant &extra slot"), IDC_GRANTSLOT, users,
+		std::tr1::bind(&UploadManager::reserveSlot, UploadManager::getInstance(), _1));
+	
+	menu->appendSeparatorItem();
+
+	typedef void (QueueManager::*qmp)(const UserPtr&, int);
+	addUsers(addSub, menu, T_("Remove user from queue"), IDC_REMOVE_ALL, users,
+		std::tr1::bind((qmp)&QueueManager::removeSource, qm, _1, 
+			(int)QueueItem::Source::FLAG_REMOVED));
+}
+
 #ifdef PORT_ME
 
 double WinUtil::toBytes(TCHAR* aSize) {

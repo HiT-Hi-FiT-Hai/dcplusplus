@@ -75,7 +75,7 @@ void UserInfoBase::UserTraits::operator()(UserInfoBase* ui) {
 	bool fav = FavoriteManager::getInstance()->isFavoriteUser(ui->getUser());
 	if(fav)
 		nonFavOnly = false;
-	if(!fav)
+	else
 		favOnly = false;
 }
 

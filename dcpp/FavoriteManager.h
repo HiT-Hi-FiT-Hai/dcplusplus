@@ -62,9 +62,9 @@ public:
 	typedef unordered_map<CID, FavoriteUser> FavoriteMap;
 	FavoriteMap getFavoriteUsers() { Lock l(cs); return users; }
 
-	void addFavoriteUser(UserPtr& aUser);
+	void addFavoriteUser(const UserPtr& aUser);
 	bool isFavoriteUser(const UserPtr& aUser) const { Lock l(cs); return users.find(aUser->getCID()) != users.end(); }
-	void removeFavoriteUser(UserPtr& aUser);
+	void removeFavoriteUser(const UserPtr& aUser);
 
 	bool hasSlot(const UserPtr& aUser) const;
 	void setUserDescription(const UserPtr& aUser, const string& description);

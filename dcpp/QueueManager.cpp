@@ -420,7 +420,7 @@ void QueueManager::addPfs(const UserPtr& aUser, const string& aDir) throw(QueueE
 		throw QueueException(_("You're trying to download from yourself!"));
 	}
 
-	if(!aUser->isOnline())
+	if(!aUser->isOnline() || aUser->getCID().isZero())
 		return;
 
 	{

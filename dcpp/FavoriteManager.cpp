@@ -142,7 +142,7 @@ void FavoriteManager::removeHubUserCommands(int ctx, const string& hub) {
 	}
 }
 
-void FavoriteManager::addFavoriteUser(UserPtr& aUser) {
+void FavoriteManager::addFavoriteUser(const UserPtr& aUser) {
 	Lock l(cs);
 	if(users.find(aUser->getCID()) == users.end()) {
 		StringList urls = ClientManager::getInstance()->getHubs(aUser->getCID());
@@ -160,7 +160,7 @@ void FavoriteManager::addFavoriteUser(UserPtr& aUser) {
 	}
 }
 
-void FavoriteManager::removeFavoriteUser(UserPtr& aUser) {
+void FavoriteManager::removeFavoriteUser(const UserPtr& aUser) {
 	Lock l(cs);
 	FavoriteMap::iterator i = users.find(aUser->getCID());
 	if(i != users.end()) {
