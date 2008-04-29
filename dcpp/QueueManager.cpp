@@ -35,6 +35,7 @@
 #include "Transfer.h"
 #include "UserConnection.h"
 #include "version.h"
+#include "SearchResult.h"
 
 #include <limits>
 
@@ -1388,7 +1389,7 @@ void QueueLoader::endTag(const string& name, const string&) {
 }
 
 // SearchManagerListener
-void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
+void QueueManager::on(SearchManagerListener::SR, const SearchResultPtr& sr) throw() {
 	bool added = false;
 	bool wantConnection = false;
 

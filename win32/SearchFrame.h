@@ -23,6 +23,7 @@
 #include "TypedTable.h"
 #include "AspectUserCommand.h"
 
+#include <dcpp/SearchResult.h>
 #include <dcpp/SearchManager.h>
 #include <dcpp/ClientManagerListener.h>
 
@@ -83,11 +84,11 @@ private:
 
 	class SearchInfo : public UserInfoBase {
 	public:
-		SearchInfo(SearchResult* aSR) : UserInfoBase(aSR->getUser()), sr(aSR) {
-			sr->incRef(); update();
+		SearchInfo(const SearchResultPtr& aSR) : UserInfoBase(aSR->getUser()), sr(aSR) {
+			update();
 		}
 		~SearchInfo() {
-			sr->decRef();
+			
 		}
 
 		void getList();
@@ -127,7 +128,7 @@ private:
 
 		void update();
 
-		SearchResult* sr;
+		SearchResultPtr sr;
 
 		tstring columns[COLUMN_LAST];
 	};
@@ -249,7 +250,7 @@ private:
 	WidgetResultsPtr getUserList() { return results; }
 	
 	// SearchManagerListener
-	virtual void on(SearchManagerListener::SR, SearchResult* aResult) throw();
+	virtual void on(SearchManagerListener::SR, const SearchResultPtr& aResult) throw();
 
 	// ClientManagerListener
 	virtual void on(ClientConnected, Client* c) throw() { speak(SPEAK_HUB_ADDED, c); }

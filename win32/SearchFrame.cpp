@@ -556,11 +556,11 @@ LRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	case SPEAK_ADD_RESULT:
 		{
 			SearchInfo* si = reinterpret_cast<SearchInfo*>(lParam);
-			SearchResult* sr = si->sr;
+			const SearchResultPtr& sr = si->sr;
 			// Check previous search results for dupes
 			for(int i = 0, j = results->size(); i < j; ++i) {
 				SearchInfo* si2 = results->getData(i);
-				SearchResult* sr2 = si2->sr;
+				const SearchResultPtr& sr2 = si2->sr;
 				if((sr->getUser()->getCID() == sr2->getUser()->getCID()) && (sr->getFile() == sr2->getFile())) {
 					delete si;
 					return 0;
@@ -683,7 +683,7 @@ void SearchFrame::handleDownloadTo() {
 		int i = results->getNext(-1, LVNI_SELECTED);
 		dcassert(i != -1);
 		SearchInfo* si = results->getData(i);
-		SearchResult* sr = si->sr;
+		const SearchResultPtr& sr = si->sr;
 
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + si->columns[COLUMN_FILENAME];
@@ -829,7 +829,7 @@ void SearchFrame::addTargetDirMenu(const MenuPtr& parent, const StringPairList& 
 	}
 }
 
-void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
+void SearchFrame::on(SearchManagerListener::SR, const SearchResultPtr& aResult) throw() {
 	// Check that this is really a relevant search result...
 	{
 		Lock l(cs);
@@ -1069,7 +1069,7 @@ void SearchFrame::runUserCommand(const UserCommand& uc) {
 
 	int sel = -1;
 	while((sel = results->getNext(sel, LVNI_SELECTED)) != -1) {
-		SearchResult* sr = results->getData(sel)->sr;
+		const SearchResultPtr& sr = results->getData(sel)->sr;
 
 		if(!sr->getUser()->isOnline())
 			continue;

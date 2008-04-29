@@ -36,6 +36,7 @@
 #include "UserConnection.h"
 #include "Download.h"
 #include "HashBloom.h"
+#include "SearchResult.h"
 
 #ifndef _WIN32
 #include <sys/types.h>
@@ -1175,7 +1176,7 @@ SearchManager::TypeModes ShareManager::getType(const string& aFileName) const th
  * has been matched in the directory name. This new stringlist should also be used in all descendants,
  * but not the parents...
  */
-void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) const throw() {
+void ShareManager::Directory::search(SearchResultList& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) const throw() {
 	// Skip everything if there's nothing to find here (doh! =)
 	if(!hasType(aFileType))
 		return;
@@ -1201,7 +1202,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 	if( (cur->empty()) &&
 		(((aFileType == SearchManager::TYPE_ANY) && sizeOk) || (aFileType == SearchManager::TYPE_DIRECTORY)) ) {
 		// We satisfied all the search words! Add the directory...(NMDC searches don't support directory size)
-		SearchResult* sr = new SearchResult(SearchResult::TYPE_DIRECTORY, 0, getFullName(), TTHValue());
+		SearchResultPtr sr(new SearchResult(SearchResult::TYPE_DIRECTORY, 0, getFullName(), TTHValue()));
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 	}
@@ -1223,7 +1224,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 
 			// Check file type...
 			if(checkType(i->getName(), aFileType)) {
-				SearchResult* sr = new SearchResult(SearchResult::TYPE_FILE, i->getSize(), getFullName() + i->getName(), i->getTTH());
+				SearchResultPtr sr(new SearchResult(SearchResult::TYPE_FILE, i->getSize(), getFullName() + i->getName(), i->getTTH()));
 				aResults.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 				if(aResults.size() >= maxResults) {
@@ -1238,15 +1239,15 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 	}
 }
 
-void ShareManager::search(SearchResult::List& results, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw() {
+void ShareManager::search(SearchResultList& results, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw() {
 	Lock l(cs);
 	if(aFileType == SearchManager::TYPE_TTH) {
 		if(aString.compare(0, 4, "TTH:") == 0) {
 			TTHValue tth(aString.substr(4));
 			HashFileMap::const_iterator i = tthIndex.find(tth);
 			if(i != tthIndex.end()) {
-				SearchResult* sr = new SearchResult(SearchResult::TYPE_FILE, i->second->getSize(),
-					i->second->getParent()->getFullName() + i->second->getName(), i->second->getTTH());
+				SearchResultPtr sr(new SearchResult(SearchResult::TYPE_FILE, i->second->getSize(),
+					i->second->getParent()->getFullName() + i->second->getName(), i->second->getTTH()));
 
 				results.push_back(sr);
 				ShareManager::getInstance()->addHits(1);
@@ -1308,7 +1309,7 @@ ShareManager::AdcSearch::AdcSearch(const StringList& params) : include(&includeX
 	}
 }
 
-void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) const throw() {
+void ShareManager::Directory::search(SearchResultList& aResults, AdcSearch& aStrings, StringList::size_type maxResults) const throw() {
 	StringSearch::List* cur = aStrings.include;
 	StringSearch::List* old = aStrings.include;
 
@@ -1331,7 +1332,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 	bool sizeOk = (aStrings.gt == 0);
 	if( cur->empty() && aStrings.ext.empty() && sizeOk ) {
 		// We satisfied all the search words! Add the directory...
-		SearchResult* sr = new SearchResult(SearchResult::TYPE_DIRECTORY, getSize(), getFullName(), TTHValue());
+		SearchResultPtr sr(new SearchResult(SearchResult::TYPE_DIRECTORY, getSize(), getFullName(), TTHValue()));
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 	}
@@ -1358,8 +1359,8 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 			// Check file type...
 			if(aStrings.hasExt(i->getName())) {
 
-				SearchResult* sr = new SearchResult(SearchResult::TYPE_FILE,
-					i->getSize(), getFullName() + i->getName(), i->getTTH());
+				SearchResultPtr sr(new SearchResult(SearchResult::TYPE_FILE,
+					i->getSize(), getFullName() + i->getName(), i->getTTH()));
 				aResults.push_back(sr);
 				ShareManager::getInstance()->addHits(1);
 				if(aResults.size() >= maxResults) {
@@ -1375,7 +1376,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 	aStrings.include = old;
 }
 
-void ShareManager::search(SearchResult::List& results, const StringList& params, StringList::size_type maxResults) throw() {
+void ShareManager::search(SearchResultList& results, const StringList& params, StringList::size_type maxResults) throw() {
 	AdcSearch srch(params);
 
 	Lock l(cs);
@@ -1383,9 +1384,9 @@ void ShareManager::search(SearchResult::List& results, const StringList& params,
 	if(srch.hasRoot) {
 		HashFileMap::const_iterator i = tthIndex.find(srch.root);
 		if(i != tthIndex.end()) {
-			SearchResult* sr = new SearchResult(SearchResult::TYPE_FILE,
+			SearchResultPtr sr(new SearchResult(SearchResult::TYPE_FILE,
 				i->second->getSize(), i->second->getParent()->getFullName() + i->second->getName(),
-				i->second->getTTH());
+				i->second->getTTH()));
 			results.push_back(sr);
 			addHits(1);
 		}

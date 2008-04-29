@@ -16,12 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SEARCH_MANAGER_LISTENER_H)
-#define SEARCH_MANAGER_LISTENER_H
+#ifndef DCPLUSPLUS_DCPP_SEARCH_MANAGER_LISTENER_H
+#define DCPLUSPLUS_DCPP_SEARCH_MANAGER_LISTENER_H
+
+#include "forward.h"
 
 namespace dcpp {
-
-class SearchResult;
 
 class SearchManagerListener {
 public:
@@ -29,7 +29,7 @@ public:
 	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> SR;
-	virtual void on(SR, SearchResult*) throw() = 0;
+	virtual void on(SR, const SearchResultPtr&) throw() = 0;
 };
 
 } // namespace dcpp

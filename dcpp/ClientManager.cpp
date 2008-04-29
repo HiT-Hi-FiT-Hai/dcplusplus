@@ -29,6 +29,7 @@
 #include "SimpleXML.h"
 #include "UserCommand.h"
 #include "LogManager.h"
+#include "SearchResult.h"
 
 #include "AdcHub.h"
 #include "NmdcHub.h"
@@ -342,7 +343,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 		return;
 	}
 
-	SearchResult::List l;
+	SearchResultList l;
 	ShareManager::getInstance()->search(l, aString, aSearchType, aSize, aFileType, aClient, isPassive ? 5 : 10);
 //		dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
 	if(l.size() > 0) {
@@ -350,14 +351,12 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 			string name = aSeeker.substr(4);
 			// Good, we have a passive seeker, those are easier...
 			string str;
-			for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
-				SearchResult* sr = *i;
+			for(SearchResultList::const_iterator i = l.begin(); i != l.end(); ++i) {
+				const SearchResultPtr& sr = *i;
 				str += sr->toSR(*aClient);
 				str[str.length()-1] = 5;
 				str += name;
 				str += '|';
-
-				sr->decRef();
 			}
 
 			if(str.size() > 0)
@@ -378,10 +377,9 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 
 				if(port == 0)
 					port = 412;
-				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
-					SearchResult* sr = *i;
+				for(SearchResultList::const_iterator i = l.begin(); i != l.end(); ++i) {
+					const SearchResultPtr& sr = *i;
 					udp.writeTo(ip, port, sr->toSR(*aClient));
-					sr->decRef();
 				}
 			} catch(const SocketException& /* e */) {
 				dcdebug("Search caught error\n");

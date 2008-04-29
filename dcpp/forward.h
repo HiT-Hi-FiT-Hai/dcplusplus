@@ -70,6 +70,10 @@ typedef std::vector<OnlineUserPtr> OnlineUserList;
 
 class QueueItem;
 
+class SearchResult;
+typedef boost::intrusive_ptr<SearchResult> SearchResultPtr;
+typedef std::vector<SearchResultPtr> SearchResultList;
+
 class ServerSocket;
 
 class Socket;

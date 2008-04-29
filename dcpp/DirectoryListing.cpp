@@ -22,7 +22,6 @@
 #include "DirectoryListing.h"
 
 #include "QueueManager.h"
-#include "SearchManager.h"
 #include "ClientManager.h"
 
 #include "StringTokenizer.h"

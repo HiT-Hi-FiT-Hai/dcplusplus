@@ -63,8 +63,8 @@ public:
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw();
 	void setDirty() { xmlDirty = true; }
 
-	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
-	void search(SearchResult::List& l, const StringList& params, StringList::size_type maxResults) throw();
+	void search(SearchResultList& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
+	void search(SearchResultList& l, const StringList& params, StringList::size_type maxResults) throw();
 
 	StringPairList getDirectories() const throw();
 
@@ -171,8 +171,8 @@ private:
 
 		int64_t getSize() const throw();
 
-		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) const throw();
-		void search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) const throw();
+		void search(SearchResultList& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) const throw();
+		void search(SearchResultList& aResults, AdcSearch& aStrings, StringList::size_type maxResults) const throw();
 
 		void toXml(OutputStream& xmlFile, string& indent, string& tmp2, bool fullList) const;
 		void filesToXml(OutputStream& xmlFile, string& indent, string& tmp2) const;

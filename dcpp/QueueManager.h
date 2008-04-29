@@ -245,7 +245,7 @@ private:
 	virtual void on(TimerManagerListener::Minute, uint32_t aTick) throw();
 
 	// SearchManagerListener
-	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
+	virtual void on(SearchManagerListener::SR, const SearchResultPtr&) throw();
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserConnected, const UserPtr& aUser) throw();

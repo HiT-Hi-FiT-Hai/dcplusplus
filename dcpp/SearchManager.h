@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SEARCH_MANAGER_H)
-#define SEARCH_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_SEARCH_MANAGER_H
+#define DCPLUSPLUS_DCPP_SEARCH_MANAGER_H
 
 #include "SettingsManager.h"
 
@@ -26,8 +26,6 @@
 #include "Thread.h"
 #include "Client.h"
 #include "Singleton.h"
-#include "FastAlloc.h"
-#include "MerkleTree.h"
 
 #include "SearchManagerListener.h"
 #include "TimerManager.h"
@@ -37,74 +35,6 @@ namespace dcpp {
 
 class SearchManager;
 class SocketException;
-
-class SearchResult : public FastAlloc<SearchResult> {
-public:
-
-	enum Types {
-		TYPE_FILE,
-		TYPE_DIRECTORY
-	};
-
-	typedef SearchResult* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-
-	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue& aTTH);
-
-	SearchResult(const UserPtr& aUser, Types aType, int aSlots, int aFreeSlots,
-		int64_t aSize, const string& aFile, const string& aHubName,
-		const string& aHubURL, const string& ip, TTHValue aTTH, const string& aToken) :
-	file(aFile), hubName(aHubName), hubURL(aHubURL), user(aUser),
-		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(ip),
-		tth(aTTH), token(aToken), ref(1) { }
-
-	string getFileName() const;
-	string toSR(const Client& client) const;
-	AdcCommand toRES(char type) const;
-
-	UserPtr& getUser() { return user; }
-	string getSlotString() const { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
-
-	const string& getFile() const { return file; }
-	const string& getHubURL() const { return hubURL; }
-	const string& getHubName() const { return hubName; }
-	int64_t getSize() const { return size; }
-	Types getType() const { return type; }
-	int getSlots() const { return slots; }
-	int getFreeSlots() const { return freeSlots; }
-	TTHValue getTTH() const { return tth; }
-	const string& getIP() const { return IP; }
-	const string& getToken() const { return token; }
-
-	void incRef() { Thread::safeInc(ref); }
-	void decRef() {
-		if(Thread::safeDec(ref) == 0)
-			delete this;
-	}
-
-private:
-	friend class SearchManager;
-
-	SearchResult();
-	~SearchResult() { }
-
-	SearchResult(const SearchResult& rhs);
-
-	string file;
-	string hubName;
-	string hubURL;
-	UserPtr user;
-	int64_t size;
-	Types type;
-	int slots;
-	int freeSlots;
-	string IP;
-	TTHValue tth;
-	string token;
-
-	volatile long ref;
-};
 
 class SearchManager : public Speaker<SearchManagerListener>, public Singleton<SearchManager>, public Thread
 {
