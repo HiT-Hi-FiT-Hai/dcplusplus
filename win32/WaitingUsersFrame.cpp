@@ -81,7 +81,7 @@ bool WaitingUsersFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&WaitingUsersFrame::onRemove, this));
 	menu->appendItem(IDC_GRANTSLOT, T_("Grant &extra slot"), std::tr1::bind(&WaitingUsersFrame::onGrantSlot, this));
 	menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&WaitingUsersFrame::onAddToFavorites, this));
-	menu->appendItem(IDC_PRIVATEMESSAGE, T_("&Send private message"), std::tr1::bind(&WaitingUsersFrame::onPrivateMessage, this));
+	menu->appendItem(IDC_PM, T_("&Send private message"), std::tr1::bind(&WaitingUsersFrame::onPrivateMessage, this));
 	menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return true;
 }

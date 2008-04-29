@@ -186,7 +186,7 @@ TransferView::MenuPtr TransferView::makeContextMenu(ConnectionInfo* ii) {
 	menu->appendItem(IDC_COPY_NICK, T_("Copy &nick to clipboard"), std::tr1::bind(&TransferView::handleCopyNick, this));
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_REMOVE, T_("&Disconnect"), std::tr1::bind(&TransferView::handleDisconnect, this));
-	menu->setDefaultItem(IDC_PRIVATEMESSAGE);
+	menu->setDefaultItem(IDC_PM);
 	return menu;
 }
 

@@ -25,6 +25,7 @@
 #include <dcpp/QueueManager.h>
 #include <dcpp/ClientManager.h>
 #include <dcpp/ShareManager.h>
+#include <set>
 
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
 	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH, COLUMN_CID };
@@ -541,6 +542,7 @@ void SearchFrame::SearchInfo::update() {
 			columns[COLUMN_TYPE].erase(0, 1);
 		columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));
 		columns[COLUMN_EXACT_SIZE] = Text::toT(Util::formatExactSize(sr->getSize()));
+        columns[COLUMN_TTH] = Text::toT(sr->getTTH().toBase32());
 	} else {
 		columns[COLUMN_FILENAME] = Text::toT(sr->getFileName());
 		columns[COLUMN_PATH] = Text::toT(sr->getFile());
@@ -552,24 +554,29 @@ void SearchFrame::SearchInfo::update() {
 	}
 	if(srs.size() > 1) {
 		columns[COLUMN_NICK] = str(TFN_("%1% user", "%1% users", srs.size()) % srs.size());
+		columns[COLUMN_CONNECTION].clear();
+		columns[COLUMN_IP].clear();
+		columns[COLUMN_CID].clear();
+		
+		std::set<std::string> hubs;
+		for(SearchResultList::const_iterator i = srs.begin(), iend = srs.end(); i != iend; ++i) {
+			hubs.insert((*i)->getHubName());
+		}
+		columns[COLUMN_HUB] = Text::toT(Util::toString(StringList(hubs.begin(), hubs.end())));
 	} else {
 		columns[COLUMN_NICK] = WinUtil::getNicks(sr->getUser());
+		columns[COLUMN_CONNECTION] = Text::toT(ClientManager::getInstance()->getConnection(sr->getUser()->getCID()));
+		columns[COLUMN_SLOTS] = Text::toT(sr->getSlotString());
+		columns[COLUMN_IP] = Text::toT(sr->getIP());
+		if (!columns[COLUMN_IP].empty()) {
+			// Only attempt to grab a country mapping if we actually have an IP address
+			tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
+			if(!tmpCountry.empty())
+				columns[COLUMN_IP] = tmpCountry + _T(" (") + columns[COLUMN_IP] + _T(")");
+		}
+		columns[COLUMN_HUB] = Text::toT(sr->getHubName());
+		columns[COLUMN_CID] = Text::toT(sr->getUser()->getCID().toBase32());
 	} 
-	columns[COLUMN_CONNECTION] = Text::toT(ClientManager::getInstance()->getConnection(sr->getUser()->getCID()));
-	// TODO Join hubs of all users
-	columns[COLUMN_HUB] = Text::toT(sr->getHubName());
-	columns[COLUMN_SLOTS] = Text::toT(sr->getSlotString());
-	columns[COLUMN_IP] = Text::toT(sr->getIP());
-	if (!columns[COLUMN_IP].empty()) {
-		// Only attempt to grab a country mapping if we actually have an IP address
-		tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
-		if(!tmpCountry.empty())
-			columns[COLUMN_IP] = tmpCountry + _T(" (") + columns[COLUMN_IP] + _T(")");
-	}
-	if(sr->getType() == SearchResult::TYPE_FILE) {
-        columns[COLUMN_TTH] = Text::toT(sr->getTTH().toBase32());
-	}
-	columns[COLUMN_CID] = Text::toT(sr->getUser()->getCID().toBase32());
 }
 
 LRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
@@ -797,7 +804,8 @@ struct UserCollector {
 	void operator()(T* si) {
 		for(SearchResultList::const_iterator i = si->srs.begin(), iend = si->srs.end(); i != iend; ++i) {
 			const SearchResultPtr& sr = *i;
-			users.push_back(sr->getUser());
+			if(std::find(users.begin(), users.end(), sr->getUser()) == users.end()) 
+				users.push_back(sr->getUser());
 		}
 	}
 	UserList users;

@@ -96,7 +96,7 @@ public:
 		if(traits.adcOnly)
 			menu->appendItem(IDC_BROWSELIST, T_("&Browse file list"), std::tr1::bind(&T::handleBrowseList, This));
 		menu->appendItem(IDC_MATCH_QUEUE, T_("&Match queue"), std::tr1::bind(&T::handleMatchQueue, This));
-		menu->appendItem(IDC_PRIVATEMESSAGE, T_("&Send private message"), std::tr1::bind(&T::handlePrivateMessage, This, parent));
+		menu->appendItem(IDC_PM, T_("&Send private message"), std::tr1::bind(&T::handlePrivateMessage, This, parent));
 		if(!traits.favOnly)
 			menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&T::handleAddFavorite, This), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_USERS)));
 		menu->appendItem(IDC_GRANTSLOT, T_("Grant &extra slot"), std::tr1::bind(&T::handleGrantSlot, This));

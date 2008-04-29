@@ -1067,20 +1067,43 @@ static void eachUser(const UserList& list, const UserFunction& f) {
 }
 
 static void addUsers(bool addSub, dwt::MenuPtr menu, const tstring& text, int id, const UserList& users, const UserFunction& f) {
+	if(users.empty())
+		return;
 	
 	if(addSub) {
 		menu = menu->appendPopup(text);
 	}
+	
 	if(users.size() > 1) {
 		menu->appendItem(id, T_("All"), std::tr1::bind(&eachUser, users, f), dwt::BitmapPtr());
+		
+		menu->appendSeparatorItem();
 		
 		for(size_t i = 0, iend = users.size(); i < iend; ++i) {
 			menu->appendItem(id + i + 1, WinUtil::getNicks(users[i]), 
 				std::tr1::bind(&eachUser, UserList(1, users[i]), f), dwt::BitmapPtr());
 		}
 	} else {
-		menu->appendItem(id, text, std::tr1::bind(&eachUser, users, f), dwt::BitmapPtr());
+		menu->appendItem(id, addSub ? WinUtil::getNicks(users[0]) : text, std::tr1::bind(&eachUser, users, f), dwt::BitmapPtr());
 	}
+}
+
+template<typename F>
+UserList filter(const UserList& l, F f) {
+	UserList ret;
+	for(UserList::const_iterator i = l.begin(), iend = l.end(); i != iend; ++i) {
+		if(f(*i)) {
+			ret.push_back(*i);
+		}
+	}
+	return ret;
+}
+
+static bool isAdc(const UserPtr& u) {
+	return !u->isSet(User::NMDC);
+}
+static bool isFav(const UserPtr& u) {
+	return !FavoriteManager::getInstance()->isFavoriteUser(u);
 }
 
 void WinUtil::addUserItems(dwt::MenuPtr menu, const UserList& users, dwt::TabViewPtr parent, const std::string& dir) {
@@ -1091,16 +1114,16 @@ void WinUtil::addUserItems(dwt::MenuPtr menu, const UserList& users, dwt::TabVie
 	addUsers(addSub, menu, T_("&Get file list"), IDC_GETLIST, users, 
 		std::tr1::bind(&QueueManager::addList, qm, _1, QueueItem::FLAG_CLIENT_VIEW, dir));
 	
-	addUsers(addSub, menu, T_("&Browse file list"), IDC_BROWSELIST, users, 
+	addUsers(addSub, menu, T_("&Browse file list"), IDC_BROWSELIST, filter(users, &isAdc), 
 		std::tr1::bind(&QueueManager::addPfs, qm, _1, dir));
 	
 	addUsers(addSub, menu, T_("&Match queue"), IDC_MATCH_QUEUE, users,
 		std::tr1::bind(&QueueManager::addList, qm, _1, QueueItem::FLAG_MATCH_QUEUE, std::string()));
 	
-	addUsers(addSub, menu, T_("&Send private message"), IDC_PRIVATEMESSAGE, users,
+	addUsers(addSub, menu, T_("&Send private message"), IDC_PM, users,
 		std::tr1::bind(&PrivateFrame::openWindow, parent, _1, tstring()));
 
-	addUsers(addSub, menu, T_("Add To &Favorites"), IDC_ADD_TO_FAVORITES, users,
+	addUsers(addSub, menu, T_("Add To &Favorites"), IDC_ADD_TO_FAVORITES, filter(users, &isFav),
 		std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), _1));
 	
 	addUsers(addSub, menu, T_("Grant &extra slot"), IDC_GRANTSLOT, users,
